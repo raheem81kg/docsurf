@@ -1,0 +1,28 @@
+{
+	"name": "@docsurf/backend",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"dev": "convex dev",
+		"setup": "convex dev --configure --until-success"
+	},
+	"author": "",
+	"license": "ISC",
+	"description": "",
+	"devDependencies": {
+		"@types/node": "^24.0.3",
+		"@types/react": "^19.0.12",
+		"typescript": "^5.8.3"
+	},
+	"dependencies": {
+		"@convex-dev/better-auth": "^0.6.1",
+		"@convex-dev/rate-limiter": "^0.2.10",
+		"@docsurf/utils": "workspace:*",
+		"@react-email/components": "^0.1.0",
+		"better-auth": "1.2.7",
+		"convex": "^1.23.0",
+		"convex-helpers": "^0.1.94",
+		"react": "19.0.0",
+		"resend": "^4.6.0"
+	}
+}

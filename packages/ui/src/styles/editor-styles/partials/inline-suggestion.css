@@ -1,0 +1,16 @@
+/*
+ * Styles for inline suggestion ghost text in the minimal Tiptap editor.
+ * Renders the suggestion from the data-suggestion attribute as ghost text.
+ */
+.suggestion-decoration-inline::after {
+   content: attr(data-suggestion);
+   color: inherit;
+   opacity: 0.5;
+   pointer-events: none;
+   user-select: none;
+   font-family: inherit;
+   font-size: inherit;
+   line-height: inherit;
+   white-space: pre-wrap;
+   vertical-align: initial;
+}

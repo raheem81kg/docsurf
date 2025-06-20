@@ -1,0 +1,12 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"display": "TanStack App",
+	"extends": "./base.json",
+	"compilerOptions": {
+		"plugins": [{ "name": "next" }],
+		"jsx": "preserve",
+		"noEmit": true,
+		"allowJs": true,
+		"types": ["vite/client"]
+	}
+}
