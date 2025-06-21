@@ -1,28 +1,47 @@
 {
-	"name": "@docsurf/backend",
-	"type": "module",
-	"private": true,
-	"scripts": {
-		"dev": "convex dev",
-		"setup": "convex dev --configure --until-success"
-	},
-	"author": "",
-	"license": "ISC",
-	"description": "",
-	"devDependencies": {
-		"@types/node": "^24.0.3",
-		"@types/react": "^19.0.12",
-		"typescript": "^5.8.3"
-	},
-	"dependencies": {
-		"@convex-dev/better-auth": "^0.6.1",
-		"@convex-dev/rate-limiter": "^0.2.10",
-		"@docsurf/utils": "workspace:*",
-		"@react-email/components": "^0.1.0",
-		"better-auth": "1.2.7",
-		"convex": "^1.23.0",
-		"convex-helpers": "^0.1.94",
-		"react": "19.0.0",
-		"resend": "^4.6.0"
-	}
+   "name": "@docsurf/backend",
+   "type": "module",
+   "private": true,
+   "scripts": {
+      "dev": "convex dev",
+      "setup": "convex dev --configure --until-success",
+      "postinstall": "patch-package && cd node_modules/@convex-dev/r2 && tsc --project ./esm.json && echo '{\"type\": \"module\"}' > dist/esm/package.json"
+   },
+   "author": "",
+   "license": "ISC",
+   "description": "",
+   "devDependencies": {
+      "@types/node": "^24.0.3",
+      "@types/react": "^19.0.12",
+      "typescript": "^5.8.3"
+   },
+   "dependencies": {
+      "@ai-sdk/anthropic": "^1.2.12",
+      "@ai-sdk/fal": "^0.1.12",
+      "@ai-sdk/google": "^1.2.19",
+      "@ai-sdk/groq": "^1.2.9",
+      "@ai-sdk/openai": "^1.3.22",
+      "@ai-sdk/provider": "^1.1.3",
+      "@ai-sdk/ui-utils": "^1.2.11",
+      "@convex-dev/aggregate": "^0.1.21",
+      "@convex-dev/better-auth": "^0.6.1",
+      "@convex-dev/polar": "^0.5.0",
+      "@convex-dev/r2": "^0.6.2",
+      "@convex-dev/rate-limiter": "^0.2.10",
+      "@docsurf/utils": "workspace:*",
+      "@modelcontextprotocol/sdk": "^1.13.0",
+      "@openrouter/ai-sdk-provider": "^0.7.2",
+      "@react-email/components": "^0.1.0",
+      "@upstash/redis": "^1.35.0",
+      "ai": "^4.3.16",
+      "better-auth": "1.2.7",
+      "convex": "^1.23.0",
+      "convex-helpers": "^0.1.94",
+      "patch-package": "^8.0.0",
+      "react": "19.0.0",
+      "resend": "^4.6.0",
+      "resumable-stream": "^2.2.0",
+      "supermemory": "3.0.0-alpha.18",
+      "ts-dedent": "^2.2.0"
+   }
 }

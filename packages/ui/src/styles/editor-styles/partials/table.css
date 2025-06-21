@@ -1,81 +1,81 @@
 /* Table-specific styling */
 .minimal-tiptap-editor .ProseMirror table {
-   border: 1px solid;
-   border-collapse: collapse;
-   border-color: rgba(0, 0, 0, 0.1);
-   table-layout: fixed;
-   box-sizing: border-box;
-   overflow-x: auto;
-   overflow-y: hidden;
-   display: block;
-   width: 100%;
-   margin: 0;
+	border: 1px solid;
+	border-collapse: collapse;
+	border-color: rgba(0, 0, 0, 0.1);
+	table-layout: fixed;
+	box-sizing: border-box;
+	overflow-x: auto;
+	overflow-y: hidden;
+	display: block;
+	width: 100%;
+	margin: 0;
 }
 
 .dark .minimal-tiptap-editor .ProseMirror table {
-   border-color: rgba(255, 255, 255, 0.2);
+	border-color: rgba(255, 255, 255, 0.2);
 }
 
 .minimal-tiptap-editor .ProseMirror table td,
 .minimal-tiptap-editor .ProseMirror table th {
-   border: 1px solid;
-   border-color: rgba(0, 0, 0, 0.1);
-   min-width: 1em;
-   padding: 0.5rem;
-   box-sizing: border-box;
-   position: relative;
-   text-align: left;
-   vertical-align: top;
+	border: 1px solid;
+	border-color: rgba(0, 0, 0, 0.1);
+	min-width: 1em;
+	padding: 0.5rem;
+	box-sizing: border-box;
+	position: relative;
+	text-align: left;
+	vertical-align: top;
 }
 
 .dark .minimal-tiptap-editor .ProseMirror table td,
 .dark .minimal-tiptap-editor .ProseMirror table th {
-   border-color: rgba(255, 255, 255, 0.2);
+	border-color: rgba(255, 255, 255, 0.2);
 }
 
 .minimal-tiptap-editor .ProseMirror table td:first-of-type:not(a),
 .minimal-tiptap-editor .ProseMirror table th:first-of-type:not(a) {
-   margin-top: 0;
+	margin-top: 0;
 }
 
 .minimal-tiptap-editor .ProseMirror table td p,
 .minimal-tiptap-editor .ProseMirror table th p {
-   margin: 0 !important;
+	margin: 0 !important;
 }
 
 .minimal-tiptap-editor .ProseMirror table td p + p,
 .minimal-tiptap-editor .ProseMirror table th p + p {
-   margin-top: 0.75rem;
+	margin-top: 0.75rem;
 }
 
 .minimal-tiptap-editor .ProseMirror table th {
-   font-weight: bold;
-   text-align: left;
+	font-weight: bold;
+	text-align: left;
 }
 
 .minimal-tiptap-editor .ProseMirror table .selectedCell:after {
-   background-color: rgba(59, 130, 246, 0.25);
-   content: "";
-   left: 0;
-   right: 0;
-   top: 0;
-   bottom: 0;
-   pointer-events: none;
-   position: absolute;
-   z-index: 2;
+	background-color: rgba(59, 130, 246, 0.25);
+	content: "";
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	pointer-events: none;
+	position: absolute;
+	z-index: 2;
 }
 
 .minimal-tiptap-editor .ProseMirror table .column-resize-handle {
-   background-color: var(--color-blue-500);
-   bottom: -2px;
-   pointer-events: none;
-   position: absolute;
-   right: -2px;
-   top: 0;
-   width: 4px;
+	background-color: var(--color-blue-500);
+	bottom: -2px;
+	pointer-events: none;
+	position: absolute;
+	right: -2px;
+	top: 0;
+	width: 4px;
 }
 
 .minimal-tiptap-editor .ProseMirror .tableWrapper {
-   margin: 1.5rem 0;
-   overflow-x: auto;
+	margin: 1.5rem 0;
+	overflow-x: auto;
 }

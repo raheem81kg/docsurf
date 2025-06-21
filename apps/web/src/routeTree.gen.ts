@@ -13,24 +13,22 @@ import { createServerRootRoute } from '@tanstack/react-start/server'
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TodosRouteImport } from './routes/todos'
 import { Route as WelcomeRouteImport } from './routes/_welcome'
-import { Route as DocRouteImport } from './routes/_doc'
+import { Route as MainRouteImport } from './routes/_main'
 import { Route as AuthedRouteImport } from './routes/_authed'
+import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as WelcomeIndexRouteImport } from './routes/_welcome/index'
 import { Route as WelcomeTermsRouteImport } from './routes/_welcome/terms'
 import { Route as WelcomePricingRouteImport } from './routes/_welcome/pricing'
 import { Route as WelcomePolicyRouteImport } from './routes/_welcome/policy'
 import { Route as WelcomeAboutRouteImport } from './routes/_welcome/about'
-import { Route as DocDocRouteImport } from './routes/_doc/doc'
+import { Route as MainDocRouteImport } from './routes/_main/doc'
 import { Route as AuthedServerRouteImport } from './routes/_authed/server'
 import { Route as AuthedClientOnlyRouteImport } from './routes/_authed/client-only'
-import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthAuthRouteImport } from './routes/_auth/auth'
 import { Route as WelcomeWelcomeIndexRouteImport } from './routes/_welcome/welcome.index'
 import { Route as AuthedClientOnlyIndexRouteImport } from './routes/_authed/client-only.index'
-import { Route as DocDocDocumentIdRouteImport } from './routes/_doc/doc.$documentId'
-import { ServerRoute as ApiPortalServerRouteImport } from './routes/api/portal'
-import { ServerRoute as ApiCheckoutIndexServerRouteImport } from './routes/api/checkout/index'
-import { ServerRoute as ApiWebhooksPolarServerRouteImport } from './routes/api/webhooks/polar'
+import { Route as MainDocDocumentIdRouteImport } from './routes/_main/doc.$documentId'
+import { ServerRoute as ApiPhrSplatServerRouteImport } from './routes/api/phr/$'
 import { ServerRoute as ApiCheckoutSuccessServerRouteImport } from './routes/api/checkout/success'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
@@ -45,12 +43,16 @@ const WelcomeRoute = WelcomeRouteImport.update({
   id: '/_welcome',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DocRoute = DocRouteImport.update({
-  id: '/_doc',
+const MainRoute = MainRouteImport.update({
+  id: '/_main',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthedRoute = AuthedRouteImport.update({
   id: '/_authed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WelcomeIndexRoute = WelcomeIndexRouteImport.update({
@@ -78,10 +80,10 @@ const WelcomeAboutRoute = WelcomeAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => WelcomeRoute,
 } as any)
-const DocDocRoute = DocDocRouteImport.update({
+const MainDocRoute = MainDocRouteImport.update({
   id: '/doc',
   path: '/doc',
-  getParentRoute: () => DocRoute,
+  getParentRoute: () => MainRoute,
 } as any)
 const AuthedServerRoute = AuthedServerRouteImport.update({
   id: '/server',
@@ -93,15 +95,10 @@ const AuthedClientOnlyRoute = AuthedClientOnlyRouteImport.update({
   path: '/client-only',
   getParentRoute: () => AuthedRoute,
 } as any)
-const AuthSignUpRoute = AuthSignUpRouteImport.update({
-  id: '/_auth/sign-up',
-  path: '/sign-up',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthAuthRoute = AuthAuthRouteImport.update({
-  id: '/_auth/auth',
+  id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthRoute,
 } as any)
 const WelcomeWelcomeIndexRoute = WelcomeWelcomeIndexRouteImport.update({
   id: '/welcome/',
@@ -113,24 +110,14 @@ const AuthedClientOnlyIndexRoute = AuthedClientOnlyIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthedClientOnlyRoute,
 } as any)
-const DocDocDocumentIdRoute = DocDocDocumentIdRouteImport.update({
+const MainDocDocumentIdRoute = MainDocDocumentIdRouteImport.update({
   id: '/$documentId',
   path: '/$documentId',
-  getParentRoute: () => DocDocRoute,
+  getParentRoute: () => MainDocRoute,
 } as any)
-const ApiPortalServerRoute = ApiPortalServerRouteImport.update({
-  id: '/api/portal',
-  path: '/api/portal',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const ApiCheckoutIndexServerRoute = ApiCheckoutIndexServerRouteImport.update({
-  id: '/api/checkout/',
-  path: '/api/checkout/',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const ApiWebhooksPolarServerRoute = ApiWebhooksPolarServerRouteImport.update({
-  id: '/api/webhooks/polar',
-  path: '/api/webhooks/polar',
+const ApiPhrSplatServerRoute = ApiPhrSplatServerRouteImport.update({
+  id: '/api/phr/$',
+  path: '/api/phr/$',
   getParentRoute: () => rootServerRouteImport,
 } as any)
 const ApiCheckoutSuccessServerRoute =
@@ -148,51 +135,49 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 export interface FileRoutesByFullPath {
   '/todos': typeof TodosRoute
   '/auth': typeof AuthAuthRoute
-  '/sign-up': typeof AuthSignUpRoute
   '/client-only': typeof AuthedClientOnlyRouteWithChildren
   '/server': typeof AuthedServerRoute
-  '/doc': typeof DocDocRouteWithChildren
+  '/doc': typeof MainDocRouteWithChildren
   '/about': typeof WelcomeAboutRoute
   '/policy': typeof WelcomePolicyRoute
   '/pricing': typeof WelcomePricingRoute
   '/terms': typeof WelcomeTermsRoute
   '/': typeof WelcomeIndexRoute
-  '/doc/$documentId': typeof DocDocDocumentIdRoute
+  '/doc/$documentId': typeof MainDocDocumentIdRoute
   '/client-only/': typeof AuthedClientOnlyIndexRoute
   '/welcome': typeof WelcomeWelcomeIndexRoute
 }
 export interface FileRoutesByTo {
   '/todos': typeof TodosRoute
   '/auth': typeof AuthAuthRoute
-  '/sign-up': typeof AuthSignUpRoute
   '/server': typeof AuthedServerRoute
-  '/doc': typeof DocDocRouteWithChildren
+  '/doc': typeof MainDocRouteWithChildren
   '/about': typeof WelcomeAboutRoute
   '/policy': typeof WelcomePolicyRoute
   '/pricing': typeof WelcomePricingRoute
   '/terms': typeof WelcomeTermsRoute
   '/': typeof WelcomeIndexRoute
-  '/doc/$documentId': typeof DocDocDocumentIdRoute
+  '/doc/$documentId': typeof MainDocDocumentIdRoute
   '/client-only': typeof AuthedClientOnlyIndexRoute
   '/welcome': typeof WelcomeWelcomeIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_auth': typeof AuthRouteWithChildren
   '/_authed': typeof AuthedRouteWithChildren
-  '/_doc': typeof DocRouteWithChildren
+  '/_main': typeof MainRouteWithChildren
   '/_welcome': typeof WelcomeRouteWithChildren
   '/todos': typeof TodosRoute
   '/_auth/auth': typeof AuthAuthRoute
-  '/_auth/sign-up': typeof AuthSignUpRoute
   '/_authed/client-only': typeof AuthedClientOnlyRouteWithChildren
   '/_authed/server': typeof AuthedServerRoute
-  '/_doc/doc': typeof DocDocRouteWithChildren
+  '/_main/doc': typeof MainDocRouteWithChildren
   '/_welcome/about': typeof WelcomeAboutRoute
   '/_welcome/policy': typeof WelcomePolicyRoute
   '/_welcome/pricing': typeof WelcomePricingRoute
   '/_welcome/terms': typeof WelcomeTermsRoute
   '/_welcome/': typeof WelcomeIndexRoute
-  '/_doc/doc/$documentId': typeof DocDocDocumentIdRoute
+  '/_main/doc/$documentId': typeof MainDocDocumentIdRoute
   '/_authed/client-only/': typeof AuthedClientOnlyIndexRoute
   '/_welcome/welcome/': typeof WelcomeWelcomeIndexRoute
 }
@@ -201,7 +186,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/todos'
     | '/auth'
-    | '/sign-up'
     | '/client-only'
     | '/server'
     | '/doc'
@@ -217,7 +201,6 @@ export interface FileRouteTypes {
   to:
     | '/todos'
     | '/auth'
-    | '/sign-up'
     | '/server'
     | '/doc'
     | '/about'
@@ -230,85 +213,60 @@ export interface FileRouteTypes {
     | '/welcome'
   id:
     | '__root__'
+    | '/_auth'
     | '/_authed'
-    | '/_doc'
+    | '/_main'
     | '/_welcome'
     | '/todos'
     | '/_auth/auth'
-    | '/_auth/sign-up'
     | '/_authed/client-only'
     | '/_authed/server'
-    | '/_doc/doc'
+    | '/_main/doc'
     | '/_welcome/about'
     | '/_welcome/policy'
     | '/_welcome/pricing'
     | '/_welcome/terms'
     | '/_welcome/'
-    | '/_doc/doc/$documentId'
+    | '/_main/doc/$documentId'
     | '/_authed/client-only/'
     | '/_welcome/welcome/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AuthRoute: typeof AuthRouteWithChildren
   AuthedRoute: typeof AuthedRouteWithChildren
-  DocRoute: typeof DocRouteWithChildren
+  MainRoute: typeof MainRouteWithChildren
   WelcomeRoute: typeof WelcomeRouteWithChildren
   TodosRoute: typeof TodosRoute
-  AuthAuthRoute: typeof AuthAuthRoute
-  AuthSignUpRoute: typeof AuthSignUpRoute
 }
 export interface FileServerRoutesByFullPath {
-  '/api/portal': typeof ApiPortalServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
   '/api/checkout/success': typeof ApiCheckoutSuccessServerRoute
-  '/api/webhooks/polar': typeof ApiWebhooksPolarServerRoute
-  '/api/checkout': typeof ApiCheckoutIndexServerRoute
+  '/api/phr/$': typeof ApiPhrSplatServerRoute
 }
 export interface FileServerRoutesByTo {
-  '/api/portal': typeof ApiPortalServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
   '/api/checkout/success': typeof ApiCheckoutSuccessServerRoute
-  '/api/webhooks/polar': typeof ApiWebhooksPolarServerRoute
-  '/api/checkout': typeof ApiCheckoutIndexServerRoute
+  '/api/phr/$': typeof ApiPhrSplatServerRoute
 }
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
-  '/api/portal': typeof ApiPortalServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
   '/api/checkout/success': typeof ApiCheckoutSuccessServerRoute
-  '/api/webhooks/polar': typeof ApiWebhooksPolarServerRoute
-  '/api/checkout/': typeof ApiCheckoutIndexServerRoute
+  '/api/phr/$': typeof ApiPhrSplatServerRoute
 }
 export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths:
-    | '/api/portal'
-    | '/api/auth/$'
-    | '/api/checkout/success'
-    | '/api/webhooks/polar'
-    | '/api/checkout'
+  fullPaths: '/api/auth/$' | '/api/checkout/success' | '/api/phr/$'
   fileServerRoutesByTo: FileServerRoutesByTo
-  to:
-    | '/api/portal'
-    | '/api/auth/$'
-    | '/api/checkout/success'
-    | '/api/webhooks/polar'
-    | '/api/checkout'
-  id:
-    | '__root__'
-    | '/api/portal'
-    | '/api/auth/$'
-    | '/api/checkout/success'
-    | '/api/webhooks/polar'
-    | '/api/checkout/'
+  to: '/api/auth/$' | '/api/checkout/success' | '/api/phr/$'
+  id: '__root__' | '/api/auth/$' | '/api/checkout/success' | '/api/phr/$'
   fileServerRoutesById: FileServerRoutesById
 }
 export interface RootServerRouteChildren {
-  ApiPortalServerRoute: typeof ApiPortalServerRoute
   ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
   ApiCheckoutSuccessServerRoute: typeof ApiCheckoutSuccessServerRoute
-  ApiWebhooksPolarServerRoute: typeof ApiWebhooksPolarServerRoute
-  ApiCheckoutIndexServerRoute: typeof ApiCheckoutIndexServerRoute
+  ApiPhrSplatServerRoute: typeof ApiPhrSplatServerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -327,11 +285,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WelcomeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_doc': {
-      id: '/_doc'
+    '/_main': {
+      id: '/_main'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof DocRouteImport
+      preLoaderRoute: typeof MainRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authed': {
@@ -339,6 +297,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof AuthedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_welcome/': {
@@ -376,12 +341,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WelcomeAboutRouteImport
       parentRoute: typeof WelcomeRoute
     }
-    '/_doc/doc': {
-      id: '/_doc/doc'
+    '/_main/doc': {
+      id: '/_main/doc'
       path: '/doc'
       fullPath: '/doc'
-      preLoaderRoute: typeof DocDocRouteImport
-      parentRoute: typeof DocRoute
+      preLoaderRoute: typeof MainDocRouteImport
+      parentRoute: typeof MainRoute
     }
     '/_authed/server': {
       id: '/_authed/server'
@@ -397,19 +362,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedClientOnlyRouteImport
       parentRoute: typeof AuthedRoute
     }
-    '/_auth/sign-up': {
-      id: '/_auth/sign-up'
-      path: '/sign-up'
-      fullPath: '/sign-up'
-      preLoaderRoute: typeof AuthSignUpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_auth/auth': {
       id: '/_auth/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthAuthRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/_welcome/welcome/': {
       id: '/_welcome/welcome/'
@@ -425,36 +383,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedClientOnlyIndexRouteImport
       parentRoute: typeof AuthedClientOnlyRoute
     }
-    '/_doc/doc/$documentId': {
-      id: '/_doc/doc/$documentId'
+    '/_main/doc/$documentId': {
+      id: '/_main/doc/$documentId'
       path: '/$documentId'
       fullPath: '/doc/$documentId'
-      preLoaderRoute: typeof DocDocDocumentIdRouteImport
-      parentRoute: typeof DocDocRoute
+      preLoaderRoute: typeof MainDocDocumentIdRouteImport
+      parentRoute: typeof MainDocRoute
     }
   }
 }
 declare module '@tanstack/react-start/server' {
   interface ServerFileRoutesByPath {
-    '/api/portal': {
-      id: '/api/portal'
-      path: '/api/portal'
-      fullPath: '/api/portal'
-      preLoaderRoute: typeof ApiPortalServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/checkout/': {
-      id: '/api/checkout/'
-      path: '/api/checkout'
-      fullPath: '/api/checkout'
-      preLoaderRoute: typeof ApiCheckoutIndexServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/webhooks/polar': {
-      id: '/api/webhooks/polar'
-      path: '/api/webhooks/polar'
-      fullPath: '/api/webhooks/polar'
-      preLoaderRoute: typeof ApiWebhooksPolarServerRouteImport
+    '/api/phr/$': {
+      id: '/api/phr/$'
+      path: '/api/phr/$'
+      fullPath: '/api/phr/$'
+      preLoaderRoute: typeof ApiPhrSplatServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
     '/api/checkout/success': {
@@ -473,6 +417,16 @@ declare module '@tanstack/react-start/server' {
     }
   }
 }
+
+interface AuthRouteChildren {
+  AuthAuthRoute: typeof AuthAuthRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthAuthRoute: AuthAuthRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface AuthedClientOnlyRouteChildren {
   AuthedClientOnlyIndexRoute: typeof AuthedClientOnlyIndexRoute
@@ -498,26 +452,26 @@ const AuthedRouteChildren: AuthedRouteChildren = {
 const AuthedRouteWithChildren =
   AuthedRoute._addFileChildren(AuthedRouteChildren)
 
-interface DocDocRouteChildren {
-  DocDocDocumentIdRoute: typeof DocDocDocumentIdRoute
+interface MainDocRouteChildren {
+  MainDocDocumentIdRoute: typeof MainDocDocumentIdRoute
 }
 
-const DocDocRouteChildren: DocDocRouteChildren = {
-  DocDocDocumentIdRoute: DocDocDocumentIdRoute,
+const MainDocRouteChildren: MainDocRouteChildren = {
+  MainDocDocumentIdRoute: MainDocDocumentIdRoute,
 }
 
-const DocDocRouteWithChildren =
-  DocDocRoute._addFileChildren(DocDocRouteChildren)
+const MainDocRouteWithChildren =
+  MainDocRoute._addFileChildren(MainDocRouteChildren)
 
-interface DocRouteChildren {
-  DocDocRoute: typeof DocDocRouteWithChildren
+interface MainRouteChildren {
+  MainDocRoute: typeof MainDocRouteWithChildren
 }
 
-const DocRouteChildren: DocRouteChildren = {
-  DocDocRoute: DocDocRouteWithChildren,
+const MainRouteChildren: MainRouteChildren = {
+  MainDocRoute: MainDocRouteWithChildren,
 }
 
-const DocRouteWithChildren = DocRoute._addFileChildren(DocRouteChildren)
+const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
 
 interface WelcomeRouteChildren {
   WelcomeAboutRoute: typeof WelcomeAboutRoute
@@ -541,22 +495,19 @@ const WelcomeRouteWithChildren =
   WelcomeRoute._addFileChildren(WelcomeRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
+  AuthRoute: AuthRouteWithChildren,
   AuthedRoute: AuthedRouteWithChildren,
-  DocRoute: DocRouteWithChildren,
+  MainRoute: MainRouteWithChildren,
   WelcomeRoute: WelcomeRouteWithChildren,
   TodosRoute: TodosRoute,
-  AuthAuthRoute: AuthAuthRoute,
-  AuthSignUpRoute: AuthSignUpRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 const rootServerRouteChildren: RootServerRouteChildren = {
-  ApiPortalServerRoute: ApiPortalServerRoute,
   ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
   ApiCheckoutSuccessServerRoute: ApiCheckoutSuccessServerRoute,
-  ApiWebhooksPolarServerRoute: ApiWebhooksPolarServerRoute,
-  ApiCheckoutIndexServerRoute: ApiCheckoutIndexServerRoute,
+  ApiPhrSplatServerRoute: ApiPhrSplatServerRoute,
 }
 export const serverRouteTree = rootServerRouteImport
   ._addFileChildren(rootServerRouteChildren)

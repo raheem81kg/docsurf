@@ -6,64 +6,58 @@ import { useTransition } from "react";
 import { Toaster } from "sonner";
 import { SignOutButton } from "@/components/client";
 import { ModeToggle } from "@/components/mode-toggle";
-import {
-	AppContainer,
-	AppHeader,
-	AppNav,
-	SettingsButton,
-	UserProfile,
-} from "@/components/server";
+import { AppContainer, AppHeader, AppNav, SettingsButton, UserProfile } from "@/components/server";
 import { TodoList } from "@/components/TodoListServer";
 import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/_authed/server")({
-	component: ServerComponent,
+   component: ServerComponent,
 });
 
 function ServerComponent() {
-	const navigate = useNavigate();
-	const [isPending, startTransition] = useTransition();
+   const navigate = useNavigate();
+   const [isPending, startTransition] = useTransition();
 
-	return (
-		<AppContainer>
-			<ModeToggle
-				isServer={true}
-				onSwitch={() => {
-					startTransition(() => {
-						void navigate({ to: "/client-only" });
-					});
-				}}
-				isPending={isPending}
-			/>
-			<Header />
-			<TodoList />
-			<Toaster />
-		</AppContainer>
-	);
+   return (
+      <AppContainer>
+         <ModeToggle
+            isServer={true}
+            onSwitch={() => {
+               startTransition(() => {
+                  void navigate({ to: "/client-only" });
+               });
+            }}
+            isPending={isPending}
+         />
+         <Header />
+         <TodoList />
+         <Toaster />
+      </AppContainer>
+   );
 }
 
 function Header() {
-	const user = useSuspenseQuery(convexQuery(api.auth.getCurrentUser, {}));
-	const navigate = useNavigate();
+   const user = useSuspenseQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const navigate = useNavigate();
 
-	const handleSignOut = async () => {
-		await authClient.signOut();
-		void navigate({ to: "/sign-in" });
-	};
+   const handleSignOut = async () => {
+      await authClient.signOut();
+      void navigate({ to: "/" });
+   };
 
-	return (
-		<AppHeader>
-			<UserProfile user={user.data} />
-			<AppNav>
-				<SettingsButton>
-					{/*
+   return (
+      <AppHeader>
+         <UserProfile user={user.data} />
+         <AppNav>
+            <SettingsButton>
+               {/*
           <Link to="/settings">
             <SettingsButtonContent />
           </Link>
           */}
-				</SettingsButton>
-				<SignOutButton onClick={handleSignOut} />
-			</AppNav>
-		</AppHeader>
-	);
+            </SettingsButton>
+            <SignOutButton onClick={handleSignOut} />
+         </AppNav>
+      </AppHeader>
+   );
 }

@@ -1,21 +1,19 @@
 import { onlineManager } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "sonner";
+import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 
 export function useOfflineIndicator() {
-	useEffect(() => {
-		return onlineManager.subscribe(() => {
-			if (onlineManager.isOnline()) {
-				toast.success("online", {
-					id: "ReactQuery",
-					duration: 2000,
-				});
-			} else {
-				toast.error("offline", {
-					id: "ReactQuery",
-					duration: Number.POSITIVE_INFINITY,
-				});
-			}
-		});
-	}, []);
+   useEffect(() => {
+      return onlineManager.subscribe(() => {
+         if (onlineManager.isOnline()) {
+            showToast("online", "success", {
+               duration: 2000,
+            });
+         } else {
+            showToast("offline", "error", {
+               duration: Number.POSITIVE_INFINITY,
+            });
+         }
+      });
+   }, []);
 }
