@@ -8,6 +8,7 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
 import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
@@ -17,23 +18,42 @@ import { Route as MainRouteImport } from './routes/_main'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as WelcomeIndexRouteImport } from './routes/_welcome/index'
-import { Route as WelcomeTermsRouteImport } from './routes/_welcome/terms'
-import { Route as WelcomePricingRouteImport } from './routes/_welcome/pricing'
-import { Route as WelcomePolicyRouteImport } from './routes/_welcome/policy'
-import { Route as WelcomeAboutRouteImport } from './routes/_welcome/about'
-import { Route as MainDocRouteImport } from './routes/_main/doc'
+import { Route as SettingsUsageRouteImport } from './routes/settings/usage'
+import { Route as SettingsProvidersRouteImport } from './routes/settings/providers'
+import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
+import { Route as SettingsModelsRouteImport } from './routes/settings/models'
+import { Route as SettingsCustomizationRouteImport } from './routes/settings/customization'
+import { Route as SettingsAttachmentsRouteImport } from './routes/settings/attachments'
+import { Route as SettingsAppearanceRouteImport } from './routes/settings/appearance'
+import { Route as SettingsAiOptionsRouteImport } from './routes/settings/ai-options'
 import { Route as AuthedServerRouteImport } from './routes/_authed/server'
 import { Route as AuthedClientOnlyRouteImport } from './routes/_authed/client-only'
-import { Route as AuthAuthRouteImport } from './routes/_auth/auth'
-import { Route as WelcomeWelcomeIndexRouteImport } from './routes/_welcome/welcome.index'
+import { Route as MainDocIndexRouteImport } from './routes/_main/doc.index'
 import { Route as AuthedClientOnlyIndexRouteImport } from './routes/_authed/client-only.index'
+import { Route as MainDocLibraryRouteImport } from './routes/_main/doc.library'
 import { Route as MainDocDocumentIdRouteImport } from './routes/_main/doc.$documentId'
 import { ServerRoute as ApiPhrSplatServerRouteImport } from './routes/api/phr/$'
 import { ServerRoute as ApiCheckoutSuccessServerRouteImport } from './routes/api/checkout/success'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
+const SettingsRouteLazyRouteImport = createFileRoute('/settings')()
+const WelcomeTermsLazyRouteImport = createFileRoute('/_welcome/terms')()
+const WelcomePricingLazyRouteImport = createFileRoute('/_welcome/pricing')()
+const WelcomePolicyLazyRouteImport = createFileRoute('/_welcome/policy')()
+const WelcomeAboutLazyRouteImport = createFileRoute('/_welcome/about')()
+const AuthAuthLazyRouteImport = createFileRoute('/_auth/auth')()
+const MainSSharedThreadIdLazyRouteImport = createFileRoute(
+  '/_main/s/$sharedThreadId',
+)()
 const rootServerRouteImport = createServerRootRoute()
 
+const SettingsRouteLazyRoute = SettingsRouteLazyRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/settings/route.lazy').then((d) => d.Route),
+)
 const TodosRoute = TodosRouteImport.update({
   id: '/todos',
   path: '/todos',
@@ -60,30 +80,78 @@ const WelcomeIndexRoute = WelcomeIndexRouteImport.update({
   path: '/',
   getParentRoute: () => WelcomeRoute,
 } as any)
-const WelcomeTermsRoute = WelcomeTermsRouteImport.update({
+const WelcomeTermsLazyRoute = WelcomeTermsLazyRouteImport.update({
   id: '/terms',
   path: '/terms',
   getParentRoute: () => WelcomeRoute,
-} as any)
-const WelcomePricingRoute = WelcomePricingRouteImport.update({
+} as any).lazy(() =>
+  import('./routes/_welcome/terms.lazy').then((d) => d.Route),
+)
+const WelcomePricingLazyRoute = WelcomePricingLazyRouteImport.update({
   id: '/pricing',
   path: '/pricing',
   getParentRoute: () => WelcomeRoute,
-} as any)
-const WelcomePolicyRoute = WelcomePolicyRouteImport.update({
+} as any).lazy(() =>
+  import('./routes/_welcome/pricing.lazy').then((d) => d.Route),
+)
+const WelcomePolicyLazyRoute = WelcomePolicyLazyRouteImport.update({
   id: '/policy',
   path: '/policy',
   getParentRoute: () => WelcomeRoute,
-} as any)
-const WelcomeAboutRoute = WelcomeAboutRouteImport.update({
+} as any).lazy(() =>
+  import('./routes/_welcome/policy.lazy').then((d) => d.Route),
+)
+const WelcomeAboutLazyRoute = WelcomeAboutLazyRouteImport.update({
   id: '/about',
   path: '/about',
   getParentRoute: () => WelcomeRoute,
+} as any).lazy(() =>
+  import('./routes/_welcome/about.lazy').then((d) => d.Route),
+)
+const AuthAuthLazyRoute = AuthAuthLazyRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => AuthRoute,
+} as any).lazy(() => import('./routes/_auth/auth.lazy').then((d) => d.Route))
+const SettingsUsageRoute = SettingsUsageRouteImport.update({
+  id: '/usage',
+  path: '/usage',
+  getParentRoute: () => SettingsRouteLazyRoute,
 } as any)
-const MainDocRoute = MainDocRouteImport.update({
-  id: '/doc',
-  path: '/doc',
-  getParentRoute: () => MainRoute,
+const SettingsProvidersRoute = SettingsProvidersRouteImport.update({
+  id: '/providers',
+  path: '/providers',
+  getParentRoute: () => SettingsRouteLazyRoute,
+} as any)
+const SettingsProfileRoute = SettingsProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => SettingsRouteLazyRoute,
+} as any)
+const SettingsModelsRoute = SettingsModelsRouteImport.update({
+  id: '/models',
+  path: '/models',
+  getParentRoute: () => SettingsRouteLazyRoute,
+} as any)
+const SettingsCustomizationRoute = SettingsCustomizationRouteImport.update({
+  id: '/customization',
+  path: '/customization',
+  getParentRoute: () => SettingsRouteLazyRoute,
+} as any)
+const SettingsAttachmentsRoute = SettingsAttachmentsRouteImport.update({
+  id: '/attachments',
+  path: '/attachments',
+  getParentRoute: () => SettingsRouteLazyRoute,
+} as any)
+const SettingsAppearanceRoute = SettingsAppearanceRouteImport.update({
+  id: '/appearance',
+  path: '/appearance',
+  getParentRoute: () => SettingsRouteLazyRoute,
+} as any)
+const SettingsAiOptionsRoute = SettingsAiOptionsRouteImport.update({
+  id: '/ai-options',
+  path: '/ai-options',
+  getParentRoute: () => SettingsRouteLazyRoute,
 } as any)
 const AuthedServerRoute = AuthedServerRouteImport.update({
   id: '/server',
@@ -95,25 +163,32 @@ const AuthedClientOnlyRoute = AuthedClientOnlyRouteImport.update({
   path: '/client-only',
   getParentRoute: () => AuthedRoute,
 } as any)
-const AuthAuthRoute = AuthAuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => AuthRoute,
-} as any)
-const WelcomeWelcomeIndexRoute = WelcomeWelcomeIndexRouteImport.update({
-  id: '/welcome/',
-  path: '/welcome/',
-  getParentRoute: () => WelcomeRoute,
+const MainDocIndexRoute = MainDocIndexRouteImport.update({
+  id: '/doc/',
+  path: '/doc/',
+  getParentRoute: () => MainRoute,
 } as any)
 const AuthedClientOnlyIndexRoute = AuthedClientOnlyIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthedClientOnlyRoute,
 } as any)
+const MainSSharedThreadIdLazyRoute = MainSSharedThreadIdLazyRouteImport.update({
+  id: '/s/$sharedThreadId',
+  path: '/s/$sharedThreadId',
+  getParentRoute: () => MainRoute,
+} as any).lazy(() =>
+  import('./routes/_main/s.$sharedThreadId.lazy').then((d) => d.Route),
+)
+const MainDocLibraryRoute = MainDocLibraryRouteImport.update({
+  id: '/doc/library',
+  path: '/doc/library',
+  getParentRoute: () => MainRoute,
+} as any)
 const MainDocDocumentIdRoute = MainDocDocumentIdRouteImport.update({
-  id: '/$documentId',
-  path: '/$documentId',
-  getParentRoute: () => MainDocRoute,
+  id: '/doc/$documentId',
+  path: '/doc/$documentId',
+  getParentRoute: () => MainRoute,
 } as any)
 const ApiPhrSplatServerRoute = ApiPhrSplatServerRouteImport.update({
   id: '/api/phr/$',
@@ -134,32 +209,52 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/todos': typeof TodosRoute
-  '/auth': typeof AuthAuthRoute
+  '/settings': typeof SettingsRouteLazyRouteWithChildren
   '/client-only': typeof AuthedClientOnlyRouteWithChildren
   '/server': typeof AuthedServerRoute
-  '/doc': typeof MainDocRouteWithChildren
-  '/about': typeof WelcomeAboutRoute
-  '/policy': typeof WelcomePolicyRoute
-  '/pricing': typeof WelcomePricingRoute
-  '/terms': typeof WelcomeTermsRoute
+  '/settings/ai-options': typeof SettingsAiOptionsRoute
+  '/settings/appearance': typeof SettingsAppearanceRoute
+  '/settings/attachments': typeof SettingsAttachmentsRoute
+  '/settings/customization': typeof SettingsCustomizationRoute
+  '/settings/models': typeof SettingsModelsRoute
+  '/settings/profile': typeof SettingsProfileRoute
+  '/settings/providers': typeof SettingsProvidersRoute
+  '/settings/usage': typeof SettingsUsageRoute
+  '/auth': typeof AuthAuthLazyRoute
+  '/about': typeof WelcomeAboutLazyRoute
+  '/policy': typeof WelcomePolicyLazyRoute
+  '/pricing': typeof WelcomePricingLazyRoute
+  '/terms': typeof WelcomeTermsLazyRoute
   '/': typeof WelcomeIndexRoute
   '/doc/$documentId': typeof MainDocDocumentIdRoute
+  '/doc/library': typeof MainDocLibraryRoute
+  '/s/$sharedThreadId': typeof MainSSharedThreadIdLazyRoute
   '/client-only/': typeof AuthedClientOnlyIndexRoute
-  '/welcome': typeof WelcomeWelcomeIndexRoute
+  '/doc': typeof MainDocIndexRoute
 }
 export interface FileRoutesByTo {
   '/todos': typeof TodosRoute
-  '/auth': typeof AuthAuthRoute
+  '/settings': typeof SettingsRouteLazyRouteWithChildren
   '/server': typeof AuthedServerRoute
-  '/doc': typeof MainDocRouteWithChildren
-  '/about': typeof WelcomeAboutRoute
-  '/policy': typeof WelcomePolicyRoute
-  '/pricing': typeof WelcomePricingRoute
-  '/terms': typeof WelcomeTermsRoute
+  '/settings/ai-options': typeof SettingsAiOptionsRoute
+  '/settings/appearance': typeof SettingsAppearanceRoute
+  '/settings/attachments': typeof SettingsAttachmentsRoute
+  '/settings/customization': typeof SettingsCustomizationRoute
+  '/settings/models': typeof SettingsModelsRoute
+  '/settings/profile': typeof SettingsProfileRoute
+  '/settings/providers': typeof SettingsProvidersRoute
+  '/settings/usage': typeof SettingsUsageRoute
+  '/auth': typeof AuthAuthLazyRoute
+  '/about': typeof WelcomeAboutLazyRoute
+  '/policy': typeof WelcomePolicyLazyRoute
+  '/pricing': typeof WelcomePricingLazyRoute
+  '/terms': typeof WelcomeTermsLazyRoute
   '/': typeof WelcomeIndexRoute
   '/doc/$documentId': typeof MainDocDocumentIdRoute
+  '/doc/library': typeof MainDocLibraryRoute
+  '/s/$sharedThreadId': typeof MainSSharedThreadIdLazyRoute
   '/client-only': typeof AuthedClientOnlyIndexRoute
-  '/welcome': typeof WelcomeWelcomeIndexRoute
+  '/doc': typeof MainDocIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -168,49 +263,79 @@ export interface FileRoutesById {
   '/_main': typeof MainRouteWithChildren
   '/_welcome': typeof WelcomeRouteWithChildren
   '/todos': typeof TodosRoute
-  '/_auth/auth': typeof AuthAuthRoute
+  '/settings': typeof SettingsRouteLazyRouteWithChildren
   '/_authed/client-only': typeof AuthedClientOnlyRouteWithChildren
   '/_authed/server': typeof AuthedServerRoute
-  '/_main/doc': typeof MainDocRouteWithChildren
-  '/_welcome/about': typeof WelcomeAboutRoute
-  '/_welcome/policy': typeof WelcomePolicyRoute
-  '/_welcome/pricing': typeof WelcomePricingRoute
-  '/_welcome/terms': typeof WelcomeTermsRoute
+  '/settings/ai-options': typeof SettingsAiOptionsRoute
+  '/settings/appearance': typeof SettingsAppearanceRoute
+  '/settings/attachments': typeof SettingsAttachmentsRoute
+  '/settings/customization': typeof SettingsCustomizationRoute
+  '/settings/models': typeof SettingsModelsRoute
+  '/settings/profile': typeof SettingsProfileRoute
+  '/settings/providers': typeof SettingsProvidersRoute
+  '/settings/usage': typeof SettingsUsageRoute
+  '/_auth/auth': typeof AuthAuthLazyRoute
+  '/_welcome/about': typeof WelcomeAboutLazyRoute
+  '/_welcome/policy': typeof WelcomePolicyLazyRoute
+  '/_welcome/pricing': typeof WelcomePricingLazyRoute
+  '/_welcome/terms': typeof WelcomeTermsLazyRoute
   '/_welcome/': typeof WelcomeIndexRoute
   '/_main/doc/$documentId': typeof MainDocDocumentIdRoute
+  '/_main/doc/library': typeof MainDocLibraryRoute
+  '/_main/s/$sharedThreadId': typeof MainSSharedThreadIdLazyRoute
   '/_authed/client-only/': typeof AuthedClientOnlyIndexRoute
-  '/_welcome/welcome/': typeof WelcomeWelcomeIndexRoute
+  '/_main/doc/': typeof MainDocIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/todos'
-    | '/auth'
+    | '/settings'
     | '/client-only'
     | '/server'
-    | '/doc'
+    | '/settings/ai-options'
+    | '/settings/appearance'
+    | '/settings/attachments'
+    | '/settings/customization'
+    | '/settings/models'
+    | '/settings/profile'
+    | '/settings/providers'
+    | '/settings/usage'
+    | '/auth'
     | '/about'
     | '/policy'
     | '/pricing'
     | '/terms'
     | '/'
     | '/doc/$documentId'
+    | '/doc/library'
+    | '/s/$sharedThreadId'
     | '/client-only/'
-    | '/welcome'
+    | '/doc'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/todos'
-    | '/auth'
+    | '/settings'
     | '/server'
-    | '/doc'
+    | '/settings/ai-options'
+    | '/settings/appearance'
+    | '/settings/attachments'
+    | '/settings/customization'
+    | '/settings/models'
+    | '/settings/profile'
+    | '/settings/providers'
+    | '/settings/usage'
+    | '/auth'
     | '/about'
     | '/policy'
     | '/pricing'
     | '/terms'
     | '/'
     | '/doc/$documentId'
+    | '/doc/library'
+    | '/s/$sharedThreadId'
     | '/client-only'
-    | '/welcome'
+    | '/doc'
   id:
     | '__root__'
     | '/_auth'
@@ -218,18 +343,28 @@ export interface FileRouteTypes {
     | '/_main'
     | '/_welcome'
     | '/todos'
-    | '/_auth/auth'
+    | '/settings'
     | '/_authed/client-only'
     | '/_authed/server'
-    | '/_main/doc'
+    | '/settings/ai-options'
+    | '/settings/appearance'
+    | '/settings/attachments'
+    | '/settings/customization'
+    | '/settings/models'
+    | '/settings/profile'
+    | '/settings/providers'
+    | '/settings/usage'
+    | '/_auth/auth'
     | '/_welcome/about'
     | '/_welcome/policy'
     | '/_welcome/pricing'
     | '/_welcome/terms'
     | '/_welcome/'
     | '/_main/doc/$documentId'
+    | '/_main/doc/library'
+    | '/_main/s/$sharedThreadId'
     | '/_authed/client-only/'
-    | '/_welcome/welcome/'
+    | '/_main/doc/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -238,6 +373,7 @@ export interface RootRouteChildren {
   MainRoute: typeof MainRouteWithChildren
   WelcomeRoute: typeof WelcomeRouteWithChildren
   TodosRoute: typeof TodosRoute
+  SettingsRouteLazyRoute: typeof SettingsRouteLazyRouteWithChildren
 }
 export interface FileServerRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatServerRoute
@@ -271,6 +407,13 @@ export interface RootServerRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/todos': {
       id: '/todos'
       path: '/todos'
@@ -317,36 +460,92 @@ declare module '@tanstack/react-router' {
       id: '/_welcome/terms'
       path: '/terms'
       fullPath: '/terms'
-      preLoaderRoute: typeof WelcomeTermsRouteImport
+      preLoaderRoute: typeof WelcomeTermsLazyRouteImport
       parentRoute: typeof WelcomeRoute
     }
     '/_welcome/pricing': {
       id: '/_welcome/pricing'
       path: '/pricing'
       fullPath: '/pricing'
-      preLoaderRoute: typeof WelcomePricingRouteImport
+      preLoaderRoute: typeof WelcomePricingLazyRouteImport
       parentRoute: typeof WelcomeRoute
     }
     '/_welcome/policy': {
       id: '/_welcome/policy'
       path: '/policy'
       fullPath: '/policy'
-      preLoaderRoute: typeof WelcomePolicyRouteImport
+      preLoaderRoute: typeof WelcomePolicyLazyRouteImport
       parentRoute: typeof WelcomeRoute
     }
     '/_welcome/about': {
       id: '/_welcome/about'
       path: '/about'
       fullPath: '/about'
-      preLoaderRoute: typeof WelcomeAboutRouteImport
+      preLoaderRoute: typeof WelcomeAboutLazyRouteImport
       parentRoute: typeof WelcomeRoute
     }
-    '/_main/doc': {
-      id: '/_main/doc'
-      path: '/doc'
-      fullPath: '/doc'
-      preLoaderRoute: typeof MainDocRouteImport
-      parentRoute: typeof MainRoute
+    '/_auth/auth': {
+      id: '/_auth/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthAuthLazyRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/settings/usage': {
+      id: '/settings/usage'
+      path: '/usage'
+      fullPath: '/settings/usage'
+      preLoaderRoute: typeof SettingsUsageRouteImport
+      parentRoute: typeof SettingsRouteLazyRoute
+    }
+    '/settings/providers': {
+      id: '/settings/providers'
+      path: '/providers'
+      fullPath: '/settings/providers'
+      preLoaderRoute: typeof SettingsProvidersRouteImport
+      parentRoute: typeof SettingsRouteLazyRoute
+    }
+    '/settings/profile': {
+      id: '/settings/profile'
+      path: '/profile'
+      fullPath: '/settings/profile'
+      preLoaderRoute: typeof SettingsProfileRouteImport
+      parentRoute: typeof SettingsRouteLazyRoute
+    }
+    '/settings/models': {
+      id: '/settings/models'
+      path: '/models'
+      fullPath: '/settings/models'
+      preLoaderRoute: typeof SettingsModelsRouteImport
+      parentRoute: typeof SettingsRouteLazyRoute
+    }
+    '/settings/customization': {
+      id: '/settings/customization'
+      path: '/customization'
+      fullPath: '/settings/customization'
+      preLoaderRoute: typeof SettingsCustomizationRouteImport
+      parentRoute: typeof SettingsRouteLazyRoute
+    }
+    '/settings/attachments': {
+      id: '/settings/attachments'
+      path: '/attachments'
+      fullPath: '/settings/attachments'
+      preLoaderRoute: typeof SettingsAttachmentsRouteImport
+      parentRoute: typeof SettingsRouteLazyRoute
+    }
+    '/settings/appearance': {
+      id: '/settings/appearance'
+      path: '/appearance'
+      fullPath: '/settings/appearance'
+      preLoaderRoute: typeof SettingsAppearanceRouteImport
+      parentRoute: typeof SettingsRouteLazyRoute
+    }
+    '/settings/ai-options': {
+      id: '/settings/ai-options'
+      path: '/ai-options'
+      fullPath: '/settings/ai-options'
+      preLoaderRoute: typeof SettingsAiOptionsRouteImport
+      parentRoute: typeof SettingsRouteLazyRoute
     }
     '/_authed/server': {
       id: '/_authed/server'
@@ -362,19 +561,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedClientOnlyRouteImport
       parentRoute: typeof AuthedRoute
     }
-    '/_auth/auth': {
-      id: '/_auth/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthAuthRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_welcome/welcome/': {
-      id: '/_welcome/welcome/'
-      path: '/welcome'
-      fullPath: '/welcome'
-      preLoaderRoute: typeof WelcomeWelcomeIndexRouteImport
-      parentRoute: typeof WelcomeRoute
+    '/_main/doc/': {
+      id: '/_main/doc/'
+      path: '/doc'
+      fullPath: '/doc'
+      preLoaderRoute: typeof MainDocIndexRouteImport
+      parentRoute: typeof MainRoute
     }
     '/_authed/client-only/': {
       id: '/_authed/client-only/'
@@ -383,12 +575,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedClientOnlyIndexRouteImport
       parentRoute: typeof AuthedClientOnlyRoute
     }
+    '/_main/s/$sharedThreadId': {
+      id: '/_main/s/$sharedThreadId'
+      path: '/s/$sharedThreadId'
+      fullPath: '/s/$sharedThreadId'
+      preLoaderRoute: typeof MainSSharedThreadIdLazyRouteImport
+      parentRoute: typeof MainRoute
+    }
+    '/_main/doc/library': {
+      id: '/_main/doc/library'
+      path: '/doc/library'
+      fullPath: '/doc/library'
+      preLoaderRoute: typeof MainDocLibraryRouteImport
+      parentRoute: typeof MainRoute
+    }
     '/_main/doc/$documentId': {
       id: '/_main/doc/$documentId'
-      path: '/$documentId'
+      path: '/doc/$documentId'
       fullPath: '/doc/$documentId'
       preLoaderRoute: typeof MainDocDocumentIdRouteImport
-      parentRoute: typeof MainDocRoute
+      parentRoute: typeof MainRoute
     }
   }
 }
@@ -419,11 +625,11 @@ declare module '@tanstack/react-start/server' {
 }
 
 interface AuthRouteChildren {
-  AuthAuthRoute: typeof AuthAuthRoute
+  AuthAuthLazyRoute: typeof AuthAuthLazyRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
-  AuthAuthRoute: AuthAuthRoute,
+  AuthAuthLazyRoute: AuthAuthLazyRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
@@ -452,47 +658,65 @@ const AuthedRouteChildren: AuthedRouteChildren = {
 const AuthedRouteWithChildren =
   AuthedRoute._addFileChildren(AuthedRouteChildren)
 
-interface MainDocRouteChildren {
-  MainDocDocumentIdRoute: typeof MainDocDocumentIdRoute
-}
-
-const MainDocRouteChildren: MainDocRouteChildren = {
-  MainDocDocumentIdRoute: MainDocDocumentIdRoute,
-}
-
-const MainDocRouteWithChildren =
-  MainDocRoute._addFileChildren(MainDocRouteChildren)
-
 interface MainRouteChildren {
-  MainDocRoute: typeof MainDocRouteWithChildren
+  MainDocDocumentIdRoute: typeof MainDocDocumentIdRoute
+  MainDocLibraryRoute: typeof MainDocLibraryRoute
+  MainSSharedThreadIdLazyRoute: typeof MainSSharedThreadIdLazyRoute
+  MainDocIndexRoute: typeof MainDocIndexRoute
 }
 
 const MainRouteChildren: MainRouteChildren = {
-  MainDocRoute: MainDocRouteWithChildren,
+  MainDocDocumentIdRoute: MainDocDocumentIdRoute,
+  MainDocLibraryRoute: MainDocLibraryRoute,
+  MainSSharedThreadIdLazyRoute: MainSSharedThreadIdLazyRoute,
+  MainDocIndexRoute: MainDocIndexRoute,
 }
 
 const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
 
 interface WelcomeRouteChildren {
-  WelcomeAboutRoute: typeof WelcomeAboutRoute
-  WelcomePolicyRoute: typeof WelcomePolicyRoute
-  WelcomePricingRoute: typeof WelcomePricingRoute
-  WelcomeTermsRoute: typeof WelcomeTermsRoute
+  WelcomeAboutLazyRoute: typeof WelcomeAboutLazyRoute
+  WelcomePolicyLazyRoute: typeof WelcomePolicyLazyRoute
+  WelcomePricingLazyRoute: typeof WelcomePricingLazyRoute
+  WelcomeTermsLazyRoute: typeof WelcomeTermsLazyRoute
   WelcomeIndexRoute: typeof WelcomeIndexRoute
-  WelcomeWelcomeIndexRoute: typeof WelcomeWelcomeIndexRoute
 }
 
 const WelcomeRouteChildren: WelcomeRouteChildren = {
-  WelcomeAboutRoute: WelcomeAboutRoute,
-  WelcomePolicyRoute: WelcomePolicyRoute,
-  WelcomePricingRoute: WelcomePricingRoute,
-  WelcomeTermsRoute: WelcomeTermsRoute,
+  WelcomeAboutLazyRoute: WelcomeAboutLazyRoute,
+  WelcomePolicyLazyRoute: WelcomePolicyLazyRoute,
+  WelcomePricingLazyRoute: WelcomePricingLazyRoute,
+  WelcomeTermsLazyRoute: WelcomeTermsLazyRoute,
   WelcomeIndexRoute: WelcomeIndexRoute,
-  WelcomeWelcomeIndexRoute: WelcomeWelcomeIndexRoute,
 }
 
 const WelcomeRouteWithChildren =
   WelcomeRoute._addFileChildren(WelcomeRouteChildren)
+
+interface SettingsRouteLazyRouteChildren {
+  SettingsAiOptionsRoute: typeof SettingsAiOptionsRoute
+  SettingsAppearanceRoute: typeof SettingsAppearanceRoute
+  SettingsAttachmentsRoute: typeof SettingsAttachmentsRoute
+  SettingsCustomizationRoute: typeof SettingsCustomizationRoute
+  SettingsModelsRoute: typeof SettingsModelsRoute
+  SettingsProfileRoute: typeof SettingsProfileRoute
+  SettingsProvidersRoute: typeof SettingsProvidersRoute
+  SettingsUsageRoute: typeof SettingsUsageRoute
+}
+
+const SettingsRouteLazyRouteChildren: SettingsRouteLazyRouteChildren = {
+  SettingsAiOptionsRoute: SettingsAiOptionsRoute,
+  SettingsAppearanceRoute: SettingsAppearanceRoute,
+  SettingsAttachmentsRoute: SettingsAttachmentsRoute,
+  SettingsCustomizationRoute: SettingsCustomizationRoute,
+  SettingsModelsRoute: SettingsModelsRoute,
+  SettingsProfileRoute: SettingsProfileRoute,
+  SettingsProvidersRoute: SettingsProvidersRoute,
+  SettingsUsageRoute: SettingsUsageRoute,
+}
+
+const SettingsRouteLazyRouteWithChildren =
+  SettingsRouteLazyRoute._addFileChildren(SettingsRouteLazyRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
@@ -500,6 +724,7 @@ const rootRouteChildren: RootRouteChildren = {
   MainRoute: MainRouteWithChildren,
   WelcomeRoute: WelcomeRouteWithChildren,
   TodosRoute: TodosRoute,
+  SettingsRouteLazyRoute: SettingsRouteLazyRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

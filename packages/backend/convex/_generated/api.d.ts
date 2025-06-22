@@ -24,6 +24,7 @@ import type * as emails_magicLink from "../emails/magicLink.js";
 import type * as emails_verifyEmail from "../emails/verifyEmail.js";
 import type * as emails_verifyOTP from "../emails/verifyOTP.js";
 import type * as files from "../files.js";
+import type * as folders from "../folders.js";
 import type * as healthCheck from "../healthCheck.js";
 import type * as http from "../http.js";
 import type * as lib_backend_to_ui_messages from "../lib/backend_to_ui_messages.js";
@@ -92,6 +93,7 @@ declare const fullApi: ApiFromModules<{
   "emails/verifyEmail": typeof emails_verifyEmail;
   "emails/verifyOTP": typeof emails_verifyOTP;
   files: typeof files;
+  folders: typeof folders;
   healthCheck: typeof healthCheck;
   http: typeof http;
   "lib/backend_to_ui_messages": typeof lib_backend_to_ui_messages;
@@ -1240,6 +1242,7 @@ export declare const components: {
           accessKeyId: string;
           bucket: string;
           endpoint: string;
+          forcePathStyle?: boolean;
           key: string;
           secretAccessKey: string;
         },
@@ -1252,6 +1255,7 @@ export declare const components: {
           accessKeyId: string;
           bucket: string;
           endpoint: string;
+          forcePathStyle?: boolean;
           key: string;
           secretAccessKey: string;
         },
@@ -1264,10 +1268,12 @@ export declare const components: {
           accessKeyId: string;
           bucket: string;
           endpoint: string;
+          forcePathStyle?: boolean;
           key: string;
           secretAccessKey: string;
         },
         {
+          authorId?: string;
           bucket: string;
           bucketLink: string;
           contentType?: string;
@@ -1284,9 +1290,11 @@ export declare const components: {
         "internal",
         {
           accessKeyId: string;
+          authorId?: string;
           bucket: string;
           cursor?: string;
           endpoint: string;
+          forcePathStyle?: boolean;
           limit?: number;
           secretAccessKey: string;
         },
@@ -1294,6 +1302,7 @@ export declare const components: {
           continueCursor: string;
           isDone: boolean;
           page: Array<{
+            authorId?: string;
             bucket: string;
             bucketLink: string;
             contentType?: string;
@@ -1315,6 +1324,7 @@ export declare const components: {
           accessKeyId: string;
           bucket: string;
           endpoint: string;
+          forcePathStyle?: boolean;
           secretAccessKey: string;
           url: string;
         },
@@ -1325,8 +1335,10 @@ export declare const components: {
         "internal",
         {
           accessKeyId: string;
+          authorId?: string;
           bucket: string;
           endpoint: string;
+          forcePathStyle?: boolean;
           key: string;
           onComplete?: string;
           secretAccessKey: string;
@@ -1337,6 +1349,7 @@ export declare const components: {
         "mutation",
         "internal",
         {
+          authorId?: string;
           bucket: string;
           contentType?: string;
           key: string;

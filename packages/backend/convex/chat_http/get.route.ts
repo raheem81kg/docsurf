@@ -46,7 +46,7 @@ export const chatGET = httpAction(async (ctx, req) => {
 
    if (!streams.length) return new ChatError("not_found:stream").toResponse();
 
-   const recentStreamId = streams.at(-1);
+   const recentStreamId = streams[streams.length - 1];
 
    if (!recentStreamId) return new ChatError("not_found:stream").toResponse();
 
@@ -64,7 +64,7 @@ export const chatGET = httpAction(async (ctx, req) => {
       const messages = await ctx.runQuery(internal.messages.getMessagesByThreadId, {
          threadId: threadId as Id<"threads">,
       });
-      const mostRecentMessage = messages.at(-1);
+      const mostRecentMessage = messages[messages.length - 1];
 
       if (!mostRecentMessage) {
          return new Response(emptyDataStream.pipeThrough(new TextEncoderStream()), RESPONSE_OPTS);

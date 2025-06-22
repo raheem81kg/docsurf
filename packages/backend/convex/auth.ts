@@ -12,7 +12,18 @@ import type { SafeSubscription } from "./subscriptions";
 
 // The user object returned by the getCurrentUser query. It combines authentication
 // data with the user's subscription status and application-specific data.
-type CurrentUser = Doc<"users"> & SafeSubscription;
+type CurrentUser = Doc<"users"> & Partial<NonNullable<SafeSubscription>> & CurrentUserMetadata;
+
+type CurrentUserMetadata = {
+   image?: string | undefined;
+   twoFactorEnabled?: boolean | undefined;
+   name: string;
+   email: string;
+   emailVerified: boolean;
+   userId: string;
+   createdAt: number;
+   updatedAt: number;
+} | null;
 
 const authFunctions: AuthFunctions = internal.auth;
 const publicAuthFunctions: PublicAuthFunctions = api.auth;
@@ -126,6 +137,9 @@ export const { createUser, deleteUser, updateUser, createSession, isAuthenticate
          const userId = user.userId as Id<"users">;
          await ctx.db.patch(userId, {
             email: user.email,
+            // not sure if we need this
+            // name: user.name,
+            // image: user.image,
          });
       },
    });
@@ -166,6 +180,7 @@ export const getCurrentUser = query({
 
       return {
          ...user,
+         ...userMetadata,
          ...subscription,
       };
    },

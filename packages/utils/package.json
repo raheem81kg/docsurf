@@ -1,18 +1,22 @@
 {
-	"name": "@docsurf/utils",
-	"version": "0.0.0",
-	"type": "module",
-	"private": true,
-	"scripts": {
-		"clean": "rm -rf .turbo node_modules",
-		"lint": "biome check .",
-		"format": "biome format --write .",
-		"typecheck": "tsc --noEmit"
-	},
-	"devDependencies": {
-		"@docsurf/typescript-config": "workspace:*"
-	},
-	"exports": {
-		"./*": "./src/*.ts"
-	}
+   "name": "@docsurf/utils",
+   "version": "0.0.0",
+   "type": "module",
+   "private": true,
+   "scripts": {
+      "clean": "rm -rf .turbo node_modules",
+      "lint": "biome check .",
+      "format": "biome format --write .",
+      "typecheck": "tsc --noEmit"
+   },
+   "devDependencies": {
+      "@docsurf/typescript-config": "workspace:*"
+   },
+   "exports": {
+      "./*": "./src/*.ts",
+      "./chat/*": "./src/chat/*.ts"
+   },
+   "dependencies": {
+      "zustand": "^5.0.5"
+   }
 }

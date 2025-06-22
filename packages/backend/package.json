@@ -5,7 +5,7 @@
    "scripts": {
       "dev": "convex dev",
       "setup": "convex dev --configure --until-success",
-      "postinstall": "patch-package && cd node_modules/@convex-dev/r2 && tsc --project ./esm.json && echo '{\"type\": \"module\"}' > dist/esm/package.json"
+      "postinstall": "patch-package"
    },
    "author": "",
    "license": "ISC",
@@ -16,6 +16,7 @@
       "typescript": "^5.8.3"
    },
    "dependencies": {
+      "@docsurf/utils": "workspace:*",
       "@ai-sdk/anthropic": "^1.2.12",
       "@ai-sdk/fal": "^0.1.12",
       "@ai-sdk/google": "^1.2.19",
@@ -26,16 +27,15 @@
       "@convex-dev/aggregate": "^0.1.21",
       "@convex-dev/better-auth": "^0.6.1",
       "@convex-dev/polar": "^0.5.0",
-      "@convex-dev/r2": "^0.6.2",
+      "@convex-dev/r2": "git://github.com/f1shy-dev/r2",
       "@convex-dev/rate-limiter": "^0.2.10",
-      "@docsurf/utils": "workspace:*",
       "@modelcontextprotocol/sdk": "^1.13.0",
       "@openrouter/ai-sdk-provider": "^0.7.2",
       "@react-email/components": "^0.1.0",
       "@upstash/redis": "^1.35.0",
       "ai": "^4.3.16",
       "better-auth": "1.2.7",
-      "convex": "^1.23.0",
+      "convex": "^1.24.8",
       "convex-helpers": "^0.1.94",
       "patch-package": "^8.0.0",
       "react": "19.0.0",
@@ -43,5 +43,11 @@
       "resumable-stream": "^2.2.0",
       "supermemory": "3.0.0-alpha.18",
       "ts-dedent": "^2.2.0"
+   },
+   "exports": {
+      "./lib/*": "./src/lib/*.ts",
+      "./models": "./src/lib/models.ts",
+      "./toolkit": "./src/lib/toolkit.ts",
+      "./convex/*": "./convex/*"
    }
 }

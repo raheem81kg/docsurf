@@ -6,8 +6,9 @@ import { Message } from "./schema/message";
 import { SharedThread, Thread } from "./schema/thread";
 import { UsageEvent } from "./schema/usage";
 import { Project } from "./schema/folders";
+import { ResumableStream } from "./schema/streams";
 
-export { Thread, Message, SharedThread, UsageEvent, UserSettings, Project };
+export { Thread, Message, SharedThread, UsageEvent, UserSettings, Project, ResumableStream };
 // The schema is entirely optional.
 // You can delete this file (schema.ts) and the
 // app will continue to work.
@@ -21,7 +22,6 @@ export default defineSchema({
       timezone: v.optional(v.string()),
       timeFormat: v.optional(v.number()),
       dateFormat: v.optional(v.string()),
-      workspaceInitialized: v.optional(v.boolean()),
       creditsUsed: v.optional(v.number()),
    }).index("email", ["email"]),
 
@@ -91,55 +91,29 @@ export default defineSchema({
       is_default: v.optional(v.boolean()),
    }).index("by_user_and_service", ["userId", "service"]),
 
-   chats: defineTable({
-      userId: v.id("users"),
-      title: v.string(),
-      createdAt: v.number(),
-      updatedAt: v.number(),
-      shareId: v.optional(v.string()),
-      isShared: v.optional(v.boolean()),
-      isGeneratingTitle: v.optional(v.boolean()),
-      // isBranch: v.optional(v.boolean()),
-      branchId: v.optional(v.id("chats")),
-   })
-      .index("by_user", ["userId"])
-      .index("by_share_id", ["shareId"]),
+   threads: defineTable(Thread)
+      .index("byAuthor", ["authorId"])
+      .index("byProject", ["projectId"])
+      .index("byAuthorAndProject", ["authorId", "projectId"])
+      .searchIndex("search_title", {
+         searchField: "title",
+         filterFields: ["authorId"],
+      }),
 
-   messages: defineTable({
-      chatId: v.id("chats"),
-      role: v.union(v.literal("user"), v.literal("assistant")),
-      content: v.string(),
-      modelId: v.optional(v.string()),
-      thinking: v.optional(v.string()), // Store reasoning content separately
-      thinkingDuration: v.optional(v.number()), // Store thinking duration in seconds
-      isComplete: v.optional(v.boolean()), // For streaming messages
-      isCancelled: v.optional(v.boolean()), // For cancelling streaming messages
-      promptTokens: v.optional(v.number()),
-      completionTokens: v.optional(v.number()),
-      totalTokens: v.optional(v.number()),
-      creditsSpent: v.optional(v.number()),
-      attachments: v.optional(
-         v.array(
-            v.object({
-               name: v.string(),
-               type: v.string(),
-               size: v.number(),
-               url: v.string(),
-            })
-         )
-      ),
-      toolCalls: v.optional(
-         v.array(
-            v.object({
-               toolCallId: v.string(),
-               toolName: v.string(),
-               args: v.any(),
-               result: v.optional(v.any()),
-            })
-         )
-      ),
-      createdAt: v.number(),
-   })
-      .index("by_chat", ["chatId"])
-      .index("by_chat_created", ["chatId", "createdAt"]),
+   messages: defineTable(Message).index("byThreadId", ["threadId"]).index("byMessageId", ["messageId"]),
+   sharedThreads: defineTable(SharedThread).index("byAuthorId", ["authorId"]),
+   streams: defineTable(ResumableStream).index("byThreadId", ["threadId"]),
+   // apiKeys: defineTable(ApiKey)
+   //     .index("byUser", ["userId"])
+   //     .index("byUserProvider", ["userId", "provider"]),
+   settings: defineTable(UserSettings).index("byUser", ["userId"]),
+
+   usageEvents: defineTable(UsageEvent).index("byUserDay", ["userId", "daysSinceEpoch"]),
+
+   projects: defineTable(Project)
+      .index("byAuthor", ["authorId"])
+      .searchIndex("search_name", {
+         searchField: "name",
+         filterFields: ["authorId"],
+      }),
 });

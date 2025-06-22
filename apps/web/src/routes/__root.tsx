@@ -5,7 +5,7 @@ import { createAuth } from "@docsurf/backend/convex/auth";
 import { Toaster } from "@docsurf/ui/components/sonner";
 import appCss from "@docsurf/ui/globals.css?url";
 import type { QueryClient } from "@tanstack/react-query";
-import { ClientOnly, createRootRouteWithContext, HeadContent, Outlet, Scripts, useRouteContext } from "@tanstack/react-router";
+import { createRootRouteWithContext, HeadContent, Outlet, Scripts, useRouteContext } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
 import { getCookie, getWebRequest } from "@tanstack/react-start/server";
@@ -15,6 +15,7 @@ import { Providers } from "@/components/providers/providers";
 import { authClient } from "@/lib/auth-client";
 import { seo } from "@/utils/seo";
 import { getAppUrl } from "@docsurf/utils/envs";
+import { ThemeScript } from "@/components/providers/theme-script";
 
 export interface RouterAppContext {
    queryClient: QueryClient;
@@ -114,6 +115,15 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
             sizes: "16x16",
             href: "/favicon-16x16.png",
          },
+         {
+            rel: "preconnect",
+            href: "https://fonts.gstatic.com",
+            crossOrigin: "anonymous",
+         },
+         {
+            rel: "stylesheet",
+            href: "https://fonts.googleapis.com/css2?family=Architects+Daughter&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Fira+Code:wght@300..700&family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400..700;1,400..700&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Outfit:wght@100..900&family=Oxanium:wght@200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&family=Space+Grotesk:wght@300..700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap",
+         },
 
          // { rel: "manifest", href: "/site.webmanifest", color: "#ffffff" },
       ],
@@ -151,17 +161,16 @@ function RootDocument({ children }: { children: React.ReactNode }) {
    return (
       <html lang="en" className="dark" suppressHydrationWarning>
          <head>
+            <ThemeScript />
             <HeadContent />
          </head>
          <body className="min-h-screen max-w-screen antialiased">
-            <ClientOnly>
-               <Providers attribute="class" enableSystem disableTransitionOnChange defaultTheme="dark" storageKey="vite-ui-theme">
-                  {children}
-                  {/* TODO: Add cookie consent */}
-                  {/* <CookieConsent /> */}
-                  <Toaster richColors />
-               </Providers>
-            </ClientOnly>
+            <Providers attribute="class" enableSystem disableTransitionOnChange defaultTheme="dark" storageKey="vite-ui-theme">
+               {children}
+               {/* TODO: Add cookie consent */}
+               {/* <CookieConsent /> */}
+               <Toaster richColors />
+            </Providers>
             <TanStackRouterDevtools position="bottom-right" />
             <Scripts />
          </body>

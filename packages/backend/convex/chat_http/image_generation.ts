@@ -3,7 +3,8 @@ import { experimental_generateImage } from "ai";
 import type { GenericActionCtx } from "convex/server";
 import type { DataModel, Id } from "../_generated/dataModel";
 import { r2 } from "../attachments";
-import { type ImageSize, MODELS_SHARED } from "../lib/models";
+import { MODELS_SHARED } from "../lib/models";
+import type { ImageSize } from "@docsurf/utils/chat/chat-constants";
 
 export interface ImageGenerationResult {
    assets: {

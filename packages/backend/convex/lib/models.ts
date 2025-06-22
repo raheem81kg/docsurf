@@ -6,6 +6,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import type { ProviderV1 } from "@ai-sdk/provider";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import type { ModelAbility } from "../schema/settings";
+import type { ImageSize } from "@docsurf/utils/chat/chat-constants";
 
 export const CoreProviders = ["openai", "anthropic", "google", "groq", "fal"] as const;
 export type CoreProvider = (typeof CoreProviders)[number];
@@ -16,11 +17,6 @@ export type ModelDefinitionProviders =
 
 export type RegistryKey = `${ModelDefinitionProviders | string}:${string}`;
 export type Provider = RegistryKey extends `${infer P}:${string}` ? P : never;
-
-export type BaseAspects = "1:1" | "16:9" | "9:16" | "4:3" | "3:4" | "2:3" | "3:2";
-export type BaseResolution = `${number}x${number}`;
-export type AllAspects = (BaseAspects | `${BaseAspects}-hd`) & {};
-export type ImageSize = (AllAspects | BaseResolution) & {};
 
 export type SharedModel<Abilities extends ModelAbility[] = ModelAbility[]> = {
    id: string;

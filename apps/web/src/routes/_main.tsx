@@ -8,6 +8,7 @@ import { useSandStateStore } from "@/store/sandstate";
 import { useCookies } from "react-cookie";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { INNER_RIGHT_SIDEBAR_COOKIE_NAME, LEFT_SIDEBAR_COOKIE_NAME, RIGHT_SIDEBAR_COOKIE_NAME } from "@/utils/constants";
+import { OnboardingProvider } from "@/components/onboarding/onboarding-provider";
 
 export const Route = createFileRoute("/_main")({
    component: MainLayoutComponent,
@@ -32,23 +33,25 @@ function MainLayoutComponent() {
    }, [initializeState, initialLeftSidebarOpen, initialRightSidebarOpen, initialInnerRightSidebarOpen]);
 
    return (
-      <div className="flex overflow-hidden max-h-dvh">
-         {/* sidebar 1 */}
-         <WrapperLeftSidebar initialOpen={initialLeftSidebarOpen} />
-         <OnboardingWrapper />
-         <SidebarInset className="flex-1 min-w-0 bg-default dark:bg-default flex flex-col">
-            <Header />
+      <OnboardingProvider>
+         <div className="flex overflow-hidden max-h-dvh">
+            {/* sidebar 1 */}
+            <WrapperLeftSidebar initialOpen={initialLeftSidebarOpen} />
+            <OnboardingWrapper />
+            <SidebarInset className="flex-1 min-w-0 bg-default dark:bg-default flex flex-col">
+               <Header />
 
-            <div className="flex overflow-hidden h-full">
-               <div className="flex-1 min-w-0 overflow-auto scrollbar-hidden">
-                  <Outlet />
+               <div className="flex overflow-hidden h-full">
+                  <div className="flex-1 min-w-0 overflow-auto scrollbar-hidden">
+                     <Outlet />
+                  </div>
+
+                  {/* sidebar 3 */}
+                  <WrapperInnerRightSidebar initialOpen={initialInnerRightSidebarOpen} />
                </div>
-
-               {/* sidebar 3 */}
-               <WrapperInnerRightSidebar initialOpen={initialInnerRightSidebarOpen} />
-            </div>
-         </SidebarInset>
-      </div>
+            </SidebarInset>
+         </div>
+      </OnboardingProvider>
    );
 }
 
