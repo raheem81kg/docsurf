@@ -15,6 +15,8 @@ import {
 } from "@docsurf/ui/components/command";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { useSession } from "@/hooks/auth-hooks";
+import { useChatStore } from "./lib/chat-store";
+import { DotsLoader } from "@docsurf/ui/components/loader";
 
 interface Thread {
    _id: string;
@@ -78,6 +80,8 @@ export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps =
    const handleSelect = (threadId: string) => {
       setOpen(false);
       setQuery("");
+      // Reset all chat state for the new thread (prevents carryover bugs)
+      useChatStore.getState().resetForThread(threadId);
       // router.navigate({ to: "/thread/$threadId", params: { threadId } });
    };
 
@@ -88,9 +92,9 @@ export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps =
             return;
          }
          e.preventDefault();
-         setOpen(false);
+         // setOpen(false);
          setQuery("");
-         router.navigate({ to: "/" });
+         // router.navigate({ to: "/" });
       }
    };
 
@@ -148,25 +152,35 @@ export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps =
                onKeyDown={handleKeyDown}
             />
             <CommandList>
-               <CommandEmpty>No chats found.</CommandEmpty>
-               {threads.length > 0 && (
-                  <CommandGroup heading="Chats">
-                     {threads.map((thread: Thread) => (
-                        <CommandItem
-                           key={thread._id}
-                           value={thread._id}
-                           onSelect={() => handleSelect(thread._id)}
-                           className="h-9 hover:bg-accent/80"
-                        >
-                           <div className="flex w-full items-center justify-between gap-4">
-                              <div className="flex min-w-0 flex-1 items-center gap-2">
-                                 <div className="truncate font-medium">{thread.title}</div>
-                              </div>
-                              <div className="flex-shrink-0 text-muted-foreground text-xs">{formatRelativeTime(thread.createdAt)}</div>
-                           </div>
-                        </CommandItem>
-                     ))}
-                  </CommandGroup>
+               {isPending || searchResults === undefined ? (
+                  <div className="flex items-center justify-center py-8">
+                     <DotsLoader size="md" />
+                  </div>
+               ) : (
+                  <>
+                     <CommandEmpty>No chats found.</CommandEmpty>
+                     {threads.length > 0 && (
+                        <CommandGroup heading="Chats">
+                           {threads.map((thread: Thread) => (
+                              <CommandItem
+                                 key={thread._id}
+                                 value={thread._id}
+                                 onSelect={() => handleSelect(thread._id)}
+                                 className="h-9 hover:bg-accent/80"
+                              >
+                                 <div className="flex w-full items-center justify-between gap-4">
+                                    <div className="flex min-w-0 flex-1 items-center gap-2">
+                                       <div className="truncate font-medium">{thread.title}</div>
+                                    </div>
+                                    <div className="flex-shrink-0 text-muted-foreground text-xs">
+                                       {formatRelativeTime(thread.createdAt)}
+                                    </div>
+                                 </div>
+                              </CommandItem>
+                           ))}
+                        </CommandGroup>
+                     )}
+                  </>
                )}
             </CommandList>
          </Command>

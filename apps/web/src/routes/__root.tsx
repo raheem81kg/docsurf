@@ -171,7 +171,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                {/* <CookieConsent /> */}
                <Toaster richColors />
             </Providers>
-            <TanStackRouterDevtools position="bottom-right" />
+            {/* <TanStackRouterDevtools position="bottom-right" /> */}
             <Scripts />
          </body>
       </html>

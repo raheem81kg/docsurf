@@ -11,7 +11,7 @@ import { type Message, useChat } from "@ai-sdk/react";
 import { useQuery as useConvexQuery } from "convex-helpers/react/cache";
 import type { Infer } from "convex/values";
 import { nanoid } from "nanoid";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useEffect } from "react";
 
 export function useChatIntegration<IsShared extends boolean>({
    threadId,
@@ -122,6 +122,13 @@ export function useChatIntegration<IsShared extends boolean>({
          return nanoid();
       },
    });
+
+   // Cleanup: stop any in-flight streaming when threadId changes or component unmounts
+   useEffect(() => {
+      return () => {
+         chatHelpers.stop?.();
+      };
+   }, [threadId]);
 
    const customResume = useCallback(() => {
       console.log("[UCI:custom_resume]", {

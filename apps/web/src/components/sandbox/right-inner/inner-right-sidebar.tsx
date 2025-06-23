@@ -46,7 +46,7 @@ export const InnerRightSidebar = ({
          className="border-l bg-default h-full overflow-scroll scrollbar-hidden"
          set_ir_sidebar_state={set_ir_sidebar_state}
       >
-         <SidebarContent className="scrollbar-hidden p-0">
+         <SidebarContent className="scrollbar-hidden h-full p-0">
             <React.Suspense fallback={<Loading />}>
                <Chat threadId={threadId} />
             </React.Suspense>

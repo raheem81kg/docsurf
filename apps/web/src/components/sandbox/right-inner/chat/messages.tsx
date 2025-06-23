@@ -317,7 +317,7 @@ export function Messages({
 
    return (
       <>
-         <div className="min-h-[70dvh] overflow-y-auto p-4 pt-0" ref={scrollRef}>
+         <div className="min-h-[70dvh] h-full overflow-y-auto p-4 pt-0" ref={scrollRef}>
             <div ref={contentRef} className={cn("mx-auto space-y-3 pb-16", getChatWidthClass(chatWidthState.chatWidth))}>
                {messages.map((message) => (
                   <div

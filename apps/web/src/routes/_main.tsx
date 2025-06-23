@@ -80,7 +80,7 @@ const WrapperInnerRightSidebar = ({ initialOpen }: { initialOpen?: boolean }) =>
          defaultWidth="23.5rem"
          name="inner-right-sidebar"
          defaultOpen={initialOpen ?? false}
-         className="w-fit overflow-hidden max-h-dvh min-h-[calc(100svh-41px)]"
+         className="w-fit overflow-hidden max-h-dvh min-h-[calc(100svh-95px)]"
       >
          <InnerRightSidebar ir_sidebar_state={ir_sidebar_state} toggle_ir_sidebar={toggle_ir_sidebar} />
       </SidebarProvider>

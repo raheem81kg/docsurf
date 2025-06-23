@@ -19,6 +19,7 @@ import { MultimodalInput } from "./multimodal-input";
 import { SignupMessagePrompt } from "./signup-message-prompt";
 import { StickToBottomButton } from "./stick-to-bottom-button";
 import { useSession } from "@/hooks/auth-hooks";
+import { ChatHeader } from "./chat-header";
 
 interface ChatProps {
    threadId: string | undefined;
@@ -104,7 +105,8 @@ const ChatContent = ({ threadId: routeThreadId, folderId }: ChatProps) => {
    }
 
    return (
-      <div className="relative flex h-[calc(100dvh-64px)] flex-col">
+      <div className="relative flex h-full flex-col">
+         <ChatHeader />
          <Messages
             messages={messages}
             onRetry={handleRetry}
@@ -122,7 +124,7 @@ const ChatContent = ({ threadId: routeThreadId, folderId }: ChatProps) => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.2, ease: "easeInOut" }}
-                  className="absolute inset-0 flex flex-col items-center justify-center"
+                  className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
                >
                   <div className="mb-6 size-16 rounded-full border-2 opacity-80">
                      <Logo />
@@ -142,7 +144,7 @@ const ChatContent = ({ threadId: routeThreadId, folderId }: ChatProps) => {
                      initial={{ opacity: 0, scale: 0.95 }}
                      animate={{ opacity: 1, scale: 1 }}
                      transition={{ duration: 0.2 }}
-                     className="w-full max-w-4xl px-4"
+                     className="w-full max-w-4xl px-4 pointer-events-auto"
                   >
                      <MultimodalInput onSubmit={handleInputSubmitWithScroll} status={status} />
                   </motion.div>
@@ -166,5 +168,5 @@ const ChatContent = ({ threadId: routeThreadId, folderId }: ChatProps) => {
 };
 
 export const Chat = ({ threadId, folderId }: ChatProps) => {
-   return <ChatContent threadId={threadId} folderId={folderId} />;
+   return <ChatContent key={threadId || "new"} threadId={threadId} folderId={folderId} />;
 };

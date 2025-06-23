@@ -6,17 +6,18 @@ interface UseThreadSyncProps {
 }
 
 export function useThreadSync({ routeThreadId }: UseThreadSyncProps) {
-   const { threadId, setThreadId, resetChat, triggerRerender } = useChatStore();
+   const { threadId, setThreadId, resetChat, triggerRerender, resetForThread } = useChatStore();
 
    useEffect(() => {
       if (routeThreadId === undefined) {
          console.log("[thread-sync] resetChat");
          resetChat();
       } else {
-         setThreadId(routeThreadId);
+         // Reset all chat state for the new thread (prevents carryover bugs)
+         resetForThread(routeThreadId);
          triggerRerender();
       }
-   }, [routeThreadId, setThreadId, resetChat, triggerRerender]);
+   }, [routeThreadId, resetForThread, resetChat, triggerRerender]);
 
    return { threadId, setThreadId };
 }
