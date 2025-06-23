@@ -1,5 +1,5 @@
 import { api } from "@docsurf/backend/convex/_generated/api";
-import { useSession } from "./auth-hooks";
+
 import { useThemeStore } from "../lib/theme-store";
 import { type FetchedTheme, THEME_URLS, type ThemePreset, fetchThemeFromUrl } from "../lib/theme-utils";
 import { toggleThemeMode } from "../lib/toggle-theme-mode";
@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { useSession } from "@/hooks/auth-hooks";
 
 export function useThemeManagement() {
    const session = useSession();

@@ -18,7 +18,7 @@ import { Logo } from "./logo";
 import { MultimodalInput } from "./multimodal-input";
 import { SignupMessagePrompt } from "./signup-message-prompt";
 import { StickToBottomButton } from "./stick-to-bottom-button";
-import { authClient } from "@/lib/auth-client";
+import { useSession } from "@/hooks/auth-hooks";
 
 interface ChatProps {
    threadId: string | undefined;
@@ -34,7 +34,7 @@ const ChatContent = ({ threadId: routeThreadId, folderId }: ChatProps) => {
    });
    const { themeState } = useThemeStore();
    const mode = themeState.currentMode;
-   const { data: session, isPending } = authClient.useSession();
+   const { data: session, isPending } = useSession();
    useDynamicTitle({ threadId });
 
    useMemo(() => {

@@ -12,7 +12,7 @@ import { cn } from "@docsurf/ui/lib/utils";
 import { useConvexQuery } from "@convex-dev/react-query";
 import { Globe, Settings2 } from "lucide-react";
 import { memo, useMemo, useState } from "react";
-import { authClient } from "@/lib/auth-client";
+import { useSession } from "@/hooks/auth-hooks";
 import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
 import { useModelStore } from "./lib/model-store";
 import type { AbilityId } from "@docsurf/utils/chat/chat-constants";
@@ -27,7 +27,7 @@ type ToolSelectorPopoverProps = {
 
 export const ToolSelectorPopover = memo(
    ({ threadId, enabledTools, onEnabledToolsChange, modelSupportsFunctionCalling, className }: ToolSelectorPopoverProps) => {
-      const { data: session } = authClient.useSession();
+      const { data: session, isPending } = useSession();
 
       const isMobile = useIsMobile();
       const [open, setOpen] = useState(false);

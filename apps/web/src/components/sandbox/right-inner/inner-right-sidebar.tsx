@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import React from "react";
 import { useCookies } from "react-cookie";
 import { INNER_RIGHT_SIDEBAR_COOKIE_NAME, SIDEBAR_COOKIE_MAX_AGE } from "@/utils/constants";
+import { Chat } from "./chat/chat";
 
 export const InnerRightSidebar = ({
    ir_sidebar_state,
@@ -42,7 +43,9 @@ export const InnerRightSidebar = ({
          set_ir_sidebar_state={set_ir_sidebar_state}
       >
          <SidebarContent className="scrollbar-hidden p-0">
-            <React.Suspense fallback={<Loading />}>{/* <Chat initialMessages={[]} hasActiveSubscription={true} /> */}</React.Suspense>
+            <React.Suspense fallback={<Loading />}>
+               <Chat threadId={undefined} />
+            </React.Suspense>
          </SidebarContent>
          <SidebarRail onToggle={handleRailClick} enableDrag sideForDrag="right" maxSidebarWidth={28} />
       </Sidebar>

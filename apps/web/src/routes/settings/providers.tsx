@@ -32,7 +32,7 @@ import {
    useAvailableModels,
    type CoreProviderInfo,
 } from "@/components/sandbox/right-inner/chat/lib/models-providers-shared";
-import { authClient } from "@/lib/auth-client";
+import { useSession } from "@/hooks/auth-hooks";
 import { BYOKSearchProviderCard } from "@/components/sandbox/right-inner/chat/settings/search-provider-card";
 
 export const Route = createFileRoute("/settings/providers")({
@@ -382,7 +382,7 @@ const CustomProviderCard = memo(({ providerId, provider, onSave, onDelete, loadi
 });
 
 function ProvidersSettings() {
-   const { data: session } = authClient.useSession();
+   const { data: session } = useSession();
    const userSettings = useConvexQuery(api.settings.getUserSettings, session?.user?.id ? {} : "skip");
    const updateSettings = useMutation(api.settings.updateUserSettingsPartial);
 

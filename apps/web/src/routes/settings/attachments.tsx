@@ -22,7 +22,7 @@ import { Archive, Download, File, FileText, Image, Music, Trash2, Video } from "
 import { memo, useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import { env } from "@/env";
-import { authClient } from "@/lib/auth-client";
+import { useSession } from "@/hooks/auth-hooks";
 
 export const Route = createFileRoute("/settings/attachments")({
    component: AttachmentsPage,
@@ -158,7 +158,7 @@ const FileCard = memo(({ file, onDelete }: { file: FileMetadata; onDelete: (key:
 FileCard.displayName = "FileCard";
 
 function AttachmentsPage() {
-   const { data: session } = authClient.useSession();
+   const { data: session } = useSession();
    const filesResult = useQuery(api.attachments.listFiles, session?.user?.id ? {} : "skip");
    const deleteFile = useMutation(api.attachments.deleteFile);
 

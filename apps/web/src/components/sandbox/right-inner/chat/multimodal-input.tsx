@@ -39,6 +39,7 @@ import {
    type PromptInputRef,
 } from "./prompt-kit/prompt-input";
 import { ModelSelector } from "./model-selector";
+import { useSession, useToken } from "@/hooks/auth-hooks";
 
 interface ExtendedUploadedFile extends UploadedFile {
    file?: File;
@@ -157,7 +158,7 @@ export function MultimodalInput({
 }) {
    const { token } = useToken();
    const location = useLocation();
-   const session = useSession();
+   const { data: session, isPending } = useSession();
    const auth = useConvexAuth();
    // Extract threadId from URL
    const threadId = location.pathname.includes("/thread/") ? location.pathname.split("/thread/")[1]?.split("/")[0] : undefined;
@@ -182,10 +183,10 @@ export function MultimodalInput({
       api.settings.getUserSettings,
       {
          key: "user-settings",
-         default: DefaultSettings(session.user?.id ?? "CACHE"),
+         default: DefaultSettings(session?.user?.id ?? "CACHE"),
          forceCache: true,
       },
-      session.user?.id && !auth.isLoading ? {} : "skip"
+      session?.user?.id && !auth.isLoading ? {} : "skip"
    );
 
    // Voice recording state

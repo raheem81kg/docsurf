@@ -1,4 +1,4 @@
-import { useToken } from "./auth-hooks";
+import { useToken } from "@/hooks/auth-hooks";
 import { env } from "@/env";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";

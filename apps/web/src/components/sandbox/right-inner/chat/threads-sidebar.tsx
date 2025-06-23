@@ -14,7 +14,7 @@ import { api } from "@docsurf/backend/convex/_generated/api";
 import { useFunction } from "./hooks/use-function";
 import { useInfiniteScroll } from "./hooks/use-infinite-scroll";
 import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
-import { authClient } from "@/lib/auth-client";
+import { useSession } from "@/hooks/auth-hooks";
 import { useDiskCachedPaginatedQuery, useDiskCachedQuery } from "./lib/convex-cached-query";
 import { cn } from "@docsurf/ui/lib/utils";
 import { Link } from "@tanstack/react-router";
@@ -134,7 +134,7 @@ export function ThreadsSidebar() {
    const [currentThread, setCurrentThread] = useState<Thread | null>(null);
 
    const scrollContainerRef = useRef<HTMLDivElement>(null);
-   const { data: session } = authClient.useSession();
+   const { data: session, isPending } = useSession();
    const navigate = useNavigate();
    const isMobile = useIsMobile();
    const { setOpen, setOpenMobile } = useSidebar();
@@ -295,7 +295,7 @@ export function ThreadsSidebar() {
       return (
          <>
             <div className="px-2">
-               <Link to="/library" className={cn(buttonVariants({ variant: "ghost" }), "h-8 w-full justify-start")}>
+               <Link to="/doc/library" className={cn(buttonVariants({ variant: "ghost" }), "h-8 w-full justify-start")}>
                   <Image className="h-4 w-4" />
                   Library
                </Link>

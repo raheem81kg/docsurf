@@ -3,12 +3,12 @@ import { Button } from "@docsurf/ui/components/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@docsurf/ui/components/select";
 import { Skeleton } from "@docsurf/ui/components/skeleton";
 import { api } from "@docsurf/backend/convex/_generated/api";
-import { useSession } from "@docsurf/backend/convex/auth";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { Download, Image as ImageIcon, ImageOff } from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
 import { env } from "@/env";
+import { useSession } from "@/hooks/auth-hooks";
 
 export const Route = createFileRoute("/_main/doc/library")({
    component: LibraryPage,
@@ -225,6 +225,7 @@ function LibraryPage() {
             {!generatedAssets ? (
                <div className="columns-1 gap-4 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5">
                   {Array.from({ length: 12 }).map((_, i) => (
+                     // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                      <div key={i} className="mb-4 break-inside-avoid" style={{ height: `${Math.random() * 150 + 250}px` }}>
                         <Skeleton className="h-full w-full rounded-xl" />
                      </div>

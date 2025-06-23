@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@docs
 import { Input } from "@docsurf/ui/components/input";
 import { Label } from "@docsurf/ui/components/label";
 import { Separator } from "@docsurf/ui/components/separator";
-// import { useListSessions, useRevokeOtherSessions, useRevokeSession, useSession, useUpdateUser } from "@/hooks/auth-hooks";
+import { useListSessions, useRevokeOtherSessions, useRevokeSession, useSession, useUpdateUser } from "@/hooks/auth-hooks";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@docsurf/ui/lib/utils";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
@@ -21,13 +21,12 @@ export const Route = createFileRoute("/settings/profile")({
 });
 
 function UserAccountSettings() {
-   //    const { data: session, isLoading: sessionLoading } = useSession();
-   const { data: session, isPending: sessionLoading } = authClient.useSession();
-   //    const { data: sessions = [], isLoading: sessionsLoading } = useListSessions();
-   const { data: sessions = [], isPending: sessionsLoading } = authClient.listSessions();
-   // const updateUser = useUpdateUser();
-   // const revokeSession = useRevokeSession();
-   // const revokeOtherSessions = useRevokeOtherSessions();
+   const { data: session, isPending: sessionLoading } = useSession();
+
+   const { data: sessions = [], isPending: sessionsLoading } = useListSessions();
+   const updateUser = useUpdateUser();
+   const revokeSession = useRevokeSession();
+   const revokeOtherSessions = useRevokeOtherSessions();
    const router = useRouter();
    const [isEditingName, setIsEditingName] = useState(false);
    const [nameValue, setNameValue] = useState("");
@@ -82,8 +81,6 @@ function UserAccountSettings() {
    const handleSignOut = useCallback(async () => {
       try {
          await authClient.signOut();
-         // await queryClient.resetQueries({ queryKey: ["session"] })
-         // await queryClient.resetQueries({ queryKey: ["token"] })
          const keys = Object.keys(localStorage);
          for (const key of keys) {
             if (key.includes("_CACHE")) {
@@ -96,11 +93,11 @@ function UserAccountSettings() {
          toast.error("Failed to sign out");
          console.error("Error signing out:", error);
       }
-   }, []);
+   }, [router]);
 
    const handleRevokeOtherSessions = useCallback(async () => {
       try {
-         await revokeOtherSessions.mutateAsync({});
+         await revokeOtherSessions.mutateAsync();
          toast.success("All other sessions revoked successfully");
       } catch (error) {
          toast.error("Failed to revoke other sessions");
@@ -246,65 +243,72 @@ function UserAccountSettings() {
                   ) : (
                      <>
                         <div className="space-y-3">
-                           {sessions?.map((sessionItem) => {
-                              const deviceInfo = getDeviceInfo(sessionItem.userAgent);
-                              const DeviceIcon = deviceInfo.icon;
-                              const isCurrentSession = sessionItem.id === session?.session?.id;
+                           {(sessions as any)?.map(
+                              (sessionItem: { id: string; userAgent: string; createdAt: string; ipAddress: string }) => {
+                                 const deviceInfo = getDeviceInfo(sessionItem.userAgent);
+                                 const DeviceIcon = deviceInfo.icon;
+                                 const isCurrentSession = sessionItem.id === session?.session?.id;
 
-                              return (
-                                 <div
-                                    key={sessionItem.id}
-                                    className={cn(
-                                       "flex flex-col justify-between gap-3 rounded-lg border p-3 sm:flex-row sm:items-center",
-                                       isCurrentSession ? "border-primary bg-primary/5" : "border-border"
-                                    )}
-                                 >
-                                    <div className="flex flex-1 items-start gap-3">
-                                       <div className="mt-0.5">
-                                          <DeviceIcon className="h-5 w-5 text-muted-foreground" />
-                                       </div>
-                                       <div className="flex-1 space-y-1">
-                                          <div className="flex flex-wrap items-center gap-2">
-                                             <span className="font-medium text-sm">{deviceInfo.name}</span>
-                                             {isCurrentSession && (
-                                                <Badge variant="secondary" className="text-xs">
-                                                   Current
-                                                </Badge>
+                                 return (
+                                    <div
+                                       key={sessionItem.id}
+                                       className={cn(
+                                          "flex flex-col justify-between gap-3 rounded-lg border p-3 sm:flex-row sm:items-center",
+                                          isCurrentSession ? "border-primary bg-primary/5" : "border-border"
+                                       )}
+                                    >
+                                       <div className="flex flex-1 items-start gap-3">
+                                          <div className="mt-0.5">
+                                             <DeviceIcon className="h-5 w-5 text-muted-foreground" />
+                                          </div>
+                                          <div className="flex-1 space-y-1">
+                                             <div className="flex flex-wrap items-center gap-2">
+                                                <span className="font-medium text-sm">{deviceInfo.name}</span>
+                                                {isCurrentSession && (
+                                                   <Badge variant="secondary" className="text-xs">
+                                                      Current
+                                                   </Badge>
+                                                )}
+                                             </div>
+                                             <div className="text-muted-foreground text-xs">
+                                                Last seen: {formatLastSeen(sessionItem.createdAt)}
+                                             </div>
+                                             {sessionItem.ipAddress && (
+                                                <div className="text-muted-foreground text-xs">IP: {sessionItem.ipAddress}</div>
                                              )}
                                           </div>
-                                          <div className="text-muted-foreground text-xs">
-                                             Last seen: {formatLastSeen(sessionItem.createdAt)}
-                                          </div>
-                                          {sessionItem.ipAddress && (
-                                             <div className="text-muted-foreground text-xs">IP: {sessionItem.ipAddress}</div>
+                                       </div>
+                                       <div className="flex-shrink-0">
+                                          {isCurrentSession ? (
+                                             <Button
+                                                onClick={handleSignOut}
+                                                variant="destructive"
+                                                size="sm"
+                                                className="w-full sm:w-auto"
+                                             >
+                                                <LogOut className="h-4 w-4" />
+                                                Sign Out
+                                             </Button>
+                                          ) : (
+                                             <Button
+                                                onClick={() => handleRevokeSession(sessionItem.id)}
+                                                variant="destructive"
+                                                size="sm"
+                                                disabled={revokeSession.isPending}
+                                                className="w-full sm:w-auto"
+                                             >
+                                                <UserX className="h-4 w-4" />
+                                                Revoke
+                                             </Button>
                                           )}
                                        </div>
                                     </div>
-                                    <div className="flex-shrink-0">
-                                       {isCurrentSession ? (
-                                          <Button onClick={handleSignOut} variant="destructive" size="sm" className="w-full sm:w-auto">
-                                             <LogOut className="h-4 w-4" />
-                                             Sign Out
-                                          </Button>
-                                       ) : (
-                                          <Button
-                                             onClick={() => handleRevokeSession(sessionItem.id)}
-                                             variant="destructive"
-                                             size="sm"
-                                             disabled={revokeSession.isPending}
-                                             className="w-full sm:w-auto"
-                                          >
-                                             <UserX className="h-4 w-4" />
-                                             Revoke
-                                          </Button>
-                                       )}
-                                    </div>
-                                 </div>
-                              );
-                           })}
+                                 );
+                              }
+                           )}
                         </div>
 
-                        {sessions && sessions.length > 1 && (
+                        {(sessions as any) && (sessions as any).length > 1 && (
                            <>
                               <Separator />
                               <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">

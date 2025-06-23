@@ -10,13 +10,14 @@ import {
    DropdownMenuSeparator,
    DropdownMenuTrigger,
 } from "@docsurf/ui/components/dropdown-menu";
-import { authClient } from "@/lib/auth-client";
+import { useSession } from "@/hooks/auth-hooks";
 import { GitHubIcon, XIcon } from "@daveyplate/better-auth-ui";
 import { useRouter } from "@tanstack/react-router";
 import { BookText, Loader2, LogOutIcon, SettingsIcon, UserIcon, UserLock, Users } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 export function UserButton() {
-   const { data: session, isPending } = authClient.useSession();
+   const { data: session, isPending } = useSession();
    const router = useRouter();
 
    if (isPending) {

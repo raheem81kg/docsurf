@@ -1,0 +1,85 @@
+<svg width="800" height="400" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+
+  <defs>
+    <!--
+      The <style> block is the key to this solution.
+      - We define 4 color variables, from darkest (front) to lightest (back).
+      - Using HSL (Hue, Saturation, Lightness) makes it easy to create a
+        cohesive color palette. Just change the Hue (the first value, 145) 
+        to change the entire forest's color (e.g., 210 for blue, 40 for orange).
+      - To edit, just modify the 4 color values below.
+    -->
+    <style>
+      .forest {
+        --color-front: hsl(145, 30%, 70%);
+        /* Lightest, for Row 1 */
+        --color-mid-front: hsl(145, 35%, 55%);
+        /* For Row 2 */
+        --color-mid-back: hsl(145, 40%, 40%);
+        /* For Row 3 */
+        --color-back: hsl(145, 45%, 25%);
+        /* Darkest, for Row 4 */
+      }
+    </style>
+
+    <!-- The realistic pine tree symbol has been updated with a more detailed path. -->
+    <symbol id="pine-tree" viewBox="0 0 100 200">
+      <path
+        d="M 50,0 L 53,10 L 58,12 L 55,20 L 65,22 L 60,30 L 75,35 L 70,42 L 85,50 L 80,55 L 92,70 L 87,75 L 98,90 L 93,95 L 100,115 L 95,120 L 100,140 L 93,142 L 98,160 L 90,165 L 95,178 L 60,178 L 60,200 L 40,200 L 40,178 L 5,178 L 10,165 L 2,160 L 7,142 L 0,140 L 5,120 L 0,115 L 7,95 L 2,90 L 13,75 L 8,70 L 20,55 L 15,50 L 30,42 L 25,35 L 40,30 L 35,22 L 45,20 L 42,12 L 47,10 Z" />
+    </symbol>
+
+  </defs>
+
+  <!-- 
+    The main group now has a class to hook into the CSS variables.
+    Each row is now in its own group with a specific fill color variable.
+  -->
+
+  <g class="forest" fill-rule="nonzero">
+
+    <!-- Row 4: Farthest back. Filled with the lightest color. -->
+    <g fill="var(--color-back)">
+      <use href="#pine-tree" x="380" y="150" width="40" height="80" />
+      <use href="#pine-tree" x="320" y="155" width="35" height="70" />
+      <use href="#pine-tree" x="430" y="158" width="38" height="76" />
+      <use href="#pine-tree" x="280" y="165" width="30" height="60" />
+      <use href="#pine-tree" x="470" y="168" width="32" height="64" />
+    </g>
+
+    <!-- Row 3: Mid-back. -->
+    <g fill="var(--color-mid-back)">
+      <use href="#pine-tree" x="350" y="180" width="50" height="100" />
+      <use href="#pine-tree" x="290" y="185" width="48" height="96" />
+      <use href="#pine-tree" x="410" y="182" width="52" height="104" />
+      <use href="#pine-tree" x="230" y="190" width="45" height="90" />
+      <use href="#pine-tree" x="470" y="188" width="48" height="96" />
+      <use href="#pine-tree" x="520" y="195" width="42" height="84" />
+      <use href="#pine-tree" x="180" y="198" width="40" height="80" />
+    </g>
+
+    <!-- Row 2: Mid-front. -->
+    <g fill="var(--color-mid-front)">
+      <use href="#pine-tree" x="150" y="220" width="65" height="130" />
+      <use href="#pine-tree" x="250" y="215" width="70" height="140" />
+      <use href="#pine-tree" x="330" y="210" width="75" height="150" />
+      <use href="#pine-tree" x="420" y="218" width="72" height="144" />
+      <use href="#pine-tree" x="510" y="222" width="68" height="136" />
+      <use href="#pine-tree" x="600" y="230" width="60" height="120" />
+      <use href="#pine-tree" x="80" y="235" width="55" height="110" />
+      <use href="#pine-tree" x="670" y="240" width="50" height="100" />
+    </g>
+
+    <!-- Row 1: Closest. Filled with the darkest color. -->
+    <g fill="var(--color-front)">
+      <use href="#pine-tree" x="20" y="250" width="80" height="160" />
+      <use href="#pine-tree" x="120" y="245" width="90" height="180" />
+      <use href="#pine-tree" x="230" y="240" width="95" height="190" />
+      <use href="#pine-tree" x="350" y="235" width="100" height="200" />
+      <use href="#pine-tree" x="470" y="242" width="92" height="184" />
+      <use href="#pine-tree" x="580" y="248" width="85" height="170" />
+      <use href="#pine-tree" x="680" y="255" width="75" height="150" />
+    </g>
+
+  </g>
+
+</svg>

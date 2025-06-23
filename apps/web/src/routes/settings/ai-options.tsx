@@ -13,7 +13,7 @@ import { SettingsLayout } from "@/components/sandbox/right-inner/chat/settings/s
 import { MCPServersCard } from "@/components/sandbox/right-inner/chat/settings/mcp-servers-card";
 import { SupermemoryCard } from "@/components/sandbox/right-inner/chat/settings/supermemory-card";
 import { SearchProviderCard } from "@/components/sandbox/right-inner/chat/settings/search-provider-card";
-import { authClient } from "@/lib/auth-client";
+import { useSession } from "@/hooks/auth-hooks";
 
 export const Route = createFileRoute("/settings/ai-options")({
    component: AIOptionsSettings,
@@ -50,7 +50,7 @@ const getProviderStatus = (providerId: SearchProvider, userSettings: any): "BYOK
 };
 
 function AIOptionsSettings() {
-   const { data: session } = authClient.useSession();
+   const { data: session } = useSession();
 
    const [isLoading, setIsLoading] = useState(false);
 

@@ -10,6 +10,7 @@ import { useMemo, useState } from "react";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 import { authClient } from "@/lib/auth-client";
 import { useConvexQuery } from "@convex-dev/react-query";
+import { useSession } from "@/hooks/auth-hooks";
 
 // Enhanced color palette for better model distinction
 const MODEL_COLORS = [
@@ -43,7 +44,7 @@ export function UsageDashboard({ className }: UsageDashboardProps) {
    const [timeframe, setTimeframe] = useState<"1d" | "7d" | "30d">("7d");
    const isMobile = useIsMobile();
 
-   const session = authClient.useSession();
+   const { data: session, isPending: sessionLoading } = useSession();
 
    const stats = useConvexQuery(api.analytics.getMyUsageStats, session?.user?.id ? { timeframe } : "skip");
    const chartData = useConvexQuery(api.analytics.getMyUsageChartData, session?.user?.id ? { timeframe } : "skip");

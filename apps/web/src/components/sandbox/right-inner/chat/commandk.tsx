@@ -14,7 +14,7 @@ import {
    CommandList,
 } from "@docsurf/ui/components/command";
 import { api } from "@docsurf/backend/convex/_generated/api";
-import { authClient } from "@/lib/auth-client";
+import { useSession } from "@/hooks/auth-hooks";
 
 interface Thread {
    _id: string;
@@ -32,7 +32,7 @@ export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps =
    const [internalOpen, setInternalOpen] = useState(false);
    const [query, setQuery] = useState("");
    const [debouncedQuery, setDebouncedQuery] = useState("");
-   const { data: session } = authClient.useSession();
+   const { data: session, isPending } = useSession();
    const router = useRouter();
    const commandRef = useRef<HTMLDivElement>(null);
 

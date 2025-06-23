@@ -2,7 +2,7 @@ import { api } from "@docsurf/backend/convex/_generated/api";
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 import { backendToUiMessages } from "@docsurf/backend/convex/lib/backend_to_ui_messages";
 import type { SharedThread, Thread } from "@docsurf/backend/convex/schema";
-import { useToken } from "./auth-hooks";
+import { useToken } from "@/hooks/auth-hooks";
 import { useAutoResume } from "./use-auto-resume";
 import { env } from "@/env";
 import { useChatStore } from "../lib/chat-store";

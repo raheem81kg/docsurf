@@ -5,7 +5,7 @@ import { Input } from "@docsurf/ui/components/input";
 import { Label } from "@docsurf/ui/components/label";
 import { Textarea } from "@docsurf/ui/components/textarea";
 import { api } from "@docsurf/backend/convex/_generated/api";
-import { authClient } from "@/lib/auth-client";
+import { useSession } from "@/hooks/auth-hooks";
 import { useConvexMutation, useConvexQuery } from "@convex-dev/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Loader2, Save } from "lucide-react";
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/settings/customization")({
 });
 
 function CustomizationSettings() {
-   const { data: session } = authClient.useSession();
+   const { data: session } = useSession();
    const userSettings = useConvexQuery(api.settings.getUserSettings, session?.user?.id ? {} : "skip");
    const updateSettings = useConvexMutation(api.settings.updateUserSettingsPartial);
 

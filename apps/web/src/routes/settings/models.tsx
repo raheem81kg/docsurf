@@ -20,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@docsurf/ui/components/switch";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import type { ModelAbility } from "@docsurf/backend/convex/schema/settings";
-import { authClient } from "@/lib/auth-client";
+import { useSession } from "@/hooks/auth-hooks";
 
 import { cn } from "@docsurf/ui/lib/utils";
 import { useConvexQuery } from "@convex-dev/react-query";
@@ -187,7 +187,7 @@ const ModelCard = memo(({ model, currentProviders, onEdit, onDelete }: ModelCard
 });
 
 function ModelsSettings() {
-   const { data: session } = authClient.useSession();
+   const { data: session } = useSession();
    const userSettings = useConvexQuery(api.settings.getUserSettings, session?.user?.id ? {} : "skip");
    const updateSettings = useMutation(api.settings.updateUserSettingsPartial);
 

@@ -3,7 +3,7 @@ import { SettingsLayout } from "@/components/sandbox/right-inner/chat/settings/s
 import { Button } from "@docsurf/ui/components/button";
 import { Skeleton } from "@docsurf/ui/components/skeleton";
 import { api } from "@docsurf/backend/convex/_generated/api";
-import { authClient } from "@/lib/auth-client";
+import { useSession } from "@/hooks/auth-hooks";
 import { cn } from "@docsurf/ui/lib/utils";
 import { useConvexQuery } from "@convex-dev/react-query";
 import { Outlet, createLazyFileRoute, useLocation, useNavigate } from "@tanstack/react-router";
@@ -65,7 +65,7 @@ export const Route = createLazyFileRoute("/settings")({
 });
 
 const Inner = () => {
-   const { data: session } = authClient.useSession();
+   const { data: session } = useSession();
    const userSettings = useConvexQuery(api.settings.getUserSettings, session?.user?.id ? {} : "skip");
    if (!session?.user?.id) {
       return (

@@ -10,7 +10,7 @@ import { useMutation } from "convex/react";
 import { ArrowRight, GitFork } from "lucide-react";
 import { useStickToBottom } from "use-stick-to-bottom";
 import { Skeleton } from "@docsurf/ui/components/skeleton";
-import { authClient } from "@/lib/auth-client";
+import { useSession } from "@/hooks/auth-hooks";
 
 interface SharedChatProps {
    sharedThreadId: string;
@@ -19,7 +19,7 @@ interface SharedChatProps {
 export function SharedChat({ sharedThreadId }: SharedChatProps) {
    const { chatWidthState } = useChatWidthStore();
    const router = useRouter();
-   const { data: session } = authClient.useSession();
+   const { data: session } = useSession();
    const forkThread = useMutation(api.threads.forkSharedThread);
    const { contentRef, scrollRef } = useStickToBottom({
       initial: "instant",
@@ -35,7 +35,7 @@ export function SharedChat({ sharedThreadId }: SharedChatProps) {
    const handleFork = async () => {
       if (!session?.user?.id) {
          // Redirect to login or show login modal
-         router.navigate({ to: "/auth/$pathname", params: { pathname: "sign-in" } });
+         router.navigate({ to: "/auth" });
          return;
       }
 
@@ -50,10 +50,10 @@ export function SharedChat({ sharedThreadId }: SharedChatProps) {
          }
 
          // Navigate to the new forked thread
-         router.navigate({
-            to: "/thread/$threadId",
-            params: { threadId: result.threadId.toString() },
-         });
+         // router.navigate({
+         //    to: "/thread/$threadId",
+         //    params: { threadId: result.threadId.toString() },
+         // });
       } catch (error) {
          console.error("Error forking thread:", error);
       }

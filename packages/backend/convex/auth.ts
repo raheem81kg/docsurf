@@ -137,9 +137,8 @@ export const { createUser, deleteUser, updateUser, createSession, isAuthenticate
          const userId = user.userId as Id<"users">;
          await ctx.db.patch(userId, {
             email: user.email,
-            // not sure if we need this
-            // name: user.name,
-            // image: user.image,
+            name: user.name,
+            image: user.image,
          });
       },
    });

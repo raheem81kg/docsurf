@@ -1,5 +1,6 @@
+import { useSession } from "@/hooks/auth-hooks";
 import { api } from "@docsurf/backend/convex/_generated/api";
-import { useSession } from "./auth-hooks";
+
 import { useMutation, useQuery } from "convex/react";
 
 export function useOnboarding() {

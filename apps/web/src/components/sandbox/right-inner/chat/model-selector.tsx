@@ -17,7 +17,7 @@ import { useAvailableModels, type DisplayModel } from "./lib/models-providers-sh
 import { MODELS_SHARED, type SharedModel } from "@docsurf/backend/convex/lib/models";
 import { useDiskCachedQuery } from "./lib/convex-cached-query";
 import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
-import { authClient } from "@/lib/auth-client";
+import { useSession } from "@/hooks/auth-hooks";
 
 export const getProviderIcon = (model: DisplayModel, isCustom: boolean) => {
    if (isCustom) {
@@ -140,7 +140,7 @@ export function ModelSelector({
    className?: string;
 }) {
    const auth = useConvexAuth();
-   const { data: session } = authClient.useSession();
+   const { data: session, isPending } = useSession();
 
    const userSettings = useDiskCachedQuery(
       api.settings.getUserSettings,
