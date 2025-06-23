@@ -3,6 +3,8 @@ import { skipToken, useMutation, useQuery, useQueryClient, type AnyUseQueryOptio
 import type { BetterFetchOption, BetterFetchResponse } from "better-auth/react";
 import { useCallback, useEffect, useMemo } from "react";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
+import { useRouteContext } from "@tanstack/react-router";
+import { Route as RootRoute } from "../routes/__root";
 
 // Types
 type AuthClient = typeof authClient;
@@ -93,58 +95,66 @@ export const useRevokeOtherSessions = () => {
    });
 };
 
+export function useVerifyToken(token: string | null | undefined, message = "Authentication required. Please sign in to continue.") {
+   return useCallback(
+      (action: () => void | Promise<void>) => {
+         if (!token) {
+            showToast(message, "error");
+            return;
+         }
+         action();
+      },
+      [token, message]
+   );
+}
+
 // Token Management
 export const decodeJwt = (token: string) => {
-   const decode = (data: string) => {
-      if (typeof Buffer === "undefined") {
-         return atob(data);
+   try {
+      const parts = token.split(".");
+      if (parts.length < 2 || !parts[1]) {
+         return null;
       }
-      return Buffer.from(data, "base64").toString();
-   };
-   const parts = token.split(".").map((part) => decode(part.replace(/-/g, "+").replace(/_/g, "/")));
 
-   return JSON.parse(parts[1]);
+      const decode = (data: string) => {
+         const normalizedData = data.replace(/-/g, "+").replace(/_/g, "/");
+         if (typeof Buffer === "undefined") {
+            return atob(normalizedData);
+         }
+         return Buffer.from(normalizedData, "base64").toString("utf8");
+      };
+
+      const payload = decode(parts[1]);
+      return JSON.parse(payload);
+   } catch (error) {
+      console.error("Failed to decode JWT:", error);
+      return null;
+   }
 };
 
 export function useToken() {
+   // Try to get token from router context (SSR-aware)
+   const context = useRouteContext({ from: RootRoute.id });
+   const contextToken = context?.token;
+
+   // Fallback to session token if context token is not available
    const { data: sessionData, refetch, ...rest } = useSession();
 
-   const token = sessionData?.session?.token;
-
-   const payload = useMemo(() => {
-      if (!token) return null;
-      try {
-         return decodeJwt(token);
-      } catch (error) {
-         console.error("Failed to decode JWT:", error);
-         return null;
-      }
-   }, [token]);
+   // Prefer context token, fallback to session token
+   const token = contextToken;
+   console.log("token from useToken", token);
 
    useEffect(() => {
-      if (!payload?.exp) return;
-      const expiresAt = payload.exp * 1000;
+      if (!sessionData?.session?.expiresAt) return;
+      const expiresAt = new Date(sessionData.session.expiresAt).getTime();
       const expiresIn = expiresAt - Date.now();
-      if (expiresIn <= 60000) return;
-      const timeout = setTimeout(() => refetch(), expiresIn - 60000);
-      return () => clearTimeout(timeout);
-   }, [payload, refetch]);
 
-   useEffect(() => {
-      if (sessionData?.user?.id && payload?.sub && payload.sub !== sessionData.user.id) {
-         refetch();
+      // Refetch 60 seconds before expiration
+      if (expiresIn > 60000) {
+         const timeout = setTimeout(() => refetch(), expiresIn - 60000);
+         return () => clearTimeout(timeout);
       }
-   }, [payload, sessionData, refetch]);
+   }, [sessionData, refetch]);
 
-   const isTokenExpired = useCallback(() => {
-      if (!payload?.exp) return true;
-      return payload.exp < Date.now() / 1000;
-   }, [payload]);
-
-   const tokenData = useMemo(
-      () => (isTokenExpired() || sessionData?.user?.id !== payload?.sub ? undefined : sessionData),
-      [sessionData, isTokenExpired, payload]
-   );
-
-   return { ...rest, data: tokenData, token: tokenData?.session?.token, payload };
+   return { ...rest, data: sessionData, token };
 }

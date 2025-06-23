@@ -1,7 +1,4 @@
-import { internalMutation, QueryCtx } from "./_generated/server";
-import { internal } from "./_generated/api";
-import { internalQuery } from "./_generated/server";
-import { betterAuthComponent } from "./auth";
+import { internalMutation, type ActionCtx, QueryCtx } from "./_generated/server";
 import { ConvexError } from "convex/values";
 import { Id } from "./_generated/dataModel";
 
@@ -34,12 +31,12 @@ import { Id } from "./_generated/dataModel";
 //    return true;
 // };
 
-export const getUserId = async (ctx: QueryCtx) => {
+export const getUserId = async (ctx: QueryCtx | ActionCtx) => {
    const identity = await ctx.auth.getUserIdentity();
    return (identity?.subject as Id<"users">) ?? null;
 };
 
-export const requireUserId = async (ctx: QueryCtx) => {
+export const requireUserId = async (ctx: QueryCtx | ActionCtx) => {
    const userId = await getUserId(ctx);
    if (!userId) {
       throw new ConvexError({

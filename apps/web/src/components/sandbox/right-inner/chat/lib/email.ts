@@ -49,7 +49,7 @@ class EmailService {
 
       return {
          provider,
-         from: process.env.EMAIL_FROM || "noreply@intern3.chat",
+         from: process.env.EMAIL_FROM || "noreply@docsurf.ai",
          resend:
             provider === "resend"
                ? {
@@ -175,7 +175,7 @@ class EmailService {
 
       await this.sendEmail({
          to: data.user.email,
-         subject: "Verify your email address - Intern3 Chat",
+         subject: "Verify your email address - Docsurf",
          html,
          text: `Hi ${data.user.name || ""},\n\nPlease verify your email address by clicking this link: ${data.url}\n\nIf you didn't create an account, you can safely ignore this email.`,
       });
@@ -191,7 +191,7 @@ class EmailService {
 
       await this.sendEmail({
          to: data.user.email,
-         subject: "Reset your password - Intern3 Chat",
+         subject: "Reset your password - Docsurf",
          html,
          text: `Hi ${data.user.name || ""},\n\nYou can reset your password by clicking this link: ${data.url}\n\nIf you didn't request a password reset, you can safely ignore this email.`,
       });
@@ -202,36 +202,36 @@ class EmailService {
          switch (data.type) {
             case "sign-in":
                return {
-                  subject: "Your sign-in code - Intern3 Chat",
+                  subject: "Your sign-in code - Docsurf",
                   html: await render(
                      OTPEmailTemplate({
                         otp: data.otp,
                         type: "sign-in",
                      })
                   ),
-                  text: `Your sign-in code for Intern3 Chat is: ${data.otp}\n\nThis code will expire in 5 minutes.`,
+                  text: `Your sign-in code for Docsurf is: ${data.otp}\n\nThis code will expire in 5 minutes.`,
                };
             case "email-verification":
                return {
-                  subject: "Verify your email - Intern3 Chat",
+                  subject: "Verify your email - Docsurf",
                   html: await render(
                      OTPEmailTemplate({
                         otp: data.otp,
                         type: "email-verification",
                      })
                   ),
-                  text: `Your email verification code for Intern3 Chat is: ${data.otp}\n\nThis code will expire in 5 minutes.`,
+                  text: `Your email verification code for Docsurf is: ${data.otp}\n\nThis code will expire in 5 minutes.`,
                };
             case "forget-password":
                return {
-                  subject: "Reset your password - Intern3 Chat",
+                  subject: "Reset your password - Docsurf",
                   html: await render(
                      OTPEmailTemplate({
                         otp: data.otp,
                         type: "forget-password",
                      })
                   ),
-                  text: `Your password reset code for Intern3 Chat is: ${data.otp}\n\nThis code will expire in 5 minutes.`,
+                  text: `Your password reset code for Docsurf is: ${data.otp}\n\nThis code will expire in 5 minutes.`,
                };
          }
       };

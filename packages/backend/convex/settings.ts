@@ -53,7 +53,7 @@ export const getUserSettingsInternal = internalQuery({
 export const getUserSettings = query({
    args: {},
    handler: async (ctx): Promise<Infer<typeof UserSettings> | { error: string }> => {
-      const user = await getUserIdentity(ctx.auth, { allowAnons: false });
+      const user = await getUserIdentity(ctx, { allowAnons: false });
       if ("error" in user) return { error: "unauthorized:api" };
       return await getSettings(ctx, user.id);
    },
@@ -206,7 +206,7 @@ export const updateUserSettings = mutation({
       ),
    },
    handler: async (ctx, args) => {
-      const user = await getUserIdentity(ctx.auth, { allowAnons: false });
+      const user = await getUserIdentity(ctx, { allowAnons: false });
       if ("error" in user) throw new ChatError("unauthorized:api");
       if (user.id !== args.userId) {
          throw new ChatError("unauthorized:api");
@@ -301,7 +301,7 @@ export const addUserTheme = mutation({
       url: v.string(),
    },
    handler: async (ctx, args) => {
-      const user = await getUserIdentity(ctx.auth, { allowAnons: false });
+      const user = await getUserIdentity(ctx, { allowAnons: false });
       if ("error" in user) throw new Error("Unauthorized");
       const settings = await getSettings(ctx, user.id);
       const existingThemes = settings.customThemes ?? [];
@@ -327,7 +327,7 @@ export const deleteUserTheme = mutation({
       url: v.string(),
    },
    handler: async (ctx, args) => {
-      const user = await getUserIdentity(ctx.auth, { allowAnons: false });
+      const user = await getUserIdentity(ctx, { allowAnons: false });
       if ("error" in user) throw new Error("Unauthorized");
       const settings = await getSettings(ctx, user.id);
 
@@ -510,7 +510,7 @@ export const updateUserSettingsPartial = mutation({
       removeTheme: v.optional(v.string()),
    },
    handler: async (ctx, args) => {
-      const user = await getUserIdentity(ctx.auth, { allowAnons: false });
+      const user = await getUserIdentity(ctx, { allowAnons: false });
       if ("error" in user) throw new ChatError("unauthorized:api");
 
       const settings = await getSettings(ctx, user.id);
@@ -648,7 +648,7 @@ export const updateUserSettingsPartial = mutation({
 export const getOnboardingStatus = query({
    args: {},
    handler: async (ctx): Promise<{ shouldShowOnboarding: boolean } | { error: string }> => {
-      const user = await getUserIdentity(ctx.auth, { allowAnons: false });
+      const user = await getUserIdentity(ctx, { allowAnons: false });
       if ("error" in user) return { error: "unauthorized:api" };
 
       const settings = await getSettings(ctx, user.id);
@@ -661,7 +661,7 @@ export const getOnboardingStatus = query({
 export const completeOnboarding = mutation({
    args: {},
    handler: async (ctx) => {
-      const user = await getUserIdentity(ctx.auth, { allowAnons: false });
+      const user = await getUserIdentity(ctx, { allowAnons: false });
       if ("error" in user) throw new ChatError("unauthorized:api");
 
       const settings = await getSettings(ctx, user.id);

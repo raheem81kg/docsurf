@@ -5,8 +5,8 @@ import { MessagePart } from "./schema/parts";
 
 export const getMessagesByThreadId = internalQuery({
    args: { threadId: v.id("threads") },
-   handler: async ({ db }, { threadId }) => {
-      return await db
+   handler: async ({ ...ctx }, { threadId }) => {
+      return await ctx.db
          .query("messages")
          .withIndex("byThreadId", (q) => q.eq("threadId", threadId))
          .order("desc")
@@ -30,15 +30,15 @@ export const patchMessage = internalMutation({
          })
       ),
    },
-   handler: async ({ db }, { threadId, messageId, parts, metadata }) => {
-      const msgs = await db
+   handler: async ({ ...ctx }, { threadId, messageId, parts, metadata }) => {
+      const msgs = await ctx.db
          .query("messages")
          .withIndex("byMessageId", (q) => q.eq("messageId", messageId))
          .collect();
       const msg = msgs[0];
       if (!msg) return;
 
-      await db.patch(msg._id as Id<"messages">, {
+      await ctx.db.patch(msg._id as Id<"messages">, {
          parts,
          metadata: {
             ...msg.metadata,
@@ -49,9 +49,9 @@ export const patchMessage = internalMutation({
 
       // Create usage event for analytics
       if (metadata?.modelId) {
-         const thread = await db.get(threadId);
+         const thread = await ctx.db.get(threadId);
          if (thread) {
-            await db.insert("usageEvents", {
+            await ctx.db.insert("usageEvents", {
                userId: thread.authorId,
                modelId: metadata.modelId,
                p: metadata.promptTokens ?? 0,

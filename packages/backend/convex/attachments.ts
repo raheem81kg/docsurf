@@ -17,7 +17,7 @@ export const r2 = new R2(components.r2);
 // Direct file upload HTTP action for files under 5MB
 export const uploadFile = httpAction(async (ctx, request) => {
    try {
-      const user = await getUserIdentity(ctx.auth, { allowAnons: false });
+      const user = await getUserIdentity(ctx, { allowAnons: false });
       if ("error" in user) {
          return new Response(JSON.stringify({ error: "Unauthorized" }), {
             status: 401,
@@ -204,7 +204,7 @@ export const deleteFile = mutation({
    args: { key: v.string() },
    handler: async (ctx, args) => {
       try {
-         const user = await getUserIdentity(ctx.auth, { allowAnons: false });
+         const user = await getUserIdentity(ctx, { allowAnons: false });
          if ("error" in user) {
             return {
                success: false,
@@ -248,7 +248,7 @@ export const listFiles = query({
    },
    handler: async (ctx, args) => {
       try {
-         const user = await getUserIdentity(ctx.auth, { allowAnons: false });
+         const user = await getUserIdentity(ctx, { allowAnons: false });
          if ("error" in user) {
             return [];
          }

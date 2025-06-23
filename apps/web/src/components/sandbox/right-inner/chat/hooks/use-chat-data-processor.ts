@@ -34,9 +34,9 @@ export function useChatDataProcessor({ data, messages }: UseChatDataProcessorPro
 
          if (item.type === "thread_id") {
             setThreadId(item.content);
-            if (typeof window !== "undefined") {
-               window.history.replaceState({}, "", `/thread/${item.content}`);
-            }
+            // if (typeof window !== "undefined") {
+            //    window.history.replaceState({}, "", `/thread/${item.content}`);
+            // }
             setShouldUpdateQuery(true);
             console.log("[CDP:thread_id]", { t: item.content });
          }

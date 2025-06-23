@@ -39,7 +39,7 @@
       "@zanreal/search": "^1.0.0",
       "ai": "^4.3.16",
       "babel-plugin-react-compiler": "19.1.0-rc.2",
-      "better-auth": "1.2.7",
+      "better-auth": "1.2.9",
       "canvas-confetti": "^1.9.3",
       "class-variance-authority": "^0.7.1",
       "clsx": "^2.1.1",

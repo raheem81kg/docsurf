@@ -10,6 +10,7 @@ import { Separator } from "@docsurf/ui/components/separator";
 import { useListSessions, useRevokeOtherSessions, useRevokeSession, useSession, useUpdateUser } from "@/hooks/auth-hooks";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@docsurf/ui/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Edit, Globe, Laptop, LogOut, Monitor, Save, Smartphone, Tablet, UserX, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
@@ -80,6 +81,9 @@ function UserAccountSettings() {
 
    const handleSignOut = useCallback(async () => {
       try {
+         const queryClient = useQueryClient();
+         await queryClient.resetQueries({ queryKey: ["session"] });
+         await queryClient.resetQueries({ queryKey: ["token"] });
          await authClient.signOut();
          const keys = Object.keys(localStorage);
          for (const key of keys) {

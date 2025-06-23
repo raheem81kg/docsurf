@@ -34,7 +34,7 @@ const GeneratedImage = memo(({ asset }: { asset: GeneratedAsset }) => {
    const [isLoaded, setIsLoaded] = useState(false);
 
    const imageUrl = useMemo(() => {
-      return `${env.VITE_CONVEX_URL}/r2?key=${asset.key}`;
+      return `${env.VITE_CONVEX_SITE_URL}/r2?key=${asset.key}`;
    }, [asset.key]);
 
    const handleDownload = useCallback(() => {

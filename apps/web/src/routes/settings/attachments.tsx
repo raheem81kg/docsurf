@@ -86,7 +86,7 @@ const FileCard = memo(({ file, onDelete }: { file: FileMetadata; onDelete: (key:
    }, [file.key]);
 
    const fileUrl = useMemo(() => {
-      return `${env.VITE_CONVEX_URL}/r2?key=${file.key}`;
+      return `${env.VITE_CONVEX_SITE_URL}/r2?key=${file.key}`;
    }, [file.key]);
 
    const handleDownload = useCallback(() => {

@@ -1,6 +1,6 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@docsurf/backend/convex/_generated/api";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useTransition } from "react";
 import { SignOutButton } from "@/components/client";
@@ -39,8 +39,17 @@ function Header() {
    const navigate = useNavigate();
 
    const handleSignOut = async () => {
+      const queryClient = useQueryClient();
+      await queryClient.resetQueries({ queryKey: ["session"] });
+      await queryClient.resetQueries({ queryKey: ["token"] });
       await authClient.signOut();
       void navigate({ to: "/auth" });
+      const keys = Object.keys(localStorage);
+      for (const key of keys) {
+         if (key.includes("_CACHE")) {
+            localStorage.removeItem(key);
+         }
+      }
    };
 
    return (

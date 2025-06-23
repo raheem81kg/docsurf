@@ -13,7 +13,7 @@ export const buildPrompt = (enabledTools: AbilityId[], userSettings?: Infer<type
    const utcDate = `${now.getUTCDate().toString().padStart(2, "0")}-${(now.getUTCMonth() + 1).toString().padStart(2, "0")}-${now.getUTCFullYear()}`;
 
    const layers: string[] = [
-      `You are a helpful assistant inside a chatbot called "intern3-chat".`,
+      `You are a helpful assistant inside a chatbot called "Docsurf Chat".`,
       dedent`## Formatting
 - You should output in markdown format. LaTeX is also supported!
 - Inline math: Use $$like this$$ for inline LaTeX

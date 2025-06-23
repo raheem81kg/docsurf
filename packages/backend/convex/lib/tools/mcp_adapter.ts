@@ -70,7 +70,7 @@ export const MCPAdapter: ToolAdapter = async ({ enabledTools, userSettings }) =>
             console.log(`[MCP] Creating MCP client for ${server.name}...`);
             const client = await createMCPClient({
                transport,
-               name: `intern3-chat-${server.name}`,
+               name: `docsurf-chat-${server.name}`,
             });
 
             console.log(`[MCP] Successfully created client for ${server.name}`);

@@ -1,7 +1,7 @@
-import { useToken } from "@/hooks/auth-hooks";
+import { useVerifyToken, useToken } from "@/hooks/auth-hooks";
 import { env } from "@/env";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 
 interface UseVoiceRecorderOptions {
    onTranscript: (text: string) => void;
@@ -96,6 +96,7 @@ export const useVoiceRecorder = ({ onTranscript }: UseVoiceRecorderOptions) => {
    const audioChunksRef = useRef<Blob[]>([]);
    const tokenRef = useRef<string | undefined>(undefined);
    const mediaStreamRef = useRef<MediaStream | null>(null);
+   const verifyToken = useVerifyToken(token, "You must be logged in to use voice input.");
 
    // Keep token ref up to date
    useEffect(() => {
@@ -175,160 +176,164 @@ export const useVoiceRecorder = ({ onTranscript }: UseVoiceRecorderOptions) => {
    }, []);
 
    const startRecording = useCallback(async () => {
-      try {
-         // Enhanced browser support checks
-         if (!navigator || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            if (isIOSSafari()) {
-               throw new Error(
-                  "Microphone access is not available. This can happen when launching from the home screen or when not using HTTPS. Please open this page directly in Safari with HTTPS."
-               );
-            }
-            throw new Error("Your browser doesn't support audio recording. Please try using the latest version of Safari.");
-         }
-
-         if (!isMediaRecorderUsable()) {
-            if (isIOSSafari()) {
-               throw new Error("Audio recording is not available on this version of iOS Safari. Please update to iOS 14.3 or later.");
-            }
-            throw new Error("MediaRecorder not supported in your browser");
-         }
-
-         // Audio constraints
-         const constraints = {
-            audio: {
-               echoCancellation: true,
-               noiseSuppression: true,
-               autoGainControl: true,
-               ...(isIOSSafari() && {
-                  sampleRate: 44100,
-                  channelCount: 1,
-               }),
-            },
-         };
-
-         console.log("Requesting microphone access...");
-         const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-         mediaStreamRef.current = mediaStream;
-
-         // Create audio context for visualization only
-         window.AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-         audioContextRef.current = new AudioContext();
-
-         if (audioContextRef.current.state === "suspended") {
-            await audioContextRef.current.resume();
-            console.log("AudioContext resumed");
-         }
-
-         // Set up simple audio analysis for visualization
-         analyserRef.current = audioContextRef.current.createAnalyser();
-         analyserRef.current.fftSize = 256;
-         analyserRef.current.smoothingTimeConstant = 0.8;
-         dataArrayRef.current = new Uint8Array(analyserRef.current.frequencyBinCount);
-
-         // Connect audio stream to analyser for visualization
-         const source = audioContextRef.current.createMediaStreamSource(mediaStream);
-         source.connect(analyserRef.current);
-
-         // Get the best supported MIME type
-         const mimeType = getBestSupportedMimeType();
-         console.log(`Using MIME type: ${mimeType || "browser default"}`);
-
-         // Set up MediaRecorder with the original media stream (NOT processed)
-         const options: MediaRecorderOptions = {};
-         if (mimeType) {
-            options.mimeType = mimeType;
-         }
-
-         if (isIOSSafari() && mimeType.includes("mp4")) {
-            options.audioBitsPerSecond = 128000;
-         }
-
+      await verifyToken(async () => {
          try {
-            // CRITICAL: Use the original mediaStream directly!
-            mediaRecorderRef.current = new MediaRecorder(mediaStream, options);
-         } catch (optionsError) {
-            console.warn("Failed with options, trying without:", optionsError);
-            mediaRecorderRef.current = new MediaRecorder(mediaStream);
-         }
-
-         audioChunksRef.current = [];
-
-         mediaRecorderRef.current.ondataavailable = (event) => {
-            if (event.data.size > 0) {
-               console.log("Received audio data chunk:", event.data.size, "bytes");
-               audioChunksRef.current.push(event.data);
+            // Enhanced browser support checks
+            if (!navigator || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+               if (isIOSSafari()) {
+                  throw new Error(
+                     "Microphone access is not available. This can happen when launching from the home screen or when not using HTTPS. Please open this page directly in Safari with HTTPS."
+                  );
+               }
+               throw new Error("Your browser doesn't support audio recording. Please try using the latest version of Safari.");
             }
-         };
 
-         mediaRecorderRef.current.onstop = async () => {
-            console.log("Recording stopped, processing audio...");
-            const actualMimeType = mimeType || "audio/mp4";
-            const audioBlob = new Blob(audioChunksRef.current, { type: actualMimeType });
-            console.log("Created audio blob:", audioBlob.size, "bytes, type:", actualMimeType);
+            if (!isMediaRecorderUsable()) {
+               if (isIOSSafari()) {
+                  throw new Error(
+                     "Audio recording is not available on this version of iOS Safari. Please update to iOS 14.3 or later."
+                  );
+               }
+               throw new Error("MediaRecorder not supported in your browser");
+            }
 
-            await transcribeAudio(audioBlob);
+            // Audio constraints
+            const constraints = {
+               audio: {
+                  echoCancellation: true,
+                  noiseSuppression: true,
+                  autoGainControl: true,
+                  ...(isIOSSafari() && {
+                     sampleRate: 44100,
+                     channelCount: 1,
+                  }),
+               },
+            };
+
+            console.log("Requesting microphone access...");
+            const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+            mediaStreamRef.current = mediaStream;
+
+            // Create audio context for visualization only
+            window.AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+            audioContextRef.current = new AudioContext();
+
+            if (audioContextRef.current.state === "suspended") {
+               await audioContextRef.current.resume();
+               console.log("AudioContext resumed");
+            }
+
+            // Set up simple audio analysis for visualization
+            analyserRef.current = audioContextRef.current.createAnalyser();
+            analyserRef.current.fftSize = 256;
+            analyserRef.current.smoothingTimeConstant = 0.8;
+            dataArrayRef.current = new Uint8Array(analyserRef.current.frequencyBinCount);
+
+            // Connect audio stream to analyser for visualization
+            const source = audioContextRef.current.createMediaStreamSource(mediaStream);
+            source.connect(analyserRef.current);
+
+            // Get the best supported MIME type
+            const mimeType = getBestSupportedMimeType();
+            console.log(`Using MIME type: ${mimeType || "browser default"}`);
+
+            // Set up MediaRecorder with the original media stream (NOT processed)
+            const options: MediaRecorderOptions = {};
+            if (mimeType) {
+               options.mimeType = mimeType;
+            }
+
+            if (isIOSSafari() && mimeType.includes("mp4")) {
+               options.audioBitsPerSecond = 128000;
+            }
+
+            try {
+               // CRITICAL: Use the original mediaStream directly!
+               mediaRecorderRef.current = new MediaRecorder(mediaStream, options);
+            } catch (optionsError) {
+               console.warn("Failed with options, trying without:", optionsError);
+               mediaRecorderRef.current = new MediaRecorder(mediaStream);
+            }
+
+            audioChunksRef.current = [];
+
+            mediaRecorderRef.current.ondataavailable = (event) => {
+               if (event.data.size > 0) {
+                  console.log("Received audio data chunk:", event.data.size, "bytes");
+                  audioChunksRef.current.push(event.data);
+               }
+            };
+
+            mediaRecorderRef.current.onstop = async () => {
+               console.log("Recording stopped, processing audio...");
+               const actualMimeType = mimeType || "audio/mp4";
+               const audioBlob = new Blob(audioChunksRef.current, { type: actualMimeType });
+               console.log("Created audio blob:", audioBlob.size, "bytes, type:", actualMimeType);
+
+               await transcribeAudio(audioBlob);
+               cleanupRecording();
+            };
+
+            mediaRecorderRef.current.onerror = (event) => {
+               console.error("MediaRecorder error:", event);
+               const errorEvent = event as Event & { error?: Error };
+               if (errorEvent.error) {
+                  showToast(`Recording failed: ${errorEvent.error.message}`, "error");
+               } else {
+                  showToast("Recording failed. Please try again.", "error");
+               }
+               cleanupRecording();
+            };
+
+            // Start recording
+            try {
+               mediaRecorderRef.current.start(1000);
+               console.log("Recording started successfully");
+            } catch (startError) {
+               console.warn("Failed to start with timeslice, trying without:", startError);
+               mediaRecorderRef.current.start();
+            }
+
+            recordingStartTimeRef.current = Date.now();
+
+            setState((prev) => ({
+               ...prev,
+               isRecording: true,
+               recordingDuration: 0,
+               audioLevel: 0,
+               waveformData: [],
+            }));
+
+            // Start duration counter
+            durationIntervalRef.current = window.setInterval(() => {
+               const duration = Math.floor((Date.now() - recordingStartTimeRef.current) / 1000);
+               setState((prev) => ({ ...prev, recordingDuration: duration }));
+            }, 1000);
+
+            // Start audio level monitoring
+            audioLevelIntervalRef.current = window.setInterval(updateAudioLevel, 100);
+         } catch (error) {
+            console.error("Error starting recording:", error);
             cleanupRecording();
-         };
 
-         mediaRecorderRef.current.onerror = (event) => {
-            console.error("MediaRecorder error:", event);
-            const errorEvent = event as Event & { error?: Error };
-            if (errorEvent.error) {
-               toast.error(`Recording failed: ${errorEvent.error.message}`);
+            if (error instanceof Error) {
+               if (error.name === "NotAllowedError") {
+                  showToast("Microphone permission denied. Please allow microphone access and try again.", "error");
+               } else if (error.name === "NotFoundError") {
+                  showToast("No microphone found. Please check your device's microphone and try again.", "error");
+               } else if (error.name === "NotSupportedError") {
+                  showToast("Audio recording is not supported on this device/browser combination.", "error");
+               } else if (error.name === "AbortError") {
+                  showToast("Recording was interrupted. Please try again.", "error");
+               } else {
+                  showToast(error.message, "error");
+               }
             } else {
-               toast.error("Recording failed. Please try again.");
+               showToast("Failed to start recording. Please check microphone permissions.", "error");
             }
-            cleanupRecording();
-         };
-
-         // Start recording
-         try {
-            mediaRecorderRef.current.start(1000);
-            console.log("Recording started successfully");
-         } catch (startError) {
-            console.warn("Failed to start with timeslice, trying without:", startError);
-            mediaRecorderRef.current.start();
          }
-
-         recordingStartTimeRef.current = Date.now();
-
-         setState((prev) => ({
-            ...prev,
-            isRecording: true,
-            recordingDuration: 0,
-            audioLevel: 0,
-            waveformData: [],
-         }));
-
-         // Start duration counter
-         durationIntervalRef.current = window.setInterval(() => {
-            const duration = Math.floor((Date.now() - recordingStartTimeRef.current) / 1000);
-            setState((prev) => ({ ...prev, recordingDuration: duration }));
-         }, 1000);
-
-         // Start audio level monitoring
-         audioLevelIntervalRef.current = window.setInterval(updateAudioLevel, 100);
-      } catch (error) {
-         console.error("Error starting recording:", error);
-         cleanupRecording();
-
-         if (error instanceof Error) {
-            if (error.name === "NotAllowedError") {
-               toast.error("Microphone permission denied. Please allow microphone access and try again.");
-            } else if (error.name === "NotFoundError") {
-               toast.error("No microphone found. Please check your device's microphone and try again.");
-            } else if (error.name === "NotSupportedError") {
-               toast.error("Audio recording is not supported on this device/browser combination.");
-            } else if (error.name === "AbortError") {
-               toast.error("Recording was interrupted. Please try again.");
-            } else {
-               toast.error(error.message);
-            }
-         } else {
-            toast.error("Failed to start recording. Please check microphone permissions.");
-         }
-      }
-   }, [updateAudioLevel, cleanupRecording]);
+      });
+   }, [updateAudioLevel, cleanupRecording, verifyToken]);
 
    const stopRecording = useCallback(() => {
       if (mediaRecorderRef.current && state.isRecording) {
@@ -357,7 +362,7 @@ export const useVoiceRecorder = ({ onTranscript }: UseVoiceRecorderOptions) => {
             const formData = new FormData();
             formData.append("audio", audioBlob);
 
-            const response = await fetch(`${env.VITE_CONVEX_URL}/transcribe`, {
+            const response = await fetch(`${env.VITE_CONVEX_SITE_URL}/transcribe`, {
                method: "POST",
                headers: {
                   Authorization: `Bearer ${tokenRef.current}`,
@@ -376,11 +381,11 @@ export const useVoiceRecorder = ({ onTranscript }: UseVoiceRecorderOptions) => {
                console.log("Transcription successful:", text);
                onTranscript(text.trim());
             } else {
-               toast.error("No speech detected. Please try again and speak clearly.");
+               showToast("No speech detected. Please try again and speak clearly.", "error");
             }
          } catch (error) {
             console.error("Transcription error:", error);
-            toast.error(error instanceof Error ? error.message : "Failed to transcribe audio");
+            showToast(error instanceof Error ? error.message : "Failed to transcribe audio", "error");
          } finally {
             setState((prev) => ({
                ...prev,

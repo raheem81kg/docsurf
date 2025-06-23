@@ -28,6 +28,7 @@ import { Route as SettingsAppearanceRouteImport } from './routes/settings/appear
 import { Route as SettingsAiOptionsRouteImport } from './routes/settings/ai-options'
 import { Route as AuthedServerRouteImport } from './routes/_authed/server'
 import { Route as AuthedClientOnlyRouteImport } from './routes/_authed/client-only'
+import { Route as AuthAuthRouteImport } from './routes/_auth/auth'
 import { Route as MainDocIndexRouteImport } from './routes/_main/doc.index'
 import { Route as AuthedClientOnlyIndexRouteImport } from './routes/_authed/client-only.index'
 import { Route as MainDocLibraryRouteImport } from './routes/_main/doc.library'
@@ -41,7 +42,6 @@ const WelcomeTermsLazyRouteImport = createFileRoute('/_welcome/terms')()
 const WelcomePricingLazyRouteImport = createFileRoute('/_welcome/pricing')()
 const WelcomePolicyLazyRouteImport = createFileRoute('/_welcome/policy')()
 const WelcomeAboutLazyRouteImport = createFileRoute('/_welcome/about')()
-const AuthAuthLazyRouteImport = createFileRoute('/_auth/auth')()
 const MainSSharedThreadIdLazyRouteImport = createFileRoute(
   '/_main/s/$sharedThreadId',
 )()
@@ -108,11 +108,6 @@ const WelcomeAboutLazyRoute = WelcomeAboutLazyRouteImport.update({
 } as any).lazy(() =>
   import('./routes/_welcome/about.lazy').then((d) => d.Route),
 )
-const AuthAuthLazyRoute = AuthAuthLazyRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => AuthRoute,
-} as any).lazy(() => import('./routes/_auth/auth.lazy').then((d) => d.Route))
 const SettingsUsageRoute = SettingsUsageRouteImport.update({
   id: '/usage',
   path: '/usage',
@@ -163,6 +158,11 @@ const AuthedClientOnlyRoute = AuthedClientOnlyRouteImport.update({
   path: '/client-only',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthAuthRoute = AuthAuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => AuthRoute,
+} as any)
 const MainDocIndexRoute = MainDocIndexRouteImport.update({
   id: '/doc/',
   path: '/doc/',
@@ -210,6 +210,7 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 export interface FileRoutesByFullPath {
   '/todos': typeof TodosRoute
   '/settings': typeof SettingsRouteLazyRouteWithChildren
+  '/auth': typeof AuthAuthRoute
   '/client-only': typeof AuthedClientOnlyRouteWithChildren
   '/server': typeof AuthedServerRoute
   '/settings/ai-options': typeof SettingsAiOptionsRoute
@@ -220,7 +221,6 @@ export interface FileRoutesByFullPath {
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/providers': typeof SettingsProvidersRoute
   '/settings/usage': typeof SettingsUsageRoute
-  '/auth': typeof AuthAuthLazyRoute
   '/about': typeof WelcomeAboutLazyRoute
   '/policy': typeof WelcomePolicyLazyRoute
   '/pricing': typeof WelcomePricingLazyRoute
@@ -235,6 +235,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/todos': typeof TodosRoute
   '/settings': typeof SettingsRouteLazyRouteWithChildren
+  '/auth': typeof AuthAuthRoute
   '/server': typeof AuthedServerRoute
   '/settings/ai-options': typeof SettingsAiOptionsRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
@@ -244,7 +245,6 @@ export interface FileRoutesByTo {
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/providers': typeof SettingsProvidersRoute
   '/settings/usage': typeof SettingsUsageRoute
-  '/auth': typeof AuthAuthLazyRoute
   '/about': typeof WelcomeAboutLazyRoute
   '/policy': typeof WelcomePolicyLazyRoute
   '/pricing': typeof WelcomePricingLazyRoute
@@ -264,6 +264,7 @@ export interface FileRoutesById {
   '/_welcome': typeof WelcomeRouteWithChildren
   '/todos': typeof TodosRoute
   '/settings': typeof SettingsRouteLazyRouteWithChildren
+  '/_auth/auth': typeof AuthAuthRoute
   '/_authed/client-only': typeof AuthedClientOnlyRouteWithChildren
   '/_authed/server': typeof AuthedServerRoute
   '/settings/ai-options': typeof SettingsAiOptionsRoute
@@ -274,7 +275,6 @@ export interface FileRoutesById {
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/providers': typeof SettingsProvidersRoute
   '/settings/usage': typeof SettingsUsageRoute
-  '/_auth/auth': typeof AuthAuthLazyRoute
   '/_welcome/about': typeof WelcomeAboutLazyRoute
   '/_welcome/policy': typeof WelcomePolicyLazyRoute
   '/_welcome/pricing': typeof WelcomePricingLazyRoute
@@ -291,6 +291,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/todos'
     | '/settings'
+    | '/auth'
     | '/client-only'
     | '/server'
     | '/settings/ai-options'
@@ -301,7 +302,6 @@ export interface FileRouteTypes {
     | '/settings/profile'
     | '/settings/providers'
     | '/settings/usage'
-    | '/auth'
     | '/about'
     | '/policy'
     | '/pricing'
@@ -316,6 +316,7 @@ export interface FileRouteTypes {
   to:
     | '/todos'
     | '/settings'
+    | '/auth'
     | '/server'
     | '/settings/ai-options'
     | '/settings/appearance'
@@ -325,7 +326,6 @@ export interface FileRouteTypes {
     | '/settings/profile'
     | '/settings/providers'
     | '/settings/usage'
-    | '/auth'
     | '/about'
     | '/policy'
     | '/pricing'
@@ -344,6 +344,7 @@ export interface FileRouteTypes {
     | '/_welcome'
     | '/todos'
     | '/settings'
+    | '/_auth/auth'
     | '/_authed/client-only'
     | '/_authed/server'
     | '/settings/ai-options'
@@ -354,7 +355,6 @@ export interface FileRouteTypes {
     | '/settings/profile'
     | '/settings/providers'
     | '/settings/usage'
-    | '/_auth/auth'
     | '/_welcome/about'
     | '/_welcome/policy'
     | '/_welcome/pricing'
@@ -484,13 +484,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WelcomeAboutLazyRouteImport
       parentRoute: typeof WelcomeRoute
     }
-    '/_auth/auth': {
-      id: '/_auth/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthAuthLazyRouteImport
-      parentRoute: typeof AuthRoute
-    }
     '/settings/usage': {
       id: '/settings/usage'
       path: '/usage'
@@ -561,6 +554,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedClientOnlyRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_auth/auth': {
+      id: '/_auth/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthAuthRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_main/doc/': {
       id: '/_main/doc/'
       path: '/doc'
@@ -625,11 +625,11 @@ declare module '@tanstack/react-start/server' {
 }
 
 interface AuthRouteChildren {
-  AuthAuthLazyRoute: typeof AuthAuthLazyRoute
+  AuthAuthRoute: typeof AuthAuthRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
-  AuthAuthLazyRoute: AuthAuthLazyRoute,
+  AuthAuthRoute: AuthAuthRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)

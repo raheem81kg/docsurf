@@ -229,7 +229,7 @@ export function UsageDashboard({ className }: UsageDashboardProps) {
                               modelChartConfig[name as string]?.label || name,
                            ]}
                         />
-                        {modelIds.map((modelId) => (
+                        {modelIds.map((modelId: string) => (
                            <Bar key={modelId} dataKey={modelId} stackId="models" fill={modelChartConfig[modelId]?.color} />
                         ))}
                      </BarChart>

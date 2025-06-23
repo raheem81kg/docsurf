@@ -7,7 +7,7 @@ import { getUserIdentity } from "../lib/identity";
 import { type CoreProvider, CoreProviders, MODELS_SHARED, createProvider } from "../lib/models";
 
 export const getModel = async (ctx: ActionCtx, modelId: string) => {
-   const user = await getUserIdentity(ctx.auth, { allowAnons: false });
+   const user = await getUserIdentity(ctx, { allowAnons: false });
    if ("error" in user) throw new ChatError("unauthorized:chat");
 
    const registry = await ctx.runQuery(internal.settings.getUserRegistryInternal, {

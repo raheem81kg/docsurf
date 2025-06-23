@@ -32,9 +32,9 @@ export const SignupMessagePrompt = () => {
                   <Logo />
                </div>
                <h1 className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text font-bold text-4xl text-transparent tracking-tight">
-                  intern3.chat
+                  Docsurf
                </h1>
-               <p className="mt-1 font-medium text-muted-foreground text-sm italic">built for interns, by interns</p>
+               <p className="mt-1 font-medium text-muted-foreground text-sm italic">built for students, by students</p>
             </motion.div>
          </div>
 

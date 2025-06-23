@@ -39,7 +39,7 @@ import {
    type PromptInputRef,
 } from "./prompt-kit/prompt-input";
 import { ModelSelector } from "./model-selector";
-import { useSession, useToken } from "@/hooks/auth-hooks";
+import { useSession, useToken, useVerifyToken } from "@/hooks/auth-hooks";
 
 interface ExtendedUploadedFile extends UploadedFile {
    file?: File;
@@ -167,6 +167,9 @@ export function MultimodalInput({
    const { uploadedFiles, addUploadedFile, removeUploadedFile, uploading, setUploading } = useChatStore();
    const { chatWidthState } = useChatWidthStore();
 
+   const performSubmitAction = useVerifyToken(token, "You must be logged in to send a message.");
+   const performUploadAction = useVerifyToken(token, "You must be logged in to upload files.");
+
    const isLoading = status === "streaming";
    const uploadInputRef = useRef<HTMLInputElement>(null);
    const promptInputRef = useRef<PromptInputRef>(null);
@@ -234,17 +237,19 @@ export function MultimodalInput({
    }, [modelSupportsFunctionCalling, enabledTools, setEnabledTools]);
 
    const handleSubmit = async () => {
-      const inputValue = promptInputRef.current?.getValue() || "";
+      performSubmitAction(() => {
+         const inputValue = promptInputRef.current?.getValue() || "";
 
-      if (!inputValue.trim()) {
-         promptInputRef.current?.focus();
-         return;
-      }
+         if (!inputValue.trim()) {
+            promptInputRef.current?.focus();
+            return;
+         }
 
-      promptInputRef.current?.clear();
-      localStorage.removeItem("user-input");
-      setInputValue(""); // Update our state too
-      onSubmit(inputValue, uploadedFiles);
+         promptInputRef.current?.clear();
+         localStorage.removeItem("user-input");
+         setInputValue(""); // Update our state too
+         onSubmit(inputValue, uploadedFiles);
+      });
    };
 
    // Check if input is empty for mic button display
@@ -303,7 +308,7 @@ export function MultimodalInput({
          formData.append("file", file);
          formData.append("fileName", file.name);
 
-         const response = await fetch(`${env.VITE_CONVEX_URL}/upload`, {
+         const response = await fetch(`${env.VITE_CONVEX_SITE_URL}/upload`, {
             method: "POST",
             body: formData,
             headers: {
@@ -322,89 +327,91 @@ export function MultimodalInput({
             file,
          };
       },
-      [token]
+      [session?.session?.token]
    );
 
    const handleFileUpload = useCallback(
       async (filesToUpload: File[]) => {
-         if (filesToUpload.length === 0) return;
+         await performUploadAction(async () => {
+            if (filesToUpload.length === 0) return;
 
-         // Validate files before uploading
-         const validFiles: File[] = [];
-         const errors: string[] = [];
+            // Validate files before uploading
+            const validFiles: File[] = [];
+            const errors: string[] = [];
 
-         for (const file of filesToUpload) {
-            // Check file size
-            if (file.size > MAX_FILE_SIZE) {
-               errors.push(`${file.name}: File size exceeds 5MB limit`);
-               continue;
-            }
-
-            // Check if file type is supported
-            if (!isSupportedFile(file.name, file.type)) {
-               errors.push(`${file.name}: Unsupported file type`);
-               continue;
-            }
-
-            const fileTypeInfo = getFileTypeInfo(file.name, file.type);
-
-            // If file is an image but model doesn't support vision, reject it
-            if (fileTypeInfo.isImage && !modelSupportsVision) {
-               errors.push(`${file.name}: Current model doesn't support image files`);
-               continue;
-            }
-
-            // For text files, check token count
-            if (fileTypeInfo.isText && !fileTypeInfo.isImage) {
-               try {
-                  const content = await readFileContent(file);
-                  const tokenCount = estimateTokenCount(content);
-                  if (tokenCount > MAX_TOKENS_PER_FILE) {
-                     errors.push(`${file.name}: File exceeds ${MAX_TOKENS_PER_FILE.toLocaleString()} token limit`);
-                     continue;
-                  }
-               } catch (error) {
-                  errors.push(`${file.name}: Error reading file content`);
+            for (const file of filesToUpload) {
+               // Check file size
+               if (file.size > MAX_FILE_SIZE) {
+                  errors.push(`${file.name}: File size exceeds 5MB limit`);
                   continue;
                }
-            }
 
-            validFiles.push(file);
-         }
-
-         // Show validation errors
-         if (errors.length > 0) {
-            toast.error(`File validation failed:\n${errors.join("\n")}`);
-            if (validFiles.length === 0) return;
-         }
-
-         setUploading(true);
-         try {
-            const uploadPromises = validFiles.map((file) => uploadFile(file));
-            const uploadedResults = await Promise.all(uploadPromises);
-
-            for (const result of uploadedResults) {
-               addUploadedFile(result);
-
-               if (result.file) {
-                  const content = await readFileContent(result.file);
-                  setFileContents((prev) => ({
-                     ...prev,
-                     [result.key]: content,
-                  }));
+               // Check if file type is supported
+               if (!isSupportedFile(file.name, file.type)) {
+                  errors.push(`${file.name}: Unsupported file type`);
+                  continue;
                }
+
+               const fileTypeInfo = getFileTypeInfo(file.name, file.type);
+
+               // If file is an image but model doesn't support vision, reject it
+               if (fileTypeInfo.isImage && !modelSupportsVision) {
+                  errors.push(`${file.name}: Current model doesn't support image files`);
+                  continue;
+               }
+
+               // For text files, check token count
+               if (fileTypeInfo.isText && !fileTypeInfo.isImage) {
+                  try {
+                     const content = await readFileContent(file);
+                     const tokenCount = estimateTokenCount(content);
+                     if (tokenCount > MAX_TOKENS_PER_FILE) {
+                        errors.push(`${file.name}: File exceeds ${MAX_TOKENS_PER_FILE.toLocaleString()} token limit`);
+                        continue;
+                     }
+                  } catch (error) {
+                     errors.push(`${file.name}: Error reading file content`);
+                     continue;
+                  }
+               }
+
+               validFiles.push(file);
             }
 
-            if (uploadInputRef.current) {
-               uploadInputRef.current.value = "";
+            // Show validation errors
+            if (errors.length > 0) {
+               toast.error(`File validation failed:\n${errors.join("\n")}`);
+               if (validFiles.length === 0) return;
             }
-         } catch (error) {
-            toast.error(error instanceof Error ? error.message : "Upload failed");
-         } finally {
-            setUploading(false);
-         }
+
+            setUploading(true);
+            try {
+               const uploadPromises = validFiles.map((file) => uploadFile(file));
+               const uploadedResults = await Promise.all(uploadPromises);
+
+               for (const result of uploadedResults) {
+                  addUploadedFile(result);
+
+                  if (result.file) {
+                     const content = await readFileContent(result.file);
+                     setFileContents((prev) => ({
+                        ...prev,
+                        [result.key]: content,
+                     }));
+                  }
+               }
+
+               if (uploadInputRef.current) {
+                  uploadInputRef.current.value = "";
+               }
+            } catch (error) {
+               toast.error(error instanceof Error ? error.message : "Upload failed");
+            } finally {
+               setUploading(false);
+            }
+         });
       },
-      [uploadFile, addUploadedFile, setUploading, readFileContent, modelSupportsVision]
+      [uploadFile, addUploadedFile, setUploading, readFileContent, modelSupportsVision, performUploadAction]
    );
 
    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -727,7 +734,7 @@ export function MultimodalInput({
                }
             }}
          >
-            <DialogContent className="md:!max-w-[min(90vw,60rem)] max-h-[90dvh] max-w-full">
+            <DialogContent className="md:!max-w-[min(90vw,60rem)] max-h-[70dvh] max-w-full">
                {dialogFile && (
                   <>
                      <DialogHeader>

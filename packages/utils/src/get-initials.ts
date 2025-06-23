@@ -1,20 +1,18 @@
 /**
- * Gets the first two initials from a name
- * @param name - The full name to extract initials from
- * @returns The first two initials in uppercase
+ * Gets initials from a name, using the first character of the first and last parts.
+ * e.g., "John Fitzgerald Doe" becomes "JD". A single name like "John" becomes "J".
+ *
+ * @param name The full name to extract initials from. Can be null or contain extra spacing.
+ * @returns The resulting initials in uppercase. Returns an empty string if the name is empty.
  */
 export function getInitials(name: string): string {
-   if (!name) return "";
+   if (!name?.trim()) {
+      return "";
+   }
 
-   // Split the name by spaces and filter out empty strings
-   const nameParts = name.split(" ").filter((part) => part.length > 0);
+   const parts = name.trim().split(/\s+/);
+   const firstInitial = parts[0]?.[0] ?? "";
+   const lastInitial = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? "") : "";
 
-   if (nameParts.length === 0) return "";
-   if (nameParts.length === 1) return (nameParts[0]?.charAt(0) || "").toUpperCase();
-
-   // Get the first letter of the first and last parts
-   const firstLetter = nameParts[0]?.charAt(0) || "";
-   const lastLetter = nameParts[nameParts.length - 1]?.charAt(0) || "";
-
-   return (firstLetter + lastLetter).toUpperCase();
+   return `${firstInitial}${lastInitial}`.toUpperCase();
 }

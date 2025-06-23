@@ -56,6 +56,7 @@ import type * as schema_streams from "../schema/streams.js";
 import type * as schema_thread from "../schema/thread.js";
 import type * as schema_usage from "../schema/usage.js";
 import type * as settings from "../settings.js";
+import type * as speech_to_text from "../speech_to_text.js";
 import type * as streams from "../streams.js";
 import type * as subscriptions from "../subscriptions.js";
 import type * as threads from "../threads.js";
@@ -125,6 +126,7 @@ declare const fullApi: ApiFromModules<{
   "schema/thread": typeof schema_thread;
   "schema/usage": typeof schema_usage;
   settings: typeof settings;
+  speech_to_text: typeof speech_to_text;
   streams: typeof streams;
   subscriptions: typeof subscriptions;
   threads: typeof threads;

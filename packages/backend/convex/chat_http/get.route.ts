@@ -22,7 +22,7 @@ export const chatGET = httpAction(async (ctx, req) => {
    const threadId = searchParams.get("chatId");
    if (!threadId) return new ChatError("bad_request:api").toResponse();
 
-   const session = await getUserIdentity(ctx.auth, { allowAnons: false });
+   const session = await getUserIdentity(ctx, { allowAnons: false });
 
    if ("error" in session) return new ChatError("unauthorized:chat").toResponse();
 

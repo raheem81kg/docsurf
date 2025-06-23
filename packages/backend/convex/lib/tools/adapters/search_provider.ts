@@ -28,17 +28,17 @@ export class SearchProvider {
             } as FirecrawlSearchConfig);
             break;
          }
-         case "brave": {
-            const braveApiKey = apiKey || process.env.BRAVE_API_KEY;
-            if (!braveApiKey) {
-               throw new Error("Brave API key is not set");
-            }
-            this.adapter = new BraveSearchAdapter({
-               apiKey: braveApiKey,
-               ...config,
-            } as BraveSearchConfig);
-            break;
-         }
+         // case "brave": {
+         //    const braveApiKey = apiKey || process.env.BRAVE_API_KEY;
+         //    if (!braveApiKey) {
+         //       throw new Error("Brave API key is not set");
+         //    }
+         //    this.adapter = new BraveSearchAdapter({
+         //       apiKey: braveApiKey,
+         //       ...config,
+         //    } as BraveSearchConfig);
+         //    break;
+         // }
          case "tavily": {
             const tavilyApiKey = apiKey || process.env.TAVILY_API_KEY;
             if (!tavilyApiKey) {
@@ -50,17 +50,17 @@ export class SearchProvider {
             } as TavilySearchConfig);
             break;
          }
-         case "serper": {
-            const serperApiKey = apiKey || process.env.SERPER_API_KEY;
-            if (!serperApiKey) {
-               throw new Error("Serper API key is not set");
-            }
-            this.adapter = new SerperSearchAdapter({
-               apiKey: serperApiKey,
-               ...config,
-            } as SerperSearchConfig);
-            break;
-         }
+         // case "serper": {
+         //    const serperApiKey = apiKey || process.env.SERPER_API_KEY;
+         //    if (!serperApiKey) {
+         //       throw new Error("Serper API key is not set");
+         //    }
+         //    this.adapter = new SerperSearchAdapter({
+         //       apiKey: serperApiKey,
+         //       ...config,
+         //    } as SerperSearchConfig);
+         //    break;
+         // }
          default:
             throw new Error(`Unsupported search provider: ${provider}`);
       }

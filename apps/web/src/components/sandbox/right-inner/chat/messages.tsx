@@ -76,7 +76,7 @@ const FileAttachment = memo(
 
          return (
             <img
-               src={`${env.VITE_CONVEX_URL}/r2?key=${part.data}`}
+               src={`${env.VITE_CONVEX_SITE_URL}/r2?key=${part.data}`}
                alt={fileName}
                className="w-full max-w-md cursor-pointer rounded-lg object-contain transition-opacity hover:opacity-90"
                onClick={handleInteraction}
@@ -276,7 +276,7 @@ export function Messages({
          <div className="max-h-full overflow-auto">
             {isImage && (
                <img
-                  src={`${env.VITE_CONVEX_URL}/r2?key=${previewFile.data}`}
+                  src={`${env.VITE_CONVEX_SITE_URL}/r2?key=${previewFile.data}`}
                   alt={fileName}
                   className="h-auto w-full rounded object-contain"
                   onError={(e) => {
@@ -290,7 +290,7 @@ export function Messages({
 
             {(isText || isPdf) && (
                <iframe
-                  src={`${env.VITE_CONVEX_URL}/r2?key=${previewFile.data}`}
+                  src={`${env.VITE_CONVEX_SITE_URL}/r2?key=${previewFile.data}`}
                   className="h-[69dvh] w-full rounded border-0"
                   title={fileName}
                />
@@ -317,7 +317,7 @@ export function Messages({
 
    return (
       <>
-         <div className="min-h-[90dvh] overflow-y-auto p-4 pt-0" ref={scrollRef}>
+         <div className="min-h-[70dvh] overflow-y-auto p-4 pt-0" ref={scrollRef}>
             <div ref={contentRef} className={cn("mx-auto space-y-3 pb-16", getChatWidthClass(chatWidthState.chatWidth))}>
                {messages.map((message) => (
                   <div
@@ -416,7 +416,7 @@ export function Messages({
                }
             }}
          >
-            <DialogContent className="md:!max-w-[min(90vw,60rem)] max-h-[90dvh]">
+            <DialogContent className="md:!max-w-[min(90vw,60rem)] max-h-[70dvh]">
                {previewFile && (
                   <>
                      <DialogHeader>

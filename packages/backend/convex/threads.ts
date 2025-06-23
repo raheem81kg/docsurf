@@ -185,17 +185,17 @@ export const createThreadOrInsertMessages = internalMutation({
 // New query to fetch all messages for a thread (public)
 export const getThreadMessages = query({
    args: { threadId: v.id("threads") },
-   handler: async ({ db, auth }, { threadId }) => {
-      const user = await getUserIdentity(auth, {
+   handler: async (ctx, { threadId }) => {
+      const user = await getUserIdentity(ctx, {
          allowAnons: true,
       });
 
       if ("error" in user) return { error: user.error };
 
-      const thread = await db.get(threadId);
+      const thread = await ctx.db.get(threadId);
       if (!thread || thread.authorId !== user.id) return { error: "Unauthorized" };
 
-      const messages = await db
+      const messages = await ctx.db
          .query("messages")
          .withIndex("byThreadId", (q) => q.eq("threadId", threadId))
          .collect();
@@ -210,8 +210,8 @@ export const searchUserThreads = query({
       query: v.string(),
       paginationOpts: paginationOptsValidator,
    },
-   handler: async ({ db, auth }, { query, paginationOpts }) => {
-      const user = await getUserIdentity(auth, {
+   handler: async (ctx, { query, paginationOpts }) => {
+      const user = await getUserIdentity(ctx, {
          allowAnons: true,
       });
 
@@ -225,7 +225,7 @@ export const searchUserThreads = query({
 
       if (!query.trim()) {
          // If no search query, return recent threads with pagination
-         return await db
+         return await ctx.db
             .query("threads")
             .withIndex("byAuthor", (q) => q.eq("authorId", user.id))
             .order("desc")
@@ -233,7 +233,7 @@ export const searchUserThreads = query({
       }
 
       // Use search index for text search
-      return await db
+      return await ctx.db
          .query("threads")
          .withSearchIndex("search_title", (q) => q.search("title", query.trim()).eq("authorId", user.id))
          .paginate(paginationOpts);
@@ -252,8 +252,8 @@ export const getUserThreadsPaginated = query({
       paginationOpts: paginationOptsValidator,
       includeInFolder: v.optional(v.boolean()),
    },
-   handler: async ({ db, auth }, { paginationOpts, includeInFolder }) => {
-      const user = await getUserIdentity(auth, {
+   handler: async (ctx, { paginationOpts, includeInFolder }) => {
+      const user = await getUserIdentity(ctx, {
          allowAnons: true,
       });
 
@@ -270,13 +270,13 @@ export const getUserThreadsPaginated = query({
       const isFirstPage = !paginationOpts.cursor;
 
       if (isFirstPage) {
-         const pinnedQuery = db
+         const pinnedQuery = ctx.db
             .query("threads")
             .withIndex("byAuthor", (q) => q.eq("authorId", user.id))
             .filter((q) => q.eq(q.field("pinned"), true))
             .order("desc");
 
-         const regularQuery = db
+         const regularQuery = ctx.db
             .query("threads")
             .withIndex("byAuthor", (q) => q.eq("authorId", user.id))
             .filter((q) => q.neq(q.field("pinned"), true))
@@ -307,7 +307,7 @@ export const getUserThreadsPaginated = query({
          };
       }
 
-      const baseQuery = db
+      const baseQuery = ctx.db
          .query("threads")
          .withIndex("byAuthor", (q) => q.eq("authorId", user.id))
          .filter((q) => q.neq(q.field("pinned"), true));
@@ -325,14 +325,14 @@ export const getUserThreadsPaginated = query({
 // Public version of getThreadById
 export const getThread = query({
    args: { threadId: v.id("threads") },
-   handler: async ({ db, auth }, { threadId }) => {
-      const user = await getUserIdentity(auth, {
+   handler: async (ctx, { threadId }) => {
+      const user = await getUserIdentity(ctx, {
          allowAnons: true,
       });
 
       if ("error" in user) return null;
 
-      const thread = await db.get(threadId);
+      const thread = await ctx.db.get(threadId);
       if (!thread || thread.authorId !== user.id) return null;
 
       return thread;
@@ -346,14 +346,14 @@ export const updateThreadStreamingState = internalMutation({
       streamStartedAt: v.optional(v.number()),
       currentStreamId: v.optional(v.string()),
    },
-   handler: async ({ db }, { threadId, isLive, streamStartedAt, currentStreamId }) => {
-      const thread = await db.get(threadId);
+   handler: async (ctx, { threadId, isLive, streamStartedAt, currentStreamId }) => {
+      const thread = await ctx.db.get(threadId);
       if (!thread) {
          console.error("[cvx][updateThreadStreamingState] Thread not found", threadId);
          return;
       }
 
-      await db.patch(threadId, {
+      await ctx.db.patch(threadId, {
          isLive,
          streamStartedAt: isLive ? streamStartedAt : undefined,
          currentStreamId: isLive ? currentStreamId : undefined,
@@ -367,8 +367,8 @@ export const updateThreadName = internalMutation({
       threadId: v.id("threads"),
       name: v.string(),
    },
-   handler: async ({ db }, { threadId, name }) => {
-      await db.patch(threadId, {
+   handler: async (ctx, { threadId, name }) => {
+      await ctx.db.patch(threadId, {
          title: name,
       });
    },
@@ -383,8 +383,8 @@ export const createSharedThread = internalMutation({
       messages: v.array(v.any()),
       includeAttachments: v.boolean(),
    },
-   handler: async ({ db }, { originalThreadId, authorId, title, messages, includeAttachments }) => {
-      const sharedThreadId = await db.insert("sharedThreads", {
+   handler: async (ctx, { originalThreadId, authorId, title, messages, includeAttachments }) => {
+      const sharedThreadId = await ctx.db.insert("sharedThreads", {
          originalThreadId,
          authorId,
          title,
@@ -399,8 +399,8 @@ export const createSharedThread = internalMutation({
 
 export const getSharedThread = query({
    args: { sharedThreadId: v.id("sharedThreads") },
-   handler: async ({ db }, { sharedThreadId }) => {
-      const sharedThread = await db.get(sharedThreadId);
+   handler: async (ctx, { sharedThreadId }) => {
+      const sharedThread = await ctx.db.get(sharedThreadId);
       if (!sharedThread) return null;
 
       return sharedThread;
@@ -414,7 +414,7 @@ export const shareThread = action({
       includeAttachments: v.optional(v.boolean()),
    },
    handler: async (ctx, { threadId, includeAttachments = false }) => {
-      const user = await getUserIdentity(ctx.auth, {
+      const user = await getUserIdentity(ctx, {
          allowAnons: true,
       });
 
@@ -459,7 +459,7 @@ export const shareThread = action({
 export const forkSharedThread = mutation({
    args: { sharedThreadId: v.id("sharedThreads") },
    handler: async (ctx, { sharedThreadId }) => {
-      const user = await getUserIdentity(ctx.auth, {
+      const user = await getUserIdentity(ctx, {
          allowAnons: true,
       });
 
@@ -498,7 +498,7 @@ export const forkSharedThread = mutation({
 export const togglePinThread = mutation({
    args: { threadId: v.id("threads") },
    handler: async (ctx, { threadId }) => {
-      const user = await getUserIdentity(ctx.auth, {
+      const user = await getUserIdentity(ctx, {
          allowAnons: false,
       });
 
@@ -518,7 +518,7 @@ export const togglePinThread = mutation({
 export const deleteThread = mutation({
    args: { threadId: v.id("threads") },
    handler: async (ctx, { threadId }) => {
-      const user = await getUserIdentity(ctx.auth, {
+      const user = await getUserIdentity(ctx, {
          allowAnons: false,
       });
 
@@ -540,7 +540,7 @@ export const renameThread = mutation({
       title: v.string(),
    },
    handler: async (ctx, { threadId, title }) => {
-      const user = await getUserIdentity(ctx.auth, {
+      const user = await getUserIdentity(ctx, {
          allowAnons: false,
       });
 
@@ -569,8 +569,8 @@ export const getThreadsByProject = query({
       projectId: v.optional(v.id("projects")),
       paginationOpts: paginationOptsValidator,
    },
-   handler: async ({ db, auth }, { projectId, paginationOpts }) => {
-      const user = await getUserIdentity(auth, { allowAnons: true });
+   handler: async (ctx, { projectId, paginationOpts }) => {
+      const user = await getUserIdentity(ctx, { allowAnons: true });
 
       if ("error" in user) {
          return {
@@ -582,7 +582,7 @@ export const getThreadsByProject = query({
 
       if (projectId) {
          // Get threads for specific project
-         return await db
+         return await ctx.db
             .query("threads")
             .withIndex("byAuthorAndProject", (q) => q.eq("authorId", user.id).eq("projectId", projectId))
             .order("desc")
@@ -590,7 +590,7 @@ export const getThreadsByProject = query({
       }
 
       // Get threads without project (General)
-      return await db
+      return await ctx.db
          .query("threads")
          .withIndex("byAuthor", (q) => q.eq("authorId", user.id))
          .filter((q) => q.eq(q.field("projectId"), undefined))
@@ -605,8 +605,8 @@ export const getUserThreadsPaginatedByProject = query({
       paginationOpts: paginationOptsValidator,
       projectId: v.optional(v.id("projects")),
    },
-   handler: async ({ db, auth }, { paginationOpts, projectId }) => {
-      const user = await getUserIdentity(auth, { allowAnons: true });
+   handler: async (ctx, { paginationOpts, projectId }) => {
+      const user = await getUserIdentity(ctx, { allowAnons: true });
 
       if ("error" in user) {
          return {
@@ -625,7 +625,7 @@ export const getUserThreadsPaginatedByProject = query({
 
          if (projectId) {
             // Get pinned threads for specific project
-            pinnedThreads = await db
+            pinnedThreads = await ctx.db
                .query("threads")
                .withIndex("byAuthorAndProject", (q) => q.eq("authorId", user.id).eq("projectId", projectId))
                .filter((q) => q.eq(q.field("pinned"), true))
@@ -633,7 +633,7 @@ export const getUserThreadsPaginatedByProject = query({
                .collect();
 
             // Get regular threads (non-pinned) for specific project
-            regularThreadsResult = await db
+            regularThreadsResult = await ctx.db
                .query("threads")
                .withIndex("byAuthorAndProject", (q) => q.eq("authorId", user.id).eq("projectId", projectId))
                .filter((q) => q.neq(q.field("pinned"), true))
@@ -641,7 +641,7 @@ export const getUserThreadsPaginatedByProject = query({
                .paginate(paginationOpts);
          } else {
             // Get pinned threads without project (General)
-            pinnedThreads = await db
+            pinnedThreads = await ctx.db
                .query("threads")
                .withIndex("byAuthor", (q) => q.eq("authorId", user.id))
                .filter((q) => q.and(q.eq(q.field("projectId"), undefined), q.eq(q.field("pinned"), true)))
@@ -649,7 +649,7 @@ export const getUserThreadsPaginatedByProject = query({
                .collect();
 
             // Get regular threads (non-pinned) without project
-            regularThreadsResult = await db
+            regularThreadsResult = await ctx.db
                .query("threads")
                .withIndex("byAuthor", (q) => q.eq("authorId", user.id))
                .filter((q) => q.and(q.eq(q.field("projectId"), undefined), q.neq(q.field("pinned"), true)))
@@ -679,7 +679,7 @@ export const getUserThreadsPaginatedByProject = query({
 
       // For subsequent pages, only get regular threads (no pinned)
       if (projectId) {
-         return await db
+         return await ctx.db
             .query("threads")
             .withIndex("byAuthorAndProject", (q) => q.eq("authorId", user.id).eq("projectId", projectId))
             .filter((q) => q.neq(q.field("pinned"), true))
@@ -687,7 +687,7 @@ export const getUserThreadsPaginatedByProject = query({
             .paginate(paginationOpts);
       }
 
-      return await db
+      return await ctx.db
          .query("threads")
          .withIndex("byAuthor", (q) => q.eq("authorId", user.id))
          .filter((q) => q.and(q.eq(q.field("projectId"), undefined), q.neq(q.field("pinned"), true)))

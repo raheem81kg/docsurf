@@ -2,7 +2,7 @@ import { api } from "@docsurf/backend/convex/_generated/api";
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 import { backendToUiMessages } from "@docsurf/backend/convex/lib/backend_to_ui_messages";
 import type { SharedThread, Thread } from "@docsurf/backend/convex/schema";
-import { useToken } from "@/hooks/auth-hooks";
+import { useVerifyToken, useToken, useSession } from "@/hooks/auth-hooks";
 import { useAutoResume } from "./use-auto-resume";
 import { env } from "@/env";
 import { useChatStore } from "../lib/chat-store";
@@ -24,10 +24,11 @@ export function useChatIntegration<IsShared extends boolean>({
    isShared?: IsShared;
    folderId?: Id<"projects">;
 }) {
-   const tokenData = useToken();
+   const { token } = useToken();
    const { selectedModel, enabledTools, selectedImageSize, reasoningEffort, getEffectiveMcpOverrides } = useModelStore();
    const { rerenderTrigger, shouldUpdateQuery, setShouldUpdateQuery, triggerRerender } = useChatStore();
    const seededNextId = useRef<string | null>(null);
+   const verifyToken = useVerifyToken(token);
 
    // For regular threads, use getThreadMessages
    const threadMessages = useConvexQuery(
@@ -64,41 +65,45 @@ export function useChatIntegration<IsShared extends boolean>({
       headers: isShared
          ? {}
          : {
-              authorization: `Bearer ${tokenData.token}`,
+              authorization: `Bearer ${token}`,
            },
       experimental_throttle: 50,
       experimental_prepareRequestBody(body) {
-         // Skip request preparation for shared threads since they're read-only
-         if (isShared) return null;
+         let requestBody = null;
+         verifyToken(() => {
+            // Skip request preparation for shared threads since they're read-only
+            if (isShared) return;
 
-         if (threadId) {
-            useChatStore.getState().setPendingStream(threadId, true);
-         }
-         const proposedNewAssistantId = nanoid();
-         seededNextId.current = proposedNewAssistantId;
+            if (threadId) {
+               useChatStore.getState().setPendingStream(threadId, true);
+            }
+            const proposedNewAssistantId = nanoid();
+            seededNextId.current = proposedNewAssistantId;
 
-         const messages = body.messages as Message[];
-         const message = messages[messages.length - 1];
+            const messages = body.messages as Message[];
+            const message = messages[messages.length - 1];
 
-         // Get effective MCP overrides (includes defaults for new chats)
-         const mcpOverrides = getEffectiveMcpOverrides(threadId);
+            // Get effective MCP overrides (includes defaults for new chats)
+            const mcpOverrides = getEffectiveMcpOverrides(threadId);
 
-         return {
-            ...body.requestBody,
-            id: threadId,
-            proposedNewAssistantId,
-            model: selectedModel,
-            message: {
-               parts: message?.parts,
-               role: message?.role,
-               messageId: message?.id,
-            },
-            enabledTools,
-            imageSize: selectedImageSize,
-            folderId,
-            reasoningEffort,
-            mcpOverrides,
-         };
+            requestBody = {
+               ...body.requestBody,
+               id: threadId,
+               proposedNewAssistantId,
+               model: selectedModel,
+               message: {
+                  parts: message?.parts,
+                  role: message?.role,
+                  messageId: message?.id,
+               },
+               enabledTools,
+               imageSize: selectedImageSize,
+               folderId,
+               reasoningEffort,
+               mcpOverrides,
+            };
+         });
+         return requestBody;
       },
       initialMessages,
       onFinish: () => {
@@ -107,7 +112,7 @@ export function useChatIntegration<IsShared extends boolean>({
             triggerRerender();
          }
       },
-      api: isShared ? undefined : `${env.VITE_CONVEX_URL}/chat`,
+      api: isShared ? undefined : `${env.VITE_CONVEX_SITE_URL}/chat`,
       generateId: () => {
          if (seededNextId.current) {
             const id = seededNextId.current;

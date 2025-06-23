@@ -5,6 +5,7 @@ import React from "react";
 import { useCookies } from "react-cookie";
 import { INNER_RIGHT_SIDEBAR_COOKIE_NAME, SIDEBAR_COOKIE_MAX_AGE } from "@/utils/constants";
 import { Chat } from "./chat/chat";
+import { useChatStore } from "./chat/lib/chat-store";
 
 export const InnerRightSidebar = ({
    ir_sidebar_state,
@@ -16,6 +17,9 @@ export const InnerRightSidebar = ({
    const { setOpen, setOpenMobile, open, openMobile, isMobile } = useSidebar();
    const [cookies, setCookie] = useCookies([INNER_RIGHT_SIDEBAR_COOKIE_NAME]);
    const set_ir_sidebar_state = useSandStateStore((s) => s.set_ir_sidebar_state);
+
+   // Get the current threadId from the chat store
+   const threadId = useChatStore((s) => s.threadId);
 
    // Define handleRailClick as a stable callback with useCallback
    const handleRailClick = useCallback(() => {
@@ -44,7 +48,7 @@ export const InnerRightSidebar = ({
       >
          <SidebarContent className="scrollbar-hidden p-0">
             <React.Suspense fallback={<Loading />}>
-               <Chat threadId={undefined} />
+               <Chat threadId={threadId} />
             </React.Suspense>
          </SidebarContent>
          <SidebarRail onToggle={handleRailClick} enableDrag sideForDrag="right" maxSidebarWidth={28} />

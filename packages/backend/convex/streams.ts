@@ -3,8 +3,8 @@ import { internalMutation, internalQuery } from "./_generated/server";
 
 export const getStreamsByThreadId = internalQuery({
    args: { threadId: v.id("threads") },
-   handler: async ({ db }, { threadId }) => {
-      return await db
+   handler: async ({ ...ctx }, { threadId }) => {
+      return await ctx.db
          .query("streams")
          .withIndex("byThreadId", (q) => q.eq("threadId", threadId))
          .collect();
@@ -13,7 +13,7 @@ export const getStreamsByThreadId = internalQuery({
 
 export const appendStreamId = internalMutation({
    args: { threadId: v.id("threads") },
-   handler: async ({ db }, { threadId }) => {
-      return await db.insert("streams", { threadId, createdAt: Date.now() });
+   handler: async ({ ...ctx }, { threadId }) => {
+      return await ctx.db.insert("streams", { threadId, createdAt: Date.now() });
    },
 });

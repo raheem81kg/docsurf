@@ -26,6 +26,7 @@ import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { authClient } from "@/lib/auth-client";
 import { useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface SignOutDialogProps extends React.ComponentPropsWithoutRef<typeof Dialog> {
    showTrigger?: boolean;
@@ -52,8 +53,18 @@ export function SignOutDialog({ showTrigger = true, children, scope = "local", o
 
    function onSignOut() {
       startSignOutTransition(async () => {
+         const queryClient = useQueryClient();
+         await queryClient.resetQueries({ queryKey: ["session"] });
+         await queryClient.resetQueries({ queryKey: ["token"] });
          await authClient.signOut();
          void navigate({ to: "/auth" });
+         const keys = Object.keys(localStorage);
+         for (const key of keys) {
+            if (key.includes("_CACHE")) {
+               localStorage.removeItem(key);
+            }
+         }
+
          props.onOpenChange?.(false);
          onSuccess?.();
       });

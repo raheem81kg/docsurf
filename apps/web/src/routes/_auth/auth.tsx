@@ -1,7 +1,7 @@
-import { redirect, createLazyFileRoute } from "@tanstack/react-router";
+import { redirect, createFileRoute } from "@tanstack/react-router";
 import { SignIn } from "@/components/auth/sign-in";
 
-export const Route = createLazyFileRoute("/_auth/auth")({
+export const Route = createFileRoute("/_auth/auth")({
    component: SignIn,
    beforeLoad: ({ context }) => {
       if (context.userId) {
