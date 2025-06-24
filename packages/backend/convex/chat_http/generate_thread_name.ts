@@ -57,6 +57,7 @@ export const generateThreadName = async (
 
    const result = await generateText({
       model,
+      temperature: 0.7,
       messages: [
          {
             role: "system",

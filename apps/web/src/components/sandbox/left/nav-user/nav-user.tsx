@@ -22,6 +22,7 @@ import { SparklesIcon, type SparklesIconHandle } from "@/components/assets/anima
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
+import { Link } from "@tanstack/react-router";
 
 /**
  * NavUser component for displaying the user's avatar, name, and dropdown menu in the sidebar.
@@ -139,9 +140,11 @@ export function NavUser() {
                </DropdownMenuGroup>
                <DropdownMenuSeparator />
                <DropdownMenuGroup>
-                  <DropdownMenuItem className="cursor-pointer group">
-                     <Settings className="size-3.5 text-text-default hover:text-text-emphasis" />
-                     <span className="text-[13px] text-text-default hover:text-text-emphasis">Settings</span>
+                  <DropdownMenuItem className="cursor-pointer group" asChild>
+                     <Link to="/settings">
+                        <Settings className="size-3.5 text-text-default hover:text-text-emphasis" />
+                        <span className="text-[13px] text-text-default hover:text-text-emphasis">Settings</span>
+                     </Link>
                   </DropdownMenuItem>
 
                   <SidebarThemeSwitchMenuItem />

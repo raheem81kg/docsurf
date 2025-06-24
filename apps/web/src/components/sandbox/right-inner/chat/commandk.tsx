@@ -18,16 +18,72 @@ import { useSession } from "@/hooks/auth-hooks";
 import { useChatStore } from "./lib/chat-store";
 import { DotsLoader } from "@docsurf/ui/components/loader";
 
-interface Thread {
-   _id: string;
-   title: string;
-   createdAt: number;
-   authorId: string;
-}
-
 interface CommandKProps {
    open?: boolean;
    onOpenChange?: (open: boolean) => void;
+}
+
+// Group threads by time periods for CommandK
+// Returns null if searching
+import type { Thread } from "./threads/types";
+
+type TimeGroup = {
+   name: string;
+   threads: Thread[];
+};
+
+function groupThreadsByDate(threads: Thread[], searchQuery: string): TimeGroup[] | null {
+   if (searchQuery) return null; // Don't group when searching
+
+   const now = new Date();
+   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+   const weekAgo = today - 7 * 24 * 60 * 60 * 1000;
+   const monthAgo = today - 30 * 24 * 60 * 60 * 1000;
+   const yearStart = new Date(now.getFullYear(), 0, 1).getTime();
+
+   const todayThreads: Thread[] = [];
+   const last7DaysThreads: Thread[] = [];
+   const last30DaysThreads: Thread[] = [];
+   const thisYearThreads: Thread[] = [];
+   const olderThreads: Record<number, Thread[]> = {};
+
+   threads.forEach((thread) => {
+      // If projectId exists, skip (for general chat grouping)
+      if ((thread as any).projectId) return;
+      const ts = (thread as any).updatedAt ?? thread.createdAt;
+      if (!ts) {
+         todayThreads.push(thread);
+         return;
+      }
+      if (ts >= today) {
+         todayThreads.push(thread);
+      } else if (ts >= weekAgo) {
+         last7DaysThreads.push(thread);
+      } else if (ts >= monthAgo) {
+         last30DaysThreads.push(thread);
+      } else if (ts >= yearStart) {
+         thisYearThreads.push(thread);
+      } else {
+         const year = new Date(ts).getFullYear();
+         if (!olderThreads[year]) olderThreads[year] = [];
+         olderThreads[year].push(thread);
+      }
+   });
+
+   // Sort threads in each group by updatedAt/createdAt DESC
+   const sortDesc = (a: Thread, b: Thread) => ((b as any).updatedAt ?? b.createdAt) - ((a as any).updatedAt ?? a.createdAt);
+
+   const result: TimeGroup[] = [];
+   if (todayThreads.length > 0) result.push({ name: "Today", threads: todayThreads.sort(sortDesc) });
+   if (last7DaysThreads.length > 0) result.push({ name: "Last 7 days", threads: last7DaysThreads.sort(sortDesc) });
+   if (last30DaysThreads.length > 0) result.push({ name: "Last 30 days", threads: last30DaysThreads.sort(sortDesc) });
+   if (thisYearThreads.length > 0) result.push({ name: "This year", threads: thisYearThreads.sort(sortDesc) });
+   Object.entries(olderThreads)
+      .sort(([a], [b]) => Number(b) - Number(a))
+      .forEach(([year, threads]) => {
+         result.push({ name: year, threads: threads.sort(sortDesc) });
+      });
+   return result;
 }
 
 export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps = {}) {
@@ -76,6 +132,9 @@ export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps =
       if (!searchResults || "error" in searchResults) return [];
       return searchResults.page || [];
    }, [searchResults]);
+
+   // Group threads by date unless searching
+   const groupedThreads = useMemo(() => groupThreadsByDate(threads, query), [threads, query]);
 
    const handleSelect = (threadId: string) => {
       setOpen(false);
@@ -159,27 +218,49 @@ export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps =
                ) : (
                   <>
                      <CommandEmpty>No chats found.</CommandEmpty>
-                     {threads.length > 0 && (
-                        <CommandGroup heading="Chats">
-                           {threads.map((thread: Thread) => (
-                              <CommandItem
-                                 key={thread._id}
-                                 value={thread._id}
-                                 onSelect={() => handleSelect(thread._id)}
-                                 className="h-9 hover:bg-accent/80"
-                              >
-                                 <div className="flex w-full items-center justify-between gap-4">
-                                    <div className="flex min-w-0 flex-1 items-center gap-2">
-                                       <div className="truncate font-medium">{thread.title}</div>
-                                    </div>
-                                    <div className="flex-shrink-0 text-muted-foreground text-xs">
-                                       {formatRelativeTime(thread.createdAt)}
-                                    </div>
-                                 </div>
-                              </CommandItem>
-                           ))}
-                        </CommandGroup>
-                     )}
+                     {groupedThreads
+                        ? groupedThreads.map((group) => (
+                             <CommandGroup key={group.name} heading={group.name}>
+                                {group.threads.map((thread) => (
+                                   <CommandItem
+                                      key={thread._id}
+                                      value={thread._id}
+                                      onSelect={() => handleSelect(thread._id)}
+                                      className="h-9 hover:bg-accent/80"
+                                   >
+                                      <div className="flex w-full items-center justify-between gap-4">
+                                         <div className="flex min-w-0 flex-1 items-center gap-2">
+                                            <div className="truncate font-medium">{thread.title}</div>
+                                         </div>
+                                         <div className="flex-shrink-0 text-muted-foreground text-xs">
+                                            {formatRelativeTime((thread as any).updatedAt ?? thread.createdAt)}
+                                         </div>
+                                      </div>
+                                   </CommandItem>
+                                ))}
+                             </CommandGroup>
+                          ))
+                        : threads.length > 0 && (
+                             <CommandGroup heading="Chats">
+                                {threads.map((thread: Thread) => (
+                                   <CommandItem
+                                      key={thread._id}
+                                      value={thread._id}
+                                      onSelect={() => handleSelect(thread._id)}
+                                      className="h-9 hover:bg-accent/80"
+                                   >
+                                      <div className="flex w-full items-center justify-between gap-4">
+                                         <div className="flex min-w-0 flex-1 items-center gap-2">
+                                            <div className="truncate font-medium">{thread.title}</div>
+                                         </div>
+                                         <div className="flex-shrink-0 text-muted-foreground text-xs">
+                                            {formatRelativeTime((thread as any).updatedAt ?? thread.createdAt)}
+                                         </div>
+                                      </div>
+                                   </CommandItem>
+                                ))}
+                             </CommandGroup>
+                          )}
                   </>
                )}
             </CommandList>

@@ -9,6 +9,7 @@
  */
 
 import type * as aggregates from "../aggregates.js";
+import type * as analytics from "../analytics.js";
 import type * as attachments from "../attachments.js";
 import type * as auth from "../auth.js";
 import type * as chat_http_generate_thread_name from "../chat_http/generate_thread_name.js";
@@ -79,6 +80,7 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   aggregates: typeof aggregates;
+  analytics: typeof analytics;
   attachments: typeof attachments;
   auth: typeof auth;
   "chat_http/generate_thread_name": typeof chat_http_generate_thread_name;

@@ -74,12 +74,13 @@ export function useChatActions({ threadId, folderId }: { threadId: string | unde
          setTargetMode("normal");
          reload({
             body: {
+               id: threadId,
                targetMode: "retry",
                targetFromMessageId: message.id,
             },
          });
       },
-      [messages, setMessages, reload]
+      [messages, setMessages, reload, threadId]
    );
 
    const handleEditAndRetry = useCallback(
@@ -105,12 +106,13 @@ export function useChatActions({ threadId, folderId }: { threadId: string | unde
          setTargetMode("normal");
          reload({
             body: {
+               id: threadId,
                targetMode: "edit",
                targetFromMessageId: messageId,
             },
          });
       },
-      [messages, setMessages, setTargetFromMessageId, reload]
+      [messages, setMessages, setTargetFromMessageId, reload, threadId]
    );
 
    return {

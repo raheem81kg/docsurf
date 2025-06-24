@@ -132,29 +132,12 @@ export const decodeJwt = (token: string) => {
    }
 };
 
-export function useToken() {
-   // Try to get token from router context (SSR-aware)
+/**
+ * Returns the current router context token. This token is ephemeral and must be used immediately (e.g., directly in a Bearer header).
+ * Do NOT store or cache this value for later use.
+ */
+export function useEphemeralToken() {
    const context = useRouteContext({ from: RootRoute.id });
-   const contextToken = context?.token;
-
-   // Fallback to session token if context token is not available
-   const { data: sessionData, refetch, ...rest } = useSession();
-
-   // Prefer context token, fallback to session token
-   const token = contextToken;
-   console.log("token from useToken", token);
-
-   useEffect(() => {
-      if (!sessionData?.session?.expiresAt) return;
-      const expiresAt = new Date(sessionData.session.expiresAt).getTime();
-      const expiresIn = expiresAt - Date.now();
-
-      // Refetch 60 seconds before expiration
-      if (expiresIn > 60000) {
-         const timeout = setTimeout(() => refetch(), expiresIn - 60000);
-         return () => clearTimeout(timeout);
-      }
-   }, [sessionData, refetch]);
-
-   return { ...rest, data: sessionData, token };
+   const token = context?.token ?? null;
+   return { token };
 }

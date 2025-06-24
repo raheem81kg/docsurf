@@ -19,7 +19,6 @@ import { Label } from "@docsurf/ui/components/label";
 import { Switch } from "@docsurf/ui/components/switch";
 import { api } from "@docsurf/backend/convex/_generated/api";
 
-import Logo from "@docsurf/backend/logo.svg";
 import { useConvexQuery } from "@convex-dev/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
@@ -34,6 +33,7 @@ import {
 } from "@/components/sandbox/right-inner/chat/lib/models-providers-shared";
 import { useSession } from "@/hooks/auth-hooks";
 import { BYOKSearchProviderCard } from "@/components/sandbox/right-inner/chat/settings/search-provider-card";
+import { Logo } from "@/components/sandbox/right-inner/chat/logo";
 
 export const Route = createFileRoute("/settings/providers")({
    component: ProvidersSettings,

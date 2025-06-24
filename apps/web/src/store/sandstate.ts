@@ -1,4 +1,24 @@
 import { create } from "zustand";
+import { LEFT_SIDEBAR_COOKIE_NAME, RIGHT_SIDEBAR_COOKIE_NAME, INNER_RIGHT_SIDEBAR_COOKIE_NAME } from "@/utils/constants";
+
+// Helper to get cookie value
+const getCookie = (name: string): string | null => {
+   if (typeof document === "undefined") return null;
+   const value = `; ${document.cookie}`;
+   const parts = value.split(`; ${name}=`);
+   if (parts.length === 2) {
+      return parts.pop()?.split(";").shift() || null;
+   }
+   return null;
+};
+
+const leftSidebarCookie = getCookie(LEFT_SIDEBAR_COOKIE_NAME);
+const rightSidebarCookie = getCookie(RIGHT_SIDEBAR_COOKIE_NAME);
+const innerRightSidebarCookie = getCookie(INNER_RIGHT_SIDEBAR_COOKIE_NAME);
+
+const initialLeftSidebarOpen = leftSidebarCookie === null ? true : leftSidebarCookie === "true";
+const initialRightSidebarOpen = rightSidebarCookie === "true";
+const initialInnerRightSidebarOpen = innerRightSidebarCookie === "true";
 
 interface SandStateProps {
    l_sidebar_state: boolean;
@@ -14,10 +34,10 @@ interface SandStateProps {
 }
 
 export const useSandStateStore = create<SandStateProps>()((set) => ({
-   // Default values
-   l_sidebar_state: true, // Left sidebar defaults to true
-   r_sidebar_state: false,
-   ir_sidebar_state: false,
+   // Synchronously initialized values
+   l_sidebar_state: initialLeftSidebarOpen,
+   r_sidebar_state: initialRightSidebarOpen,
+   ir_sidebar_state: initialInnerRightSidebarOpen,
 
    toggle_l_sidebar: () =>
       set((state) => ({

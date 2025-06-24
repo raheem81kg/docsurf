@@ -105,9 +105,10 @@ const ChatContent = ({ threadId: routeThreadId, folderId }: ChatProps) => {
    }
 
    return (
-      <div className="relative flex h-full flex-col">
-         <ChatHeader />
+      <div className="relative flex flex-col h-full overflow-hidden">
+         <ChatHeader className="flex-none" />
          <Messages
+            className="flex-1"
             messages={messages}
             onRetry={handleRetry}
             onEditAndRetry={handleEditAndRetry}
@@ -156,7 +157,7 @@ const ChatContent = ({ threadId: routeThreadId, folderId }: ChatProps) => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
                   transition={{ duration: 0.2, ease: "easeInOut" }}
-                  className="-bottom-[3.875rem] md:-bottom-10 absolute inset-x-0 z-[10] flex flex-col items-center justify-center gap-2"
+                  className="bottom-1 flex-none md:bottom-1 absolute inset-x-0 z-[10] flex flex-col items-center justify-center gap-2"
                >
                   <StickToBottomButton isAtBottom={isAtBottom} scrollToBottom={scrollToBottom} />
                   <MultimodalInput onSubmit={handleInputSubmitWithScroll} status={status} />

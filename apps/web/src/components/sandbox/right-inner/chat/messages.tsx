@@ -224,6 +224,7 @@ export function Messages({
    status,
    contentRef,
    scrollRef,
+   className,
 }: {
    messages: UIMessage[];
    onRetry?: (message: UIMessage) => void;
@@ -231,6 +232,7 @@ export function Messages({
    status: ReturnType<typeof useChatIntegration>["status"];
    contentRef: ReturnType<typeof useStickToBottom>["contentRef"];
    scrollRef: ReturnType<typeof useStickToBottom>["scrollRef"];
+   className?: string;
 }) {
    const { setTargetFromMessageId, targetFromMessageId, setTargetMode, targetMode } = useChatStore();
    const { chatWidthState } = useChatWidthStore();
@@ -317,7 +319,7 @@ export function Messages({
 
    return (
       <>
-         <div className="min-h-[70dvh] h-full overflow-y-auto p-4 pt-0" ref={scrollRef}>
+         <div className={cn("overflow-y-auto p-4 pt-0", className)} ref={scrollRef}>
             <div ref={contentRef} className={cn("mx-auto space-y-3 pb-16", getChatWidthClass(chatWidthState.chatWidth))}>
                {messages.map((message) => (
                   <div

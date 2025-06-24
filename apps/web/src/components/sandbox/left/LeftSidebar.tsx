@@ -27,7 +27,6 @@ import {
 } from "./info-card/info-card";
 import Credits from "./credits";
 import { Button } from "@docsurf/ui/components/button";
-import { useCookies } from "react-cookie";
 import { LEFT_SIDEBAR_COOKIE_NAME } from "@/utils/constants";
 
 const data = {
@@ -63,9 +62,16 @@ const useMounted = () => {
    return mounted;
 };
 
-export const LeftSidebar = ({ l_sidebar_state, toggle_l_sidebar }: { l_sidebar_state: boolean; toggle_l_sidebar: () => void }) => {
+export const LeftSidebar = ({
+   l_sidebar_state,
+   toggle_l_sidebar,
+   initialOpen,
+}: {
+   l_sidebar_state: boolean;
+   toggle_l_sidebar: () => void;
+   initialOpen?: boolean;
+}) => {
    const { setOpen, setOpenMobile, toggleSidebar, open, isMobile, openMobile } = useSidebar();
-   const [cookies, setCookie] = useCookies([LEFT_SIDEBAR_COOKIE_NAME]);
    const set_l_sidebar_state = useSandStateStore((s) => s.set_l_sidebar_state);
 
    const [infoCardDismissed, setInfoCardDismissed] = useState(false);
@@ -84,7 +90,7 @@ export const LeftSidebar = ({ l_sidebar_state, toggle_l_sidebar }: { l_sidebar_s
          }
       }
       // Update cookie when state changes
-      setCookie(LEFT_SIDEBAR_COOKIE_NAME, l_sidebar_state.toString(), { path: "/", maxAge: SIDEBAR_COOKIE_MAX_AGE });
+      document.cookie = `${LEFT_SIDEBAR_COOKIE_NAME}=${l_sidebar_state}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
    }, [l_sidebar_state, open, openMobile, isMobile]);
 
    // Sync with localStorage on mount (client only)

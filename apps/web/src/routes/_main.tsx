@@ -5,7 +5,6 @@ import Header from "@/components/sandbox/header";
 import React, { useEffect } from "react";
 import { OnboardingWrapper } from "@/components/onboarding";
 import { useSandStateStore } from "@/store/sandstate";
-import { useCookies } from "react-cookie";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { INNER_RIGHT_SIDEBAR_COOKIE_NAME, LEFT_SIDEBAR_COOKIE_NAME, RIGHT_SIDEBAR_COOKIE_NAME } from "@/utils/constants";
 import { OnboardingProvider } from "@/components/onboarding/onboarding-provider";
@@ -16,27 +15,16 @@ export const Route = createFileRoute("/_main")({
 
 function MainLayoutComponent() {
    const initializeState = useSandStateStore((s) => s.initializeState);
-   const [cookies] = useCookies([LEFT_SIDEBAR_COOKIE_NAME, RIGHT_SIDEBAR_COOKIE_NAME, INNER_RIGHT_SIDEBAR_COOKIE_NAME]);
 
-   const initialLeftSidebarOpen =
-      cookies[LEFT_SIDEBAR_COOKIE_NAME] === undefined ? true : cookies[LEFT_SIDEBAR_COOKIE_NAME] === "true";
-   const initialRightSidebarOpen = cookies[RIGHT_SIDEBAR_COOKIE_NAME] === "true";
-   const initialInnerRightSidebarOpen = cookies[INNER_RIGHT_SIDEBAR_COOKIE_NAME] === "true";
+   // No need to read cookies or set initialOpen here
 
-   // Initialize store state once when component mounts
-   useEffect(() => {
-      initializeState({
-         l_sidebar_state: initialLeftSidebarOpen,
-         r_sidebar_state: initialRightSidebarOpen,
-         ir_sidebar_state: initialInnerRightSidebarOpen,
-      });
-   }, [initializeState, initialLeftSidebarOpen, initialRightSidebarOpen, initialInnerRightSidebarOpen]);
+   // Optionally, you can remove the initializeState effect if not needed
 
    return (
       <OnboardingProvider>
          <div className="flex overflow-hidden max-h-dvh">
             {/* sidebar 1 */}
-            <WrapperLeftSidebar initialOpen={initialLeftSidebarOpen} />
+            <WrapperLeftSidebar />
             <OnboardingWrapper />
             <SidebarInset className="flex-1 min-w-0 bg-default dark:bg-default flex flex-col">
                <Header />
@@ -47,7 +35,7 @@ function MainLayoutComponent() {
                   </div>
 
                   {/* sidebar 3 */}
-                  <WrapperInnerRightSidebar initialOpen={initialInnerRightSidebarOpen} />
+                  <WrapperInnerRightSidebar />
                </div>
             </SidebarInset>
          </div>
@@ -55,23 +43,18 @@ function MainLayoutComponent() {
    );
 }
 
-const WrapperLeftSidebar = ({ initialOpen }: { initialOpen?: boolean }) => {
+const WrapperLeftSidebar = () => {
    const l_sidebar_state = useSandStateStore((s) => s.l_sidebar_state);
    const toggle_l_sidebar = useSandStateStore((s) => s.toggle_l_sidebar);
 
    return (
-      <SidebarProvider
-         defaultOpen={initialOpen ?? true}
-         name="left-sidebar"
-         defaultWidth="15.8rem"
-         className="w-fit overflow-hidden max-h-dvh"
-      >
+      <SidebarProvider name="left-sidebar" defaultWidth="15.8rem" className="w-fit overflow-hidden max-h-dvh">
          <LeftSidebar l_sidebar_state={l_sidebar_state} toggle_l_sidebar={toggle_l_sidebar} />
       </SidebarProvider>
    );
 };
 
-const WrapperInnerRightSidebar = ({ initialOpen }: { initialOpen?: boolean }) => {
+const WrapperInnerRightSidebar = () => {
    const ir_sidebar_state = useSandStateStore((s) => s.ir_sidebar_state);
    const toggle_ir_sidebar = useSandStateStore((s) => s.toggle_ir_sidebar);
 
@@ -79,7 +62,6 @@ const WrapperInnerRightSidebar = ({ initialOpen }: { initialOpen?: boolean }) =>
       <SidebarProvider
          defaultWidth="23.5rem"
          name="inner-right-sidebar"
-         defaultOpen={initialOpen ?? false}
          className="w-fit overflow-hidden max-h-dvh min-h-[calc(100svh-95px)]"
       >
          <InnerRightSidebar ir_sidebar_state={ir_sidebar_state} toggle_ir_sidebar={toggle_ir_sidebar} />

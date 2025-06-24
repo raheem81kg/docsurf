@@ -2,7 +2,6 @@ import { Sidebar, SidebarContent, SidebarRail, useSidebar } from "@docsurf/ui/co
 import { useSandStateStore } from "@/store/sandstate";
 import { useCallback } from "react";
 import React from "react";
-import { useCookies } from "react-cookie";
 import { INNER_RIGHT_SIDEBAR_COOKIE_NAME, SIDEBAR_COOKIE_MAX_AGE } from "@/utils/constants";
 import { Chat } from "./chat/chat";
 import { useChatStore } from "./chat/lib/chat-store";
@@ -10,12 +9,13 @@ import { useChatStore } from "./chat/lib/chat-store";
 export const InnerRightSidebar = ({
    ir_sidebar_state,
    toggle_ir_sidebar,
+   initialOpen,
 }: {
    ir_sidebar_state: boolean;
    toggle_ir_sidebar: () => void;
+   initialOpen?: boolean;
 }) => {
    const { setOpen, setOpenMobile, open, openMobile, isMobile } = useSidebar();
-   const [cookies, setCookie] = useCookies([INNER_RIGHT_SIDEBAR_COOKIE_NAME]);
    const set_ir_sidebar_state = useSandStateStore((s) => s.set_ir_sidebar_state);
 
    // Get the current threadId from the chat store
@@ -37,7 +37,7 @@ export const InnerRightSidebar = ({
          }
       }
       // Update cookie when state changes
-      setCookie(INNER_RIGHT_SIDEBAR_COOKIE_NAME, ir_sidebar_state.toString(), { path: "/", maxAge: SIDEBAR_COOKIE_MAX_AGE });
+      document.cookie = `${INNER_RIGHT_SIDEBAR_COOKIE_NAME}=${ir_sidebar_state}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
    }, [ir_sidebar_state, open, openMobile, isMobile]);
 
    return (

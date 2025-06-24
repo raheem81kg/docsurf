@@ -113,7 +113,7 @@ function SettingsPage({ title, description }: SettingsLayoutProps) {
             {/* Header */}
             <div className="mb-8 max-md:px-2">
                <div className="mb-6 flex items-center gap-4">
-                  <Link to="/">
+                  <Link to="/doc">
                      <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
                         <ArrowLeft className="h-4 w-4" />
                         Back

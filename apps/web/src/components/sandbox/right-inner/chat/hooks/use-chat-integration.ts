@@ -2,7 +2,7 @@ import { api } from "@docsurf/backend/convex/_generated/api";
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 import { backendToUiMessages } from "@docsurf/backend/convex/lib/backend_to_ui_messages";
 import type { SharedThread, Thread } from "@docsurf/backend/convex/schema";
-import { useVerifyToken, useToken, useSession } from "@/hooks/auth-hooks";
+import { useVerifyToken, useEphemeralToken, useSession } from "@/hooks/auth-hooks";
 import { useAutoResume } from "./use-auto-resume";
 import { env } from "@/env";
 import { useChatStore } from "../lib/chat-store";
@@ -24,11 +24,10 @@ export function useChatIntegration<IsShared extends boolean>({
    isShared?: IsShared;
    folderId?: Id<"projects">;
 }) {
-   const { token } = useToken();
    const { selectedModel, enabledTools, selectedImageSize, reasoningEffort, getEffectiveMcpOverrides } = useModelStore();
    const { rerenderTrigger, shouldUpdateQuery, setShouldUpdateQuery, triggerRerender } = useChatStore();
    const seededNextId = useRef<string | null>(null);
-   const verifyToken = useVerifyToken(token);
+   const verifyToken = useVerifyToken(useEphemeralToken()?.token ?? "");
 
    // For regular threads, use getThreadMessages
    const threadMessages = useConvexQuery(
@@ -65,7 +64,7 @@ export function useChatIntegration<IsShared extends boolean>({
       headers: isShared
          ? {}
          : {
-              authorization: `Bearer ${token}`,
+              authorization: `Bearer ${useEphemeralToken()?.token ?? ""}`,
            },
       experimental_throttle: 50,
       experimental_prepareRequestBody(body) {

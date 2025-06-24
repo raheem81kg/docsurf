@@ -39,7 +39,7 @@ import {
    type PromptInputRef,
 } from "./prompt-kit/prompt-input";
 import { ModelSelector } from "./model-selector";
-import { useSession, useToken, useVerifyToken } from "@/hooks/auth-hooks";
+import { useSession, useEphemeralToken, useVerifyToken } from "@/hooks/auth-hooks";
 
 interface ExtendedUploadedFile extends UploadedFile {
    file?: File;
@@ -156,7 +156,6 @@ export function MultimodalInput({
    onSubmit: (input?: string, files?: UploadedFile[]) => void;
    status: ReturnType<typeof useChat>["status"];
 }) {
-   const { token } = useToken();
    const location = useLocation();
    const { data: session, isPending } = useSession();
    const auth = useConvexAuth();
@@ -167,8 +166,8 @@ export function MultimodalInput({
    const { uploadedFiles, addUploadedFile, removeUploadedFile, uploading, setUploading } = useChatStore();
    const { chatWidthState } = useChatWidthStore();
 
-   const performSubmitAction = useVerifyToken(token, "You must be logged in to send a message.");
-   const performUploadAction = useVerifyToken(token, "You must be logged in to upload files.");
+   const performSubmitAction = useVerifyToken(useEphemeralToken()?.token ?? "", "You must be logged in to send a message.");
+   const performUploadAction = useVerifyToken(useEphemeralToken()?.token ?? "", "You must be logged in to upload files.");
 
    const isLoading = status === "streaming";
    const uploadInputRef = useRef<HTMLInputElement>(null);
@@ -312,7 +311,7 @@ export function MultimodalInput({
             method: "POST",
             body: formData,
             headers: {
-               Authorization: `Bearer ${token}`,
+               Authorization: `Bearer ${useEphemeralToken()}`,
             },
          });
 

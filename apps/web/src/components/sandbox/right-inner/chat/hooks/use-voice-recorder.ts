@@ -1,4 +1,4 @@
-import { useVerifyToken, useToken } from "@/hooks/auth-hooks";
+import { useVerifyToken, useEphemeralToken } from "@/hooks/auth-hooks";
 import { env } from "@/env";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
@@ -77,7 +77,8 @@ const getBestSupportedMimeType = (): string => {
 };
 
 export const useVoiceRecorder = ({ onTranscript }: UseVoiceRecorderOptions) => {
-   const { token } = useToken();
+   const verifyToken = useVerifyToken(useEphemeralToken()?.token ?? "", "You must be logged in to use voice input.");
+
    const [state, setState] = useState<VoiceRecorderState>({
       isRecording: false,
       isTranscribing: false,
@@ -94,14 +95,7 @@ export const useVoiceRecorder = ({ onTranscript }: UseVoiceRecorderOptions) => {
    const durationIntervalRef = useRef<number | null>(null);
    const audioLevelIntervalRef = useRef<number | null>(null);
    const audioChunksRef = useRef<Blob[]>([]);
-   const tokenRef = useRef<string | undefined>(undefined);
    const mediaStreamRef = useRef<MediaStream | null>(null);
-   const verifyToken = useVerifyToken(token, "You must be logged in to use voice input.");
-
-   // Keep token ref up to date
-   useEffect(() => {
-      tokenRef.current = token;
-   }, [token]);
 
    const updateAudioLevel = useCallback(() => {
       if (!analyserRef.current || !dataArrayRef.current) return;
@@ -365,7 +359,7 @@ export const useVoiceRecorder = ({ onTranscript }: UseVoiceRecorderOptions) => {
             const response = await fetch(`${env.VITE_CONVEX_SITE_URL}/transcribe`, {
                method: "POST",
                headers: {
-                  Authorization: `Bearer ${tokenRef.current}`,
+                  Authorization: `Bearer ${useEphemeralToken()?.token ?? ""}`,
                },
                body: formData,
             });
