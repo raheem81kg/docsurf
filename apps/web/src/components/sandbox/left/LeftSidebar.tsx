@@ -171,8 +171,8 @@ export const LeftSidebar = ({
                >
                   <InfoCardContent>
                      <div className="relative">
-                        <div className="absolute -top-4 -right-4 w-[14px] h-[14px] bg-blue-500 rounded-full animate-ping" />
-                        <div className="absolute -top-4 -right-4 w-[14px] h-[14px] bg-blue-500 rounded-full" />
+                        <div className="absolute -top-4 -right-4 w-[14px] h-[14px] bg-primary rounded-full animate-ping" />
+                        <div className="absolute -top-4 -right-4 w-[14px] h-[14px] bg-primary rounded-full" />
                         <InfoCardTitle className="text-primary">DocSurf is now in beta</InfoCardTitle>
                         <InfoCardDescription>We are currently in beta and we would love to hear from you.</InfoCardDescription>
                         <InfoCardFooter>

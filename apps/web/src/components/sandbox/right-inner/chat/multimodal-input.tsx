@@ -191,6 +191,12 @@ export function MultimodalInput({
       session?.user?.id && !auth.isLoading ? {} : "skip"
    );
 
+   const { token: ephemeralToken } = useEphemeralToken();
+   const ephemeralTokenRef = useRef(ephemeralToken);
+   useEffect(() => {
+      ephemeralTokenRef.current = ephemeralToken;
+   }, [ephemeralToken]);
+
    // Voice recording state
    const {
       state: voiceState,
@@ -311,7 +317,7 @@ export function MultimodalInput({
             method: "POST",
             body: formData,
             headers: {
-               Authorization: `Bearer ${useEphemeralToken()}`,
+               Authorization: `Bearer ${ephemeralTokenRef.current}`,
             },
          });
 

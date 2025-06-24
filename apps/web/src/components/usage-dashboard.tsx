@@ -114,7 +114,7 @@ export function UsageDashboard({ className }: UsageDashboardProps) {
       <div className={cn("space-y-4", className)}>
          {/* Header with timeframe selector */}
          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <Tabs value={timeframe} onValueChange={(value) => setTimeframe(value as "1d" | "7d" | "30d")}>
+            <Tabs value={timeframe} onValueChange={(value: "1d" | "7d" | "30d") => setTimeframe(value)}>
                <TabsList className="grid w-full grid-cols-3 sm:w-auto">
                   <TabsTrigger value="1d">1 Day</TabsTrigger>
                   <TabsTrigger value="7d">7 Days</TabsTrigger>

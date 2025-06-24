@@ -10,7 +10,7 @@ import { GenericToolRenderer } from "./renderers/generic-tool";
 import { ImageGenerationToolRenderer } from "./renderers/image-generation-ui";
 import { WebSearchToolRenderer } from "./renderers/web-search-ui";
 import { Button } from "@docsurf/ui/components/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@docsurf/ui/components/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@docsurf/ui/components/dialog";
 import { Loader } from "@docsurf/ui/components/loader";
 import { Textarea } from "@docsurf/ui/components/textarea";
 import { getFileTypeInfo } from "@docsurf/utils/file_constants";
@@ -19,6 +19,7 @@ import type { useChatIntegration } from "./hooks/use-chat-integration";
 import { getChatWidthClass, useChatWidthStore } from "./lib/chat-width-store";
 import { useChatStore } from "./lib/chat-store";
 import { cn } from "@docsurf/ui/lib/utils";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 const extractFileName = (data: string) => {
    const _extract = data.startsWith("attachments/") ? (data.split("/").pop() ?? "") : "";
@@ -421,6 +422,9 @@ export function Messages({
             <DialogContent className="md:!max-w-[min(90vw,60rem)] max-h-[70dvh]">
                {previewFile && (
                   <>
+                     <VisuallyHidden>
+                        <DialogDescription>Preview file</DialogDescription>
+                     </VisuallyHidden>
                      <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                            {getFileIcon(previewFile)}

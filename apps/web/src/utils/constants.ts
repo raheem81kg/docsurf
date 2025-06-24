@@ -14,3 +14,10 @@ export const RIGHT_SIDEBAR_COOKIE_NAME = "r_sidebar_state";
 export const INNER_RIGHT_SIDEBAR_COOKIE_NAME = "ir_sidebar_state";
 
 export const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
+
+export const FREE_CREDITS = 10;
+export const PRO_CREDITS = 100;
+
+export const IMAGE_GENERATION_COST = 1;
+export const SEARCH_COST = 1;
+export const RESEARCH_COST = 2;

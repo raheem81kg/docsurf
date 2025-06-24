@@ -17,6 +17,7 @@
       "./chat/*": "./src/chat/*.ts"
    },
    "dependencies": {
+      "zod": "^3.24.2",
       "zustand": "^5.0.5"
    }
 }

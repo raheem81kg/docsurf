@@ -8,7 +8,7 @@ import { cn } from "@docsurf/ui/lib/utils";
 import { useConvexQuery } from "@convex-dev/react-query";
 import { Outlet, createLazyFileRoute, useLocation, useNavigate } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, BarChart3, Bot, Box, Key, PaintBucket, Paperclip, User } from "lucide-react";
+import { ArrowLeft, BarChart3, Bot, Box, Key, PaintBucket, Paperclip, User, CreditCard } from "lucide-react";
 import { type ReactNode, useEffect } from "react";
 
 interface SettingsLayoutProps {
@@ -58,6 +58,11 @@ const settingsNavItems = [
       href: "/settings/appearance",
       icon: PaintBucket,
    },
+   {
+      title: "Subscription",
+      href: "/settings/subscription",
+      icon: CreditCard,
+   },
 ];
 
 export const Route = createLazyFileRoute("/settings")({
@@ -70,7 +75,7 @@ const Inner = () => {
    if (!session?.user?.id) {
       return (
          <SettingsLayout title="API Keys" description="Manage your models and providers. Keys are encrypted and stored securely.">
-            <p className="text-muted-foreground text-sm">Sign in to manage your API keys.</p>
+            <p className="text-muted-foreground text-sm">Sign in to manage your settings.</p>
          </SettingsLayout>
       );
    }
@@ -84,7 +89,7 @@ const Inner = () => {
    if ("error" in userSettings) {
       return (
          <SettingsLayout title="API Keys" description="Manage your models and providers. Keys are encrypted and stored securely.">
-            <p className="text-muted-foreground text-sm">Error loading API keys.</p>
+            <p className="text-muted-foreground text-sm">Error loading settings.</p>
          </SettingsLayout>
       );
    }
@@ -93,8 +98,7 @@ const Inner = () => {
 };
 
 function SettingsPage({ title, description }: SettingsLayoutProps) {
-   console.log("title", title);
-   console.log("description", description);
+   console.log("title", title, "description", description);
    const location = useLocation();
    const navigate = useNavigate();
 

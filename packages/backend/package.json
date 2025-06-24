@@ -32,17 +32,21 @@
       "@modelcontextprotocol/sdk": "^1.13.0",
       "@openrouter/ai-sdk-provider": "^0.7.2",
       "@react-email/components": "^0.1.0",
+      "@t3-oss/env-core": "^0.13.8",
       "@upstash/redis": "^1.35.0",
       "ai": "^4.3.16",
       "better-auth": "1.2.7",
       "convex": "^1.24.8",
       "convex-helpers": "^0.1.94",
+      "date-fns": "^4.1.0",
+      "nanoid": "^5.1.5",
       "patch-package": "^8.0.0",
       "react": "19.0.0",
       "resend": "^4.6.0",
       "resumable-stream": "^2.2.0",
       "supermemory": "3.0.0-alpha.18",
-      "ts-dedent": "^2.2.0"
+      "ts-dedent": "^2.2.0",
+      "zod": "^3.24.2"
    },
    "exports": {
       "./lib/*": "./src/lib/*.ts",

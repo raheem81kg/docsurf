@@ -12,7 +12,7 @@ import type { SafeSubscription } from "./subscriptions";
 
 // The user object returned by the getCurrentUser query. It combines authentication
 // data with the user's subscription status and application-specific data.
-type CurrentUser = Doc<"users"> & Partial<NonNullable<SafeSubscription>> & CurrentUserMetadata;
+type CurrentUser = (Doc<"users"> & CurrentUserMetadata & { subscription: SafeSubscription | null }) | null;
 
 type CurrentUserMetadata = {
    image?: string | undefined;
@@ -160,7 +160,7 @@ export const { createUser, deleteUser, updateUser, createSession, isAuthenticate
 // Feel free to edit, omit, etc.
 export const getCurrentUser = query({
    args: {},
-   handler: async (ctx): Promise<CurrentUser | null> => {
+   handler: async (ctx): Promise<CurrentUser> => {
       // Get user data from Better Auth - email, name, image, etc.
       const userMetadata = await betterAuthComponent.getAuthUser(ctx);
       if (!userMetadata) {
@@ -180,7 +180,7 @@ export const getCurrentUser = query({
       return {
          ...user,
          ...userMetadata,
-         ...subscription,
+         subscription,
       };
    },
 });
