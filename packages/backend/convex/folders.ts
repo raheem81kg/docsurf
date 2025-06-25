@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { aggregrateThreadsByFolder } from "./aggregates";
 import { getUserIdentity } from "./lib/identity";
+import { Id } from "./_generated/dataModel";
 
 // Create a new project
 export const createProject = mutation({
@@ -20,7 +21,7 @@ export const createProject = mutation({
 
       const projectId = await ctx.db.insert("projects", {
          ...args,
-         authorId: user.id,
+         authorId: user.id as Id<"users">,
          createdAt: Date.now(),
          updatedAt: Date.now(),
       });
@@ -38,7 +39,7 @@ export const getUserProjects = query({
 
       const projects = await ctx.db
          .query("projects")
-         .withIndex("byAuthor", (q) => q.eq("authorId", user.id))
+         .withIndex("byAuthor", (q) => q.eq("authorId", user.id as Id<"users">))
          .filter((q) => q.neq(q.field("archived"), true))
          .order("desc")
          .collect();
@@ -118,7 +119,7 @@ export const deleteProject = mutation({
       // Check if project has threads
       const threadsInProject = await ctx.db
          .query("threads")
-         .withIndex("byAuthorAndProject", (q) => q.eq("authorId", user.id).eq("projectId", projectId))
+         .withIndex("byAuthorAndProject", (q) => q.eq("authorId", user.id as Id<"users">).eq("projectId", projectId))
          .first();
 
       if (threadsInProject) {
@@ -189,7 +190,7 @@ export const searchProjects = query({
       if (!query.trim()) {
          return await ctx.db
             .query("projects")
-            .withIndex("byAuthor", (q) => q.eq("authorId", user.id))
+            .withIndex("byAuthor", (q) => q.eq("authorId", user.id as Id<"users">))
             .filter((q) => q.neq(q.field("archived"), true))
             .order("desc")
             .paginate(paginationOpts);
@@ -197,7 +198,7 @@ export const searchProjects = query({
 
       return await ctx.db
          .query("projects")
-         .withSearchIndex("search_name", (q) => q.search("name", query.trim()).eq("authorId", user.id))
+         .withSearchIndex("search_name", (q) => q.search("name", query.trim()).eq("authorId", user.id as Id<"users">))
          .filter((q) => q.neq(q.field("archived"), true))
          .paginate(paginationOpts);
    },

@@ -9,10 +9,17 @@ import type { DataModel, Id, Doc } from "./_generated/dataModel";
 import { type GenericCtx, query } from "./_generated/server";
 import { sendEmailVerification, sendMagicLink, sendOTPVerification } from "./email";
 import type { SafeSubscription } from "./subscriptions";
+import crypto from "crypto";
 
 // The user object returned by the getCurrentUser query. It combines authentication
 // data with the user's subscription status and application-specific data.
-type CurrentUser = (Doc<"users"> & CurrentUserMetadata & { subscription: SafeSubscription | null }) | null;
+type CurrentUser =
+   | (Doc<"users"> &
+        CurrentUserMetadata & {
+           subscription: SafeSubscription | null;
+           workspaces: Array<{ workspace: Doc<"workspaces">; role: string }>;
+        })
+   | null;
 
 type CurrentUserMetadata = {
    image?: string | undefined;
@@ -107,12 +114,31 @@ export const createAuth = (ctx: GenericCtx) =>
 export const { createUser, deleteUser, updateUser, createSession, isAuthenticated } =
    betterAuthComponent.createAuthFunctions<DataModel>({
       onCreateUser: async (ctx, user) => {
-         // Example: copy the user's email to the application users table.
-         // We'll use onUpdateUser to keep it synced.
+         // If user.name is missing or empty, use the part of their email before the @ symbol, truncated to 100 characters.
+         let name = user.name;
+         if (!name || name.trim() === "") {
+            if (user.email) {
+               name = user.email.split("@")[0].slice(0, 100);
+            } else {
+               name = "Docsurf user";
+            }
+         }
          const userId = await ctx.db.insert("users", {
-            name: user.name,
+            name,
             email: user.email,
             image: user.image,
+         });
+
+         // Create a workspace for the user and assign them as owner
+         const workspaceId = await ctx.db.insert("workspaces", {
+            name: `${name}'s Workspace`,
+            createdAt: Date.now(),
+         });
+         await ctx.db.insert("usersOnWorkspace", {
+            workspaceId,
+            userId,
+            role: "owner",
+            createdAt: Date.now(),
          });
 
          // This function must return the user id.
@@ -177,10 +203,24 @@ export const getCurrentUser = query({
          userId: userMetadata.userId as Id<"users">,
       });
 
+      // Fetch all workspace memberships for this user
+      const memberships = await ctx.db
+         .query("usersOnWorkspace")
+         .withIndex("by_user", (q) => q.eq("userId", user._id))
+         .collect();
+      // Fetch the workspace documents for each membership
+      const workspaces = await Promise.all(
+         memberships.map(async (m) => {
+            const workspace = await ctx.db.get(m.workspaceId as Id<"workspaces">);
+            return workspace ? { workspace, role: m.role } : null;
+         })
+      );
+
       return {
          ...user,
          ...userMetadata,
          subscription,
+         workspaces: workspaces.filter(Boolean) as Array<{ workspace: Doc<"workspaces">; role: string }>,
       };
    },
 });

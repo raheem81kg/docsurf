@@ -39,6 +39,7 @@ export function SignOutDialog({ showTrigger = true, children, scope = "local", o
    const isMobile = useIsMobile();
    const isDesktop = !isMobile;
    const navigate = useNavigate();
+   const queryClient = useQueryClient();
    const title = {
       local: "Are you sure, do you want to log out?",
       global: "Are you sure, do you want to log out from all logged device?",
@@ -53,7 +54,6 @@ export function SignOutDialog({ showTrigger = true, children, scope = "local", o
 
    function onSignOut() {
       startSignOutTransition(async () => {
-         const queryClient = useQueryClient();
          await queryClient.resetQueries({ queryKey: ["session"] });
          await queryClient.resetQueries({ queryKey: ["token"] });
          await authClient.signOut();

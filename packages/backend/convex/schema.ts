@@ -7,6 +7,8 @@ import { SharedThread, Thread } from "./schema/thread";
 import { UsageEvent } from "./schema/usage";
 import { Project } from "./schema/folders";
 import { ResumableStream } from "./schema/streams";
+import { Documents } from "./schema/documents";
+import { Workspaces, UsersOnWorkspace } from "./schema/workspace";
 
 export { Thread, Message, SharedThread, UsageEvent, UserSettings, Project, ResumableStream };
 // The schema is entirely optional.
@@ -33,63 +35,25 @@ export default defineSchema({
       updatedAt: v.number(),
    }).index("userId", ["userId"]),
 
-   documents: defineTable({
-      uuid: v.string(),
-      workspaceId: v.string(),
-      userId: v.id("users"),
-      parentUuid: v.optional(v.string()),
-      title: v.string(),
-      description: v.optional(v.string()),
-      content: v.optional(v.string()),
-      customPrompt: v.optional(v.string()),
-      defaultModel: v.optional(v.string()),
-      documentType: v.union(
-         v.literal("folder"),
-         v.literal("text/plain"),
-         v.literal("video/mp4"),
-         v.literal("audio/mp3"),
-         v.literal("application/pdf"),
-         v.literal("application/octet-stream"),
-         v.literal("website")
-      ),
-      writingStyle: v.optional(
-         v.union(
-            v.literal("academic"),
-            v.literal("business"),
-            v.literal("casual"),
-            v.literal("creative"),
-            v.literal("formal"),
-            v.literal("technical")
-         )
-      ),
-      orderPosition: v.number(),
-      depth: v.number(),
-      updatedAt: v.number(),
-      lastViewedAt: v.optional(v.number()),
-      isDeleted: v.boolean(),
-      metadata: v.optional(v.any()),
-      fileSize: v.optional(v.int64()),
-      isPublic: v.boolean(),
-   })
-      .index("by_uuid", ["uuid"])
-      .index("by_hierarchy", ["workspaceId", "parentUuid", "orderPosition"])
-      .index("by_active", ["workspaceId", "isDeleted", "updatedAt"])
-      .index("by_updatedAt", ["updatedAt"])
-      .index("by_user", ["userId"])
-      .index("by_parentUuid", ["parentUuid"])
-      .index("by_workspace_updated", ["workspaceId", "updatedAt"])
-      .index("by_workspace_deleted", ["workspaceId", "isDeleted"])
-      .index("by_workspace_type", ["workspaceId", "documentType"])
-      .index("by_workspace_public", ["workspaceId", "isPublic"])
-      .index("by_parent_order", ["parentUuid", "orderPosition"]),
+   documents: defineTable(Documents)
+      .index("byHierarchy", ["workspaceId", "parentId", "orderPosition"])
+      .index("byActive", ["workspaceId", "isDeleted", "updatedAt"])
+      .index("byUpdatedAt", ["updatedAt"])
+      .index("byUser", ["userId"])
+      .index("byParentId", ["parentId"])
+      .index("byWorkspaceUpdated", ["workspaceId", "updatedAt"])
+      .index("byWorkspaceDeleted", ["workspaceId", "isDeleted"])
+      .index("byWorkspaceType", ["workspaceId", "documentType"])
+      .index("byWorkspacePublic", ["workspaceId", "isPublic"])
+      .index("byParentOrder", ["parentId", "orderPosition"]),
 
-   apiKeys: defineTable({
-      userId: v.id("users"),
-      service: v.union(v.literal("gemini"), v.literal("groq"), v.literal("openrouter"), v.literal("deepgram")),
-      name: v.string(),
-      key: v.string(),
-      is_default: v.optional(v.boolean()),
-   }).index("by_user_and_service", ["userId", "service"]),
+   // apiKeys: defineTable({
+   //    userId: v.id("users"),
+   //    service: v.union(v.literal("gemini"), v.literal("groq"), v.literal("openrouter"), v.literal("deepgram")),
+   //    name: v.string(),
+   //    key: v.string(),
+   //    is_default: v.optional(v.boolean()),
+   // }).index("by_user_and_service", ["userId", "service"]),
 
    threads: defineTable(Thread)
       .index("byAuthor", ["authorId"])
@@ -116,4 +80,12 @@ export default defineSchema({
          searchField: "name",
          filterFields: ["authorId"],
       }),
+
+   usersOnWorkspace: defineTable(UsersOnWorkspace)
+      .index("by_workspace_user", ["workspaceId", "userId"])
+      .index("by_user", ["userId"])
+      .index("by_workspace", ["workspaceId"])
+      .index("by_role_workspace", ["role", "workspaceId"]),
+
+   workspaces: defineTable(Workspaces).index("by_created_at", ["createdAt"]).index("by_slug", ["slug"]),
 });

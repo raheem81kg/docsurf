@@ -1,7 +1,6 @@
 "use client";
 
-import { useRouter } from "@tanstack/react-router";
-import { useQuery as useConvexQuery } from "convex/react";
+import { useQuery as useConvexQuery, useMutation } from "convex/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
@@ -17,6 +16,10 @@ import { api } from "@docsurf/backend/convex/_generated/api";
 import { useSession } from "@/hooks/auth-hooks";
 import { useChatStore } from "./lib/chat-store";
 import { DotsLoader } from "@docsurf/ui/components/loader";
+import { Button } from "@docsurf/ui/components/button";
+import { Pencil, Trash, Check, X } from "lucide-react";
+import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
+import { useSandStateStore } from "@/store/sandstate";
 
 interface CommandKProps {
    open?: boolean;
@@ -91,8 +94,15 @@ export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps =
    const [query, setQuery] = useState("");
    const [debouncedQuery, setDebouncedQuery] = useState("");
    const { data: session, isPending } = useSession();
-   const router = useRouter();
    const commandRef = useRef<HTMLDivElement>(null);
+   const set_ir_sidebar_state = useSandStateStore((s) => s.set_ir_sidebar_state);
+   const deleteThreadMutation = useMutation(api.threads.deleteThread);
+   const renameThreadMutation = useMutation(api.threads.renameThread);
+
+   // --- New state for edit/delete modes ---
+   const [deletingThreadId, setDeletingThreadId] = useState<string | null>(null);
+   const [editingThreadId, setEditingThreadId] = useState<string | null>(null);
+   const [editingTitle, setEditingTitle] = useState("");
 
    const isControlled = controlledOpen !== undefined;
    const open = isControlled ? controlledOpen : internalOpen;
@@ -101,7 +111,7 @@ export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps =
    useEffect(() => {
       const timer = setTimeout(() => {
          setDebouncedQuery(query);
-      }, 300);
+      }, 320);
 
       return () => clearTimeout(timer);
    }, [query]);
@@ -153,6 +163,9 @@ export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps =
          e.preventDefault();
          // setOpen(false);
          setQuery("");
+         set_ir_sidebar_state(true);
+         document.dispatchEvent(new CustomEvent("new_chat"));
+         setOpen(false);
          // router.navigate({ to: "/" });
       }
    };
@@ -197,6 +210,154 @@ export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps =
       }
    };
 
+   // --- Handlers for edit/delete ---
+   const handleEditThread = (e: React.MouseEvent, threadId: string, currentTitle: string) => {
+      e.stopPropagation();
+      if (deletingThreadId === threadId) return; // Don't allow edit if deleting
+      setEditingThreadId(threadId);
+      setEditingTitle(currentTitle || "");
+   };
+   const handleCancelEdit = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setEditingThreadId(null);
+      setEditingTitle("");
+   };
+   const handleSaveEdit = async (e: React.MouseEvent | React.KeyboardEvent, threadId: string) => {
+      e.stopPropagation();
+      if (!editingTitle.trim()) return; // Optionally show error
+      await renameThreadMutation({ threadId: threadId as Id<"threads">, title: editingTitle.trim() });
+      setEditingThreadId(null);
+      setEditingTitle("");
+   };
+   const handleEditKeyDown = (e: React.KeyboardEvent, threadId: string) => {
+      if (e.key === "Enter") handleSaveEdit(e, threadId);
+      if (e.key === "Escape") handleCancelEdit(e as any);
+   };
+   const handleDeleteThread = (e: React.MouseEvent, threadId: string) => {
+      e.stopPropagation();
+      setDeletingThreadId(threadId);
+   };
+   const handleCancelDelete = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setDeletingThreadId(null);
+   };
+   const handleConfirmDelete = async (e: React.MouseEvent, threadId: string) => {
+      e.stopPropagation();
+      await deleteThreadMutation({ threadId: threadId as Id<"threads"> });
+      setDeletingThreadId(null);
+      // Optionally: reset selection if deleted thread was open
+   };
+
+   // --- Render thread item with edit/delete UI ---
+   const renderThreadItem = (thread: Thread) => {
+      const isDeleting = deletingThreadId === thread._id;
+      const isEditing = editingThreadId === thread._id;
+      const displayTitle = thread.title || "Untitled Conversation";
+      return (
+         <CommandItem
+            key={thread._id}
+            value={thread._id}
+            onSelect={() => !isDeleting && !isEditing && handleSelect(thread._id)}
+            className={[
+               "h-9 hover:bg-accent/80 flex items-center justify-between gap-4",
+               isDeleting ? "bg-destructive/10 border border-destructive/20" : "",
+               isEditing ? "bg-muted/50 border border-muted-foreground/20" : "",
+            ].join(" ")}
+            disabled={false}
+         >
+            <div className="flex min-w-0 flex-1 items-center gap-2">
+               {isEditing ? (
+                  <input
+                     type="text"
+                     value={editingTitle}
+                     onChange={(e) => setEditingTitle(e.target.value)}
+                     onKeyDown={(e) => handleEditKeyDown(e, thread._id)}
+                     onClick={(e) => e.stopPropagation()}
+                     className="w-full bg-transparent border-none outline-none text-sm"
+                     placeholder="Enter title..."
+                     maxLength={100}
+                  />
+               ) : (
+                  <span className={isDeleting ? "text-foreground/70" : "truncate font-medium"}>
+                     {isDeleting ? `Delete "${displayTitle}"?` : displayTitle}
+                  </span>
+               )}
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+               {isDeleting ? (
+                  <>
+                     <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={(e) => handleConfirmDelete(e, thread._id)}
+                        aria-label="Confirm delete"
+                     >
+                        <Check className="h-4 w-4" />
+                     </Button>
+                     <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 text-muted-foreground"
+                        onClick={handleCancelDelete}
+                        aria-label="Cancel delete"
+                     >
+                        <X className="h-4 w-4" />
+                     </Button>
+                  </>
+               ) : isEditing ? (
+                  <>
+                     <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 text-green-600 hover:text-green-600 hover:bg-green-600/10"
+                        onClick={(e) => handleSaveEdit(e, thread._id)}
+                        aria-label="Save title"
+                     >
+                        <Check className="h-4 w-4" />
+                     </Button>
+                     <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 text-muted-foreground"
+                        onClick={handleCancelEdit}
+                        aria-label="Cancel edit"
+                     >
+                        <X className="h-4 w-4" />
+                     </Button>
+                  </>
+               ) : (
+                  <>
+                     <span className="text-xs text-muted-foreground whitespace-nowrap w-16 text-right">
+                        {formatRelativeTime((thread as any).updatedAt ?? thread.createdAt)}
+                     </span>
+                     <div className="flex items-center gap-1">
+                        <Button
+                           variant="ghost"
+                           size="icon"
+                           className="transition-colors hover:text-blue-600 h-7 w-7"
+                           onClick={(e) => handleEditThread(e, thread._id, thread.title)}
+                           aria-label={`Edit title of ${displayTitle}`}
+                        >
+                           <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                           variant="ghost"
+                           size="icon"
+                           className="transition-colors hover:text-destructive h-7 w-7"
+                           onClick={(e) => handleDeleteThread(e, thread._id)}
+                           aria-label={`Delete ${displayTitle}`}
+                        >
+                           <Trash className="h-4 w-4" />
+                        </Button>
+                     </div>
+                  </>
+               )}
+            </div>
+         </CommandItem>
+      );
+   };
+
    if (!session?.user?.id) {
       return null;
    }
@@ -221,45 +382,11 @@ export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps =
                      {groupedThreads
                         ? groupedThreads.map((group) => (
                              <CommandGroup key={group.name} heading={group.name}>
-                                {group.threads.map((thread) => (
-                                   <CommandItem
-                                      key={thread._id}
-                                      value={thread._id}
-                                      onSelect={() => handleSelect(thread._id)}
-                                      className="h-9 hover:bg-accent/80"
-                                   >
-                                      <div className="flex w-full items-center justify-between gap-4">
-                                         <div className="flex min-w-0 flex-1 items-center gap-2">
-                                            <div className="truncate font-medium">{thread.title}</div>
-                                         </div>
-                                         <div className="flex-shrink-0 text-muted-foreground text-xs">
-                                            {formatRelativeTime((thread as any).updatedAt ?? thread.createdAt)}
-                                         </div>
-                                      </div>
-                                   </CommandItem>
-                                ))}
+                                {group.threads.map((thread) => renderThreadItem(thread))}
                              </CommandGroup>
                           ))
                         : threads.length > 0 && (
-                             <CommandGroup heading="Chats">
-                                {threads.map((thread: Thread) => (
-                                   <CommandItem
-                                      key={thread._id}
-                                      value={thread._id}
-                                      onSelect={() => handleSelect(thread._id)}
-                                      className="h-9 hover:bg-accent/80"
-                                   >
-                                      <div className="flex w-full items-center justify-between gap-4">
-                                         <div className="flex min-w-0 flex-1 items-center gap-2">
-                                            <div className="truncate font-medium">{thread.title}</div>
-                                         </div>
-                                         <div className="flex-shrink-0 text-muted-foreground text-xs">
-                                            {formatRelativeTime((thread as any).updatedAt ?? thread.createdAt)}
-                                         </div>
-                                      </div>
-                                   </CommandItem>
-                                ))}
-                             </CommandGroup>
+                             <CommandGroup heading="Chats">{threads.map((thread: Thread) => renderThreadItem(thread))}</CommandGroup>
                           )}
                   </>
                )}

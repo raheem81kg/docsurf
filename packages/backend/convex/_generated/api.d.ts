@@ -19,6 +19,7 @@ import type * as chat_http_manual_stream_transform from "../chat_http/manual_str
 import type * as chat_http_prompt from "../chat_http/prompt.js";
 import type * as chat_http_shared from "../chat_http/shared.js";
 import type * as cron from "../cron.js";
+import type * as documents from "../documents.js";
 import type * as email from "../email.js";
 import type * as emails_components_BaseEmail from "../emails/components/BaseEmail.js";
 import type * as emails_magicLink from "../emails/magicLink.js";
@@ -49,6 +50,7 @@ import type * as lib_tools_web_search from "../lib/tools/web_search.js";
 import type * as messages from "../messages.js";
 import type * as polar from "../polar.js";
 import type * as rateLimiter from "../rateLimiter.js";
+import type * as schema_documents from "../schema/documents.js";
 import type * as schema_folders from "../schema/folders.js";
 import type * as schema_message from "../schema/message.js";
 import type * as schema_parts from "../schema/parts.js";
@@ -56,6 +58,7 @@ import type * as schema_settings from "../schema/settings.js";
 import type * as schema_streams from "../schema/streams.js";
 import type * as schema_thread from "../schema/thread.js";
 import type * as schema_usage from "../schema/usage.js";
+import type * as schema_workspace from "../schema/workspace.js";
 import type * as settings from "../settings.js";
 import type * as speech_to_text from "../speech_to_text.js";
 import type * as streams from "../streams.js";
@@ -90,6 +93,7 @@ declare const fullApi: ApiFromModules<{
   "chat_http/prompt": typeof chat_http_prompt;
   "chat_http/shared": typeof chat_http_shared;
   cron: typeof cron;
+  documents: typeof documents;
   email: typeof email;
   "emails/components/BaseEmail": typeof emails_components_BaseEmail;
   "emails/magicLink": typeof emails_magicLink;
@@ -120,6 +124,7 @@ declare const fullApi: ApiFromModules<{
   messages: typeof messages;
   polar: typeof polar;
   rateLimiter: typeof rateLimiter;
+  "schema/documents": typeof schema_documents;
   "schema/folders": typeof schema_folders;
   "schema/message": typeof schema_message;
   "schema/parts": typeof schema_parts;
@@ -127,6 +132,7 @@ declare const fullApi: ApiFromModules<{
   "schema/streams": typeof schema_streams;
   "schema/thread": typeof schema_thread;
   "schema/usage": typeof schema_usage;
+  "schema/workspace": typeof schema_workspace;
   settings: typeof settings;
   speech_to_text: typeof speech_to_text;
   streams: typeof streams;

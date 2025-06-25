@@ -11,7 +11,7 @@ import {
    DropdownMenuSeparator,
    DropdownMenuTrigger,
 } from "@docsurf/ui/components/dropdown-menu";
-import { SidebarMenuButton, SidebarMenuItem, useSidebar } from "@docsurf/ui/components/sidebar";
+import { SidebarMenuButton, SidebarMenuItem } from "@docsurf/ui/components/sidebar";
 import { SidebarThemeSwitchMenuItem } from "./sidebar-theme-switcher-menu-item";
 import { SignOutDialog } from "./dialogs/sign-out-dialog";
 import { Skeleton } from "@docsurf/ui/components/skeleton";
@@ -30,7 +30,7 @@ import { Link } from "@tanstack/react-router";
  */
 export function NavUser() {
    const user = useQuery(convexQuery(api.auth.getCurrentUser, {}));
-   const { isMobile } = useSidebar();
+   console.log(user.data);
    const [isClearing, setIsClearing] = useState(false);
    const [showEmail, setShowEmail] = useState(false);
    const sparklesRef = useRef<SparklesIconHandle>(null);
@@ -49,10 +49,10 @@ export function NavUser() {
       const parts = email.split("@");
       if (parts.length === 2) {
          const [username = "", domain = ""] = parts;
-         const maskedUsername = username.slice(0, 3) + "•••";
+         const maskedUsername = `${username.slice(0, 3)}•••`;
          return `${maskedUsername}@${domain}`;
       }
-      return email.slice(0, 3) + "•••";
+      return `${email.slice(0, 3)}•••`;
    };
 
    const handleClearCache = async () => {

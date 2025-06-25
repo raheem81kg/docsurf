@@ -37,9 +37,9 @@ function ClientOnlyComponent() {
 function Header() {
    const user = useQuery(convexQuery(api.auth.getCurrentUser, {}));
    const navigate = useNavigate();
+   const queryClient = useQueryClient();
 
    const handleSignOut = async () => {
-      const queryClient = useQueryClient();
       await queryClient.resetQueries({ queryKey: ["session"] });
       await queryClient.resetQueries({ queryKey: ["token"] });
       await authClient.signOut();

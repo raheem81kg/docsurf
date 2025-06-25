@@ -194,7 +194,7 @@ function LibraryPage() {
 
    return (
       <div className="max-h-dvh overflow-y-auto p-4 pt-0">
-         <div className="container mx-auto max-w-6xl pt-12 pb-16">
+         <div className="container mx-auto max-w-6xl pt-3 pb-16">
             <div className="mb-8">
                <h1 className="mb-2 font-bold text-3xl">AI Library</h1>
                <p className="text-muted-foreground">Your collection of AI-generated images</p>

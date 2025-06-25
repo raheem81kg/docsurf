@@ -3,7 +3,7 @@ import { OpenAIIcon } from "@/components/brand-icons";
 import { Badge } from "@docsurf/ui/components/badge";
 import { Button } from "@docsurf/ui/components/button";
 import { Card, CardContent, CardFooter } from "@docsurf/ui/components/card";
-import { Dialog, DialogContent } from "@docsurf/ui/components/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@docsurf/ui/components/dialog";
 import { useThemeManagement } from "../sandbox/right-inner/chat/hooks/use-theme-management";
 import { extractThemeColors } from "../sandbox/right-inner/chat/lib/theme-utils";
 import { cn } from "@docsurf/ui/lib/utils";
@@ -33,6 +33,7 @@ import { CheckCircle, MoonIcon, SunIcon } from "lucide-react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { useCallback, useState } from "react";
 import { Logo } from "../sandbox/right-inner/chat/logo";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface OnboardingStep {
    id: string;
@@ -286,8 +287,8 @@ function ThemeSelector() {
                      "error" in theme && theme.error
                         ? []
                         : "preset" in theme
-                          ? extractThemeColors(theme.preset, themeState.currentMode)
-                          : [];
+                        ? extractThemeColors(theme.preset, themeState.currentMode)
+                        : [];
                   const isSelected = selectedThemeUrl === theme.url;
 
                   return (
@@ -307,7 +308,7 @@ function ThemeSelector() {
                         {colors.length > 0 && (
                            <div className="flex h-1.5 overflow-hidden rounded">
                               {colors.slice(0, 4).map((color, index) => (
-                                 <div key={color} className="flex-1" style={{ backgroundColor: color }} />
+                                 <div key={`${color}-${index}`} className="flex-1" style={{ backgroundColor: color }} />
                               ))}
                            </div>
                         )}
@@ -341,6 +342,13 @@ export function OnboardingDialog({ isOpen, onComplete }: OnboardingDialogProps) 
    return (
       <Dialog open={isOpen} onOpenChange={() => {}}>
          <DialogContent className="w-[95vw] max-w-2xl border-0 bg-transparent p-0 shadow-none sm:w-full" showCloseButton={false}>
+            <VisuallyHidden>
+               <DialogTitle>Welcome to Docsurf</DialogTitle>
+               <DialogDescription>
+                  Docsurf is a powerful AI chatbot that allows you to chat with AI and make Docsurf truly yours! Don't forget to
+                  checkout the Settings page to customize your experience.
+               </DialogDescription>
+            </VisuallyHidden>
             <MotionConfig
                transition={{
                   type: "spring",
@@ -389,8 +397,8 @@ export function OnboardingDialog({ isOpen, onComplete }: OnboardingDialogProps) 
                                  index === currentStep
                                     ? "w-6 bg-primary"
                                     : index < currentStep
-                                      ? "bg-primary/60"
-                                      : "bg-muted-foreground/20"
+                                    ? "bg-primary/60"
+                                    : "bg-muted-foreground/20"
                               }`}
                            />
                         ))}

@@ -1,6 +1,10 @@
 import type { UserIdentity } from "convex/server";
 import type { GenericActionCtx, GenericQueryCtx } from "convex/server";
 import { betterAuthComponent } from "../auth";
+import { ConvexError } from "convex/values";
+import { MutationCtx, QueryCtx } from "../_generated/server";
+import { Id } from "../_generated/dataModel";
+import { requireUserId } from "../users";
 
 type Identity<T extends boolean> = T extends false
    ? UserIdentity & { isAnonymous: false; id: string }
@@ -41,3 +45,84 @@ export const getOrThrowUserIdentity = async <T extends boolean>(
 
    return result;
 };
+
+/**
+ * Convex-style wrapper for workspace permission checks.
+ * Usage:
+ *   export const myMutation = mutation(
+ *     withWorkspacePermissionWrapper(async (ctx, { workspaceId, userId, workspaceRole, ...args }) => {
+ *       // ...
+ *     })
+ *   );
+ *
+ * Adds userId and workspaceRole to args if allowed, else throws.
+ */
+export function withWorkspacePermissionWrapper<Args extends { workspaceId: string }, ReturnType>(
+   handler: (
+      ctx: QueryCtx | MutationCtx,
+      args: Args & { userId: string; workspaceRole: "owner" | "admin" | "member" | null }
+   ) => Promise<ReturnType>
+) {
+   // Per-invocation cache for permission checks (not shared across function calls)
+   return async (ctx: QueryCtx | MutationCtx, args: Args): Promise<ReturnType> => {
+      const cache = new Map<string, boolean>();
+      // Get userId from session/auth (Convex: requireUserId)
+      const userId = await requireUserId(ctx);
+      // Fetch user by _id (no index needed)
+      const user = await ctx.db.get(userId);
+      if (!user) {
+         throw new ConvexError({
+            code: "not_found",
+            message: "User not found",
+            statusCode: 404,
+         });
+      }
+      // Get all memberships for this user
+      const memberships = await ctx.db
+         .query("usersOnWorkspace")
+         .withIndex("by_user", (q) => q.eq("userId", userId))
+         .collect();
+      // Find the requested workspaceId in memberships
+      const workspaceId = args.workspaceId;
+      const membership = memberships.find((m) => m.workspaceId === workspaceId) || null;
+      // If workspaceId is null, allow (user has no workspace assigned)
+      if (workspaceId === null) {
+         return handler(ctx, { ...args, userId, workspaceRole: null });
+      }
+      // Check cache for access
+      const cacheKey = `user:${userId}:workspace:${workspaceId}`;
+      let hasAccess = cache.get(cacheKey);
+      if (hasAccess === undefined) {
+         hasAccess = !!membership;
+         cache.set(cacheKey, hasAccess);
+      }
+      if (!hasAccess) {
+         throw new ConvexError({
+            code: "forbidden",
+            message: "No permission to access this workspace",
+            statusCode: 403,
+         });
+      }
+      return handler(ctx, { ...args, userId, workspaceRole: membership ? membership.role : null });
+   };
+}
+
+export async function requireWorkspacePermission(
+   ctx: QueryCtx | MutationCtx,
+   workspaceId: Id<"workspaces">
+): Promise<{ userId: Id<"users">; workspaceRole: "owner" | "admin" | "member" | null }> {
+   const userId = await requireUserId(ctx);
+   const memberships = await ctx.db
+      .query("usersOnWorkspace")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+   const membership = memberships.find((m) => m.workspaceId === workspaceId) || null;
+   if (!membership) {
+      throw new ConvexError({
+         code: "forbidden",
+         message: "No permission to access this workspace",
+         statusCode: 403,
+      });
+   }
+   return { userId, workspaceRole: membership.role };
+}

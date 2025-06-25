@@ -52,7 +52,7 @@ export const patchMessage = internalMutation({
          const thread = await ctx.db.get(threadId);
          if (thread) {
             await ctx.db.insert("usageEvents", {
-               userId: thread.authorId,
+               userId: thread.authorId as Id<"users">,
                modelId: metadata.modelId,
                p: metadata.promptTokens ?? 0,
                c: metadata.completionTokens ?? 0,

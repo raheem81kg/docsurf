@@ -1,5 +1,9 @@
 import { env } from "@/env";
 
+export const DEFAULT_TITLE = "New document";
+export const MAX_TITLE_LENGTH = 255;
+
+export const MAX_TREE_DEPTH = 3;
 // Cookie constants
 export const COOKIES = {
    MfaSetupVisited: "mfa-setup-visited",

@@ -23,7 +23,7 @@ export const Route = createFileRoute("/settings/profile")({
 
 function UserAccountSettings() {
    const { data: session, isPending: sessionLoading } = useSession();
-
+   const queryClient = useQueryClient();
    const { data: sessions = [], isPending: sessionsLoading } = useListSessions();
    const updateUser = useUpdateUser();
    const revokeSession = useRevokeSession();
@@ -81,7 +81,6 @@ function UserAccountSettings() {
 
    const handleSignOut = useCallback(async () => {
       try {
-         const queryClient = useQueryClient();
          await queryClient.resetQueries({ queryKey: ["session"] });
          await queryClient.resetQueries({ queryKey: ["token"] });
          await authClient.signOut();

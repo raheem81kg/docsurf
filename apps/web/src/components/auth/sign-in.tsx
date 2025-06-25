@@ -5,7 +5,7 @@ import { OTPSignIn } from "./otp-sign-in";
 import { env } from "@/env";
 import { COOKIES } from "@/utils/constants";
 import { authClient } from "@/lib/auth-client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useCookies } from "react-cookie";
 
@@ -16,9 +16,17 @@ export const SignIn = ({ inviteCode }: { inviteCode?: string }) => {
       from: "/",
    });
    const [cookies, setCookie] = useCookies();
+   const [mounted, setMounted] = useState(false);
+   const [authLoading, setAuthLoading] = useState(false);
+
+   useEffect(() => {
+      setMounted(true);
+   }, []);
+
+   if (!mounted) return null;
+
    const preferredSignInProvider = cookies[COOKIES.PreferredSignInProvider] as PreferredSignInProvider;
    let preferredSignInOption: React.ReactNode;
-   const [authLoading, setAuthLoading] = useState(false);
 
    const handleGoogleSignIn = async () => {
       await authClient.signIn.social(

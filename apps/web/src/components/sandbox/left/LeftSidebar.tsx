@@ -1,6 +1,9 @@
 import {
    Sidebar,
+   SidebarContent,
    SidebarFooter,
+   SidebarGroup,
+   SidebarGroupContent,
    SidebarGroupLabel,
    SidebarHeader,
    SidebarMenu,
@@ -10,11 +13,11 @@ import {
    useSidebar,
 } from "@docsurf/ui/components/sidebar";
 import { useSandStateStore } from "@/store/sandstate";
-import { Command, ExternalLink, Home, Settings, ChevronsLeft } from "lucide-react";
+import { Command, ExternalLink, Home, Settings, ChevronsLeft, ImageIcon, Search, Trash } from "lucide-react";
 import { NavUser } from "./nav-user/nav-user";
 import { CreateMenu } from "./nav-user/create-menu";
 import { Link } from "@tanstack/react-router";
-import React, { Suspense, useEffect, useState, useCallback } from "react";
+import React, { Suspense, useEffect, useState, useCallback, useRef } from "react";
 
 import {
    InfoCard,
@@ -26,8 +29,18 @@ import {
    InfoCardAction,
 } from "./info-card/info-card";
 import Credits from "./credits";
-import { Button } from "@docsurf/ui/components/button";
+import { Button, buttonVariants } from "@docsurf/ui/components/button";
 import { LEFT_SIDEBAR_COOKIE_NAME } from "@/utils/constants";
+import { cn } from "@docsurf/ui/lib/utils";
+import { CommandK } from "../right-inner/chat/commandk";
+import { NewFolderButton } from "../right-inner/chat/threads/new-folder-button";
+import { FolderItem } from "../right-inner/chat/threads/folder-item";
+import { api } from "@docsurf/backend/convex/_generated/api";
+import { useDiskCachedQuery } from "../right-inner/chat/lib/convex-cached-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { TrashPopover } from "./trash-popover";
+import { SortableTree } from "./_tree_components/SortableTree";
 
 const data = {
    navMain: [
@@ -73,11 +86,56 @@ export const LeftSidebar = ({
 }) => {
    const { setOpen, setOpenMobile, toggleSidebar, open, isMobile, openMobile } = useSidebar();
    const set_l_sidebar_state = useSandStateStore((s) => s.set_l_sidebar_state);
-
+   const [commandKOpen, setCommandKOpen] = useState(false);
    const [infoCardDismissed, setInfoCardDismissed] = useState(false);
    const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
    const mounted = useMounted();
+   const user = useQuery(convexQuery(api.auth.getCurrentUser, {}));
 
+   // SCROLL GRADIENT LOGIC (copied from threads-sidebar)
+   const [showGradient, setShowGradient] = useState(false);
+   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+   useEffect(() => {
+      const container = scrollContainerRef.current;
+      if (!container) return;
+
+      const handleScroll = () => {
+         const { scrollTop, scrollHeight, clientHeight } = container;
+         const hasScrollableContent = scrollHeight > clientHeight;
+         const isScrolledToBottom = scrollHeight - scrollTop - clientHeight < 5;
+         setShowGradient(hasScrollableContent && !isScrolledToBottom);
+      };
+
+      handleScroll();
+      container.addEventListener("scroll", handleScroll);
+
+      const resizeObserver = new ResizeObserver(handleScroll);
+      resizeObserver.observe(container);
+
+      const mutationObserver = new MutationObserver(handleScroll);
+      mutationObserver.observe(container, {
+         childList: true,
+         subtree: true,
+      });
+
+      return () => {
+         container.removeEventListener("scroll", handleScroll);
+         resizeObserver.disconnect();
+         mutationObserver.disconnect();
+      };
+   }, []);
+
+   // Get projects
+   const projects = useDiskCachedQuery(
+      api.folders.getUserProjects,
+      {
+         key: "projects",
+         default: [],
+         forceCache: true,
+      },
+      user.data?._id && !user.isLoading ? {} : "skip"
+   );
    // Sync the sidebar state from useSandStateStore to useSidebar (store -> UI)
    React.useEffect(() => {
       if (isMobile) {
@@ -146,51 +204,107 @@ export const LeftSidebar = ({
 
                <CreateMenu />
             </SidebarMenu>
+
+            <Button
+               onClick={() => {
+                  setOpenMobile(false);
+                  setCommandKOpen(true);
+               }}
+               variant="outline"
+            >
+               <Search className="h-4 w-4" />
+               Search chats
+               <div className="ml-auto flex items-center gap-1 text-xs">
+                  <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-medium font-mono text-muted-foreground">
+                     <span className="text-sm">⌘</span>
+                     <span className="text-xs">K</span>
+                  </kbd>
+               </div>
+            </Button>
+            <div className="px-2">
+               <Link to="/doc/library" className={cn(buttonVariants({ variant: "ghost" }), "h-8 w-full justify-start")}>
+                  <ImageIcon className="h-4 w-4" />
+                  Library
+               </Link>
+            </div>
+
             <SidebarMenu className="gap-0.5">{/* <NavMain items={navMainWithActive} onSettingsClick={openModal} /> */}</SidebarMenu>
          </SidebarHeader>
 
-         <div className="flex-1 flex flex-col min-h-0">
-            {/* <OfflineStatus /> */}
-            <Link to="/doc">
-               <SidebarGroupLabel className="font-medium px-4">Documents</SidebarGroupLabel>
-            </Link>
-            {/* <Suspense fallback={<TreeSkeleton />}>
+         <SidebarContent ref={scrollContainerRef} className="scrollbar-hide">
+            <div className="flex-1 flex flex-col min-h-0">
+               {/* Folders Section */}
+               <SidebarGroup>
+                  <SidebarGroupLabel className="pr-0">
+                     Folders
+                     <div className="flex-grow" />
+                     <NewFolderButton onClick={() => setOpenMobile(false)} />
+                  </SidebarGroupLabel>
+                  <SidebarGroupContent>
+                     <SidebarMenu>
+                        {Array.isArray(projects) &&
+                           projects.map((project) => {
+                              return <FolderItem key={project._id} project={project} numThreads={project.threadCount} />;
+                           })}
+                     </SidebarMenu>
+                  </SidebarGroupContent>
+               </SidebarGroup>
+               {/* <OfflineStatus /> */}
+               <SidebarGroup>
+                  <SidebarGroupLabel className="pr-0">
+                     <Link to="/doc">Documents</Link>
+
+                     <div className="flex-grow" />
+                     <NewFolderButton onClick={() => setOpenMobile(false)} />
+                  </SidebarGroupLabel>
+                  <SidebarGroupContent>
+                     <SidebarMenu className="px-2">
+                        {/* <SidebarMenuItem> TBI</SidebarMenuItem> */}
+                        <SortableTree collapsible indicator removable />
+                     </SidebarMenu>
+                  </SidebarGroupContent>
+               </SidebarGroup>
+
+               {/* <Suspense fallback={<TreeSkeleton />}>
                <SortableTree collapsible indicator removable />
             </Suspense> */}
-         </div>
+            </div>
+            {showGradient && (
+               <div className="pointer-events-none absolute right-0 bottom-0 left-0 h-20 bg-gradient-to-t from-sidebar via-sidebar/60 to-transparent" />
+            )}
+         </SidebarContent>
 
          <SidebarFooter className="pt-0">
-            {/* Always render InfoCard after mount; let InfoCard handle its own dismissal animation */}
-            {mounted && (
-               <InfoCard
-                  className="bg-default z-10"
-                  storageKey="docsurf-beta-announcement"
-                  dismissType="forever"
-                  forceDismiss={infoCardDismissed}
-                  onDismissed={handleInfoCardDismiss}
-               >
-                  <InfoCardContent>
-                     <div className="relative">
-                        <div className="absolute -top-4 -right-4 w-[14px] h-[14px] bg-primary rounded-full animate-ping" />
-                        <div className="absolute -top-4 -right-4 w-[14px] h-[14px] bg-primary rounded-full" />
-                        <InfoCardTitle className="text-primary">DocSurf is now in beta</InfoCardTitle>
-                        <InfoCardDescription>We are currently in beta and we would love to hear from you.</InfoCardDescription>
-                        <InfoCardFooter>
-                           <InfoCardDismiss>Dismiss</InfoCardDismiss>
-                           <InfoCardAction>
-                              <button
-                                 type="button"
-                                 className="flex flex-row items-center gap-1 underline"
-                                 onClick={openFeedbackDialog}
-                              >
-                                 Give Feedback <ExternalLink size={12} />
-                              </button>
-                           </InfoCardAction>
-                        </InfoCardFooter>
-                     </div>
-                  </InfoCardContent>
-               </InfoCard>
-            )}
+            <TrashPopover>
+               <Button variant="ghost" size="sm" aria-label="Open trash menu" className="justify-start">
+                  <span className="text-sm">Trash</span>
+                  <Trash className="w-5 h-5" />
+               </Button>
+            </TrashPopover>
+            <InfoCard
+               className="bg-default z-10"
+               storageKey="docsurf-beta-announcement"
+               dismissType="forever"
+               forceDismiss={infoCardDismissed}
+               onDismissed={handleInfoCardDismiss}
+            >
+               <InfoCardContent>
+                  <div className="relative">
+                     <div className="absolute -top-4 -right-4 w-[14px] h-[14px] bg-primary rounded-full animate-ping" />
+                     <div className="absolute -top-4 -right-4 w-[14px] h-[14px] bg-primary rounded-full" />
+                     <InfoCardTitle className="text-primary">DocSurf is now in beta</InfoCardTitle>
+                     <InfoCardDescription>We are currently in beta and we would love to hear from you.</InfoCardDescription>
+                     <InfoCardFooter>
+                        <InfoCardDismiss>Dismiss</InfoCardDismiss>
+                        <InfoCardAction>
+                           <button type="button" className="flex flex-row items-center gap-1 underline" onClick={openFeedbackDialog}>
+                              Give Feedback <ExternalLink size={12} />
+                           </button>
+                        </InfoCardAction>
+                     </InfoCardFooter>
+                  </div>
+               </InfoCardContent>
+            </InfoCard>
 
             {/* <NavSecondary
                items={data.navSecondary
@@ -207,33 +321,14 @@ export const LeftSidebar = ({
                className="mt-auto"
             /> */}
             <div className="relative flex flex-col justify-end">{/* <Usage /> */}</div>
-            <SidebarMenu>
+            <SidebarMenu className="hidden lg:block">
                <SidebarMenuItem>
-                  {/* <SidebarMenuButton size="lg" asChild>
-                     <Link href="/doc">
-                        <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
-                           <Command className="size-4" />
-                           <Image src="/assets/logo/logo.svg" alt="docsurf" width={32} height={32} className="block dark:hidden" />
-                           <Image
-                              src="/logo-dark.svg"
-                              alt="docsurf"
-                              width={32}
-                              height={32}
-                              className="hidden dark:block"
-                           />
-                        </div>
-                        <div className="grid flex-1 text-left text-sm leading-tight">
-                           <span className="truncate font-semibold">DocSurf</span>
-                           <span className="truncate text-xs">Write with AI</span>
-                        </div>
-                     </Link>
-                  </SidebarMenuButton> */}
-
                   <Credits />
                </SidebarMenuItem>
             </SidebarMenu>
          </SidebarFooter>
          <SidebarRail onToggle={handleRailClick} sideForDrag="left" enableDrag maxSidebarWidth={20} />
+         <CommandK open={commandKOpen} onOpenChange={setCommandKOpen} />
       </Sidebar>
    );
 };

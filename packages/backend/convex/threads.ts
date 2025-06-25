@@ -22,7 +22,7 @@ export const getThreadById = internalQuery({
 export const createThreadOrInsertMessages = internalMutation({
    args: {
       threadId: v.optional(v.string()),
-      authorId: v.string(),
+      authorId: v.id("users"),
       userMessage: v.optional(HTTPAIMessage),
       proposedNewAssistantId: v.string(),
       targetFromMessageId: v.optional(v.string()),
@@ -227,7 +227,7 @@ export const searchUserThreads = query({
          // If no search query, return recent threads with pagination
          return await ctx.db
             .query("threads")
-            .withIndex("byAuthor", (q) => q.eq("authorId", user.id))
+            .withIndex("byAuthor", (q) => q.eq("authorId", user.id as Id<"users">))
             .order("desc")
             .paginate(paginationOpts);
       }
@@ -235,7 +235,7 @@ export const searchUserThreads = query({
       // Use search index for text search
       return await ctx.db
          .query("threads")
-         .withSearchIndex("search_title", (q) => q.search("title", query.trim()).eq("authorId", user.id))
+         .withSearchIndex("search_title", (q) => q.search("title", query.trim()).eq("authorId", user.id as Id<"users">))
          .paginate(paginationOpts);
    },
 });
@@ -272,13 +272,13 @@ export const getUserThreadsPaginated = query({
       if (isFirstPage) {
          const pinnedQuery = ctx.db
             .query("threads")
-            .withIndex("byAuthor", (q) => q.eq("authorId", user.id))
+            .withIndex("byAuthor", (q) => q.eq("authorId", user.id as Id<"users">))
             .filter((q) => q.eq(q.field("pinned"), true))
             .order("desc");
 
          const regularQuery = ctx.db
             .query("threads")
-            .withIndex("byAuthor", (q) => q.eq("authorId", user.id))
+            .withIndex("byAuthor", (q) => q.eq("authorId", user.id as Id<"users">))
             .filter((q) => q.neq(q.field("pinned"), true))
             .order("desc");
 
@@ -309,7 +309,7 @@ export const getUserThreadsPaginated = query({
 
       const baseQuery = ctx.db
          .query("threads")
-         .withIndex("byAuthor", (q) => q.eq("authorId", user.id))
+         .withIndex("byAuthor", (q) => q.eq("authorId", user.id as Id<"users">))
          .filter((q) => q.neq(q.field("pinned"), true));
 
       if (!includeInFolder) {
@@ -378,7 +378,7 @@ export const updateThreadName = internalMutation({
 export const createSharedThread = internalMutation({
    args: {
       originalThreadId: v.id("threads"),
-      authorId: v.string(),
+      authorId: v.id("users"),
       title: v.string(),
       messages: v.array(v.any()),
       includeAttachments: v.boolean(),
@@ -446,7 +446,7 @@ export const shareThread = action({
          sharedThreadId: Id<"sharedThreads">;
       } = await ctx.runMutation(internal.threads.createSharedThread, {
          originalThreadId: threadId,
-         authorId: user.id,
+         authorId: user.id as Id<"users">,
          title: thread.title,
          messages: aiMessages,
          includeAttachments,
@@ -470,7 +470,7 @@ export const forkSharedThread = mutation({
 
       // Create new thread for the user
       const newThreadId: Id<"threads"> = await ctx.db.insert("threads", {
-         authorId: user.id,
+         authorId: user.id as Id<"users">,
          title: sharedThread.title,
          createdAt: Date.now(),
          updatedAt: Date.now(),
@@ -584,7 +584,7 @@ export const getThreadsByProject = query({
          // Get threads for specific project
          return await ctx.db
             .query("threads")
-            .withIndex("byAuthorAndProject", (q) => q.eq("authorId", user.id).eq("projectId", projectId))
+            .withIndex("byAuthorAndProject", (q) => q.eq("authorId", user.id as Id<"users">).eq("projectId", projectId))
             .order("desc")
             .paginate(paginationOpts);
       }
@@ -592,7 +592,7 @@ export const getThreadsByProject = query({
       // Get threads without project (General)
       return await ctx.db
          .query("threads")
-         .withIndex("byAuthor", (q) => q.eq("authorId", user.id))
+         .withIndex("byAuthor", (q) => q.eq("authorId", user.id as Id<"users">))
          .filter((q) => q.eq(q.field("projectId"), undefined))
          .order("desc")
          .paginate(paginationOpts);
@@ -627,7 +627,7 @@ export const getUserThreadsPaginatedByProject = query({
             // Get pinned threads for specific project
             pinnedThreads = await ctx.db
                .query("threads")
-               .withIndex("byAuthorAndProject", (q) => q.eq("authorId", user.id).eq("projectId", projectId))
+               .withIndex("byAuthorAndProject", (q) => q.eq("authorId", user.id as Id<"users">).eq("projectId", projectId))
                .filter((q) => q.eq(q.field("pinned"), true))
                .order("desc")
                .collect();
@@ -635,7 +635,7 @@ export const getUserThreadsPaginatedByProject = query({
             // Get regular threads (non-pinned) for specific project
             regularThreadsResult = await ctx.db
                .query("threads")
-               .withIndex("byAuthorAndProject", (q) => q.eq("authorId", user.id).eq("projectId", projectId))
+               .withIndex("byAuthorAndProject", (q) => q.eq("authorId", user.id as Id<"users">).eq("projectId", projectId))
                .filter((q) => q.neq(q.field("pinned"), true))
                .order("desc")
                .paginate(paginationOpts);
@@ -643,7 +643,7 @@ export const getUserThreadsPaginatedByProject = query({
             // Get pinned threads without project (General)
             pinnedThreads = await ctx.db
                .query("threads")
-               .withIndex("byAuthor", (q) => q.eq("authorId", user.id))
+               .withIndex("byAuthor", (q) => q.eq("authorId", user.id as Id<"users">))
                .filter((q) => q.and(q.eq(q.field("projectId"), undefined), q.eq(q.field("pinned"), true)))
                .order("desc")
                .collect();
@@ -651,7 +651,7 @@ export const getUserThreadsPaginatedByProject = query({
             // Get regular threads (non-pinned) without project
             regularThreadsResult = await ctx.db
                .query("threads")
-               .withIndex("byAuthor", (q) => q.eq("authorId", user.id))
+               .withIndex("byAuthor", (q) => q.eq("authorId", user.id as Id<"users">))
                .filter((q) => q.and(q.eq(q.field("projectId"), undefined), q.neq(q.field("pinned"), true)))
                .order("desc")
                .paginate(paginationOpts);
@@ -681,7 +681,7 @@ export const getUserThreadsPaginatedByProject = query({
       if (projectId) {
          return await ctx.db
             .query("threads")
-            .withIndex("byAuthorAndProject", (q) => q.eq("authorId", user.id).eq("projectId", projectId))
+            .withIndex("byAuthorAndProject", (q) => q.eq("authorId", user.id as Id<"users">).eq("projectId", projectId))
             .filter((q) => q.neq(q.field("pinned"), true))
             .order("desc")
             .paginate(paginationOpts);
@@ -689,7 +689,7 @@ export const getUserThreadsPaginatedByProject = query({
 
       return await ctx.db
          .query("threads")
-         .withIndex("byAuthor", (q) => q.eq("authorId", user.id))
+         .withIndex("byAuthor", (q) => q.eq("authorId", user.id as Id<"users">))
          .filter((q) => q.and(q.eq(q.field("projectId"), undefined), q.neq(q.field("pinned"), true)))
          .order("desc")
          .paginate(paginationOpts);

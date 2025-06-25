@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { query } from "./_generated/server";
 import { getUserIdentity } from "./lib/identity";
 import { MODELS_SHARED } from "./lib/models";
+import { Id } from "./_generated/dataModel";
 
 const getDaysSinceEpoch = (daysAgo: number) => Math.floor(Date.now() / (24 * 60 * 60 * 1000)) - daysAgo;
 
@@ -28,7 +29,7 @@ export const getMyUsageStats = query({
       // Get user's events in time range - super efficient with the index
       const events = await ctx.db
          .query("usageEvents")
-         .withIndex("byUserDay", (q) => q.eq("userId", user.id).gte("daysSinceEpoch", startDay))
+         .withIndex("byUserDay", (q) => q.eq("userId", user.id as Id<"users">).gte("daysSinceEpoch", startDay))
          .collect();
 
       // Post-filter by model and aggregate
@@ -94,7 +95,7 @@ export const getMyUsageChartData = query({
          // Get user's events in the last 24 hours
          const events = await ctx.db
             .query("usageEvents")
-            .withIndex("byUserDay", (q) => q.eq("userId", user.id))
+            .withIndex("byUserDay", (q) => q.eq("userId", user.id as Id<"users">))
             .filter((q) => q.gte(q.field("_creationTime"), startTime))
             .collect();
 
@@ -149,7 +150,7 @@ export const getMyUsageChartData = query({
       // Get user's events in time range
       const events = await ctx.db
          .query("usageEvents")
-         .withIndex("byUserDay", (q) => q.eq("userId", user.id).gte("daysSinceEpoch", startDay))
+         .withIndex("byUserDay", (q) => q.eq("userId", user.id as Id<"users">).gte("daysSinceEpoch", startDay))
          .collect();
 
       // Group by day
@@ -220,7 +221,7 @@ export const getMyModelUsage = query({
       // Get user's events, then filter by model
       const events = await ctx.db
          .query("usageEvents")
-         .withIndex("byUserDay", (q) => q.eq("userId", user.id).gte("daysSinceEpoch", startDay))
+         .withIndex("byUserDay", (q) => q.eq("userId", user.id as Id<"users">).gte("daysSinceEpoch", startDay))
          .filter((q) => q.eq(q.field("modelId"), modelId))
          .collect();
 

@@ -649,8 +649,8 @@ export function MultimodalInput({
                   placeholder={isImageModel ? "Describe the image you want to generate..." : "Ask me anything..."}
                />
 
-               <PromptInputActions className="flex items-center justify-between gap-2 pt-2">
-                  <div className="flex items-center gap-2">
+               <PromptInputActions className="flex flex-wrap items-center justify-between gap-2 pt-2">
+                  <div className="flex flex-wrap items-center gap-2">
                      {dragActive && (
                         <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg border-2 border-primary border-dashed bg-primary/5">
                            <div className="text-center">

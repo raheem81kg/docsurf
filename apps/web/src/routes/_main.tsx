@@ -48,7 +48,12 @@ const WrapperLeftSidebar = () => {
    const toggle_l_sidebar = useSandStateStore((s) => s.toggle_l_sidebar);
 
    return (
-      <SidebarProvider name="left-sidebar" defaultWidth="15.8rem" className="w-fit overflow-hidden max-h-dvh">
+      <SidebarProvider
+         name="left-sidebar"
+         defaultWidth="15.8rem"
+         defaultOpen={l_sidebar_state}
+         className="w-fit overflow-hidden max-h-dvh"
+      >
          <LeftSidebar l_sidebar_state={l_sidebar_state} toggle_l_sidebar={toggle_l_sidebar} />
       </SidebarProvider>
    );
@@ -62,6 +67,7 @@ const WrapperInnerRightSidebar = () => {
       <SidebarProvider
          defaultWidth="23.5rem"
          name="inner-right-sidebar"
+         defaultOpen={ir_sidebar_state}
          className="w-fit overflow-hidden max-h-dvh min-h-[calc(100svh-95px)]"
       >
          <InnerRightSidebar ir_sidebar_state={ir_sidebar_state} toggle_ir_sidebar={toggle_ir_sidebar} />

@@ -1,37 +1,21 @@
 "use client";
 
-import { useTheme } from "next-themes";
-
-import { MoonIcon } from "@/components/assets/animated/moon";
-import { SunIcon } from "@/components/assets/animated/sun";
 import { useEffect, useState } from "react";
 import { DropdownMenuItem } from "@docsurf/ui/components/dropdown-menu";
+import { MoonIcon } from "@/components/assets/animated/moon";
+import { SunIcon } from "@/components/assets/animated/sun";
+import { useThemeStore } from "@/components/sandbox/right-inner/chat/lib/theme-store";
+import { toggleThemeMode } from "@/components/sandbox/right-inner/chat/lib/toggle-theme-mode";
 
 export function SidebarThemeSwitchMenuItem() {
    const [isRendered, setIsRendered] = useState(false);
-   const { theme, resolvedTheme, setTheme } = useTheme();
+   const { themeState } = useThemeStore();
 
    // Prevents hydration error
    useEffect(() => setIsRendered(true), []);
 
-   async function handleThemeToggle() {
-      const newTheme = theme === "dark" ? "light" : "dark";
-      const nextResolvedTheme = newTheme;
-      function update() {
-         setTheme(newTheme);
-      }
-      if (
-         typeof window !== "undefined" &&
-         document.startViewTransition &&
-         (nextResolvedTheme === "dark" || nextResolvedTheme === "light") &&
-         nextResolvedTheme !== resolvedTheme
-      ) {
-         document.documentElement.style.viewTransitionName = "theme-transition";
-         await document.startViewTransition(update).finished;
-         document.documentElement.style.viewTransitionName = "";
-      } else {
-         update();
-      }
+   function handleThemeToggle() {
+      toggleThemeMode();
    }
 
    if (!isRendered) return null;
@@ -39,7 +23,7 @@ export function SidebarThemeSwitchMenuItem() {
    return (
       <DropdownMenuItem onClick={handleThemeToggle} className="cursor-pointer group">
          <div className="flex items-center gap-2">
-            {theme === "dark" ? (
+            {themeState.currentMode === "dark" ? (
                <MoonIcon className="size-4 text-text-default hover:text-text-emphasis" />
             ) : (
                <SunIcon className="size-4 text-text-default hover:text-text-emphasis" />
