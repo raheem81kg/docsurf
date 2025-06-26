@@ -29,7 +29,7 @@ import {
    isTextMimeType,
    MAX_FILE_SIZE,
    MAX_TOKENS_PER_FILE,
-} from "@docsurf/utils/file_constants";
+} from "@docsurf/utils/constants/file_constants";
 import { VoiceRecorder } from "./voice-recorder";
 import {
    PromptInput,

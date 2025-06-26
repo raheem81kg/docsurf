@@ -66,6 +66,7 @@ import type * as subscriptions from "../subscriptions.js";
 import type * as threads from "../threads.js";
 import type * as todos from "../todos.js";
 import type * as users from "../users.js";
+import type * as workspaces from "../workspaces.js";
 
 import type {
   ApiFromModules,
@@ -140,6 +141,7 @@ declare const fullApi: ApiFromModules<{
   threads: typeof threads;
   todos: typeof todos;
   users: typeof users;
+  workspaces: typeof workspaces;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

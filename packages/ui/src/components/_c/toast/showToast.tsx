@@ -18,7 +18,7 @@ type ToastAction = {
 export const SuccessToast = ({ message, onClose, toastId, action }: IToast & { action?: ToastAction }) => (
    <div
       className={cn(
-         "mb-2 flex h-auto items-center space-x-2 rounded-lg border border-border-subtle bg-default px-3 py-2.5 font-semibold text-sm text-text-default shadow-elevation-low md:max-w-sm rtl:space-x-reverse"
+         "mb-2 flex h-auto items-center space-x-2 rounded-lg border border-border-subtle bg-background px-3 py-2.5 font-semibold text-sm text-text-default shadow-elevation-low md:max-w-sm rtl:space-x-reverse"
       )}
    >
       <span className="mt-0.5">
@@ -200,7 +200,7 @@ showToast.promise = <T,>(
       (id) => (
          <div
             className={cn(
-               "mb-2 flex h-auto items-center space-x-2 rounded-lg border border-border-subtle bg-default px-3 py-2.5 font-semibold text-sm text-text-default shadow-elevation-low md:max-w-sm rtl:space-x-reverse"
+               "mb-2 flex h-auto items-center space-x-2 rounded-lg border border-border-subtle bg-background px-3 py-2.5 font-semibold text-sm text-text-default shadow-elevation-low md:max-w-sm rtl:space-x-reverse"
             )}
          >
             <span className="mt-0.5">

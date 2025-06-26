@@ -21,7 +21,7 @@ export const Action = forwardRef<HTMLButtonElement, Props>(({ active, className,
             "flex items-center justify-center",
             "outline-none appearance-none",
             "p-1 rounded-sm hover:bg-gray-100/10",
-            "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-background",
             className
          )}
          onClick={(e) => {

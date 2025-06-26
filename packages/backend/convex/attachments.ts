@@ -10,7 +10,7 @@ import {
    getCorrectMimeType,
    getFileTypeInfo,
    isSupportedFile,
-} from "./lib/file_constants";
+} from "@docsurf/utils/constants/file_constants";
 import { getUserIdentity } from "./lib/identity";
 
 export const r2 = new R2(components.r2);

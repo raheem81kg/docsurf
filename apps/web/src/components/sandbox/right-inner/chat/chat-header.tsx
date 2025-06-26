@@ -1,52 +1,62 @@
-import { Button, buttonVariants } from "@docsurf/ui/components/button";
-import { useNavigate } from "@tanstack/react-router";
-import { useSidebar } from "@docsurf/ui/components/sidebar";
-import { Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@docsurf/ui/lib/utils";
-import { CommandK } from "./commandk";
-import { useSandStateStore } from "@/store/sandstate";
+import { CommandP } from "./commandpchats";
+import { Popover, PopoverTrigger, PopoverContent } from "@docsurf/ui/components/popover";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@docsurf/ui/components/tooltip";
 
 /**
  * ChatHeader - Header for the chat panel with New Chat and Search Chats buttons.
  * Consistent with sidebar header styling.
  */
 export function ChatHeader({ className }: { className?: string }) {
-   //    const toggle_ir_sidebar = useSandStateStore((s) => s.toggle_ir_sidebar);
-
-   const navigate = useNavigate();
-   const { setOpenMobile } = useSidebar();
-   const [commandKOpen, setCommandKOpen] = useState(false);
+   const [commandPOpen, setCommandPOpen] = useState(false);
 
    return (
-      <div className={cn("flex pointer-events-auto items-center justify-between gap-2 px-4 py-2 border-b", className)}>
-         <Button
-            className={cn(buttonVariants({ variant: "default" }), "justify-center")}
-            onClick={() => {
-               document.dispatchEvent(new CustomEvent("new_chat"));
-               //    setOpenMobile(false);
-               //    navigate({ to: "/" });
-            }}
-         >
-            New Chat
-         </Button>
-         <Button
-            variant="outline"
-            onClick={() => {
-               //    setOpenMobile(false);
-               setCommandKOpen(true);
-            }}
-         >
-            <Search className="h-4 w-4" />
-            <span className="ml-2">Search chats</span>
-            <div className="ml-auto flex items-center gap-1 text-xs">
-               <kbd className="pointer-events-none hidden md:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-medium font-mono text-muted-foreground">
-                  <span className="text-sm">⌘</span>
-                  <span className="text-xs">K</span>
-               </kbd>
-            </div>
-         </Button>
-         <CommandK open={commandKOpen} onOpenChange={setCommandKOpen} />
+      <div className={cn("flex pointer-events-auto items-center justify-end gap-2 px-4 py-2", className)}>
+         <Popover>
+            <PopoverTrigger asChild>
+               <Tooltip delayDuration={0}>
+                  <TooltipTrigger asChild>
+                     <button
+                        type="button"
+                        className="hover:bg-accent/50 rounded-md p-1"
+                        onClick={() => {
+                           document.dispatchEvent(new CustomEvent("new_chat"));
+                        }}
+                     >
+                        <Plus className="size-5 md:size-4" />
+                     </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">New Chat</TooltipContent>
+               </Tooltip>
+            </PopoverTrigger>
+            <PopoverContent side="bottom" align="center">
+               <span className="text-sm">Start a new chat</span>
+            </PopoverContent>
+         </Popover>
+         <Popover>
+            <PopoverTrigger asChild>
+               <Tooltip delayDuration={0}>
+                  <TooltipTrigger asChild>
+                     <button
+                        type="button"
+                        className="hover:bg-accent/50 rounded-md p-1"
+                        onClick={() => {
+                           setCommandPOpen(true);
+                        }}
+                     >
+                        <Search className="size-5 md:size-4" />
+                     </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">Search Chats</TooltipContent>
+               </Tooltip>
+            </PopoverTrigger>
+            <PopoverContent side="bottom" align="center">
+               <span className="text-sm">Search your chats</span>
+            </PopoverContent>
+         </Popover>
+         <CommandP open={commandPOpen} onOpenChange={setCommandPOpen} />
       </div>
    );
 }

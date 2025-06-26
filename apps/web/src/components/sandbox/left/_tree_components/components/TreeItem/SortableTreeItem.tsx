@@ -1,5 +1,5 @@
 "use client";
-import React, { type CSSProperties, memo } from "react";
+import React, { type CSSProperties } from "react";
 import type { UniqueIdentifier } from "@dnd-kit/core";
 import { type AnimateLayoutChanges, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -59,4 +59,4 @@ function SortableTreeItemComponent({ id, depth, isLoading, isEmptyFolder, active
    );
 }
 
-export const SortableTreeItem = memo(SortableTreeItemComponent);
+export const SortableTreeItem = SortableTreeItemComponent;

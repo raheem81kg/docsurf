@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
    type Announcements,
@@ -37,17 +37,19 @@ import { SortableTreeItem } from "./components/TreeItem/SortableTreeItem";
 import { CSS } from "@dnd-kit/utilities";
 import type { AnimateLayoutChanges } from "@dnd-kit/sortable";
 import { VList } from "virtua";
-import { useTreeStore, useTreeActions, useTreeSelectors } from "./use-tree-store";
-import { useNavigate, useParams } from "@tanstack/react-router";
+import { useNavigate, useLocation, useParams } from "@tanstack/react-router";
 import { Route as DocRoute } from "@/routes/_main/doc.$documentId";
 import { Skeleton } from "@docsurf/ui/components/skeleton";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
-import { DEFAULT_TITLE, MAX_TREE_DEPTH } from "@/utils/constants";
+import { DEFAULT_TEXT_TITLE, MAX_TREE_DEPTH } from "@/utils/constants";
 import { motion } from "motion/react";
 import { CAN_USE_DOM } from "@docsurf/ui/lib/utils";
-import { useQuery } from "convex/react";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
+import { useConvexTree } from "./use-convex-tree";
+import { convexQuery } from "@convex-dev/react-query";
+import { useQuery } from "@tanstack/react-query";
+import type { CurrentUser } from "@docsurf/backend/convex/auth";
 
 const measuring = {
    droppable: {
@@ -88,9 +90,9 @@ interface Props {
 // Export TreeSkeleton component
 export function TreeSkeleton() {
    return (
-      <div className="flex flex-col mt-[1.5px]">
+      <div className="flex flex-col">
          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="flex items-center gap-2 px-2 py-1">
+            <div key={i} className="flex items-center gap-2 py-1">
                <Skeleton className="h-6 rounded-sm w-6 shrink-0" /> {/* Icon */}
                <Skeleton className="h-6 rounded-sm flex-1" /> {/* Title */}
             </div>
@@ -103,7 +105,7 @@ function NoItems() {
    return (
       <div className="flex items-center justify-center h-full">
          <motion.div
-            className="text-center text-muted-foreground"
+            className="text-center text-muted-foreground font-medium pointer-events-none"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{
@@ -111,11 +113,16 @@ function NoItems() {
                ease: "easeOut",
             }}
          >
-            <motion.p className="text-sm" initial={{ y: 5, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
+            <motion.p
+               className="md:text-sm text-base"
+               initial={{ y: 5, opacity: 0 }}
+               animate={{ y: 0, opacity: 1 }}
+               transition={{ delay: 0.1 }}
+            >
                No documents yet
             </motion.p>
             <motion.p
-               className="text-xs mt-1"
+               className="md:text-xs text-sm mt-1"
                initial={{ y: 5, opacity: 0 }}
                animate={{ y: 0, opacity: 1 }}
                transition={{ delay: 0.2 }}
@@ -131,37 +138,57 @@ function NoItems() {
  * Fetches the current document using the documentId from the route and workspaceId from user session.
  * @returns The document object, or undefined/null if loading or not found.
  */
-function useCurrentDocument() {
+export function useCurrentDocument(user: CurrentUser | undefined, userLoading: boolean) {
    let documentId: string | undefined;
    try {
-      // Try to get the param, but catch if not in route context
-      documentId = useParams({ from: DocRoute.id }).documentId;
+      documentId = useParams({ strict: false }).documentId;
    } catch {
       documentId = undefined;
    }
-   // Get the current user (and their workspaces)
-   const user = useQuery(api.auth.getCurrentUser, {});
-   // TODO: Replace with real workspaceId selection logic if user has multiple workspaces
    const workspaceId = user?.workspaces?.[0]?.workspace?._id;
-   const doc = useQuery(
-      api.documents.fetchDocumentById,
-      documentId && workspaceId ? { id: documentId as Id<"documents">, workspaceId: workspaceId as Id<"workspaces"> } : "skip"
+
+   // Always call the hook, but only enable it when you have the data
+   const enabled = !!documentId && !!workspaceId && !userLoading;
+   const { data: doc, isLoading: docLoading } = useQuery(
+      convexQuery(
+         api.documents.fetchDocumentById,
+         enabled
+            ? {
+                 id: documentId as Id<"documents">,
+                 workspaceId: workspaceId as Id<"workspaces">,
+              }
+            : "skip"
+      )
    );
-   console.log("doc", doc);
-   return doc;
+
+   // Return loading state if user is loading, or if the query is not enabled
+   if (userLoading) return { doc: undefined, docLoading: true };
+   if (!enabled) return { doc: undefined, docLoading: false };
+   return { doc, docLoading };
 }
 
 export function SortableTree({ collapsible, indicator = false, indentationWidth = 28, removable }: Props) {
-   const { items: treeItems, loading, error } = useTreeStore();
-   const { fetchTreeAsync, addItemAsync, removeItemAsync, toggleCollapse, reorderItems } = useTreeActions();
-   const { getDocumentTitle, isFolder, isFolderLoaded, isFolderLoading, isItemCollapsed } = useTreeSelectors();
-   const navigate = useNavigate();
-   const doc = useCurrentDocument();
+   // Get workspace ID from user
+   const { data: user, isLoading: userLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const workspaceId = user?.workspaces?.[0]?.workspace?._id;
 
-   // Fetch tree data on component mount
-   useEffect(() => {
-      fetchTreeAsync();
-   }, [fetchTreeAsync]);
+   const currentDocument = useCurrentDocument(user, userLoading);
+
+   const {
+      treeItems,
+      isLoading,
+      toggleCollapse,
+      reorderItems,
+      addItem,
+      removeItem,
+      isCollapsed: isCollapsedFn,
+      isFolder,
+      getDocumentTitle,
+   } = useConvexTree({ workspaceId: workspaceId as Id<"workspaces"> });
+
+   console.log("[SortableTree] treeItems", treeItems);
+
+   const navigate = useNavigate();
 
    const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
    const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
@@ -171,15 +198,18 @@ export function SortableTree({ collapsible, indicator = false, indentationWidth 
       overId: UniqueIdentifier;
    } | null>(null);
 
-   const flattenedItems = useMemo(() => {
+   let flattenedItems: FlattenedItem[] = [];
+   if (!Array.isArray(treeItems)) {
+      console.warn("flattenedItems: treeItems is not an array", treeItems);
+   } else {
       const flattenedTree = flattenTree(treeItems);
       const collapsedItems = flattenedTree.reduce<string[]>(
-         (acc, { id }) => (isItemCollapsed(id as string) ? [...acc, id.toString()] : acc),
+         (acc, { id }) => (isCollapsedFn(id as string) ? [...acc, id.toString()] : acc),
          []
       );
-
-      return removeChildrenOf(flattenedTree, activeId != null ? [activeId, ...collapsedItems] : collapsedItems);
-   }, [activeId, treeItems, isItemCollapsed]);
+      flattenedItems = removeChildrenOf(flattenedTree, activeId != null ? [activeId, ...collapsedItems] : collapsedItems);
+   }
+   console.log("[SortableTree] flattenedItems", flattenedItems);
 
    const projected =
       activeId && overId
@@ -203,7 +233,7 @@ export function SortableTree({ collapsible, indicator = false, indentationWidth 
       })
    );
 
-   const sortedIds = useMemo(() => flattenedItems.map(({ id }) => id), [flattenedItems]);
+   const sortedIds = flattenedItems.map(({ id }) => id);
    const activeItem = activeId ? flattenedItems.find(({ id }) => id === activeId) : null;
    const overItem = overId ? flattenedItems.find(({ id }) => id === overId) : null;
 
@@ -232,114 +262,84 @@ export function SortableTree({ collapsible, indicator = false, indentationWidth 
       },
    };
 
-   const handleAddItem = useCallback(
-      async (parentId: UniqueIdentifier | null = null) => {
-         try {
-            const title = DEFAULT_TITLE;
-            const newId = await addItemAsync(parentId as string | null, title, "text/plain");
-            if (newId) {
-               showToast("Document added successfully", "success");
-            }
-         } catch (error: any) {
-            if (
-               error?.message?.includes("limit user documents") ||
-               error?.message?.toLowerCase().includes("quota") ||
-               error?.message?.toLowerCase().includes("limit")
-            ) {
-               showToast(
-                  "You have reached the maximum number of documents (500). Please delete some documents to create new ones.",
-                  "error"
-               );
-            } else {
-               console.error("Error adding item:", error);
-               showToast("Failed to add item", "error");
-            }
+   const handleAddItem = async (parentId: UniqueIdentifier | null = null) => {
+      try {
+         const title = DEFAULT_TEXT_TITLE;
+         const newId = await addItem(parentId as string | null, title, "text/plain");
+         if (newId) {
+            showToast("Document added successfully", "success");
          }
-      },
-      [addItemAsync]
-   );
-
-   const handleRemove = useCallback(
-      async (id: UniqueIdentifier) => {
-         await removeItemAsync(id as string);
-         if (doc && doc._id === id) {
-            navigate({ to: "/doc" });
+      } catch (error: any) {
+         if (
+            error?.message?.includes("limit user documents") ||
+            error?.message?.toLowerCase().includes("quota") ||
+            error?.message?.toLowerCase().includes("limit")
+         ) {
+            showToast(
+               "You have reached the maximum number of documents (500). Please delete some documents to create new ones.",
+               "error"
+            );
+         } else {
+            console.error("Error adding item:", error);
+            showToast("Failed to add item", "error");
          }
-      },
-      [removeItemAsync, doc, navigate]
-   );
+      }
+   };
 
-   const handleCollapse = useCallback(
-      (id: UniqueIdentifier) => {
-         toggleCollapse(id as string);
-      },
-      [toggleCollapse]
-   );
+   const handleRemove = async (id: UniqueIdentifier) => {
+      await removeItem(id as string);
+      if (currentDocument?.doc && currentDocument.doc._id === id) {
+         navigate({ to: "/doc" });
+      }
+   };
 
-   // Memoize handlers for stable props
-   const memoizedHandleAddItem = useCallback((id: UniqueIdentifier) => () => handleAddItem(id), [handleAddItem]);
-   const memoizedHandleRemove = useCallback((id: UniqueIdentifier) => () => handleRemove(id), [handleRemove]);
-   const memoizedHandleCollapse = useCallback((id: UniqueIdentifier) => () => handleCollapse(id), [handleCollapse]);
+   const handleCollapse = (id: UniqueIdentifier) => {
+      toggleCollapse(id as string);
+   };
 
-   const renderTreeItem = useCallback(
-      ({ id, children, collapsed, depth, created_at, updated_at, ...rest }: any) => {
-         const isItemFolder = isFolder(id as string);
-         const isLoading = isItemFolder && isFolderLoading(id as string);
-         const isCollapsed = isItemFolder ? isItemCollapsed(id as string) : false;
-         const isEmptyFolder = isItemFolder && !isCollapsed && children.length === 0 && !isLoading;
-         // Memoize handlers for this item
-         const onAddChild = memoizedHandleAddItem(id);
-         const onRemove = removable ? memoizedHandleRemove(id) : undefined;
-         const onCollapse = collapsible && isItemFolder ? memoizedHandleCollapse(id) : undefined;
-         const { parentId, ...restProps } = rest;
-         return (
-            <SortableTreeItem
-               className="list-none"
-               key={id}
-               id={id}
-               value={String(id)}
-               title={getDocumentTitle(id as string) || DEFAULT_TITLE}
-               depth={id === activeId && projected ? projected.depth : depth}
-               indentationWidth={indentationWidth}
-               indicator={indicator}
-               collapsed={isCollapsed}
-               onCollapse={onCollapse}
-               onRemove={onRemove}
-               onAddChild={onAddChild}
-               isFolder={isItemFolder}
-               isLoading={isLoading}
-               isEmptyFolder={isEmptyFolder}
-               isDraggingOver={Boolean(activeId && id === overId && children.length > 0 && projected?.parentId === id)}
-               activeId={activeId}
-               created_at={created_at}
-               updated_at={updated_at}
-               {...restProps}
-            />
-         );
-      },
-      [
-         activeId,
-         collapsible,
-         getDocumentTitle,
-         indicator,
-         indentationWidth,
-         isFolder,
-         isFolderLoading,
-         isItemCollapsed,
-         memoizedHandleAddItem,
-         memoizedHandleCollapse,
-         memoizedHandleRemove,
-         overId,
-         projected,
-         removable,
-      ]
-   );
+   const renderTreeItem = ({ id, children, collapsed, depth, updatedAt, documentType, orderPosition, ...rest }: any) => {
+      const isItemFolder = isFolder(id as string);
+      const isCollapsed = isItemFolder ? isCollapsedFn(id as string) : false;
+      const isEmptyFolder = isItemFolder && !isCollapsed && children.length === 0;
+      // these are very fragile, and need to be refactored (if you don't use () => for the onCollapse, onRemove, onAddChild, it will loop infinitely and flood the database with new items)
+      const onAddChild = () => handleAddItem(id);
+      const onRemove = removable ? () => handleRemove(id) : undefined;
+      const onCollapse = collapsible && isItemFolder ? () => handleCollapse(id) : undefined;
+      const { parentId, ...restProps } = rest;
+      // documentType and orderPosition are intentionally omitted from restProps
+      return (
+         <SortableTreeItem
+            className="list-none"
+            key={id}
+            id={id}
+            value={String(id)}
+            title={getDocumentTitle(id as string) || DEFAULT_TEXT_TITLE}
+            depth={id === activeId && projected ? projected.depth : depth}
+            indentationWidth={indentationWidth}
+            indicator={indicator}
+            collapsed={isCollapsed}
+            onCollapse={onCollapse}
+            onRemove={onRemove}
+            onAddChild={onAddChild}
+            isFolder={isItemFolder}
+            isLoading={false}
+            isEmptyFolder={isEmptyFolder}
+            isDraggingOver={Boolean(activeId && id === overId && children.length > 0 && projected?.parentId === id)}
+            activeId={activeId}
+            updatedAt={updatedAt}
+            {...restProps}
+         />
+      );
+   };
 
-   if (loading) {
+   if (isLoading) {
       return <TreeSkeleton />;
    }
 
-   if (!loading && flattenedItems.length === 0) {
+   if (!isLoading && (!Array.isArray(flattenedItems) || flattenedItems.length === 0)) {
+      if (!Array.isArray(flattenedItems)) {
+         console.warn("SortableTree: flattenedItems is not an array", flattenedItems);
+      }
       return <NoItems />;
    }
 
@@ -368,11 +368,12 @@ export function SortableTree({ collapsible, indicator = false, indentationWidth 
                   <VList
                      className="relative isolate h-full overflow-hidden"
                      style={{
+                        height: "100%",
                         scrollbarWidth: "thin",
                         scrollbarColor: "var(--border) transparent",
                      }}
                   >
-                     <div className="flex flex-col space-y-[1px] mt-[1.5px] px-2">{flattenedItems.map(renderTreeItem)}</div>
+                     <div className="flex flex-col md:space-y-[1px] space-y-1.5">{flattenedItems.map(renderTreeItem)}</div>
                   </VList>
                </SortableContext>
                {CAN_USE_DOM &&
@@ -383,12 +384,12 @@ export function SortableTree({ collapsible, indicator = false, indentationWidth 
                               id={activeId}
                               depth={activeItem.depth}
                               clone
-                              title={getDocumentTitle(activeId as string) || DEFAULT_TITLE}
+                              title={getDocumentTitle(activeId as string) || DEFAULT_TEXT_TITLE}
                               childCount={getChildCount(treeItems, activeId) + 1}
                               value={activeId.toString()}
                               indentationWidth={indentationWidth}
                               isFolder={isFolder(activeId as string)}
-                              isLoading={isFolder(activeId as string) && isFolderLoading(activeId as string)}
+                              isLoading={false}
                               activeId={activeId}
                            />
                         ) : null}

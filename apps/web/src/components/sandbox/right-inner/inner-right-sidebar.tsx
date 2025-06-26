@@ -1,6 +1,6 @@
 import { Sidebar, SidebarContent, SidebarRail, useSidebar } from "@docsurf/ui/components/sidebar";
 import { useSandStateStore } from "@/store/sandstate";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import React from "react";
 import { INNER_RIGHT_SIDEBAR_COOKIE_NAME, SIDEBAR_COOKIE_MAX_AGE } from "@/utils/constants";
 import { Chat } from "./chat/chat";
@@ -40,10 +40,21 @@ export const InnerRightSidebar = ({
       document.cookie = `${INNER_RIGHT_SIDEBAR_COOKIE_NAME}=${ir_sidebar_state}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
    }, [ir_sidebar_state, open, openMobile, isMobile]);
 
+   useEffect(() => {
+      const down = (e: KeyboardEvent) => {
+         if (e.key === "i" && (e.metaKey || e.ctrlKey)) {
+            e.preventDefault();
+            set_ir_sidebar_state(!ir_sidebar_state);
+         }
+      };
+
+      document.addEventListener("keydown", down);
+      return () => document.removeEventListener("keydown", down);
+   }, [ir_sidebar_state, set_ir_sidebar_state]);
    return (
       <Sidebar
          side="right"
-         className="border-l bg-default h-full overflow-scroll scrollbar-hidden"
+         className="border-l bg-background h-full overflow-scroll scrollbar-hidden"
          set_ir_sidebar_state={set_ir_sidebar_state}
       >
          <SidebarContent className="scrollbar-hidden h-full p-0">
@@ -51,7 +62,7 @@ export const InnerRightSidebar = ({
                <Chat threadId={threadId} />
             </React.Suspense>
          </SidebarContent>
-         <SidebarRail onToggle={handleRailClick} enableDrag sideForDrag="right" maxSidebarWidth={28} />
+         <SidebarRail className="after:w-[1px]" onToggle={handleRailClick} enableDrag sideForDrag="right" maxSidebarWidth={28} />
       </Sidebar>
    );
 };

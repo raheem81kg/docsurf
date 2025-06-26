@@ -13,63 +13,63 @@ import { Button } from "@docsurf/ui/components/button";
 import { SidebarMenuItem } from "@docsurf/ui/components/sidebar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@docsurf/ui/components/tooltip";
 import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
-
-// Define supported file types with proper mime types
-// const SUPPORTED_FILE_TYPES = [
-//    {
-//       extension: "pdf",
-//       documentType: "application/pdf" as Database["public"]["Enums"]["document_type"],
-//       label: "PDF Document",
-//    },
-// ];
+import { useMutation } from "convex/react";
+import { api } from "@docsurf/backend/convex/_generated/api";
+import { DEFAULT_TEXT_TITLE, DEFAULT_FOLDER_TITLE } from "@/utils/constants";
+import { useQuery } from "convex/react";
+import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
+import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
+import throttle from "lodash/throttle";
+import { useNavigate } from "@tanstack/react-router";
 
 interface CreateMenuProps {
    parentId?: string | null;
 }
 
 export function CreateMenu({ parentId = null }: CreateMenuProps) {
-   const [isUploading, setIsUploading] = React.useState(false);
    const [open, setOpen] = React.useState(false);
-   // const { handleCreateNote, handleCreateFolder, handleUploadFile } = useShortcuts();
    const isMobile = useIsMobile();
+   const [isPending, startTransition] = React.useTransition();
+   const navigate = useNavigate();
 
-   // const onCreateDocument = React.useCallback(
-   //    debounce(
-   //       async () => {
-   //          await handleCreateNote(parentId);
-   //       },
-   //       1000,
-   //       { leading: true, trailing: false }
-   //    ),
-   //    [handleCreateNote, parentId]
-   // );
+   // Get workspaceId from current user
+   const user = useQuery(api.auth.getCurrentUser, {});
+   const workspaceId = user?.workspaces?.[0]?.workspace?._id as Id<"workspaces"> | undefined;
+   const createDocument = useMutation(api.documents.createDocument);
 
-   // const onCreateFolder = React.useCallback(
-   //    debounce(
-   //       async () => {
-   //          await handleCreateFolder(parentId);
-   //       },
-   //       1000,
-   //       { leading: true, trailing: false }
-   //    ),
-   //    [handleCreateFolder, parentId]
-   // );
-
-   // const onUploadFile = React.useCallback(
-   //    (e: React.MouseEvent) => {
-   //       e.stopPropagation();
-   //       if (env.NEXT_PUBLIC_IS_UPLOAD_STORAGE_ENABLED) {
-   //          handleUploadFile(parentId);
-   //       }
-   //    },
-   //    [handleUploadFile, parentId]
-   // );
+   const throttledCreate = throttle(
+      (type: "text/plain" | "folder") => {
+         if (!workspaceId) return;
+         startTransition(async () => {
+            try {
+               const doc = await createDocument({
+                  workspaceId,
+                  title: type === "text/plain" ? DEFAULT_TEXT_TITLE : DEFAULT_FOLDER_TITLE,
+                  documentType: type,
+                  parentId: undefined, // Top-level
+                  orderPosition: -1, // -1 means at the top
+               });
+               if (type === "text/plain") {
+                  navigate({ to: "/doc/$documentId", params: { documentId: doc.id } });
+               }
+               setOpen(false);
+            } catch (err) {
+               showToast(
+                  `Couldn't create ${type === "text/plain" ? "document" : "folder"}. Please check your connection and try again.`,
+                  "error"
+               );
+            }
+         });
+      },
+      1000, // 1 second per create action
+      { trailing: false }
+   );
 
    return (
       <SidebarMenuItem
          className={cn(
             "outline-none rounded-sm border-none transition-colors",
-            isUploading && "opacity-50 cursor-not-allowed",
+            isPending && "opacity-50 cursor-not-allowed",
             open && "bg-accent"
          )}
       >
@@ -82,17 +82,20 @@ export function CreateMenu({ parentId = null }: CreateMenuProps) {
                            type="button"
                            variant="ghost"
                            className={cn(
-                              "bg-transparent border-none outline-none cursor-pointer rounded-sm !p-2 text-sidebar transition-colors hover:bg-accent/ dark:hover:bg-accent/50",
-                              isUploading && "opacity-50 cursor-not-allowed",
+                              "bg-transparent border-none outline-none cursor-pointer rounded-sm !p-2 text-text-default hover:text-brand transition-colors hover:bg-accent/ dark:hover:bg-accent/50",
+                              isPending && "opacity-50 cursor-not-allowed",
                               open && "bg-doc-brand"
                            )}
                         >
-                           <SquarePen className="text-brand" />
+                           <SquarePen className="size-5 md:size-4 " />
                         </Button>
                      </DropdownMenuTrigger>
                   </TooltipTrigger>
                   <TooltipContent side="right" sideOffset={5}>
-                     <p>Create doc (⌘⌥N)</p>
+                     <p>
+                        Create doc
+                        {/* (⌘⌥N) */}
+                     </p>
                   </TooltipContent>
                </Tooltip>
             )}
@@ -103,38 +106,43 @@ export function CreateMenu({ parentId = null }: CreateMenuProps) {
                      variant="ghost"
                      className={cn(
                         "bg-transparent border-none outline-none cursor-pointer rounded-sm !p-2.5 text-sidebar transition-colors hover:bg-accent/50",
-                        isUploading && "opacity-50 cursor-not-allowed",
+                        isPending && "opacity-50 cursor-not-allowed",
                         open && "bg-doc-brand"
                      )}
                   >
-                     <SquarePen className="text-brand" />
+                     <SquarePen className="size-5 md:size-4 text-primary" />
                   </Button>
                </DropdownMenuTrigger>
             )}
             <DropdownMenuPortal>
-               <DropdownMenuContent onCloseAutoFocus={(e) => e.preventDefault()} align="start" className="w-56 bg-default p-1">
+               <DropdownMenuContent
+                  onCloseAutoFocus={(e) => e.preventDefault()}
+                  align="start"
+                  className="w-48 bg-background p-1"
+                  alignOffset={isMobile ? -40 : 0}
+               >
                   <DropdownMenuItem
                      className="outline-none rounded-t-sm rounded-b-none hover:bg-accent/50 transition-colors"
-                     // onClick={onCreateDocument}
+                     onClick={() => throttledCreate("text/plain")}
                   >
                      <div className="flex items-center justify-between w-full">
                         <div className="flex items-center">
                            <FileText className="mr-2 size-3.5" />
                            Create Note
                         </div>
-                        {!isMobile && <DropdownMenuShortcut>⌘⌥N</DropdownMenuShortcut>}
+                        {/* {!isMobile && <DropdownMenuShortcut>⌘⌥N</DropdownMenuShortcut>} */}
                      </div>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                      className="outline-none rounded-none hover:bg-accent/50 transition-colors"
-                     // onClick={onCreateFolder}
+                     onClick={() => throttledCreate("folder")}
                   >
                      <div className="flex items-center justify-between w-full">
                         <div className="flex items-center">
                            <FolderPlus className="mr-2 size-3.5" />
                            Create Folder
                         </div>
-                        {!isMobile && <DropdownMenuShortcut>⌘⌥F</DropdownMenuShortcut>}
+                        {/* {!isMobile && <DropdownMenuShortcut>⌘⌥F</DropdownMenuShortcut>} */}
                      </div>
                   </DropdownMenuItem>
                </DropdownMenuContent>

@@ -1,6 +1,7 @@
 import { env } from "@/env";
 
-export const DEFAULT_TITLE = "New document";
+export const DEFAULT_TEXT_TITLE = "New document";
+export const DEFAULT_FOLDER_TITLE = "New folder";
 export const MAX_TITLE_LENGTH = 255;
 
 export const MAX_TREE_DEPTH = 3;

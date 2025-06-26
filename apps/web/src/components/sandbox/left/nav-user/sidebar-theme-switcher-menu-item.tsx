@@ -1,35 +1,246 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DropdownMenuItem } from "@docsurf/ui/components/dropdown-menu";
 import { MoonIcon } from "@/components/assets/animated/moon";
 import { SunIcon } from "@/components/assets/animated/sun";
-import { useThemeStore } from "@/components/sandbox/right-inner/chat/lib/theme-store";
-import { toggleThemeMode } from "@/components/sandbox/right-inner/chat/lib/toggle-theme-mode";
+import { PaintBucketIcon } from "lucide-react";
 
 export function SidebarThemeSwitchMenuItem() {
-   const [isRendered, setIsRendered] = useState(false);
-   const { themeState } = useThemeStore();
-
-   // Prevents hydration error
-   useEffect(() => setIsRendered(true), []);
-
-   function handleThemeToggle() {
-      toggleThemeMode();
-   }
-
-   if (!isRendered) return null;
+   const { toggleMode } = useThemeManagement();
 
    return (
-      <DropdownMenuItem onClick={handleThemeToggle} className="cursor-pointer group">
-         <div className="flex items-center gap-2">
-            {themeState.currentMode === "dark" ? (
-               <MoonIcon className="size-4 text-text-default hover:text-text-emphasis" />
-            ) : (
-               <SunIcon className="size-4 text-text-default hover:text-text-emphasis" />
+      <>
+         <DropdownMenuItem onClick={toggleMode} className="cursor-pointer group">
+            <div className="flex items-center gap-2">
+               <MoonIcon className="size-4 text-text-default hidden hover:text-text-emphasis dark:block" />
+
+               <SunIcon className="size-4 text-text-default hover:text-text-emphasis dark:hidden" />
+
+               <span className="text-[13px] text-text-default hover:text-text-emphasis dark:text-text-emphasis block dark:hidden">
+                  Dark Mode
+               </span>
+               <span className="text-[13px] text-text-default hover:text-text-emphasis dark:text-text-emphasis hidden dark:block">
+                  Light Mode
+               </span>
+            </div>
+         </DropdownMenuItem>
+         <DropdownMenuItem asChild>
+            <ThemeSwitcher />
+         </DropdownMenuItem>
+      </>
+   );
+}
+
+import { useThemeManagement } from "@/components/sandbox/right-inner/chat/hooks/use-theme-management";
+import { type FetchedTheme, extractThemeColors } from "@/components/sandbox/right-inner/chat/lib/theme-utils";
+import { cn } from "@docsurf/ui/lib/utils";
+import { CheckCircle, LoaderIcon, PlusIcon, Search, ShuffleIcon } from "lucide-react";
+import { Button } from "@docsurf/ui/components/button";
+import { Input } from "@docsurf/ui/components/input";
+import { ResponsivePopover, ResponsivePopoverContent, ResponsivePopoverTrigger } from "@docsurf/ui/components/responsive-popover";
+import { ScrollArea } from "@docsurf/ui/components/scroll-area";
+import { Separator } from "@docsurf/ui/components/separator";
+import { ImportThemeDialog } from "@/components/themes/import-theme-dialog";
+
+type ThemeButtonProps = {
+   theme: FetchedTheme;
+   isSelected: boolean;
+   onSelect: (theme: FetchedTheme) => void;
+   currentMode: "light" | "dark";
+};
+
+function ThemeButton({ theme, isSelected, onSelect, currentMode }: ThemeButtonProps) {
+   const colors = "error" in theme && theme.error ? [] : "preset" in theme ? extractThemeColors(theme.preset, currentMode) : [];
+
+   return (
+      <button
+         type="button"
+         key={theme.url}
+         onClick={() => onSelect(theme)}
+         onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+               e.preventDefault();
+               onSelect(theme);
+            }
+         }}
+         className={cn(
+            "w-full cursor-pointer overflow-hidden rounded-lg border transition-all duration-200 hover:scale-[1.02] hover:shadow-md",
+            isSelected ? "border-primary shadow-sm ring-2 ring-primary/20" : "border-border hover:border-primary/50",
+            "error" in theme && theme.error && "cursor-not-allowed opacity-50 hover:scale-100"
+         )}
+         disabled={"error" in theme && !!theme.error}
+      >
+         <div className="flex items-center justify-between p-3">
+            <div className="text-left">
+               <div className="font-medium text-sm">{theme.name}</div>
+               {isSelected && <div className="text-muted-foreground text-xs">Currently active</div>}
+            </div>
+            {isSelected && (
+               <div className="flex h-5 w-5 shrink-0 items-center justify-center">
+                  <CheckCircle className="size-4 text-primary" />
+               </div>
             )}
-            <span className="text-[13px] text-text-default hover:text-text-emphasis">App Theme</span>
          </div>
-      </DropdownMenuItem>
+         {colors.length > 0 && (
+            <div className="flex h-2">
+               {colors.map((color, index) => (
+                  <div
+                     key={index}
+                     className="flex-1"
+                     style={{
+                        backgroundColor: color,
+                     }}
+                  />
+               ))}
+            </div>
+         )}
+         {"error" in theme && theme.error && <div className="p-3 pt-2 text-destructive text-xs">Error: {theme.error}</div>}
+      </button>
+   );
+}
+
+export function ThemeSwitcher() {
+   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+
+   const {
+      themeState,
+      searchQuery,
+      setSearchQuery,
+      selectedThemeUrl,
+      isLoadingThemes,
+      filteredThemes,
+      handleThemeImported,
+      handleThemeSelect,
+      toggleMode,
+      randomizeTheme,
+   } = useThemeManagement();
+
+   return (
+      <>
+         <ImportThemeDialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen} onThemeImported={handleThemeImported} />
+
+         <ResponsivePopover modal={true}>
+            <ResponsivePopoverTrigger asChild>
+               <button
+                  type="button"
+                  className="flex w-full items-center gap-2 text-[13px] text-text-default hover:text-text-emphasis bg-transparent border-none shadow-none px-2 py-1 h-auto cursor-pointer group"
+               >
+                  <PaintBucketIcon className="h-4 w-4 text-text-default hover:text-text-emphasis" />
+                  <span>Theme Library</span>
+               </button>
+            </ResponsivePopoverTrigger>
+
+            <ResponsivePopoverContent
+               align="start"
+               side="right"
+               className="w-full p-0 md:w-80"
+               title="Theme Selector"
+               description="Choose a theme for your interface"
+            >
+               {/* Note: Title and description are already in ResponsivePopoverContent */}
+               <Separator className="hidden md:block" />
+
+               {/* Search Input */}
+               <div className="hidden p-2 md:block">
+                  <div className="relative">
+                     <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-muted-foreground" />
+                     <Input
+                        placeholder="Search themes..."
+                        className="h-9 rounded-none border-none bg-popover pl-10 shadow-none dark:bg-popover"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                     />
+                  </div>
+               </div>
+               <Separator />
+
+               {/* Theme Count and Controls */}
+               <div className="flex items-center justify-between px-3 py-2">
+                  <div className="text-muted-foreground text-sm">
+                     {isLoadingThemes ? "Loading..." : `${filteredThemes.length} themes`}
+                  </div>
+                  <div className="flex items-center gap-1">
+                     {/* Randomizer */}
+                     <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-7"
+                        onClick={randomizeTheme}
+                        disabled={isLoadingThemes || filteredThemes.length === 0}
+                        title="Random theme"
+                     >
+                        <ShuffleIcon className="h-3.5 w-3.5" />
+                        <span className="sr-only">Random theme</span>
+                     </Button>
+
+                     {/* Import Button */}
+                     <Button
+                        variant="secondary"
+                        size="sm"
+                        className="h-7 text-xs"
+                        onClick={(e) => {
+                           e.preventDefault();
+                           setIsImportDialogOpen(true);
+                        }}
+                     >
+                        <PlusIcon className="h-3.5 w-3.5" />
+                        Import
+                     </Button>
+                  </div>
+               </div>
+               <Separator />
+
+               {/* Themes List */}
+               <ScrollArea className="h-80">
+                  <div className="p-3">
+                     {isLoadingThemes ? (
+                        <div className="flex items-center justify-center gap-2 py-8 text-muted-foreground">
+                           <LoaderIcon className="size-4 animate-spin" />
+                           Loading themes...
+                        </div>
+                     ) : (
+                        <>
+                           {filteredThemes.filter((theme) => theme.type === "custom").length > 0 && (
+                              <div className="mt-2 mb-6">
+                                 <h4 className="mb-1 text-muted-foreground text-xs">My Themes</h4>
+                                 <div className="mt-1 grid grid-cols-1 gap-2">
+                                    {filteredThemes
+                                       .filter((theme) => theme.type === "custom")
+                                       .map((theme) => (
+                                          <ThemeButton
+                                             key={theme.url}
+                                             theme={theme}
+                                             isSelected={selectedThemeUrl === theme.url}
+                                             onSelect={handleThemeSelect}
+                                             currentMode={themeState.currentMode}
+                                          />
+                                       ))}
+                                 </div>
+                              </div>
+                           )}
+                           <div className="mb-2">
+                              <h4 className="mb-1 text-muted-foreground text-xs">Built-in Themes</h4>
+                              <div className="mt-1 grid grid-cols-1 gap-2">
+                                 {filteredThemes
+                                    .filter((theme) => theme.type === "built-in")
+                                    .map((theme) => (
+                                       <ThemeButton
+                                          key={theme.url}
+                                          theme={theme}
+                                          isSelected={selectedThemeUrl === theme.url}
+                                          onSelect={handleThemeSelect}
+                                          currentMode={themeState.currentMode}
+                                       />
+                                    ))}
+                              </div>
+                           </div>
+                        </>
+                     )}
+                  </div>
+               </ScrollArea>
+            </ResponsivePopoverContent>
+         </ResponsivePopover>
+      </>
    );
 }

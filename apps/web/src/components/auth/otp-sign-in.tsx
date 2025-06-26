@@ -57,7 +57,6 @@ export function OTPSignIn({ className }: Props) {
          {
             onSuccess: async () => {
                await navigate({ to: "/doc" });
-               showToast("Signed in successfully", "success");
             },
             onError: (err) => {
                showToast(err.error.message, "error");

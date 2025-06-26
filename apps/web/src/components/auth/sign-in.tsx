@@ -41,7 +41,7 @@ export const SignIn = ({ inviteCode }: { inviteCode?: string }) => {
             onSuccess: async () => {
                setAuthLoading(false);
                setCookie(COOKIES.PreferredSignInProvider, "otp");
-               await navigate({ to: "/doc" });
+               // await navigate({ to: "/doc" });
             },
             onError: (ctx) => {
                setAuthLoading(false);

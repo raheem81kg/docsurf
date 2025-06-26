@@ -13,7 +13,7 @@ import { Button } from "@docsurf/ui/components/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@docsurf/ui/components/dialog";
 import { Loader } from "@docsurf/ui/components/loader";
 import { Textarea } from "@docsurf/ui/components/textarea";
-import { getFileTypeInfo } from "@docsurf/utils/file_constants";
+import { getFileTypeInfo } from "@docsurf/utils/constants/file_constants";
 import { env } from "@/env";
 import type { useChatIntegration } from "./hooks/use-chat-integration";
 import { getChatWidthClass, useChatWidthStore } from "./lib/chat-width-store";
@@ -22,7 +22,7 @@ import { cn } from "@docsurf/ui/lib/utils";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 const extractFileName = (data: string) => {
-   const _extract = data.startsWith("attachments/") ? (data.split("/").pop() ?? "") : "";
+   const _extract = data.startsWith("attachments/") ? data.split("/").pop() ?? "" : "";
    return _extract.length > 51 ? _extract.slice(51) : _extract;
 };
 

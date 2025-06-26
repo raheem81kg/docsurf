@@ -78,7 +78,7 @@ export function CookieConsent({ children, showFloatingButton = true }: CookieCon
                         <span className="block text-sm text-zinc-600 dark:text-zinc-400">
                            You can change your preferences at any time by clicking the cookie settings button in the corner of the
                            screen. For more information about how we use cookies, please see our{" "}
-                           <a href="/privacy" className="text-blue-500 hover:underline">
+                           <a href="/privacy" className="text-primary hover:underline">
                               Privacy Policy
                            </a>
                            .
@@ -111,7 +111,7 @@ export function CookieConsent({ children, showFloatingButton = true }: CookieCon
                                        checked={preferences[category]}
                                        disabled={info.required}
                                        onCheckedChange={(checked) => updatePreference(category, checked)}
-                                       className="data-[state=checked]:bg-blue-600"
+                                       className="data-[state=checked]:bg-primary"
                                     />
                                  </div>
                                  <AccordionTrigger className="mb-2 py-0 text-sm text-zinc-600 hover:no-underline dark:text-zinc-400 [&[data-state=open]>svg]:rotate-180">
@@ -126,10 +126,10 @@ export function CookieConsent({ children, showFloatingButton = true }: CookieCon
                                              {category === "necessary"
                                                 ? "Session - These cookies are deleted when you close your browser"
                                                 : category === "functional"
-                                                  ? "1 year - To remember your preferences"
-                                                  : category === "analytics"
-                                                    ? "2 years - To maintain consistent analytics data"
-                                                    : "90 days - Regular refresh of marketing preferences"}
+                                                ? "1 year - To remember your preferences"
+                                                : category === "analytics"
+                                                ? "2 years - To maintain consistent analytics data"
+                                                : "90 days - Regular refresh of marketing preferences"}
                                           </p>
                                        </div>
                                        <div>
@@ -138,10 +138,10 @@ export function CookieConsent({ children, showFloatingButton = true }: CookieCon
                                              {category === "necessary"
                                                 ? "First party - Set by us"
                                                 : category === "functional"
-                                                  ? "First party and selected third parties"
-                                                  : category === "analytics"
-                                                    ? "Google Analytics and similar services"
-                                                    : "Various advertising partners"}
+                                                ? "First party and selected third parties"
+                                                : category === "analytics"
+                                                ? "Google Analytics and similar services"
+                                                : "Various advertising partners"}
                                           </p>
                                        </div>
                                     </div>
@@ -212,7 +212,7 @@ export function CookieConsent({ children, showFloatingButton = true }: CookieCon
                   >
                      Customize
                   </Button>
-                  <Button size="sm" onClick={handleAcceptAll} className="bg-blue-600 text-white hover:bg-blue-700">
+                  <Button size="sm" onClick={handleAcceptAll} className="bg-background text-white hover:bg-background">
                      Accept All
                   </Button>
                   <Button

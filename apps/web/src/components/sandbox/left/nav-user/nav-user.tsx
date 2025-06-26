@@ -22,7 +22,7 @@ import { SparklesIcon, type SparklesIconHandle } from "@/components/assets/anima
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 /**
  * NavUser component for displaying the user's avatar, name, and dropdown menu in the sidebar.
@@ -30,11 +30,10 @@ import { Link } from "@tanstack/react-router";
  */
 export function NavUser() {
    const user = useQuery(convexQuery(api.auth.getCurrentUser, {}));
-   console.log(user.data);
    const [isClearing, setIsClearing] = useState(false);
    const [showEmail, setShowEmail] = useState(false);
    const sparklesRef = useRef<SparklesIconHandle>(null);
-
+   const navigate = useNavigate();
    // Loading state: both full_name and currentUser are null
    const isLoading = user.data?.name === null && user.data?.email === null;
    // Error state: attempted to load but no user
@@ -93,7 +92,7 @@ export function NavUser() {
                </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-               className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-sm bg-default font-medium"
+               className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-sm bg-background font-medium"
                side="bottom"
                align="end"
                sideOffset={4}
@@ -133,9 +132,14 @@ export function NavUser() {
                      className="cursor-pointer group"
                      onMouseEnter={() => sparklesRef.current?.startAnimation()}
                      onMouseLeave={() => sparklesRef.current?.stopAnimation()}
+                     onClick={() => {
+                        navigate({ to: "/settings/subscription" });
+                     }}
                   >
                      <SparklesIcon ref={sparklesRef} className="size-3.5 p-0 text-text-default hover:text-text-emphasis" />
-                     <span className="text-[13px] text-text-default hover:text-text-emphasis">Upgrade to Pro</span>
+                     <span className="text-[13px] text-text-default hover:text-text-emphasis">
+                        {user.data?.subscription?.isPremium ? "Manage Subscription" : "Upgrade to Pro"}
+                     </span>
                   </DropdownMenuItem>
                </DropdownMenuGroup>
                <DropdownMenuSeparator />

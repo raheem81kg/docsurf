@@ -29,7 +29,7 @@ import { NewFolderButton } from "./threads/new-folder-button";
 import { ThreadItem } from "./threads/thread-item";
 import { ThreadItemDialogs } from "./threads/thread-item-dialogs";
 import type { Thread } from "./threads/types";
-import { CommandK } from "./commandk";
+import { CommandK } from "./commandpchats";
 
 function groupThreadsByTime(threads: Thread[]) {
    const now = new Date();

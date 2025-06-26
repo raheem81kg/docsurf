@@ -24,6 +24,7 @@ export const batchUpsertDocuments = mutation({
       workspaceId: v.id("workspaces"),
       updates: v.array(
          v.object({
+            id: v.id("documents"),
             parentId: v.optional(v.id("documents")),
             orderPosition: v.optional(v.number()),
             documentType: v.union(
@@ -36,7 +37,8 @@ export const batchUpsertDocuments = mutation({
                v.literal("website")
             ),
             updatedAt: v.number(),
-            // Optionally allow other fields in the future
+            isDeleted: v.optional(v.boolean()),
+            depth: v.number(),
          })
       ),
    },
@@ -44,41 +46,20 @@ export const batchUpsertDocuments = mutation({
       const { userId } = await requireWorkspacePermission(ctx, workspaceId);
       let successCount = 0;
       for (const update of updates) {
-         // Find by workspaceId, userId, parentUuid, orderPosition
-         const existing = await ctx.db
-            .query("documents")
-            .withIndex("byHierarchy", (q) =>
-               q
-                  .eq("workspaceId", workspaceId)
-                  .eq("parentId", update.parentId ?? undefined)
-                  .eq("orderPosition", update.orderPosition ?? 0)
-            )
-            .filter((q) => q.eq(q.field("userId"), userId as Id<"users">))
-            .first();
-         if (existing) {
+         // Find by id
+         const existing = await ctx.db.get(update.id);
+         if (existing && existing.userId === userId && existing.workspaceId === workspaceId) {
             await ctx.db.patch(existing._id, {
                parentId: update.parentId,
                orderPosition: update.orderPosition,
                documentType: update.documentType as DocumentType,
                updatedAt: update.updatedAt,
-            });
-            successCount++;
-         } else {
-            await ctx.db.insert("documents", {
-               userId: userId as Id<"users">,
-               workspaceId,
-               parentId: update.parentId,
-               orderPosition: update.orderPosition ?? 0,
-               documentType: update.documentType as DocumentType,
-               updatedAt: update.updatedAt,
-               title: "Untitled",
-               isDeleted: false,
-               depth: 0,
-               isPublic: false,
-               isLocked: false,
+               isDeleted: update.isDeleted ?? existing.isDeleted,
+               depth: update.depth,
             });
             successCount++;
          }
+         // If not found, do nothing (do not insert new documents)
       }
       return { success: true, count: successCount };
    },
@@ -143,18 +124,11 @@ export const fetchDocumentTree = query({
    },
    handler: async (ctx, { workspaceId }) => {
       const { userId } = await requireWorkspacePermission(ctx, workspaceId);
+      // Use the new compound index for efficient filtering
       const docs = await ctx.db
          .query("documents")
-         .withIndex("byParentId", (q) => q.eq("parentId", undefined))
-         .filter((q) =>
-            q.and(
-               q.eq(q.field("userId"), userId),
-               q.eq(q.field("workspaceId"), workspaceId),
-               q.or(q.eq(q.field("isDeleted"), false), q.eq(q.field("isDeleted"), undefined), q.eq(q.field("isDeleted"), null))
-            )
-         )
-         .order("asc")
-         .take(200);
+         .withIndex("byUserWorkspaceDeleted", (q) => q.eq("userId", userId).eq("workspaceId", workspaceId).eq("isDeleted", false))
+         .collect();
       docs.sort((a, b) => (a.orderPosition ?? 0) - (b.orderPosition ?? 0));
       return { data: docs };
    },
@@ -504,6 +478,85 @@ export const fetchDocumentById = query({
       const doc = await ctx.db.get(id);
       if (!doc || doc.workspaceId !== workspaceId || doc.userId !== userId) return null;
       return doc;
+   },
+});
+
+/**
+ * Rename a document by id, with validation and authorization.
+ */
+export const renameDocument = mutation({
+   args: {
+      workspaceId: v.id("workspaces"),
+      id: v.id("documents"),
+      title: v.string(),
+   },
+   handler: async (ctx, { workspaceId, id, title }) => {
+      const { userId } = await requireWorkspacePermission(ctx, workspaceId);
+      // Get the document
+      const doc = await ctx.db.get(id);
+      if (!doc) return { error: "Document not found" };
+      // Validate user is the owner and document is in the workspace
+      if (doc.userId !== userId || doc.workspaceId !== workspaceId) {
+         return { error: "Unauthorized" };
+      }
+      // Validate title is not empty and reasonable length
+      const trimmedTitle = title.trim();
+      if (!trimmedTitle) return { error: "Title cannot be empty" };
+      if (trimmedTitle.length > 100) return { error: "Title too long" };
+      await ctx.db.patch(id, {
+         title: trimmedTitle,
+         updatedAt: Date.now(),
+      });
+      return { success: true };
+   },
+});
+
+/**
+ * Search documents by title for a workspace, only non-deleted documents.
+ */
+export const searchDocuments = query({
+   args: {
+      workspaceId: v.id("workspaces"),
+      query: v.string(),
+   },
+   handler: async (ctx, { workspaceId, query }) => {
+      const { userId } = await requireWorkspacePermission(ctx, workspaceId);
+      const q = query.trim();
+      if (!q) {
+         // Return recent documents for the user in this workspace (not deleted)
+         return await ctx.db
+            .query("documents")
+            .withIndex("byWorkspaceUpdated", (q) => q.eq("workspaceId", workspaceId))
+            .filter((qBuilder) =>
+               qBuilder.and(
+                  qBuilder.eq(qBuilder.field("userId"), userId),
+                  qBuilder.or(
+                     qBuilder.eq(qBuilder.field("isDeleted"), false),
+                     qBuilder.eq(qBuilder.field("isDeleted"), undefined),
+                     qBuilder.eq(qBuilder.field("isDeleted"), null)
+                  )
+               )
+            )
+            .order("desc")
+            .take(20);
+      }
+      // Use the search index for efficient full-text search
+      const results = await ctx.db
+         .query("documents")
+         .withSearchIndex("search_title", (qBuilder) => qBuilder.search("title", q))
+         .filter((qBuilder) =>
+            qBuilder.and(
+               qBuilder.eq(qBuilder.field("workspaceId"), workspaceId),
+               qBuilder.eq(qBuilder.field("userId"), userId),
+               qBuilder.or(
+                  qBuilder.eq(qBuilder.field("isDeleted"), false),
+                  qBuilder.eq(qBuilder.field("isDeleted"), undefined),
+                  qBuilder.eq(qBuilder.field("isDeleted"), null)
+               )
+            )
+         )
+         .collect();
+      return results;
    },
 });
 

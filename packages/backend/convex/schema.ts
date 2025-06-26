@@ -1,6 +1,5 @@
 import { defineSchema, defineTable } from "convex/server";
-import { Infer, v } from "convex/values";
-import { CoreProviders } from "./lib/models";
+import { v } from "convex/values";
 import { UserSettings } from "./schema/settings";
 import { Message } from "./schema/message";
 import { SharedThread, Thread } from "./schema/thread";
@@ -36,16 +35,16 @@ export default defineSchema({
    }).index("userId", ["userId"]),
 
    documents: defineTable(Documents)
-      .index("byHierarchy", ["workspaceId", "parentId", "orderPosition"])
-      .index("byActive", ["workspaceId", "isDeleted", "updatedAt"])
-      .index("byUpdatedAt", ["updatedAt"])
       .index("byUser", ["userId"])
       .index("byParentId", ["parentId"])
       .index("byWorkspaceUpdated", ["workspaceId", "updatedAt"])
       .index("byWorkspaceDeleted", ["workspaceId", "isDeleted"])
-      .index("byWorkspaceType", ["workspaceId", "documentType"])
-      .index("byWorkspacePublic", ["workspaceId", "isPublic"])
-      .index("byParentOrder", ["parentId", "orderPosition"]),
+      .index("byParentOrder", ["parentId", "orderPosition"])
+      .index("byUserWorkspaceDeleted", ["userId", "workspaceId", "isDeleted"])
+      .searchIndex("search_title", {
+         searchField: "title",
+         filterFields: ["workspaceId", "userId", "isDeleted"],
+      }),
 
    // apiKeys: defineTable({
    //    userId: v.id("users"),

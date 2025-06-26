@@ -8,7 +8,7 @@ const GROQ_API_KEY = process.env.GROQ_API_KEY;
 async function getSettings(ctx: any, userId: string) {
    const settings = await ctx.db
       .query("settings")
-      .withIndex("by_userId", (q: any) => q.eq("userId", userId))
+      .withIndex("byUser", (q: any) => q.eq("userId", userId))
       .unique();
 
    if (!settings) {

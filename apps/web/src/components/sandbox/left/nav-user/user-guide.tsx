@@ -50,7 +50,7 @@ export default function UserGuide() {
                      </DrawerDescription>
                   </DrawerHeader>
 
-                  <div className="overflow-auto max-h-[calc(80vh-140px)] rounded-xl border border-muted p-1 bg-default scrollbar-hide">
+                  <div className="overflow-auto max-h-[calc(80vh-140px)] rounded-xl border border-muted p-1 bg-background scrollbar-hide">
                      <FaqContent />
                   </div>
 
@@ -90,7 +90,7 @@ export default function UserGuide() {
                      </DialogDescription>
                   </DialogHeader>
 
-                  <div className="overflow-auto max-h-[calc(80vh-140px)] my-3 pr-1 rounded-xl border border-muted/50 p-1 bg-default/50 scrollbar-hide">
+                  <div className="overflow-auto max-h-[calc(80vh-140px)] my-3 pr-1 rounded-xl border border-muted/50 p-1 bg-background/50 scrollbar-hide">
                      <FaqContent />
                   </div>
 

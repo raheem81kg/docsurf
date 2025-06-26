@@ -20,8 +20,9 @@ import { Button } from "@docsurf/ui/components/button";
 import { Pencil, Trash, Check, X } from "lucide-react";
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 import { useSandStateStore } from "@/store/sandstate";
+import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
 
-interface CommandKProps {
+interface CommandPProps {
    open?: boolean;
    onOpenChange?: (open: boolean) => void;
 }
@@ -89,7 +90,7 @@ function groupThreadsByDate(threads: Thread[], searchQuery: string): TimeGroup[]
    return result;
 }
 
-export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps = {}) {
+export function CommandP({ open: controlledOpen, onOpenChange }: CommandPProps = {}) {
    const [internalOpen, setInternalOpen] = useState(false);
    const [query, setQuery] = useState("");
    const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -98,7 +99,7 @@ export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps =
    const set_ir_sidebar_state = useSandStateStore((s) => s.set_ir_sidebar_state);
    const deleteThreadMutation = useMutation(api.threads.deleteThread);
    const renameThreadMutation = useMutation(api.threads.renameThread);
-
+   const isMobile = useIsMobile();
    // --- New state for edit/delete modes ---
    const [deletingThreadId, setDeletingThreadId] = useState<string | null>(null);
    const [editingThreadId, setEditingThreadId] = useState<string | null>(null);
@@ -128,7 +129,7 @@ export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps =
 
    useEffect(() => {
       const down = (e: KeyboardEvent) => {
-         if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+         if (e.key === "p" && (e.metaKey || e.ctrlKey)) {
             e.preventDefault();
             setOpen(!open);
          }
@@ -366,7 +367,7 @@ export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps =
       <CommandDialog open={open} onOpenChange={setOpen} className="top-[30%] translate-y-0">
          <Command ref={commandRef} shouldFilter={false} disablePointerSelection value={"-"}>
             <CommandInput
-               placeholder="Search chats or press Enter to start a new chat..."
+               placeholder={isMobile ? "Search chats" : "Search chats or press Enter to start a new chat"}
                value={query}
                onValueChange={setQuery}
                onKeyDown={handleKeyDown}

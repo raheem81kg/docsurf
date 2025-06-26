@@ -12,19 +12,35 @@ export interface ItemOptionsProps extends ActionProps {
    onRename?: () => void;
    onRemove?: () => void;
    created_at?: string;
-   updated_at?: string;
+   updatedAt?: string;
 }
 
 export const ItemOptions = forwardRef<HTMLButtonElement, ItemOptionsProps>((props, ref) => {
-   const { onClick, uuid, is_locked, onRename, onRemove, created_at, updated_at, ...rest } = props;
+   const { onClick, uuid, is_locked, onRename, onRemove, created_at, updatedAt, ...rest } = props;
    const [open, setOpen] = useState(false);
    const [confirmingRemove, setConfirmingRemove] = useState(false);
    const [_, copy] = useCopyToClipboard();
 
    const createdAt = created_at
-      ? new Date(created_at).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
+      ? new Date(created_at).toLocaleString(undefined, {
+           year: "numeric",
+           month: "short",
+           day: "numeric",
+           hour: "numeric",
+           minute: "2-digit",
+           hour12: true,
+        })
       : null;
-   const updatedAt = updated_at ? timeAgo(new Date(updated_at), { withAgo: true }) : null;
+   const updatedDate = updatedAt
+      ? new Date(updatedAt).toLocaleString(undefined, {
+           year: "numeric",
+           month: "short",
+           day: "numeric",
+           hour: "numeric",
+           minute: "2-digit",
+           hour12: true,
+        })
+      : null;
 
    const handleRenameClick = (e: React.MouseEvent) => {
       e.preventDefault();
@@ -87,7 +103,7 @@ export const ItemOptions = forwardRef<HTMLButtonElement, ItemOptionsProps>((prop
                <Ellipsis className="w-3.5 h-3.5 text-muted-foreground" />
             </Action>
          </PopoverTrigger>
-         <PopoverContent className="w-56 bg-default p-1" side="right" align="start" sideOffset={5}>
+         <PopoverContent className="w-56 bg-background p-1" side="right" align="start" sideOffset={5}>
             {/** biome-ignore lint/a11y/noStaticElementInteractions: <explanation> */}
             <div
                onClick={(e) => {
@@ -99,7 +115,7 @@ export const ItemOptions = forwardRef<HTMLButtonElement, ItemOptionsProps>((prop
                <button
                   type="button"
                   className={cn(
-                     "flex w-full items-center gap-2 px-2 py-2 text-xs font-normal text-left",
+                     "flex w-full items-center gap-2 px-2 py-2 md:text-xs text-sm font-normal text-left",
                      "hover:bg-accent/50 hover:text-primary transition-colors",
                      "outline-none rounded-t-md rounded-b-none"
                   )}
@@ -116,7 +132,7 @@ export const ItemOptions = forwardRef<HTMLButtonElement, ItemOptionsProps>((prop
                <button
                   type="button"
                   className={cn(
-                     "flex w-full items-center gap-2 px-2 py-2 text-xs font-normal text-left",
+                     "flex w-full items-center gap-2 px-2 py-2 md:text-xs text-sm font-normal text-left",
                      "hover:bg-accent/50 hover:text-primary transition-colors",
                      "outline-none rounded-none"
                   )}
@@ -135,7 +151,7 @@ export const ItemOptions = forwardRef<HTMLButtonElement, ItemOptionsProps>((prop
                   disabled={!!is_locked}
                   onClick={handleRenameClick}
                   className={cn(
-                     "flex w-full items-center gap-2 px-2 py-2 text-xs font-normal text-left",
+                     "flex w-full items-center gap-2 px-2 py-2 md:text-xs text-sm font-normal text-left",
                      "hover:bg-accent/50 hover:text-primary transition-colors",
                      "outline-none rounded-none",
                      "disabled:opacity-60"
@@ -150,7 +166,7 @@ export const ItemOptions = forwardRef<HTMLButtonElement, ItemOptionsProps>((prop
                   type="button"
                   disabled={!!is_locked}
                   className={cn(
-                     "flex w-full items-center gap-2 px-2 py-2 text-xs font-normal text-left",
+                     "flex w-full items-center gap-2 px-2 py-2 md:text-xs text-sm font-normal text-left",
                      "hover:bg-red-50 hover:text-red-600 transition-colors",
                      "outline-none rounded-b-md rounded-t-none",
                      confirmingRemove && "bg-red-600 text-white hover:bg-red-700 hover:text-default"
@@ -187,9 +203,9 @@ export const ItemOptions = forwardRef<HTMLButtonElement, ItemOptionsProps>((prop
                </button>
             </div>
             {(createdAt || updatedAt) && (
-               <div className="border-t p-3 mt-1">
-                  {createdAt && <p className="mb-1 text-[10px] text-muted-foreground">Created {createdAt}</p>}
-                  {updatedAt && <p className="text-[10px] text-muted-foreground">Last updated {updatedAt}</p>}
+               <div className="mt-1 border-t p-2">
+                  {createdAt && <p className="mb-1 md:text-[10px] text-xs text-muted-foreground">Created {createdAt}</p>}
+                  {updatedDate && <p className="md:text-[10px] text-xs text-muted-foreground">Last Edited {updatedDate}</p>}
                </div>
             )}
          </PopoverContent>

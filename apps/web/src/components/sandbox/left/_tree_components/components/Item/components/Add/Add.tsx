@@ -20,7 +20,7 @@ export const Add = ({ onAddChild }: AddChildButtonProps) => {
             }}
             className={cn(
                "p-1 rounded-sm hover:bg-gray-100/10",
-               "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+               "focus:outline-none focus-visible:ring-2 focus-visible:ring-background"
             )}
          >
             <PlusIcon className="w-3.5 h-3.5 text-muted-foreground" />

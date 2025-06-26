@@ -172,10 +172,7 @@ export function OnboardingDialog({ open, onOpenChange }: { open: boolean; onOpen
                      >
                         Go back
                      </Button>
-                     <Button
-                        onClick={handleNext}
-                        className="h-8 flex-1 border bg-brand text-text-brand hover:text-text-brand hover:bg-brand-emphasis"
-                     >
+                     <Button onClick={handleNext} className="h-8 flex-1 border bg-brand hover:bg-brand-emphasis">
                         {currentStep === steps.length - 1 ? "Get Started" : "Next"}
                      </Button>
                   </div>

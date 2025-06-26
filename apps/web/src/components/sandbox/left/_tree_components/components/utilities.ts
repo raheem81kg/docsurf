@@ -87,8 +87,10 @@ function getMinDepth({ nextItem }: { nextItem: FlattenedItem }) {
 }
 
 function flatten(items: TreeItems, parentId: UniqueIdentifier | null = null, depth = 0): FlattenedItem[] {
-   return items.reduce<FlattenedItem[]>((acc, item, index) => {
-      return [...acc, { ...item, parentId, depth, index }, ...flatten(item.children, item.id, depth + 1)];
+   return (items ?? []).reduce<FlattenedItem[]>((acc, item, index) => {
+      // Defensive: ensure children is always an array
+      const children = Array.isArray(item.children) ? item.children : [];
+      return [...acc, { ...item, parentId, depth, index, children }, ...flatten(children, item.id, depth + 1)];
    }, []);
 }
 
@@ -99,16 +101,21 @@ export function flattenTree(items: TreeItems): FlattenedItem[] {
 export function buildTree(flattenedItems: FlattenedItem[]): TreeItems {
    const root: TreeItem = { id: "root", children: [] };
    const nodes: Record<string, TreeItem> = { [root.id]: root };
-   const items = flattenedItems.map((item) => ({ ...item, children: [] }));
+   const items = flattenedItems.map((item) => ({ ...item, children: Array.isArray(item.children) ? item.children : [] }));
 
    for (const item of items) {
       const { id, children } = item;
       const parentId = item.parentId ?? root.id;
       const parent = nodes[parentId] ?? findItem(items, parentId);
 
-      nodes[id] = { id, children };
+      nodes[id] = { id, children: Array.isArray(children) ? children : [] };
       if (parent) {
          parent.children.push(item);
+      } else {
+         // Defensive: attach to root if parent is missing
+         root.children.push(item);
+         // Optionally, log a warning for debugging
+         // console.warn(`Parent with id ${parentId} not found for item ${id}, attaching to root.`);
       }
    }
 
@@ -122,38 +129,32 @@ export function findItem(items: TreeItem[], itemId: UniqueIdentifier) {
 export function findItemDeep(items: TreeItems, itemId: UniqueIdentifier): TreeItem | undefined {
    for (const item of items) {
       const { id, children } = item;
-
+      const safeChildren = Array.isArray(children) ? children : [];
       if (id === itemId) {
          return item;
       }
-
-      if (children.length) {
-         const child = findItemDeep(children, itemId);
-
+      if (safeChildren && safeChildren.length) {
+         const child = findItemDeep(safeChildren, itemId);
          if (child) {
             return child;
          }
       }
    }
-
    return undefined;
 }
 
 export function removeItem(items: TreeItems, id: UniqueIdentifier) {
    const newItems = [];
-
    for (const item of items) {
+      const safeChildren = Array.isArray(item.children) ? item.children : [];
       if (item.id === id) {
          continue;
       }
-
-      if (item.children.length) {
-         item.children = removeItem(item.children, id);
+      if (safeChildren && safeChildren.length) {
+         item.children = removeItem(safeChildren, id);
       }
-
       newItems.push(item);
    }
-
    return newItems;
 }
 
@@ -164,25 +165,24 @@ export function setProperty<T extends keyof TreeItem>(
    setter: (value: TreeItem[T]) => TreeItem[T]
 ) {
    for (const item of items) {
+      const safeChildren = Array.isArray(item.children) ? item.children : [];
       if (item.id === id) {
          item[property] = setter(item[property]);
          continue;
       }
-
-      if (item.children.length) {
-         item.children = setProperty(item.children, id, property, setter);
+      if (safeChildren && safeChildren.length) {
+         item.children = setProperty(safeChildren, id, property, setter);
       }
    }
-
    return [...items];
 }
 
 function countChildren(items: TreeItem[], count = 0): number {
-   return items.reduce((acc, { children }) => {
-      if (children.length) {
-         return countChildren(children, acc + 1);
+   return items.reduce((acc, item) => {
+      const safeChildren = Array.isArray(item.children) ? item.children : [];
+      if (safeChildren && safeChildren.length) {
+         return countChildren(safeChildren, acc + 1);
       }
-
       return acc + 1;
    }, count);
 }
@@ -190,20 +190,19 @@ function countChildren(items: TreeItem[], count = 0): number {
 export function getChildCount(items: TreeItems, id: UniqueIdentifier) {
    const item = findItemDeep(items, id);
 
-   return item ? countChildren(item.children) : 0;
+   return item ? countChildren(Array.isArray(item.children) ? item.children : []) : 0;
 }
 
 export function removeChildrenOf(items: FlattenedItem[], ids: UniqueIdentifier[]) {
    const excludeParentIds = [...ids];
-
    return items.filter((item) => {
+      const safeChildren = Array.isArray(item.children) ? item.children : [];
       if (item.parentId && excludeParentIds.includes(item.parentId)) {
-         if (item.children.length) {
+         if (safeChildren && safeChildren.length) {
             excludeParentIds.push(item.id);
          }
          return false;
       }
-
       return true;
    });
 }

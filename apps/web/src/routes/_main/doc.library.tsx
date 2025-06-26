@@ -199,7 +199,7 @@ function LibraryPage() {
                <h1 className="mb-2 font-bold text-3xl">AI Library</h1>
                <p className="text-muted-foreground">Your collection of AI-generated images</p>
                {generatedAssets && (
-                  <div className="mt-4 flex gap-6 text-muted-foreground text-sm">
+                  <div className="flex mt-[1px] flex-wrap gap-6 text-muted-foreground text-sm">
                      <span>{stats.count} images</span>
                      <span>{formatFileSize(stats.totalSize)} total</span>
                   </div>

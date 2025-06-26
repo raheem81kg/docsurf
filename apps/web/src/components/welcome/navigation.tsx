@@ -88,7 +88,7 @@ export default function Navigation({ profile }: { profile: Profile }) {
                      <NavigationMenuList className="gap-1">
                         <NavigationMenuItem>
                            <NavigationMenuTrigger className="bg-transparent">Company</NavigationMenuTrigger>
-                           <NavigationMenuContent className="!rounded-sm bg-default">
+                           <NavigationMenuContent className="!rounded-sm bg-background">
                               <ul className="grid w-[400px] gap-3 rounded-sm p-4 md:w-[500px] md:grid-cols-1 lg:w-[600px]">
                                  {aboutLinks.map((link) => (
                                     <ListItem key={link.title} title={link.title} href={link.href}>
@@ -100,7 +100,7 @@ export default function Navigation({ profile }: { profile: Profile }) {
                         </NavigationMenuItem>
                         <NavigationMenuItem>
                            <NavigationMenuTrigger className="bg-transparent">Resources</NavigationMenuTrigger>
-                           <NavigationMenuContent className="!rounded-sm bg-default">
+                           <NavigationMenuContent className="!rounded-sm bg-background">
                               <ul className="grid w-[400px] gap-3 rounded-sm p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                                  {resources.map((resource) => (
                                     <ListItem
@@ -159,7 +159,9 @@ export default function Navigation({ profile }: { profile: Profile }) {
                               {/* <DynamicImage lightSrc={logo} darkSrc={logoDark} alt="DocSurf" width={22} height={22} /> */}
                            </SheetTitle>
                            <a href="/auth">
-                              <Button size="md">Sign in</Button>
+                              <Button size="lg" className="!h-9.5">
+                                 Sign in
+                              </Button>
                            </a>
                         </SheetHeader>
                         <div className="mt-8 flex flex-col gap-3">

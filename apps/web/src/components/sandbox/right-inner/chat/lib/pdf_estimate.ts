@@ -1,4 +1,4 @@
-import { estimateTokenCount } from "@docsurf/utils/file_constants";
+import { estimateTokenCount } from "@docsurf/utils/constants/file_constants";
 import { definePDFJSModule, extractText, getDocumentProxy } from "unpdf";
 
 export const estimatePdf = async (pdfBuffer: ArrayBuffer) => {

@@ -86,7 +86,7 @@ export function SectionThree() {
                      viewport={{ once: true }}
                      className="-left-[60px] absolute top-[120px]"
                   >
-                     <div className="demo-suggestion-overlay-animated min-w-[38ch] border border-border bg-default px-3 py-2.5">
+                     <div className="demo-suggestion-overlay-animated min-w-[38ch] border border-border bg-background px-3 py-2.5">
                         <div className="demo-overlay-header drag-handle mb-1 flex h-8 cursor-move items-center gap-2">
                            <GripVertical
                               size={14}

@@ -13,7 +13,7 @@ import {
    useSidebar,
 } from "@docsurf/ui/components/sidebar";
 import { useSandStateStore } from "@/store/sandstate";
-import { Command, ExternalLink, Home, Settings, ChevronsLeft, ImageIcon, Search, Trash } from "lucide-react";
+import { Command, ExternalLink, Home, Settings, ChevronsLeft, ImageIcon, Search, Trash2 } from "lucide-react";
 import { NavUser } from "./nav-user/nav-user";
 import { CreateMenu } from "./nav-user/create-menu";
 import { Link } from "@tanstack/react-router";
@@ -32,7 +32,7 @@ import Credits from "./credits";
 import { Button, buttonVariants } from "@docsurf/ui/components/button";
 import { LEFT_SIDEBAR_COOKIE_NAME } from "@/utils/constants";
 import { cn } from "@docsurf/ui/lib/utils";
-import { CommandK } from "../right-inner/chat/commandk";
+import { CommandK } from "../right-inner/chat/commandkdocs";
 import { NewFolderButton } from "../right-inner/chat/threads/new-folder-button";
 import { FolderItem } from "../right-inner/chat/threads/folder-item";
 import { api } from "@docsurf/backend/convex/_generated/api";
@@ -41,6 +41,7 @@ import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { TrashPopover } from "./trash-popover";
 import { SortableTree } from "./_tree_components/SortableTree";
+import { Usage } from "./usage";
 
 const data = {
    navMain: [
@@ -88,7 +89,6 @@ export const LeftSidebar = ({
    const set_l_sidebar_state = useSandStateStore((s) => s.set_l_sidebar_state);
    const [commandKOpen, setCommandKOpen] = useState(false);
    const [infoCardDismissed, setInfoCardDismissed] = useState(false);
-   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
    const mounted = useMounted();
    const user = useQuery(convexQuery(api.auth.getCurrentUser, {}));
 
@@ -166,21 +166,22 @@ export const LeftSidebar = ({
       }
    }, []);
 
-   // When feedback is submitted, dismiss InfoCard and close dialog
-   const handleFeedbackSubmitted = useCallback(() => {
-      handleInfoCardDismiss();
-      setFeedbackDialogOpen(false);
-   }, [handleInfoCardDismiss]);
-
-   // Open FeedbackDialog
-   const openFeedbackDialog = useCallback(() => {
-      setFeedbackDialogOpen(true);
-   }, []);
-
    // Custom handler for the rail click that updates both systems
    const handleRailClick = () => {
       toggle_l_sidebar();
    };
+
+   useEffect(() => {
+      const down = (e: KeyboardEvent) => {
+         if (e.key === "b" && (e.metaKey || e.ctrlKey)) {
+            e.preventDefault();
+            set_l_sidebar_state(!l_sidebar_state);
+         }
+      };
+
+      document.addEventListener("keydown", down);
+      return () => document.removeEventListener("keydown", down);
+   }, [l_sidebar_state, set_l_sidebar_state]);
 
    return (
       <Sidebar className="border-r bg-red-400" set_l_sidebar_state={set_l_sidebar_state}>
@@ -207,13 +208,12 @@ export const LeftSidebar = ({
 
             <Button
                onClick={() => {
-                  setOpenMobile(false);
                   setCommandKOpen(true);
                }}
                variant="outline"
             >
-               <Search className="h-4 w-4" />
-               Search chats
+               <Search className="size-5 md:size-4" />
+               Search documents
                <div className="ml-auto flex items-center gap-1 text-xs">
                   <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-medium font-mono text-muted-foreground">
                      <span className="text-sm">⌘</span>
@@ -221,9 +221,12 @@ export const LeftSidebar = ({
                   </kbd>
                </div>
             </Button>
-            <div className="px-2">
-               <Link to="/doc/library" className={cn(buttonVariants({ variant: "ghost" }), "h-8 w-full justify-start")}>
-                  <ImageIcon className="h-4 w-4" />
+            <div className="">
+               <Link
+                  to="/doc/library"
+                  className={cn(buttonVariants({ variant: "ghost" }), "h-8 w-full justify-start md:text-sm text-base")}
+               >
+                  <ImageIcon className="size-5 md:size-4" />
                   Library
                </Link>
             </div>
@@ -234,7 +237,7 @@ export const LeftSidebar = ({
          <SidebarContent ref={scrollContainerRef} className="scrollbar-hide">
             <div className="flex-1 flex flex-col min-h-0">
                {/* Folders Section */}
-               <SidebarGroup>
+               {/* <SidebarGroup>
                   <SidebarGroupLabel className="pr-0">
                      Folders
                      <div className="flex-grow" />
@@ -248,17 +251,17 @@ export const LeftSidebar = ({
                            })}
                      </SidebarMenu>
                   </SidebarGroupContent>
-               </SidebarGroup>
+               </SidebarGroup> */}
                {/* <OfflineStatus /> */}
-               <SidebarGroup>
-                  <SidebarGroupLabel className="pr-0">
+               <SidebarGroup className="h-full">
+                  <SidebarGroupLabel className="pr-0 font-medium md:text-sm text-base">
                      <Link to="/doc">Documents</Link>
 
                      <div className="flex-grow" />
                      <NewFolderButton onClick={() => setOpenMobile(false)} />
                   </SidebarGroupLabel>
-                  <SidebarGroupContent>
-                     <SidebarMenu className="px-2">
+                  <SidebarGroupContent className="h-full">
+                     <SidebarMenu className=" h-full mt-1">
                         {/* <SidebarMenuItem> TBI</SidebarMenuItem> */}
                         <SortableTree collapsible indicator removable />
                      </SidebarMenu>
@@ -277,12 +280,12 @@ export const LeftSidebar = ({
          <SidebarFooter className="pt-0">
             <TrashPopover>
                <Button variant="ghost" size="sm" aria-label="Open trash menu" className="justify-start">
-                  <span className="text-sm">Trash</span>
-                  <Trash className="w-5 h-5" />
+                  <span className="md:text-sm text-base">Trash</span>
+                  <Trash2 className="size-5 md:size-4" />
                </Button>
             </TrashPopover>
             <InfoCard
-               className="bg-default z-10"
+               className="bg-background z-10"
                storageKey="docsurf-beta-announcement"
                dismissType="forever"
                forceDismiss={infoCardDismissed}
@@ -297,9 +300,14 @@ export const LeftSidebar = ({
                      <InfoCardFooter>
                         <InfoCardDismiss>Dismiss</InfoCardDismiss>
                         <InfoCardAction>
-                           <button type="button" className="flex flex-row items-center gap-1 underline" onClick={openFeedbackDialog}>
+                           <a
+                              href="https://docsurf.featurebase.app/"
+                              rel="noopener noreferrer"
+                              target="_blank"
+                              className="flex flex-row items-center gap-1 underline"
+                           >
                               Give Feedback <ExternalLink size={12} />
-                           </button>
+                           </a>
                         </InfoCardAction>
                      </InfoCardFooter>
                   </div>
@@ -320,7 +328,9 @@ export const LeftSidebar = ({
                   }))}
                className="mt-auto"
             /> */}
-            <div className="relative flex flex-col justify-end">{/* <Usage /> */}</div>
+            <div className="relative flex flex-col justify-end">
+               <Usage />
+            </div>
             <SidebarMenu className="hidden lg:block">
                <SidebarMenuItem>
                   <Credits />

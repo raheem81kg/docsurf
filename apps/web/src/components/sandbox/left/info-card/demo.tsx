@@ -78,8 +78,8 @@ export function InfoCardDemo() {
                <InfoCard>
                   <InfoCardContent>
                      <div className="relative">
-                        <div className="absolute -top-4 -right-4 w-[14px] h-[14px] bg-blue-500 rounded-full animate-ping" />
-                        <div className="absolute -top-4 -right-4 w-[14px] h-[14px] bg-blue-500 rounded-full" />
+                        <div className="absolute -top-4 -right-4 w-[14px] h-[14px] bg-background rounded-full animate-ping" />
+                        <div className="absolute -top-4 -right-4 w-[14px] h-[14px] bg-background rounded-full" />
                         <InfoCardTitle>Simple Announcement</InfoCardTitle>
                         <InfoCardDescription>This is a simple announcement without any media content.</InfoCardDescription>
                         <InfoCardFooter>

@@ -13,7 +13,7 @@ import crypto from "crypto";
 
 // The user object returned by the getCurrentUser query. It combines authentication
 // data with the user's subscription status and application-specific data.
-type CurrentUser =
+export type CurrentUser =
    | (Doc<"users"> &
         CurrentUserMetadata & {
            subscription: SafeSubscription | null;
@@ -24,7 +24,7 @@ type CurrentUser =
 type CurrentUserMetadata = {
    image?: string | undefined;
    twoFactorEnabled?: boolean | undefined;
-   name: string;
+   name?: string | undefined;
    email: string;
    emailVerified: boolean;
    userId: string;
@@ -216,9 +216,11 @@ export const getCurrentUser = query({
          })
       );
 
+      const { name, ...userMetadataWithoutName } = userMetadata;
+
       return {
+         ...userMetadataWithoutName,
          ...user,
-         ...userMetadata,
          subscription,
          workspaces: workspaces.filter(Boolean) as Array<{ workspace: Doc<"workspaces">; role: string }>,
       };

@@ -1,18 +1,8 @@
 // File: TreeItem.tsx
 // Purpose: Renders a single tree item (document or folder) in the document tree, with drag-and-drop, options, and actions. Integrates with the document store for metadata.
 
-import React, {
-   forwardRef,
-   type HTMLAttributes,
-   useCallback,
-   useMemo,
-   memo,
-   useState,
-   useRef,
-   useEffect,
-   useDeferredValue,
-} from "react";
-import { FolderIcon, FolderOpenIcon, ChevronRight, ChevronDown, FilePen, Loader2, Check } from "lucide-react";
+import React, { forwardRef, type HTMLAttributes, memo, useState, useRef, useEffect, useDeferredValue } from "react";
+import { FolderIcon, FolderOpenIcon, ChevronRight, ChevronDown, FilePen, Loader2, Check, FolderCogIcon } from "lucide-react";
 import { ItemOptions } from "../Item/components/ItemOptions/ItemOptions";
 import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
 import { Add } from "../Item/components/Add/Add";
@@ -55,7 +45,7 @@ export interface Props extends Omit<HTMLAttributes<HTMLLIElement>, "id"> {
    isLoading?: boolean;
    isEmptyFolder?: boolean;
    created_at?: string;
-   updated_at?: string;
+   updatedAt?: string;
 }
 
 export const TreeItem = memo(
@@ -72,9 +62,9 @@ export const TreeItem = memo(
             indentationWidth,
             indicator,
             collapsed,
-            onCollapse,
-            onRemove,
-            onAddChild,
+            onCollapse = () => {},
+            onRemove = () => {},
+            onAddChild = () => {},
             style,
             value,
             title,
@@ -84,7 +74,7 @@ export const TreeItem = memo(
             isLoading,
             isEmptyFolder,
             created_at,
-            updated_at,
+            updatedAt,
             ...props
          },
          ref
@@ -131,55 +121,46 @@ export const TreeItem = memo(
             },
          });
 
-         const handleKeyDown = useCallback(
-            (event: React.KeyboardEvent<HTMLLIElement>) => {
-               if (event.key === "Enter") {
-                  if (onCollapse && isFolder) {
-                     onCollapse(value as UniqueIdentifier);
-                  } else if (!isFolder) {
-                     navigate({ to: `/doc/${value}` });
-                  }
-               }
-            },
-            [onCollapse, value, isFolder, navigate]
-         );
-
-         const handleClick = useCallback(
-            (event: React.MouseEvent<HTMLLIElement>) => {
-               // Don't navigate if we're dragging or if it's a clone
-               if (ghost || clone) return;
-
-               // Check if the click is on the drag handle
-               const target = event.target as HTMLElement;
-               if (target.closest("[data-dnd-handle]")) return;
-
-               // Check if we're in a drag operation
-               if (document.body.classList.contains("dragging")) return;
-
-               if (isFolder && onCollapse) {
+         const handleKeyDown = (event: React.KeyboardEvent<HTMLLIElement>) => {
+            if (event.key === "Enter") {
+               if (onCollapse && isFolder) {
                   onCollapse(value as UniqueIdentifier);
                } else if (!isFolder) {
                   navigate({ to: `/doc/${value}` });
                }
-            },
-            [onCollapse, value, isFolder, navigate, ghost, clone]
-         );
+            }
+         };
 
-         const handleRemove = useCallback(() => {
+         const handleClick = (event: React.MouseEvent<HTMLLIElement>) => {
+            // Don't navigate if we're dragging or if it's a clone
+            if (ghost || clone) return;
+
+            // Check if the click is on the drag handle
+            const target = event.target as HTMLElement;
+            if (target.closest("[data-dnd-handle]")) return;
+
+            // Check if we're in a drag operation
+            if (document.body.classList.contains("dragging")) return;
+
+            if (isFolder && onCollapse) {
+               onCollapse(value as UniqueIdentifier);
+            } else if (!isFolder) {
+               navigate({ to: `/doc/${value}` });
+            }
+         };
+
+         const handleRemove = () => {
             if (onRemove) {
                onRemove(value as UniqueIdentifier);
             }
-         }, [onRemove, value]);
+         };
 
-         const handleAdd = useCallback(
-            (event: React.MouseEvent<HTMLButtonElement>) => {
-               event.stopPropagation();
-               if (onAddChild) {
-                  onAddChild();
-               }
-            },
-            [onAddChild]
-         );
+         const handleAdd = (event: React.MouseEvent<HTMLButtonElement>) => {
+            event.stopPropagation();
+            if (onAddChild) {
+               onAddChild();
+            }
+         };
 
          // Auto-select text when popover opens
          useEffect(() => {
@@ -202,15 +183,21 @@ export const TreeItem = memo(
             }
          }, [isRenaming, form, title, value]);
 
-         const icon = useMemo(() => {
-            if (isLoading) {
-               return <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />;
-            }
-            if (isFolder) {
-               return collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />;
-            }
-            return <FilePen className="h-4 w-4" />;
-         }, [isFolder, collapsed, isLoading]);
+         const icon = (
+            <>
+               {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground size-5 md:size-4" />
+               ) : isFolder ? (
+                  collapsed ? (
+                     <ChevronRight className="h-4 w-4 size-5 md:size-4" />
+                  ) : (
+                     <ChevronDown className="h-4 w-4 size-5 md:size-4" />
+                  )
+               ) : (
+                  <FilePen className="h-4 w-4 size-5 md:size-4" />
+               )}
+            </>
+         );
 
          const displayTitle = form.state.values.title;
          const deferredDisplayTitle = useDeferredValue(displayTitle);
@@ -219,16 +206,16 @@ export const TreeItem = memo(
          const clickableContent = (
             <div
                className={cn(
-                  "group/item relative flex items-center h-7.5 px-2 rounded-sm  hover:bg-bg-subtle/90 dark:hover:bg-bg-subtle/70 hover:text-muted-foreground cursor-pointer",
-                  isActive && !ghost && "bg-bg-subtle/90 dark:bg-bg-subtle/70",
+                  "group/item relative flex items-center h-7.5 rounded-sm  hover:bg-accent dark:hover:bg-accent/70 hover:text-muted-foreground cursor-pointer",
+                  isActive && !ghost && "bg-accent dark:bg-accent/70",
                   clone ? "shadow-lg bg-white border border-gray-200 w-fit min-w-[200px]" : "w-full",
                   "transition-all duration-160 ease-in-out",
-                  indicator && ghost && "h-[2px] border-none p-0 my-[5px] bg-blue-400/70",
+                  indicator && ghost && "h-[2px] border-none p-0 my-[5px] bg-primary/70",
                   !clone &&
                      !ghost &&
                      !indicator && [
                         "hover:bg-gray-200/50 hover:shadow-sm",
-                        isDraggingOver && "bg-blue-50",
+                        isDraggingOver && "bg-primary/50",
                         isActive && "bg-muted shadow-sm",
                      ]
                )}
@@ -236,10 +223,10 @@ export const TreeItem = memo(
                style={indicator ? { position: "relative", top: "-2px" } : undefined}
             >
                {indicator && ghost ? (
-                  <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full border border-blue-400/70 bg-white" />
+                  <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full border border-primary/70 bg-white" />
                ) : (
                   <>
-                     <div className="flex items-center min-w-0 flex-1 overflow-hidden">
+                     <div className="pl-2 flex items-center min-w-0 flex-1">
                         <div className="flex items-center shrink-0 gap-1.5 relative">
                            {!isMobile && isFolder && onCollapse ? (
                               <>
@@ -252,7 +239,7 @@ export const TreeItem = memo(
                                     }}
                                     className={cn(
                                        "p-0.5 rounded-sm hover:bg-muted",
-                                       "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+                                       "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                                        "cursor-pointer z-10 absolute left-0 opacity-0 group-hover/item:opacity-100"
                                     )}
                                  >
@@ -261,52 +248,48 @@ export const TreeItem = memo(
                                  <div className={cn("transition-opacity duration-50 ease-in", "group-hover/item:opacity-0")}>
                                     {isFolder ? (
                                        collapsed ? (
-                                          <FolderIcon size={16} className={cn("size-4", isDraggingOver ? "text-blue-500" : "")} />
+                                          <FolderCogIcon className={cn("size-5 md:size-4", isDraggingOver ? "text-primary" : "")} />
                                        ) : (
-                                          <FolderOpenIcon size={16} className={cn("size-4", isDraggingOver ? "text-blue-500" : "")} />
+                                          <FolderOpenIcon className={cn("size-5 md:size-4", isDraggingOver ? "text-primary" : "")} />
                                        )
                                     ) : (
-                                       <FilePen size={16} className={cn("size-4", ghost ? "text-blue-500" : "text-gray-500")} />
+                                       <FilePen className={cn("size-5 md:size-4", ghost ? "text-primary" : "text-gray-500")} />
                                     )}
                                  </div>
                               </>
+                           ) : // Only render the icon inside the button on mobile, not again outside
+                           isMobile ? (
+                              <button
+                                 type="button"
+                                 onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    onCollapse(value as UniqueIdentifier);
+                                 }}
+                                 className={cn(
+                                    "p-0.5 rounded-sm hover:bg-muted",
+                                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                                    "cursor-pointer z-10",
+                                    collapsed && "transform"
+                                 )}
+                              >
+                                 {icon}
+                              </button>
+                           ) : isFolder ? (
+                              collapsed ? (
+                                 <FolderCogIcon className={cn("size-5 md:size-4", isDraggingOver ? "text-primary" : "")} />
+                              ) : (
+                                 <FolderOpenIcon className={cn("size-5 md:size-4", isDraggingOver ? "text-primary" : "")} />
+                              )
                            ) : (
-                              <>
-                                 {onCollapse && isMobile && (
-                                    <button
-                                       type="button"
-                                       onClick={(e) => {
-                                          e.preventDefault();
-                                          e.stopPropagation();
-                                          onCollapse(value as UniqueIdentifier);
-                                       }}
-                                       className={cn(
-                                          "p-0.5 rounded-sm hover:bg-muted",
-                                          "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
-                                          "cursor-pointer z-10",
-                                          collapsed && "transform"
-                                       )}
-                                    >
-                                       {icon}
-                                    </button>
-                                 )}
-                                 {isFolder ? (
-                                    collapsed ? (
-                                       <FolderIcon size={16} className={cn("size-4", isDraggingOver ? "text-blue-500" : "")} />
-                                    ) : (
-                                       <FolderOpenIcon size={16} className={cn("size-4", isDraggingOver ? "text-blue-500" : "")} />
-                                    )
-                                 ) : (
-                                    <FilePen size={16} className={cn("size-4", ghost ? "text-gray-500" : "")} />
-                                 )}
-                              </>
+                              <FilePen className={cn("size-5 md:size-4", ghost ? "text-gray-500" : "")} />
                            )}
                         </div>
                         <Popover open={isRenameOpen} onOpenChange={setIsRenameOpen} modal>
                            <PopoverTrigger asChild onClick={(e) => e.preventDefault()}>
                               <span
                                  className={cn(
-                                    "ml-1.5 truncate select-none text-sm",
+                                    "ml-2 truncate select-none md:text-sm text-base font-medium",
                                     clone || ghost ? "text-gray-500" : undefined,
                                     !isMobile && "group-hover/item:pr-14"
                                  )}
@@ -315,7 +298,7 @@ export const TreeItem = memo(
                               </span>
                            </PopoverTrigger>
                            <PopoverContent
-                              className="w-64 bg-default border border-input rounded-sm p-1 flex items-center gap-2 shadow-lg"
+                              className="w-64 bg-background border border-input rounded-sm p-1 flex items-center gap-2 shadow-lg"
                               side="bottom"
                               align="start"
                               sideOffset={-5}
@@ -335,7 +318,7 @@ export const TreeItem = memo(
                                           value={field.state.value}
                                           onBlur={field.handleBlur}
                                           onChange={(e) => field.handleChange(e.target.value)}
-                                          className="flex h-8 w-full rounded-sm border border-input bg-default px-3 py-1 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                          className="flex h-8 w-full rounded-sm border border-input bg-background px-3 py-1 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                           placeholder="Enter new name"
                                           name="name"
                                           autoComplete="off"
@@ -358,9 +341,9 @@ export const TreeItem = memo(
                                           disabled={!canSubmit || isSubmitting || isRenaming}
                                        >
                                           {isSubmitting || isRenaming ? (
-                                             <Loader2 className="w-4 h-4 animate-spin" />
+                                             <Loader2 className="size-4 animate-spin" />
                                           ) : (
-                                             <Check className="w-4 h-4" />
+                                             <Check className="size-4" />
                                           )}
                                        </button>
                                     )}
@@ -380,14 +363,14 @@ export const TreeItem = memo(
                               ]
                         )}
                      >
-                        {!clone && onAddChild && isFolder && <Add onAddChild={onAddChild} />}
-                        {!clone && onRemove && (
+                        {!clone && isFolder && <Add onAddChild={onAddChild} />}
+                        {!clone && (
                            <ItemOptions
                               className="z-10"
                               onRemove={handleRemove}
                               uuid={value}
                               created_at={created_at}
-                              updated_at={updated_at}
+                              updatedAt={updatedAt}
                               onRename={() => {
                                  setIsRenameOpen(true);
                                  setIsOptionsOpen(false);
@@ -396,7 +379,7 @@ export const TreeItem = memo(
                         )}
                      </div>
                      {clone && childCount && childCount > 1 ? (
-                        <span className="absolute -top-2 -right-2 flex items-center justify-center w-5 h-5 rounded-full bg-blue-500 text-[11px] font-medium text-white">
+                        <span className="absolute -top-2 -right-2 flex items-center justify-center w-5 h-5 rounded-full bg-primary text-[11px] font-medium text-white">
                            {childCount}
                         </span>
                      ) : null}

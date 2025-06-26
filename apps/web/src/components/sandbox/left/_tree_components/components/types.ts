@@ -5,8 +5,10 @@ export interface TreeItem {
    id: UniqueIdentifier;
    children: TreeItem[];
    collapsed?: boolean;
-   created_at?: string;
-   updated_at?: string;
+   createdAt?: number;
+   updatedAt?: number;
+   documentType?: string;
+   title?: string;
 }
 
 export type TreeItems = TreeItem[];

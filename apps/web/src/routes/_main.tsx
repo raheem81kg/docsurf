@@ -5,12 +5,17 @@ import Header from "@/components/sandbox/header";
 import React, { useEffect } from "react";
 import { OnboardingWrapper } from "@/components/onboarding";
 import { useSandStateStore } from "@/store/sandstate";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { INNER_RIGHT_SIDEBAR_COOKIE_NAME, LEFT_SIDEBAR_COOKIE_NAME, RIGHT_SIDEBAR_COOKIE_NAME } from "@/utils/constants";
 import { OnboardingProvider } from "@/components/onboarding/onboarding-provider";
 
 export const Route = createFileRoute("/_main")({
    component: MainLayoutComponent,
+   beforeLoad: ({ context }) => {
+      if (!context.userId) {
+         throw redirect({ to: "/auth", statusCode: 302 });
+      }
+   },
 });
 
 function MainLayoutComponent() {
@@ -26,7 +31,7 @@ function MainLayoutComponent() {
             {/* sidebar 1 */}
             <WrapperLeftSidebar />
             <OnboardingWrapper />
-            <SidebarInset className="flex-1 min-w-0 bg-default dark:bg-default flex flex-col">
+            <SidebarInset className="flex-1 min-w-0 bg-background dark:bg-background flex flex-col">
                <Header />
 
                <div className="flex overflow-hidden h-full">

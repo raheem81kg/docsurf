@@ -20,6 +20,7 @@ import { SignupMessagePrompt } from "./signup-message-prompt";
 import { StickToBottomButton } from "./stick-to-bottom-button";
 import { useSession } from "@/hooks/auth-hooks";
 import { ChatHeader } from "./chat-header";
+import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 
 interface ChatProps {
    threadId: string | undefined;
@@ -84,6 +85,7 @@ const ChatContent = ({ threadId: routeThreadId, folderId }: ChatProps) => {
 
    const resetAll = () => {
       console.log("[chat] resetAll");
+
       chatHelpers.setData([]);
       chatHelpers.setMessages([]);
       resetChat();
@@ -127,9 +129,9 @@ const ChatContent = ({ threadId: routeThreadId, folderId }: ChatProps) => {
                   transition={{ duration: 0.2, ease: "easeInOut" }}
                   className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
                >
-                  <div className="mb-6 size-16 rounded-full border-2 opacity-80">
+                  {/* <div className="mb-6 size-16 rounded-full border-2 opacity-80">
                      <Logo />
-                  </div>
+                  </div> */}
                   <motion.div
                      initial={{ opacity: 0, y: 10 }}
                      animate={{ opacity: 1, y: 0 }}
