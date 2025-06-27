@@ -116,19 +116,23 @@ export const batchDeleteDocuments = mutation({
  * Fetch the document tree: top-level documents (parentUuid undefined, not deleted), ordered by orderPosition.
  *
  * @param workspaceId The workspace to scope the operation to
+ * @param limit Optional limit argument
  * @returns Array of document tree nodes
  */
 export const fetchDocumentTree = query({
    args: {
       workspaceId: v.id("workspaces"),
+      limit: v.optional(v.number()),
    },
-   handler: async (ctx, { workspaceId }) => {
+   handler: async (ctx, { workspaceId, limit }) => {
       const { userId } = await requireWorkspacePermission(ctx, workspaceId);
       // Use the new compound index for efficient filtering
+      const max = typeof limit === "number" && limit > 0 ? limit : 200;
       const docs = await ctx.db
          .query("documents")
          .withIndex("byUserWorkspaceDeleted", (q) => q.eq("userId", userId).eq("workspaceId", workspaceId).eq("isDeleted", false))
-         .collect();
+         .order("asc")
+         .take(max);
       docs.sort((a, b) => (a.orderPosition ?? 0) - (b.orderPosition ?? 0));
       return { data: docs };
    },

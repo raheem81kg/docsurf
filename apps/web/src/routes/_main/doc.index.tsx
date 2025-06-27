@@ -3,56 +3,88 @@ import { api } from "@docsurf/backend/convex/_generated/api";
 import { DEFAULT_TEXT_TITLE } from "@/utils/constants";
 import { ConvexHttpClient } from "convex/browser";
 import { env } from "@/env";
+import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
+import type { CurrentUser } from "@docsurf/backend/convex/auth";
+import type { Doc } from "@docsurf/backend/convex/_generated/dataModel";
 
 export const Route = createFileRoute("/_main/doc/")({
    beforeLoad: async (ctx) => {
+      const client = new ConvexHttpClient(env.VITE_CONVEX_URL);
+      if (ctx.context.token) {
+         client.setAuth(ctx.context.token);
+      }
+
+      // 1. Get user and workspace
+      let user: CurrentUser | undefined;
+      let workspaceId: string | undefined;
       try {
-         // 1. Setup Convex HTTP client with auth
-         const client = new ConvexHttpClient(env.VITE_CONVEX_URL);
-         if (ctx.context.token) {
-            client.setAuth(ctx.context.token);
-         }
+         user = await client.query(api.auth.getCurrentUser, {});
+         workspaceId = user?.workspaces?.[0]?.workspace?._id;
+      } catch (err) {
+         logError("Error fetching user/workspace:", err);
+         throw redirect({ to: "/", statusCode: 302 });
+      }
 
-         // 1. Get current user and workspaceId
-         let user = await client.query(api.auth.getCurrentUser, {});
-         let workspaceId = user?.workspaces?.[0]?.workspace?._id;
-
-         // 2. If no workspace, create one and refetch user
-         if (!workspaceId && user?._id) {
+      // 2. Create workspace if needed
+      if (!workspaceId && user?._id) {
+         try {
             await client.mutation(api.workspaces.createWorkspace, {});
             user = await client.query(api.auth.getCurrentUser, {});
             workspaceId = user?.workspaces?.[0]?.workspace?._id;
+         } catch (err) {
+            logError("Error creating workspace:", err);
+            throw redirect({ to: "/", statusCode: 302 });
          }
+      }
 
-         if (!workspaceId) throw redirect({ to: "/auth", statusCode: 302 });
+      if (!workspaceId) throw redirect({ to: "/", statusCode: 302 });
 
-         // 3. Fetch document tree
-         const docsResult = await client.query(api.documents.fetchDocumentTree, { workspaceId });
-         const docs = docsResult?.data ?? [];
+      // 3. Fetch document tree
+      let docs: Doc<"documents">[] = [];
+      try {
+         const docsResult = await client.query(api.documents.fetchDocumentTree, {
+            workspaceId: workspaceId as Id<"workspaces">,
+            limit: 1,
+         });
+         docs = docsResult?.data ?? [];
+      } catch (err) {
+         logError("Error fetching document tree:", err);
+         throw redirect({ to: "/", statusCode: 302 });
+      }
 
-         // 4. Redirect to first doc if exists
-         if (docs.length > 0) {
-            throw redirect({ to: "/doc/$documentId", params: { documentId: docs[0]._id } });
-         }
+      // 4. Redirect to first document if exists
+      if (docs.length > 0) {
+         throw redirect({ to: "/doc/$documentId", params: { documentId: docs[0]._id } });
+      }
 
-         // 5. Otherwise, create a new doc and redirect
+      // 5. Create a new document if none exist
+      let newDocId: string | undefined;
+      try {
          const newDoc = await client.mutation(api.documents.createDocument, {
-            workspaceId,
+            workspaceId: workspaceId as Id<"workspaces">,
             title: DEFAULT_TEXT_TITLE,
             documentType: "text/plain",
             orderPosition: 0,
          });
-         throw redirect({ to: "/doc/$documentId", params: { documentId: newDoc.id } });
+         newDocId = newDoc.id;
       } catch (err) {
-         if (import.meta.env.NODE_ENV !== "production") {
-            // eslint-disable-next-line no-console
-            console.error("Error in /doc beforeLoad:", err);
-         }
-         throw redirect({ to: "/auth", statusCode: 302, search: { error: "doc-setup" } });
+         logError("Error creating document:", err);
+         throw redirect({ to: "/", statusCode: 302, search: { error: "doc-setup" } });
+      }
+      if (newDocId) {
+         throw redirect({ to: "/doc/$documentId", params: { documentId: newDocId } });
       }
    },
    component: RouteComponent,
 });
+
+// Helper for dev logging
+function logError(message: string, err: unknown) {
+   if (import.meta.env.NODE_ENV !== "production") {
+      // eslint-disable-next-line no-console
+      console.error(message, err);
+   }
+}
 
 function RouteComponent() {
    return <div>Hello "/doc"!</div>;

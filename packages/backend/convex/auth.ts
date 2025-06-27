@@ -9,7 +9,6 @@ import type { DataModel, Id, Doc } from "./_generated/dataModel";
 import { type GenericCtx, query } from "./_generated/server";
 import { sendEmailVerification, sendMagicLink, sendOTPVerification } from "./email";
 import type { SafeSubscription } from "./subscriptions";
-import crypto from "crypto";
 
 // The user object returned by the getCurrentUser query. It combines authentication
 // data with the user's subscription status and application-specific data.
@@ -168,19 +167,6 @@ export const { createUser, deleteUser, updateUser, createSession, isAuthenticate
          });
       },
    });
-
-// export const getSubscription = internalQuery({
-//    args: { userId: v.id("users") },
-//    handler: async (ctx, { userId }): Promise<SubscriptionStatus> => {
-//       const subscription = await polar.getCurrentSubscription(ctx, {
-//          userId,
-//       });
-//       return {
-//          isFree: !subscription,
-//          isPremium: !!subscription,
-//       };
-//    },
-// });
 
 // Example function for getting the current user
 // Feel free to edit, omit, etc.

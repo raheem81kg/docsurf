@@ -162,9 +162,14 @@ export function useCurrentDocument(user: CurrentUser | undefined, userLoading: b
    );
 
    // Return loading state if user is loading, or if the query is not enabled
-   if (userLoading) return { doc: undefined, docLoading: true };
-   if (!enabled) return { doc: undefined, docLoading: false };
-   return { doc, docLoading };
+   // Also return loading state if the query is enabled but still loading
+   if (userLoading || (enabled && docLoading)) {
+      return { doc: undefined, docLoading: true };
+   }
+   if (!enabled) {
+      return { doc: undefined, docLoading: false };
+   }
+   return { doc, docLoading: false };
 }
 
 export function SortableTree({ collapsible, indicator = false, indentationWidth = 28, removable }: Props) {
@@ -185,8 +190,6 @@ export function SortableTree({ collapsible, indicator = false, indentationWidth 
       isFolder,
       getDocumentTitle,
    } = useConvexTree({ workspaceId: workspaceId as Id<"workspaces"> });
-
-   console.log("[SortableTree] treeItems", treeItems);
 
    const navigate = useNavigate();
 
@@ -209,7 +212,6 @@ export function SortableTree({ collapsible, indicator = false, indentationWidth 
       );
       flattenedItems = removeChildrenOf(flattenedTree, activeId != null ? [activeId, ...collapsedItems] : collapsedItems);
    }
-   console.log("[SortableTree] flattenedItems", flattenedItems);
 
    const projected =
       activeId && overId

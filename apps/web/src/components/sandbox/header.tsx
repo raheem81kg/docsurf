@@ -20,6 +20,8 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@docsurf/backend/convex/_generated/api";
+import { useConvexTree } from "./left/_tree_components/use-convex-tree";
+import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 /**
  * Header component for the doc page, including breadcrumb, doc title (editable), and action buttons.
  * Shows a skeleton for the doc title while loading.
@@ -31,9 +33,11 @@ const HeaderContent = () => {
    const toggle_l_sidebar = useSandStateStore((s) => s.toggle_l_sidebar);
    const toggle_ir_sidebar = useSandStateStore((s) => s.toggle_ir_sidebar);
    const { data: user, isLoading: userLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
-   const { doc, docLoading } = useCurrentDocument(user, userLoading);
+   const { doc } = useCurrentDocument(user, userLoading);
+   const { isLoading: isTreeLoading } = useConvexTree({
+      workspaceId: user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">,
+   });
    const pathname = useLocation().pathname;
-   console.log("pathname", pathname);
    const documentId = useParams({ strict: false }).documentId;
    const isPreciselyDocPage = pathname === "/doc";
    const isDocPage = pathname.startsWith("/doc");
@@ -110,7 +114,7 @@ const HeaderContent = () => {
                   {isDocDetailPage && (
                      <BreadcrumbItem>
                         <div className="flex items-center h-6">
-                           {docLoading ? (
+                           {isTreeLoading ? (
                               <Skeleton className="h-6 w-[100px] md:w-[120px] lg:w-[180px] rounded-sm" />
                            ) : (
                               doc && <BreadcrumbPage className="line-clamp-1 truncate text-[13px]">{doc.title}</BreadcrumbPage>

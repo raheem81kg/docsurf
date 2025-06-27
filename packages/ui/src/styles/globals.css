@@ -903,12 +903,8 @@ body {
 
 .minimal-tiptap-editor .ProseMirror .selection,
 .minimal-tiptap-editor .ProseMirror *::selection {
-   @apply bg-background/18;
-}
-
-/* Override native selection when custom selection is present */
-.minimal-tiptap-editor .ProseMirror .selection::selection {
-   background: transparent;
+   background-color: var(--accent);
+   color: var(--accent-foreground);
 }
 
 .minimal-tiptap-editor .ProseMirror > p.is-editor-empty::before {

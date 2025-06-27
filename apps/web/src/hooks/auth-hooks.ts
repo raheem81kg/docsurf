@@ -1,7 +1,7 @@
 import { authClient } from "@/lib/auth-client";
 import { skipToken, useMutation, useQuery, useQueryClient, type AnyUseQueryOptions, type QueryKey } from "@tanstack/react-query";
 import type { BetterFetchOption, BetterFetchResponse } from "better-auth/react";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback } from "react";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 import { useRouteContext } from "@tanstack/react-router";
 import { Route as RootRoute } from "../routes/__root";
@@ -107,30 +107,6 @@ export function useVerifyToken(token: string | null | undefined, message = "Auth
       [token, message]
    );
 }
-
-// Token Management
-export const decodeJwt = (token: string) => {
-   try {
-      const parts = token.split(".");
-      if (parts.length < 2 || !parts[1]) {
-         return null;
-      }
-
-      const decode = (data: string) => {
-         const normalizedData = data.replace(/-/g, "+").replace(/_/g, "/");
-         if (typeof Buffer === "undefined") {
-            return atob(normalizedData);
-         }
-         return Buffer.from(normalizedData, "base64").toString("utf8");
-      };
-
-      const payload = decode(parts[1]);
-      return JSON.parse(payload);
-   } catch (error) {
-      console.error("Failed to decode JWT:", error);
-      return null;
-   }
-};
 
 /**
  * Returns the current router context token. This token is ephemeral and must be used immediately (e.g., directly in a Bearer header).

@@ -76,8 +76,6 @@ export const useConvexTree = ({ workspaceId }: UseConvexTreeOptions): TreeState 
       api.documents.fetchDocumentTree,
       typeof workspaceId === "string" && workspaceId.length > 0 ? { workspaceId } : "skip"
    );
-   console.log("workspaceId", workspaceId);
-   console.log("[useConvexTree] documents", documents);
    const createDoc = useMutation(api.documents.createDocument);
    const updateDoc = useMutation(api.documents.updateDocument);
    const deleteDoc = useMutation(api.documents.moveDocumentToTrash);
@@ -130,7 +128,6 @@ export const useConvexTree = ({ workspaceId }: UseConvexTreeOptions): TreeState 
    const queryResult = documents?.data;
    const treeItems = buildTreeFromDocuments(queryResult ?? []);
    const isLoading = queryResult === undefined;
-   console.log("[useConvexTree] treeItems", treeItems);
 
    // Toggle collapse for folders
    function toggleCollapse(folderId: string) {

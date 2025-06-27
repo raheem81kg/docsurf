@@ -24,6 +24,11 @@ const settingsNavItems = [
       icon: User,
    },
    {
+      title: "Subscription",
+      href: "/settings/subscription",
+      icon: CreditCard,
+   },
+   {
       title: "Providers",
       href: "/settings/providers",
       icon: Key,
@@ -57,11 +62,6 @@ const settingsNavItems = [
       title: "Appearance",
       href: "/settings/appearance",
       icon: PaintBucket,
-   },
-   {
-      title: "Subscription",
-      href: "/settings/subscription",
-      icon: CreditCard,
    },
 ];
 

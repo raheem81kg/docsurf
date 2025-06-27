@@ -198,7 +198,8 @@ export const getThreadMessages = query({
       const messages = await ctx.db
          .query("messages")
          .withIndex("byThreadId", (q) => q.eq("threadId", threadId))
-         .collect();
+         .order("asc")
+         .take(200);
 
       return messages;
    },

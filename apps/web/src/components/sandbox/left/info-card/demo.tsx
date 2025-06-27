@@ -19,7 +19,7 @@ import {
    SidebarMenuButton,
    SidebarFooter,
    SidebarTrigger,
-} from "@workspace/ui/components/sidebar";
+} from "@docsurf/ui/components/sidebar";
 import { ExternalLink, User, ChevronsUpDown, Calendar, Home, Inbox, Search, Settings } from "lucide-react";
 import Link from "next/link";
 
