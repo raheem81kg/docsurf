@@ -24,7 +24,7 @@ import { EditorContent } from "@tiptap/react";
 // import { useTiptapEditor } from "@/app/(main)/doc/tip/tap/components/minimal-tiptap/hooks/use-tiptap-editor";
 import { useEditorRefStore } from "@/store/use-editor-ref-store";
 import type { DocVersion } from "@/lib/persist/dexie-persist";
-import type { Editor } from "@tiptap/core";
+import type { Editor } from "@tiptap/react";
 import { DEFAULT_TEXT_TITLE } from "@/utils/constants";
 import useMinimalTiptapEditor from "../minimal-tiptap/hooks/use-minimal-tiptap";
 import { useCurrentDocument } from "@/components/sandbox/left/_tree_components/SortableTree";

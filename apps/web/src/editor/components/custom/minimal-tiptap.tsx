@@ -2,7 +2,7 @@
 import * as React from "react";
 import type { Content, Editor } from "@tiptap/react";
 import type { UseMinimalTiptapEditorProps } from "../minimal-tiptap/hooks/use-minimal-tiptap";
-import { EditorContent, EditorContext } from "@tiptap/react";
+import { EditorContent } from "@tiptap/react";
 import { Separator } from "@docsurf/ui/components/separator";
 import { cn } from "@docsurf/ui/lib/utils";
 import { SectionOne } from "../minimal-tiptap/components/section/one";
@@ -26,6 +26,10 @@ import { api } from "@docsurf/backend/convex/_generated/api";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { useCurrentDocument } from "@/components/sandbox/left/_tree_components/SortableTree";
+import { SearchAndReplaceToolbar } from "./search-and-replace-toolbar";
+import { AnimatePresence } from "motion/react";
+import { useMutation } from "convex/react";
+import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "onUpdate"> {
    value?: Content;
@@ -109,13 +113,15 @@ const BottomToolbar = ({
    editor,
    characterLimit = MAX_CHARACTERS,
    isDocLocked,
+   toggleLock,
 }: {
    editor: Editor;
    characterLimit?: number;
    isDocLocked: boolean;
+   toggleLock?: () => void;
 }) => (
    <ScrollArea className="shrink-0 overflow-x-auto border-t border-border p-2">
-      <SectionSix editor={editor} characterLimit={characterLimit} isDocLocked={isDocLocked} />
+      <SectionSix editor={editor} characterLimit={characterLimit} isDocLocked={isDocLocked} toggleLock={toggleLock} />
       <ScrollBar orientation="horizontal" />
    </ScrollArea>
 );
@@ -134,6 +140,20 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
          ...props,
       });
 
+      const toggleDocumentLock = useMutation(api.documents.toggleDocumentLock);
+      const handleToggleLock = React.useCallback(async () => {
+         if (!doc?._id || !doc.workspaceId) return;
+         try {
+            await toggleDocumentLock({
+               workspaceId: doc.workspaceId,
+               id: doc._id,
+            });
+         } catch (err) {
+            showToast("Failed to toggle lock", "error");
+            console.error("Failed to toggle lock", err);
+         }
+      }, [doc, toggleDocumentLock]);
+
       console.log("[MinimalTiptap] editor", editor);
       // Register the editor instance in the global store
       React.useEffect(() => {
@@ -147,11 +167,33 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
          return null;
       }
 
+      // Search & Replace hotkey logic
+      const [showSearchReplace, setShowSearchReplace] = React.useState(false);
+      React.useEffect(() => {
+         const handler = (e: KeyboardEvent) => {
+            // Cmd+F (Mac) or Ctrl+F (Win/Linux)
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "f") {
+               e.preventDefault();
+               setShowSearchReplace((v) => !v);
+            }
+         };
+         const closeHandler = () => setShowSearchReplace(false);
+         window.addEventListener("keydown", handler);
+         window.addEventListener("closeSearchReplacePanel", closeHandler);
+         return () => {
+            window.removeEventListener("keydown", handler);
+            window.removeEventListener("closeSearchReplacePanel", closeHandler);
+         };
+      }, []);
+
       return (
          <div ref={ref} className={cn("flex flex-col h-full min-h-0 relative", className)}>
-            <EditorContext.Provider value={{ editor }}>
-               <Locked />
-               <Deleted />
+            {/* Only show Locked if locked and not deleted */}
+            {doc?.isLocked && !doc?.isDeleted && <Locked />}
+            <Deleted />
+            <AnimatePresence>{showSearchReplace && <SearchAndReplaceToolbar editor={editor} />}</AnimatePresence>
+            {/* Hide top toolbars if deleted or locked */}
+            {!(doc?.isDeleted || doc?.isLocked) && (
                <div className="sticky top-0 z-10 shrink-0 overflow-x-auto border-b border-border [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                   {isMobile ? (
                      <MobileTopToolbar editor={editor} isDocLocked={doc?.isLocked ?? false} />
@@ -159,27 +201,32 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
                      <TopToolbar editor={editor} isDocLocked={doc?.isLocked ?? false} />
                   )}
                </div>
+            )}
 
-               <div className="flex-1 min-h-0 overflow-auto flex flex-col h-full">
-                  <EditorContent
-                     style={{
-                        scrollbarWidth: "thin",
-                        scrollbarColor: "var(--border) transparent",
-                     }}
-                     editor={editor}
-                     className={cn("minimal-tiptap-editor min-h-full", editorContentClassName)}
-                  />
-               </div>
+            <div className="flex-1 min-h-0 overflow-auto flex flex-col h-full">
+               <EditorContent
+                  style={{
+                     scrollbarWidth: "thin",
+                     scrollbarColor: "var(--border) transparent",
+                  }}
+                  editor={editor}
+                  className={cn("minimal-tiptap-editor min-h-full", editorContentClassName)}
+               />
+            </div>
 
-               {/* Wrap BubbleMenus in a div to avoid unmount errors (see https://github.com/ueberdosis/tiptap/issues/2658) */}
-               <div>
-                  <LinkBubbleMenu editor={editor} />
-                  <TableBubbleMenu editor={editor} />
-               </div>
-               <div className="z-10 sticky bottom-0">
-                  <BottomToolbar editor={editor} characterLimit={characterLimit} isDocLocked={doc?.isLocked ?? false} />
-               </div>
-            </EditorContext.Provider>
+            {/* Wrap BubbleMenus in a div to avoid unmount errors (see https://github.com/ueberdosis/tiptap/issues/2658) */}
+            <div>
+               <LinkBubbleMenu editor={editor} />
+               <TableBubbleMenu editor={editor} />
+            </div>
+            <div className="z-10 sticky bottom-0">
+               <BottomToolbar
+                  editor={editor}
+                  characterLimit={characterLimit}
+                  isDocLocked={doc?.isLocked ?? false}
+                  toggleLock={handleToggleLock}
+               />
+            </div>
          </div>
       );
    }

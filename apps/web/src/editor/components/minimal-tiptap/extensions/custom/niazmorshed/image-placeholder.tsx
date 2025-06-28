@@ -29,7 +29,7 @@ export interface ImagePlaceholderOptions {
    maxSize?: number;
 }
 
-declare module "@tiptap/core" {
+declare module "@tiptap/react" {
    interface Commands<ReturnType> {
       imagePlaceholder: {
          /**

@@ -38,6 +38,7 @@ export function SuggestionOverlayProvider({ children }: { children: ReactNode })
       workspaceId: user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">,
    });
    const editor = useEditorRefStore((state) => state.editor);
+   console.log("editor in suggestion overlay provider", editor);
 
    const setSuggestionIsLoading = useCallback((isLoading: boolean) => {}, []);
 
@@ -134,11 +135,12 @@ export function SuggestionOverlayProvider({ children }: { children: ReactNode })
 
    const tryOpenSuggestionOverlayFromEditorSelection = useCallback(() => {
       if (!editor) {
-         // showToast("Cannot open suggestion overlay: Editor not active.", "error");
+         showToast("Editor is not ready. Please wait for the editor to load.", "warning");
          return;
       }
       const { from, to, empty } = editor.state.selection;
       if (empty) {
+         console.log("empty selection editor ref", editor);
          showToast("Select text in the editor before using AI commands.", "warning");
          return;
       }

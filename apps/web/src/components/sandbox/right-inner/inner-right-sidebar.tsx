@@ -62,7 +62,7 @@ export const InnerRightSidebar = ({
                <Chat threadId={threadId} />
             </React.Suspense>
          </SidebarContent>
-         <SidebarRail className="after:w-[1px]" onToggle={handleRailClick} enableDrag sideForDrag="right" maxSidebarWidth={28} />
+         <SidebarRail className="after:w-[1px]" onToggle={handleRailClick} enableDrag sideForDrag="right" maxSidebarWidth={29.5} />
       </Sidebar>
    );
 };

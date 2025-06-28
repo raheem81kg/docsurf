@@ -41,7 +41,7 @@ export default function Deleted() {
    };
 
    return (
-      <div className="bg-bg-semantic-error-subtle/90 text-text-error px-4 py-3 md:py-2">
+      <div className="bg-background/80 text-text-error px-4 py-3 md:py-2">
          <div className="flex gap-2 md:items-center">
             <div className="flex grow gap-3 md:items-center">
                <div className="flex grow flex-col justify-between gap-3 md:flex-row md:items-center">

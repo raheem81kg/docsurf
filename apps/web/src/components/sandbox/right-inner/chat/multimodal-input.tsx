@@ -192,10 +192,6 @@ export function MultimodalInput({
    );
 
    const { token: ephemeralToken } = useEphemeralToken();
-   const ephemeralTokenRef = useRef(ephemeralToken);
-   useEffect(() => {
-      ephemeralTokenRef.current = ephemeralToken;
-   }, [ephemeralToken]);
 
    // Voice recording state
    const {
@@ -317,7 +313,7 @@ export function MultimodalInput({
             method: "POST",
             body: formData,
             headers: {
-               Authorization: `Bearer ${ephemeralTokenRef.current}`,
+               Authorization: `Bearer ${ephemeralToken}`,
             },
          });
 
@@ -332,7 +328,7 @@ export function MultimodalInput({
             file,
          };
       },
-      [session?.session?.token]
+      [ephemeralToken]
    );
 
    const handleFileUpload = useCallback(
@@ -646,6 +642,7 @@ export function MultimodalInput({
                {extendedFiles.length > 0 && <div className="flex flex-wrap gap-2 pb-3">{extendedFiles.map(renderFilePreview)}</div>}
                <PromptInputTextarea
                   autoFocus
+                  className="max-h-[300px]"
                   placeholder={isImageModel ? "Describe the image you want to generate..." : "Ask me anything..."}
                />
 

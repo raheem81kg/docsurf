@@ -167,7 +167,7 @@ export const SectionSix: React.FC<SectionSixProps> = ({
                tooltip={isDocLocked ? "Unlock editor" : "Lock editor"}
                onClick={toggleLock}
                disabled={loadingDoc}
-               className={cn(isDocLocked && "text-blue-500/80")}
+               className={cn(isDocLocked && "text-muted-foreground")}
             />
 
             {/* Version History Dialog Trigger and Dialog */}

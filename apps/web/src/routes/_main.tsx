@@ -8,6 +8,7 @@ import { useSandStateStore } from "@/store/sandstate";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { INNER_RIGHT_SIDEBAR_COOKIE_NAME, LEFT_SIDEBAR_COOKIE_NAME, RIGHT_SIDEBAR_COOKIE_NAME } from "@/utils/constants";
 import { OnboardingProvider } from "@/components/onboarding/onboarding-provider";
+import { SuggestionOverlayProvider } from "@/editor/components/providers/suggestion-overlay/suggestion-overlay-provider";
 
 export const Route = createFileRoute("/_main")({
    component: MainLayoutComponent,
@@ -19,32 +20,28 @@ export const Route = createFileRoute("/_main")({
 });
 
 function MainLayoutComponent() {
-   const initializeState = useSandStateStore((s) => s.initializeState);
-
-   // No need to read cookies or set initialOpen here
-
-   // Optionally, you can remove the initializeState effect if not needed
-
    return (
-      <OnboardingProvider>
-         <div className="flex overflow-hidden max-h-dvh">
-            {/* sidebar 1 */}
-            <WrapperLeftSidebar />
-            <OnboardingWrapper />
-            <SidebarInset className="flex-1 min-w-0 bg-background dark:bg-background flex flex-col">
-               <Header />
+      <SuggestionOverlayProvider>
+         <OnboardingProvider>
+            <div className="flex overflow-hidden max-h-dvh">
+               {/* sidebar 1 */}
+               <WrapperLeftSidebar />
+               <OnboardingWrapper />
+               <SidebarInset className="flex-1 min-w-0 bg-background dark:bg-background flex flex-col">
+                  <Header />
 
-               <div className="flex overflow-hidden h-full">
-                  <div className="flex-1 min-w-0 overflow-auto scrollbar-hidden">
-                     <Outlet />
+                  <div className="flex overflow-hidden h-full">
+                     <div className="flex-1 min-w-0 overflow-auto scrollbar-hidden">
+                        <Outlet />
+                     </div>
+
+                     {/* sidebar 3 */}
+                     <WrapperInnerRightSidebar />
                   </div>
-
-                  {/* sidebar 3 */}
-                  <WrapperInnerRightSidebar />
-               </div>
-            </SidebarInset>
-         </div>
-      </OnboardingProvider>
+               </SidebarInset>
+            </div>
+         </OnboardingProvider>
+      </SuggestionOverlayProvider>
    );
 }
 

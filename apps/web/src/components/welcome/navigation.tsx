@@ -79,7 +79,7 @@ export default function Navigation({ profile }: { profile: Profile }) {
       <header className="sticky top-4 z-50 mt-4 justify-center px-2 md:flex md:px-4 ">
          <nav className="relative z-20 flex h-[50px] items-center justify-between rounded-[4px] border border-border bg-[#FFFFFF] bg-opacity-70 px-4 backdrop-blur-xl backdrop-filter md:justify-center dark:bg-[#121212] ">
             <div className="flex items-center gap-6">
-               <Link to="/" className="relative bottom-1 cursor-pointer">
+               <Link to="/" className="relative bottom-1 cursor-pointer" title="Home">
                   {/* <DynamicImage lightSrc={logo} darkSrc={logoDark} alt="DocSurf" width={22} height={22} /> */}
                   <span className="-right-[-0.5px] absolute text-[10px] text-muted-foreground">beta</span>
                </Link>
@@ -172,6 +172,7 @@ export default function Navigation({ profile }: { profile: Profile }) {
                               {aboutLinks.map((link) => (
                                  <Link
                                     key={link.title}
+                                    title={link.title}
                                     to={link.href}
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -199,6 +200,7 @@ export default function Navigation({ profile }: { profile: Profile }) {
                               return (
                                  <Link
                                     key={resource.title}
+                                    title={resource.title}
                                     to={resource.href}
                                     rel="noopener noreferrer"
                                     target="_blank"

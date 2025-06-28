@@ -4,6 +4,7 @@ import { cn } from "@docsurf/ui/lib/utils";
 import { Button } from "@docsurf/ui/components/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@docsurf/ui/components/dropdown-menu";
 import { ClipboardCopyIcon, DotsHorizontalIcon, DownloadIcon, Link2Icon, SizeIcon } from "@radix-ui/react-icons";
+import { AlignLeft, AlignCenter, AlignRight, Check } from "lucide-react";
 
 interface ImageActionsProps {
    shouldMerge?: boolean;
@@ -12,6 +13,8 @@ interface ImageActionsProps {
    onDownload?: () => void;
    onCopy?: () => void;
    onCopyLink?: () => void;
+   align?: string;
+   onAlignChange?: (align: string) => void;
 }
 
 interface ActionButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -92,46 +95,107 @@ const ActionItems: Array<{
    },
 ];
 
-export const ImageActions: React.FC<ImageActionsProps> = React.memo(({ shouldMerge = false, isLink = false, ...actions }) => {
-   const [isOpen, setIsOpen] = React.useState(false);
+const alignmentOptions = [
+   { value: "left", icon: <AlignLeft className="size-4" /> },
+   { value: "center", icon: <AlignCenter className="size-4" /> },
+   { value: "right", icon: <AlignRight className="size-4" /> },
+];
 
-   const handleAction = React.useCallback((e: React.MouseEvent, action: (() => void) | undefined) => {
-      e.preventDefault();
-      e.stopPropagation();
-      action?.();
-   }, []);
+export const ImageActions: React.FC<ImageActionsProps> = React.memo(
+   ({ shouldMerge = false, isLink = false, align = "center", onAlignChange, ...actions }) => {
+      const [isOpen, setIsOpen] = React.useState(false);
+      const [alignMenuOpen, setAlignMenuOpen] = React.useState(false);
 
-   const filteredActions = React.useMemo(() => ActionItems.filter((item) => isLink || !item.isLink), [isLink]);
+      const handleAction = React.useCallback((e: React.MouseEvent, action: (() => void) | undefined) => {
+         e.preventDefault();
+         e.stopPropagation();
+         action?.();
+      }, []);
 
-   return (
-      <ActionWrapper className={cn({ "opacity-100": isOpen })}>
-         {shouldMerge ? (
-            <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-               <DropdownMenuTrigger asChild>
-                  <ActionButton
-                     icon={<DotsHorizontalIcon className="size-4" />}
-                     tooltip="Open menu"
-                     onClick={(e) => e.preventDefault()}
-                  />
-               </DropdownMenuTrigger>
-               <DropdownMenuContent className="w-56" align="end">
-                  {filteredActions.map(({ key, icon, tooltip }) => (
-                     <DropdownMenuItem key={key} onClick={(e) => handleAction(e, actions[key])}>
-                        <div className="flex flex-row items-center gap-2">
-                           {icon}
-                           <span>{tooltip}</span>
-                        </div>
+      const filteredActions = React.useMemo(() => ActionItems.filter((item) => isLink || !item.isLink), [isLink]);
+
+      // Alignment dropdown menu
+      const alignDropdown = (
+         <DropdownMenu open={alignMenuOpen} onOpenChange={setAlignMenuOpen}>
+            <DropdownMenuTrigger asChild>
+               <ActionButton
+                  icon={alignmentOptions.find((o) => o.value === align)?.icon || <AlignCenter className="size-4" />}
+                  tooltip="Image alignment"
+                  onClick={(e) => e.preventDefault()}
+               />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-0">
+               {alignmentOptions.map((option) => (
+                  <DropdownMenuItem
+                     key={option.value}
+                     onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onAlignChange?.(option.value);
+                        setAlignMenuOpen(false);
+                     }}
+                     className={align === option.value ? "bg-accent" : ""}
+                  >
+                     <span className="flex items-center gap-2">{option.icon}</span>
+                     {align === option.value && <Check className="ml-auto size-4 text-primary" />}
+                  </DropdownMenuItem>
+               ))}
+            </DropdownMenuContent>
+         </DropdownMenu>
+      );
+
+      return (
+         <ActionWrapper className={cn({ "opacity-100": isOpen })}>
+            {shouldMerge ? (
+               <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+                  <DropdownMenuTrigger asChild>
+                     <ActionButton
+                        icon={<DotsHorizontalIcon className="size-4" />}
+                        tooltip="Open menu"
+                        onClick={(e) => e.preventDefault()}
+                     />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end">
+                     {filteredActions.map(({ key, icon, tooltip }) => (
+                        <DropdownMenuItem key={key} onClick={(e) => handleAction(e, actions[key])}>
+                           <div className="flex flex-row items-center gap-2">
+                              {icon}
+                              <span>{tooltip}</span>
+                           </div>
+                        </DropdownMenuItem>
+                     ))}
+                     <DropdownMenuItem disabled className="opacity-60 cursor-default select-none">
+                        <span className="flex items-center gap-2">Align</span>
                      </DropdownMenuItem>
-                  ))}
-               </DropdownMenuContent>
-            </DropdownMenu>
-         ) : (
-            filteredActions.map(({ key, icon, tooltip }) => (
-               <ActionButton key={key} icon={icon} tooltip={tooltip} onClick={(e) => handleAction(e, actions[key])} />
-            ))
-         )}
-      </ActionWrapper>
-   );
-});
+                     {alignmentOptions.map((option) => (
+                        <DropdownMenuItem
+                           key={option.value}
+                           onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              onAlignChange?.(option.value);
+                              setIsOpen(false);
+                           }}
+                           className={align === option.value ? "bg-accent" : ""}
+                        >
+                           <span className="flex items-center gap-2">{option.icon}</span>
+                           {align === option.value && <Check className="ml-auto size-4 text-primary" />}
+                        </DropdownMenuItem>
+                     ))}
+                  </DropdownMenuContent>
+               </DropdownMenu>
+            ) : (
+               filteredActions.map(({ key, icon, tooltip }, idx) => (
+                  <React.Fragment key={key}>
+                     <ActionButton icon={icon} tooltip={tooltip} onClick={(e) => handleAction(e, actions[key])} />
+                     {/* Insert align dropdown after copy image to clipboard */}
+                     {key === "onCopy" && alignDropdown}
+                  </React.Fragment>
+               ))
+            )}
+         </ActionWrapper>
+      );
+   }
+);
 
 ImageActions.displayName = "ImageActions";

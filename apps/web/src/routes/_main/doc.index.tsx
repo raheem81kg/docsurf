@@ -6,6 +6,7 @@ import { env } from "@/env";
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 import type { CurrentUser } from "@docsurf/backend/convex/auth";
 import type { Doc } from "@docsurf/backend/convex/_generated/dataModel";
+import { Skeleton } from "@docsurf/ui/components/skeleton";
 
 export const Route = createFileRoute("/_main/doc/")({
    beforeLoad: async (ctx) => {
@@ -45,6 +46,7 @@ export const Route = createFileRoute("/_main/doc/")({
          const docsResult = await client.query(api.documents.fetchDocumentTree, {
             workspaceId: workspaceId as Id<"workspaces">,
             limit: 1,
+            documentType: "text/plain",
          });
          docs = docsResult?.data ?? [];
       } catch (err) {
@@ -88,5 +90,14 @@ function logError(message: string, err: unknown) {
 }
 
 function RouteComponent() {
-   return <div>Hello "/doc"!</div>;
+   // Show a loading skeleton placeholder
+   return (
+      <div className="flex flex-col gap-2 p-8">
+         <Skeleton className="h-8 w-1/3" />
+         <Skeleton className="h-6 w-2/3" />
+         <Skeleton className="h-4 w-full" />
+         <Skeleton className="h-4 w-5/6" />
+         <Skeleton className="h-4 w-4/6" />
+      </div>
+   );
 }

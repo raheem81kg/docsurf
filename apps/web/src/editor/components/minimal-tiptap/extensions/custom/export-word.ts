@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { Extension } from "@tiptap/core";
+import { Extension } from "@tiptap/react";
 import { Packer, WidthType } from "docx";
 import { DocxSerializer, defaultMarks, defaultNodes } from "prosemirror-docx";
 import { ActionButton } from "../image/components/image-actions";
 import { downloadFromBlob } from "../../tiptap-util";
 
-declare module "@tiptap/core" {
+declare module "@tiptap/react" {
    interface Commands<ReturnType> {
       exportWord: {
          exportToWord: () => ReturnType;

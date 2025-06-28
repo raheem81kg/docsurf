@@ -1,6 +1,6 @@
 import * as React from "react";
-import type { Editor } from "@tiptap/core";
-import { isActive } from "@tiptap/core";
+import type { Editor } from "@tiptap/react";
+import { isActive } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react";
 import { Separator } from "@docsurf/ui/components/separator";
 import ToolbarButton from "../toolbar-button";

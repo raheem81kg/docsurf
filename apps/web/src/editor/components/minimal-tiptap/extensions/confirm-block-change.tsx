@@ -17,7 +17,7 @@ import type { ReactNodeViewProps } from "@tiptap/react";
 import debounce from "lodash/debounce";
 
 // Add command type declarations
-declare module "@tiptap/core" {
+declare module "@tiptap/react" {
    interface Commands<ReturnType> {
       confirmBlockChange: {
          acceptBlockChange: (pos: number) => ReturnType;
@@ -502,7 +502,7 @@ export const ConfirmBlockChange = Node.create<ConfirmBlockChangeOptions>({
                }
                return false;
             },
-      } as Partial<import("@tiptap/core").RawCommands>;
+      } as Partial<import("@tiptap/react").RawCommands>;
    },
 
    addProseMirrorPlugins() {

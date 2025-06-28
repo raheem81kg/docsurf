@@ -59,7 +59,7 @@ export function TrashPopover({ children }: TrashPopoverProps) {
    return (
       <Popover open={open} onOpenChange={throttledSetOpen}>
          <PopoverTrigger asChild>{children}</PopoverTrigger>
-         <PopoverContent side="right" align="start" alignOffset={-220} className="w-80 p-0">
+         <PopoverContent side="right" align="start" alignOffset={-190} className="w-80 p-0">
             <Command shouldFilter={false} value={"-"}>
                <CommandInput placeholder="Search trashed documents..." value={query} onValueChange={setQuery} />
                <TrashedDocumentsList

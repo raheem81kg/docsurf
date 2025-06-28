@@ -13,7 +13,6 @@ import { internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import { httpAction } from "../_generated/server";
 import { dbMessagesToCore } from "../lib/db_to_core_messages";
-import { getUserIdentity } from "../lib/identity";
 import type { AbilityId, ImageSize } from "@docsurf/utils/chat/chat-constants";
 import { getResumableStreamContext } from "../lib/resumable_stream_context";
 import { getToolkit } from "../lib/toolkit";

@@ -163,6 +163,7 @@ const HeaderContent = () => {
                data-slot="sidebar-trigger"
                variant="ghost"
                size="icon"
+               disabled={doc?.isLocked || doc?.isDeleted}
                className={cn("size-7 text-primary cursor-pointer")}
                onClick={() => {
                   toggle_ir_sidebar();

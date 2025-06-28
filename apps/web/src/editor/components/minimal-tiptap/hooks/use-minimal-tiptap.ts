@@ -27,11 +27,12 @@ import {
    UnsetAllMarks,
    ResetMarksOnEnter,
    FileHandler,
+   SearchAndReplace,
 } from "../extensions";
 import { cn } from "@docsurf/ui/lib/utils";
 import { getOutput, randomId } from "../utils";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
-import { MAX_CHARACTERS, MAX_FILE_SIZE, convertFileToBase64, getComparableContent } from "../tiptap-util";
+import { MAX_CHARACTERS, MAX_FILE_SIZE, getComparableContent } from "../tiptap-util";
 import { IndentHandler, TrailingNode } from "../extensions/custom";
 import { Superscript } from "@tiptap/extension-superscript";
 import { Subscript } from "@tiptap/extension-subscript";
@@ -56,7 +57,8 @@ import { api } from "@docsurf/backend/convex/_generated/api";
 import { useQuery } from "@tanstack/react-query";
 import { ImageExtension } from "../extensions/custom/niazmorshed/image";
 import { ImagePlaceholder } from "../extensions/custom/niazmorshed/image-placeholder";
-
+import { Mathematics } from "@tiptap/extension-mathematics";
+// import { getHierarchicalIndexes, TableOfContents } from "@tiptap/extension-table-of-contents";
 export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
    value?: Content;
    output?: "html" | "json" | "text";
@@ -134,17 +136,14 @@ const createExtensions = (
       TaskList,
       TaskItem.configure({ nested: true }),
       Underline,
-      // ImageExtension,
-      // ImagePlaceholder,
+      Mathematics,
+      ImagePlaceholder,
       Image.configure({
          allowedMimeTypes: ["image/*"],
          maxFileSize: MAX_FILE_SIZE,
-         allowBase64: true,
+         allowBase64: false,
          uploadFn: async (file) => {
-            await new Promise((resolve) => setTimeout(resolve, 3000));
-            const abortController = new AbortController();
-            const src = await convertFileToBase64(file, abortController.signal);
-            return { id: randomId(), src };
+            return { id: randomId(), src: "" };
          },
          onToggle(editor, files, pos) {
             editor.commands.insertContentAt(
@@ -199,27 +198,26 @@ const createExtensions = (
             });
          },
       }),
+      SearchAndReplace,
       FileHandler.configure({
-         allowBase64: true,
+         allowBase64: false,
          allowedMimeTypes: ["image/*"],
          maxFileSize: MAX_FILE_SIZE,
          onDrop: (editor, files, pos) => {
             files.forEach(async (file) => {
-               const abortController = new AbortController();
-               const src = await convertFileToBase64(file, abortController.signal);
+               const blobUrl = URL.createObjectURL(file);
                editor.commands.insertContentAt(pos, {
                   type: "image",
-                  attrs: { src },
+                  attrs: { src: blobUrl },
                });
             });
          },
          onPaste: (editor, files) => {
             files.forEach(async (file) => {
-               const abortController = new AbortController();
-               const src = await convertFileToBase64(file, abortController.signal);
+               const blobUrl = URL.createObjectURL(file);
                editor.commands.insertContent({
                   type: "image",
-                  attrs: { src },
+                  attrs: { src: blobUrl },
                });
             });
          },
@@ -240,7 +238,6 @@ const createExtensions = (
       Superscript,
       Subscript,
       CharacterCount.configure({ limit: characterLimit }),
-
       UnsetAllMarks,
       HorizontalRule,
       ResetMarksOnEnter,
@@ -406,16 +403,6 @@ export const useMinimalTiptapEditor = ({
    // Register editor and view in the store
    const setEditor = useEditorRefStore((state) => state.setEditor);
 
-   const handleCreate = React.useCallback(
-      (editor: Editor) => {
-         editorRef.current = editor;
-         if (registerInStore) {
-            setEditor(editor);
-         }
-      },
-      [registerInStore, setEditor]
-   );
-
    const editor = useEditor({
       extensions,
       shouldRerenderOnTransaction: false,
@@ -439,10 +426,22 @@ export const useMinimalTiptapEditor = ({
             debouncedSave(getOutput(editor, output));
          }
       },
-      onCreate: ({ editor }) => handleCreate(editor),
+      onCreate: ({ editor }) => {
+         editorRef.current = editor;
+      },
       onBlur: ({ editor }) => handleBlur(editor),
       ...props,
    });
+
+   // Always keep the global editor ref in sync with the local editor instance
+   React.useEffect(() => {
+      if (registerInStore) {
+         setEditor(editor ?? null);
+         return () => {
+            setEditor(null);
+         };
+      }
+   }, [editor, registerInStore, setEditor]);
 
    return editor;
 };

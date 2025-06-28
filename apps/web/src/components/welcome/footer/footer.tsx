@@ -10,7 +10,7 @@ export function Footer() {
       <footer className="overflow-hidden border-border border-t-[1px] bg-[#fff] px-4 pt-10 md:max-h-[820px] md:px-6 md:pt-16 dark:bg-[#0C0C0C]">
          <div className="container mx-auto">
             <div className="mb-12 flex items-center justify-between border-border border-b-[1px] pb-10 md:pb-16">
-               <Link to="/" className="-ml-[52px] scale-50 md:ml-0 md:scale-100">
+               <Link to="/" className="-ml-[52px] scale-50 md:ml-0 md:scale-100" title="Home">
                   <LogoLarge />
                   <span className="sr-only">Docsurf</span>
                </Link>
@@ -24,19 +24,29 @@ export function Footer() {
                      <span className="font-medium">Features</span>
                      <ul>
                         <li className="text-[#878787] transition-colors">
-                           <Link to="/">Editor</Link>
+                           <Link to="/" title="Editor">
+                              Editor
+                           </Link>
                         </li>
                         <li className="text-[#878787] transition-colors">
-                           <Link to="/">AI Features</Link>
+                           <Link to="/" title="AI Features">
+                              AI Features
+                           </Link>
                         </li>
                         <li className="text-[#878787] transition-colors">
-                           <Link to="/">Version Control</Link>
+                           <Link to="/" title="Version Control">
+                              Version Control
+                           </Link>
                         </li>
                         <li className="text-[#878787] transition-colors">
-                           <Link to="/">Import/Export</Link>
+                           <Link to="/" title="Import/Export">
+                              Import/Export
+                           </Link>
                         </li>
                         <li className="text-[#878787] transition-colors">
-                           <Link to="/pricing">Pricing</Link>
+                           <Link to="/pricing" title="Pricing">
+                              Pricing
+                           </Link>
                         </li>
                      </ul>
                   </div>
@@ -50,13 +60,19 @@ export function Footer() {
                            </a>
                         </li>
                         <li className="text-[#878787] transition-colors">
-                           <Link to="/">Support</Link>
+                           <Link to="/" title="Support">
+                              Support
+                           </Link>
                         </li>
                         <li className="text-[#878787] transition-colors">
-                           <Link to="/policy">Privacy Policy</Link>
+                           <Link to="/policy" title="Privacy Policy">
+                              Privacy Policy
+                           </Link>
                         </li>
                         <li className="text-[#878787] transition-colors">
-                           <Link to="/terms">Terms of Service</Link>
+                           <Link to="/terms" title="Terms of Service">
+                              Terms of Service
+                           </Link>
                         </li>
                      </ul>
                   </div>
@@ -65,10 +81,14 @@ export function Footer() {
                      <span>Company</span>
                      <ul>
                         <li className="text-[#878787] transition-colors">
-                           <Link to="/about">About</Link>
+                           <Link to="/about" title="About">
+                              About
+                           </Link>
                         </li>
                         <li className="text-[#878787] transition-colors">
-                           <Link to="/">Contact</Link>
+                           <Link to="/" title="Contact">
+                              Contact
+                           </Link>
                         </li>
                      </ul>
                   </div>

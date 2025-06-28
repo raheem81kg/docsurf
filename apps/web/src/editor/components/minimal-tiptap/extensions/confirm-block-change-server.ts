@@ -1,4 +1,4 @@
-import { Node, mergeAttributes } from "@tiptap/core";
+import { Node, mergeAttributes } from "@tiptap/react";
 
 export const ConfirmBlockChange = Node.create({
    name: "confirmBlockChange",

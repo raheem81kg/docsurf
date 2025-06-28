@@ -177,6 +177,9 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
          fileName: {
             default: null,
          },
+         align: {
+            default: "center",
+         },
       };
    },
 
@@ -188,7 +191,7 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
                const [validImages, errors] = filterFiles(attrs, {
                   allowedMimeTypes: this.options.allowedMimeTypes,
                   maxFileSize: this.options.maxFileSize,
-                  allowBase64: this.options.allowBase64,
+                  allowBase64: false,
                });
 
                if (errors.length > 0 && this.options.onValidationError) {
@@ -261,7 +264,7 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
                   const [validImages, errors] = filterFiles(Array.from(files), {
                      allowedMimeTypes: this.options.allowedMimeTypes,
                      maxFileSize: this.options.maxFileSize,
-                     allowBase64: this.options.allowBase64,
+                     allowBase64: false,
                   });
 
                   if (errors.length > 0 && this.options.onValidationError) {

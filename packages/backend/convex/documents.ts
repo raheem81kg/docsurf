@@ -117,22 +117,36 @@ export const batchDeleteDocuments = mutation({
  *
  * @param workspaceId The workspace to scope the operation to
  * @param limit Optional limit argument
+ * @param documentType Optional document type filter
  * @returns Array of document tree nodes
  */
 export const fetchDocumentTree = query({
    args: {
       workspaceId: v.id("workspaces"),
       limit: v.optional(v.number()),
+      documentType: v.optional(
+         v.union(
+            v.literal("folder"),
+            v.literal("text/plain"),
+            v.literal("video/mp4"),
+            v.literal("audio/mp3"),
+            v.literal("application/pdf"),
+            v.literal("application/octet-stream"),
+            v.literal("website")
+         )
+      ),
    },
-   handler: async (ctx, { workspaceId, limit }) => {
+   handler: async (ctx, { workspaceId, limit, documentType }) => {
       const { userId } = await requireWorkspacePermission(ctx, workspaceId);
       // Use the new compound index for efficient filtering
       const max = typeof limit === "number" && limit > 0 ? limit : 200;
-      const docs = await ctx.db
+      let queryBuilder = ctx.db
          .query("documents")
-         .withIndex("byUserWorkspaceDeleted", (q) => q.eq("userId", userId).eq("workspaceId", workspaceId).eq("isDeleted", false))
-         .order("asc")
-         .take(max);
+         .withIndex("byUserWorkspaceDeleted", (q) => q.eq("userId", userId).eq("workspaceId", workspaceId).eq("isDeleted", false));
+      if (documentType) {
+         queryBuilder = queryBuilder.filter((q) => q.eq(q.field("documentType"), documentType));
+      }
+      const docs = await queryBuilder.order("asc").take(max);
       docs.sort((a, b) => (a.orderPosition ?? 0) - (b.orderPosition ?? 0));
       return { data: docs };
    },

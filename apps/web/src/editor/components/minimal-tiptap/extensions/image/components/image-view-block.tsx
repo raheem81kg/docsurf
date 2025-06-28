@@ -188,7 +188,12 @@ export const ImageViewBlock: React.FC<NodeViewProps> = ({ editor, node, selected
    return (
       <NodeViewWrapper ref={containerRef} data-drag-handle className="relative text-center leading-none">
          <div
-            className="group/node-image relative mx-auto rounded-md object-contain"
+            className={cn(
+               "group/node-image relative rounded-md object-contain",
+               node.attrs.align === "left" && "ml-0 mr-auto",
+               node.attrs.align === "center" && "mx-auto",
+               node.attrs.align === "right" && "ml-auto mr-0"
+            )}
             style={{
                maxWidth: `min(${maxWidth}px, 100%)`,
                width: currentWidth,
@@ -201,7 +206,7 @@ export const ImageViewBlock: React.FC<NodeViewProps> = ({ editor, node, selected
                   "outline outline-2 outline-offset-1 outline-primary": selected || isResizing,
                })}
             >
-               <div className="h-full contain-paint">
+               <div className="h-full contain-paint w-full">
                   <div className="relative h-full">
                      {imageState.isServerUploading && !imageState.error && (
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -277,6 +282,8 @@ export const ImageViewBlock: React.FC<NodeViewProps> = ({ editor, node, selected
                      onDownload={onDownload}
                      onCopy={onCopy}
                      onCopyLink={onCopyLink}
+                     align={node.attrs.align || "center"}
+                     onAlignChange={(align) => updateAttributes({ align })}
                   />
                )}
             </div>

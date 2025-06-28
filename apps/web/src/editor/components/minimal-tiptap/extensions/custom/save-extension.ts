@@ -3,7 +3,7 @@
 //  * Integrates with Zustand for save status. Uses fast-deep-equal, object-hash, and p-retry for reliability.
 //  * Supports offline-first with automatic sync when online.
 //  */
-// import { Extension, type Editor, type Command } from "@tiptap/core";
+// import { Extension, type Editor, type Command } from "@tiptap/react";
 // import debounce from "lodash/debounce";
 // import throttle from "lodash/throttle";
 // import { Plugin } from "@tiptap/pm/state";
@@ -22,7 +22,7 @@
 // export const HAS_PENDING_SAVE_SYMBOL = Symbol("hasPendingSave");
 
 // // Add type declarations for Editor methods
-// declare module "@tiptap/core" {
+// declare module "@tiptap/react" {
 //    interface Editor {
 //       isDocChanged(): boolean;
 //       getLastSavedContent(): unknown;

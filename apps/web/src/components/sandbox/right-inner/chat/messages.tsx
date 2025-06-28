@@ -321,7 +321,7 @@ export function Messages({
    return (
       <>
          <div className={cn("overflow-y-auto p-4 pt-0", className)} ref={scrollRef}>
-            <div ref={contentRef} className={cn("mx-auto space-y-3 pb-16", getChatWidthClass(chatWidthState.chatWidth))}>
+            <div ref={contentRef} className={cn("mx-auto space-y-3 pb-20", getChatWidthClass(chatWidthState.chatWidth))}>
                {messages.map((message) => (
                   <div
                      key={message.id}

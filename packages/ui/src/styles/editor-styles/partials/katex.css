@@ -1,0 +1,24 @@
+/* Mathematics extension styles */
+.tiptap .Tiptap-mathematics-editor {
+   background: var(--mt-code-background);
+   color: var(--mt-code-color);
+   font-family: var(--font-mono, monospace);
+   padding: 0.2rem 0.5rem;
+   border-radius: var(--radius, 0.25rem);
+   display: inline-block;
+}
+
+.tiptap .Tiptap-mathematics-render {
+   padding: 0 0.25rem;
+   border-radius: var(--radius, 0.25rem);
+   display: inline-block;
+}
+
+.tiptap .Tiptap-mathematics-render--editable {
+   cursor: pointer;
+   transition: background 0.2s;
+}
+
+.tiptap .Tiptap-mathematics-render--editable:hover {
+   background: var(--mt-accent-gray, #eee);
+}
