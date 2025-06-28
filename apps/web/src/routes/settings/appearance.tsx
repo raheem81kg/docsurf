@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { memo, useState } from "react";
 import { SettingsLayout } from "@/components/sandbox/right-inner/chat/settings/settings-layout";
+import { Skeleton } from "@docsurf/ui/components/skeleton";
 
 type ThemeCardProps = {
    theme: FetchedTheme;
@@ -148,8 +149,19 @@ function AppearanceSettings() {
       toggleMode,
       randomizeTheme,
    } = useThemeManagement();
+   const isPending = session?.isPending;
 
-   if (!session.user?.id) {
+   if (isPending) {
+      return (
+         <SettingsLayout title="Appearance" description="Customize the look and feel of your interface.">
+            <div className="flex items-center justify-center py-12">
+               <Skeleton className="h-10 w-1/2" />
+            </div>
+         </SettingsLayout>
+      );
+   }
+
+   if (!session?.user?.id) {
       return (
          <SettingsLayout title="Appearance" description="Customize the look and feel of your interface.">
             <div className="flex items-center justify-center py-12">

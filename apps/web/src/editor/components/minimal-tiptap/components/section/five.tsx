@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { Editor } from "@tiptap/react";
+import { useEditorState, type Editor } from "@tiptap/react";
 import type { FormatAction } from "../../types";
 import type { toggleVariants } from "@docsurf/ui/components/toggle";
 import type { VariantProps } from "class-variance-authority";
@@ -15,36 +15,6 @@ interface InsertElement extends FormatAction {
    value: InsertElementAction;
 }
 
-const formatActions: InsertElement[] = [
-   {
-      value: "codeBlock",
-      label: "Code block",
-      icon: <CodeIcon className="size-4.5" />,
-      action: (editor) => editor.chain().focus().toggleCodeBlock().run(),
-      isActive: (editor) => editor.isActive("codeBlock"),
-      canExecute: (editor) => editor.can().chain().focus().toggleCodeBlock().run(),
-      shortcuts: ["mod", "alt", "C"],
-   },
-   {
-      value: "blockquote",
-      label: "Blockquote",
-      icon: <QuoteIcon className="size-4.5" />,
-      action: (editor) => editor.chain().focus().toggleBlockquote().run(),
-      isActive: (editor) => editor.isActive("blockquote"),
-      canExecute: (editor) => editor.can().chain().focus().toggleBlockquote().run(),
-      shortcuts: ["mod", "shift", "B"],
-   },
-   {
-      value: "horizontalRule",
-      label: "Divider",
-      icon: <DividerHorizontalIcon className="size-4.5" />,
-      action: (editor) => editor.chain().focus().setHorizontalRule().run(),
-      isActive: () => false,
-      canExecute: (editor) => editor.can().chain().focus().setHorizontalRule().run(),
-      shortcuts: ["mod", "alt", "-"],
-   },
-];
-
 interface SectionFiveProps extends VariantProps<typeof toggleVariants> {
    editor: Editor;
    activeActions?: InsertElementAction[];
@@ -54,12 +24,53 @@ interface SectionFiveProps extends VariantProps<typeof toggleVariants> {
 
 export const SectionFive: React.FC<SectionFiveProps> = ({
    editor,
-   activeActions = formatActions.map((action) => action.value),
+   activeActions = ["codeBlock", "blockquote", "horizontalRule"],
    mainActionCount = 0,
    size,
    variant,
    isDocLocked,
 }) => {
+   // Log rerender
+   console.log("[SectionFive] rerender", { isDocLocked, activeActions, size, variant });
+
+   const editorState = useEditorState({
+      editor,
+      selector: (context) => ({
+         isCodeBlock: context.editor.isActive("codeBlock"),
+         isBlockquote: context.editor.isActive("blockquote"),
+      }),
+   });
+
+   const formatActionsWithActive: InsertElement[] = [
+      {
+         value: "codeBlock",
+         label: "Code block",
+         icon: <CodeIcon className="size-4.5" />,
+         action: (editor) => editor.chain().focus().toggleCodeBlock().run(),
+         isActive: () => editorState.isCodeBlock,
+         canExecute: (editor) => editor.can().chain().focus().toggleCodeBlock().run(),
+         shortcuts: ["mod", "alt", "C"],
+      },
+      {
+         value: "blockquote",
+         label: "Blockquote",
+         icon: <QuoteIcon className="size-4.5" />,
+         action: (editor) => editor.chain().focus().toggleBlockquote().run(),
+         isActive: () => editorState.isBlockquote,
+         canExecute: (editor) => editor.can().chain().focus().toggleBlockquote().run(),
+         shortcuts: ["mod", "shift", "B"],
+      },
+      {
+         value: "horizontalRule",
+         label: "Divider",
+         icon: <DividerHorizontalIcon className="size-4.5" />,
+         action: (editor) => editor.chain().focus().setHorizontalRule().run(),
+         isActive: () => false,
+         canExecute: (editor) => editor.can().chain().focus().setHorizontalRule().run(),
+         shortcuts: ["mod", "alt", "-"],
+      },
+   ];
+
    return (
       <>
          <TableActionButton
@@ -68,13 +79,25 @@ export const SectionFive: React.FC<SectionFiveProps> = ({
             tooltip="Insert table"
             icon={<TableIcon className="size-4.5" />}
             disableHoverableContent={true}
-            disabled={isDocLocked}
+            disabled={editorState.isCodeBlock || isDocLocked}
          />
-         <LinkEditPopover editor={editor} size={size} variant={variant} disableHoverableContent={true} disabled={isDocLocked} />
-         <ImageEditDialog editor={editor} size={size} variant={variant} disableHoverableContent={true} disabled={isDocLocked} />
+         <LinkEditPopover
+            editor={editor}
+            size={size}
+            variant={variant}
+            disableHoverableContent={true}
+            disabled={editorState.isCodeBlock || isDocLocked}
+         />
+         <ImageEditDialog
+            editor={editor}
+            size={size}
+            variant={variant}
+            disableHoverableContent={true}
+            disabled={editorState.isCodeBlock || isDocLocked}
+         />
          <ToolbarSection
             editor={editor}
-            actions={formatActions}
+            actions={formatActionsWithActive}
             activeActions={activeActions}
             mainActionCount={mainActionCount}
             disableHoverableContent={true}
@@ -87,7 +110,7 @@ export const SectionFive: React.FC<SectionFiveProps> = ({
             dropdownTooltip="Insert elements"
             size={size}
             variant={variant}
-            disabled={isDocLocked}
+            disabled={editorState.isCodeBlock || isDocLocked}
          />
       </>
    );

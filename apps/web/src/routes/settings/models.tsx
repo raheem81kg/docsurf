@@ -37,6 +37,7 @@ import {
    type CustomModelFormData,
    type DisplayModel,
 } from "@/components/sandbox/right-inner/chat/lib/models-providers-shared";
+import { Skeleton } from "@docsurf/ui/components/skeleton";
 
 export const Route = createFileRoute("/settings/models")({
    component: ModelsSettings,
@@ -187,7 +188,7 @@ const ModelCard = memo(({ model, currentProviders, onEdit, onDelete }: ModelCard
 });
 
 function ModelsSettings() {
-   const { data: session } = useSession();
+   const { data: session, isPending } = useSession();
    const userSettings = useConvexQuery(api.settings.getUserSettings, session?.user?.id ? {} : "skip");
    const updateSettings = useMutation(api.settings.updateUserSettingsPartial);
 
@@ -338,6 +339,14 @@ function ModelsSettings() {
          setLoading(false);
       }
    };
+
+   if (isPending) {
+      return (
+         <SettingsLayout title="Models" description="View available models and configure custom models from your providers.">
+            <Skeleton className="h-10 w-1/2" />
+         </SettingsLayout>
+      );
+   }
 
    if (!session?.user?.id) {
       return (

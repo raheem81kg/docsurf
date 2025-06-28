@@ -18,7 +18,7 @@ export const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonPr
             size="sm"
             ref={ref}
             className={cn(
-               "size-8 p-0 gap-0 border-none shadow-none hover:bg-muted hover:text-muted-foreground px-1.5 rounded-sm min-w-8",
+               "size-8 p-0 gap-0 border-none transition-none shadow-none hover:bg-muted hover:text-muted-foreground px-1.5 rounded-sm min-w-8",
                { "bg-accent": isActive },
                className
             )}

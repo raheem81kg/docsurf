@@ -170,18 +170,19 @@ export default function Navigation({ profile }: { profile: Profile }) {
                                  Pricing
                               </Link>
                               {aboutLinks.map((link) => (
-                                 <a
+                                 <Link
                                     key={link.title}
-                                    href={link.href}
+                                    to={link.href}
                                     target="_blank"
+                                    rel="noopener noreferrer"
                                     aria-label={link.title}
                                     className="block font-medium text-text-default transition-opacity duration-200 hover:opacity-80"
                                  >
                                     {link.title}
-                                 </a>
+                                 </Link>
                               ))}
                            </div>
-                           <a
+                           {/* <Link
                               rel="noopener noreferrer"
                               target="_blank"
                               href="https://cal.com/team/docsurf"
@@ -189,7 +190,7 @@ export default function Navigation({ profile }: { profile: Profile }) {
                               className="font-medium text-text-default transition-opacity duration-200 hover:opacity-80"
                            >
                               Contact Us
-                           </a>
+                           </Link> */}
                         </div>
                         <Separator className="mt-8" />
                         <div className="mt-8 flex flex-row items-center justify-center gap-4">

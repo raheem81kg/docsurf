@@ -170,13 +170,13 @@ export function NavUser() {
                </DropdownMenuGroup>
                <DropdownMenuSeparator />
                <div className="text-muted-foreground/60 flex items-center justify-center gap-1 px-2 py-1 text-[10px]">
-                  <a href="/privacy" className="hover:underline">
+                  <Link to="/policy" className="hover:underline">
                      Privacy
-                  </a>
+                  </Link>
                   <span>·</span>
-                  <a href="/terms" className="hover:underline">
+                  <Link to="/terms" className="hover:underline">
                      Terms
-                  </a>
+                  </Link>
                </div>
                <DropdownMenuSeparator />
                <DropdownMenuLabel className="px-3 py-1 text-[10.5px] font-semibold text-muted-foreground">Debug</DropdownMenuLabel>

@@ -70,8 +70,15 @@ export const Route = createLazyFileRoute("/settings")({
 });
 
 const Inner = () => {
-   const { data: session } = useSession();
+   const { data: session, isPending } = useSession();
    const userSettings = useConvexQuery(api.settings.getUserSettings, session?.user?.id ? {} : "skip");
+   if (isPending) {
+      return (
+         <SettingsLayout title="API Keys" description="Manage your models and providers. Keys are encrypted and stored securely.">
+            <Skeleton className="h-10 w-full" />
+         </SettingsLayout>
+      );
+   }
    if (!session?.user?.id) {
       return (
          <SettingsLayout title="API Keys" description="Manage your models and providers. Keys are encrypted and stored securely.">

@@ -30,35 +30,39 @@ import {
 } from "../extensions";
 import { cn } from "@docsurf/ui/lib/utils";
 import { getOutput, randomId } from "../utils";
-import { useThrottle } from "./use-throttle";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
-import { MAX_CHARACTERS, MAX_FILE_SIZE, convertFileToBase64 } from "../tiptap-util";
+import { MAX_CHARACTERS, MAX_FILE_SIZE, convertFileToBase64, getComparableContent } from "../tiptap-util";
 import { IndentHandler, TrailingNode } from "../extensions/custom";
 import { Superscript } from "@tiptap/extension-superscript";
 import { Subscript } from "@tiptap/extension-subscript";
 import { TaskList } from "@tiptap/extension-task-list";
-// import ConfirmBlockChange from "../extensions/confirm-block-change";
 import CharacterCount from "@tiptap/extension-character-count";
 import { ExportWord } from "../extensions/custom/export-word";
 import { ImportWord } from "../extensions/custom/import-word";
 import { Table } from "../extensions/table";
 import { InlineSuggestionExtension } from "../extensions/custom/inline-suggestion/inline-suggestion-plugin";
 import { createRequestInlineSuggestionCallback } from "../extensions/custom/inline-suggestion/request-inline-suggestion-callback";
-// import { useDocStore } from "@/store/use-doc-store";
-// import { SaveExtension } from "../extensions/custom/save-extension";
 import { WindowEventListener } from "../extensions/window-event-listener";
 import { getBlockBasedState, type EditWithContent } from "../edit-utils";
 import { useEditorRefStore } from "@/store/use-editor-ref-store";
-// import { VersionTracker } from "../extensions/custom/version-tracker";
+import { VersionTracker } from "../extensions/custom/version-tracker";
 import { applySingleEditToEditor } from "../extensions/apply-edit";
 import { env } from "@/env";
+import ConfirmBlockChange from "../extensions/confirm-block-change";
+import { debounce, isEqual } from "lodash-es";
+import { useCurrentDocument } from "@/components/sandbox/left/_tree_components/SortableTree";
+import { convexQuery } from "@convex-dev/react-query";
+import { api } from "@docsurf/backend/convex/_generated/api";
+import { useQuery } from "@tanstack/react-query";
+import { ImageExtension } from "../extensions/custom/niazmorshed/image";
+import { ImagePlaceholder } from "../extensions/custom/niazmorshed/image-placeholder";
 
 export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
    value?: Content;
    output?: "html" | "json" | "text";
    placeholder?: string;
    editorClassName?: string;
-   throttleDelay?: number;
+   debounceDelay?: number;
    onUpdate?: (content: Content) => void;
    onBlur?: (content: Content) => void;
    /**
@@ -105,10 +109,10 @@ const createExtensions = (
    getEditor: () => Editor | null,
    getDoc: () => any,
    abortControllerRef: React.RefObject<AbortController | null>,
-   getUpdateDocAsync: () => (uuid: string, doc: any) => Promise<void>,
    excludeExtensions: string[] = [],
    enableVersionTracking = false,
-   versionTrackingOptions = {}
+   versionTrackingOptions = {},
+   docId?: string
 ) => {
    // TODO: For debugging, comment out custom extensions below and test with only core extensions if state is not reactive.
    const allExtensions = [
@@ -130,6 +134,8 @@ const createExtensions = (
       TaskList,
       TaskItem.configure({ nested: true }),
       Underline,
+      // ImageExtension,
+      // ImagePlaceholder,
       Image.configure({
          allowedMimeTypes: ["image/*"],
          maxFileSize: MAX_FILE_SIZE,
@@ -230,40 +236,33 @@ const createExtensions = (
       Highlight.configure({ multicolor: true }),
       TextStyle,
       Selection,
-      // Typography,
-      // Superscript,
-      // Subscript,
+      Typography,
+      Superscript,
+      Subscript,
+      CharacterCount.configure({ limit: characterLimit }),
+
       UnsetAllMarks,
       HorizontalRule,
       ResetMarksOnEnter,
       CodeBlockLowlight,
       Placeholder.configure({ placeholder: () => placeholder }),
       Table,
-      // ConfirmBlockChange,
-      CharacterCount.configure({ limit: characterLimit }),
-      // ExportWord,
-      // ImportWord.configure({
-      //    upload: (files: File[]) => {
-      //       const f = files.map((file) => ({
-      //          src: URL.createObjectURL(file),
-      //          alt: file.name,
-      //       }));
-      //       return Promise.resolve(f);
-      //    },
-      // }),
-      // SaveExtension.configure({
-      //    saveCallback: async (content) => {
-      //       const doc = getDoc();
-      //       const updateDocAsync = getUpdateDocAsync();
-      //       if (!doc?.uuid || doc.is_locked) return;
-      //       await updateDocAsync(doc.uuid, { content });
-      //    },
-      // }),
-      // InlineSuggestionExtension.configure({
-      //    requestSuggestion: createRequestInlineSuggestionCallback(getEditor, getDoc, abortControllerRef),
-      //    debounceMs: 500,
-      //    contextLength: 4000,
-      // }),
+      ConfirmBlockChange,
+      ExportWord,
+      ImportWord.configure({
+         upload: (files: File[]) => {
+            const f = files.map((file) => ({
+               src: URL.createObjectURL(file),
+               alt: file.name,
+            }));
+            return Promise.resolve(f);
+         },
+      }),
+      InlineSuggestionExtension.configure({
+         requestSuggestion: createRequestInlineSuggestionCallback(getEditor, getDoc, abortControllerRef),
+         debounceMs: 500,
+         contextLength: 4000,
+      }),
       // WindowEventListener.configure({
       //    listeners: {
       //       "editor:block-edit": (event, editor) => {
@@ -287,6 +286,16 @@ const createExtensions = (
       // }),
    ];
 
+   // Add VersionTracker if enabled
+   if (enableVersionTracking) {
+      allExtensions.push(
+         VersionTracker.configure({
+            ...versionTrackingOptions,
+            docId,
+         })
+      );
+   }
+
    // Filter out excluded extensions by name
    return allExtensions.filter((ext) => {
       // Some extensions are functions, some are objects with .name
@@ -300,7 +309,7 @@ export const useMinimalTiptapEditor = ({
    output = "json",
    placeholder = "",
    editorClassName,
-   throttleDelay = 0,
+   debounceDelay = 1500,
    onUpdate,
    onBlur,
    characterLimit = MAX_CHARACTERS,
@@ -310,29 +319,88 @@ export const useMinimalTiptapEditor = ({
    versionTrackingOptions = {},
    ...props
 }: UseMinimalTiptapEditorProps) => {
-   const throttledSetValue = useThrottle((value: Content) => onUpdate?.(value), throttleDelay);
+   // Track if there are unsaved changes
+   const hasPendingChanges = React.useRef(false);
+   // Track last saved content to avoid unnecessary saves
+   const lastSavedContent = React.useRef<Content | null>(value ?? null);
+   // Skip the first onUpdate (initial content hydration)
+   const skipNextUpdate = React.useRef(true);
 
-   const handleUpdate = React.useCallback(
-      (editor: Editor) => throttledSetValue(getOutput(editor, output)),
-      [output, throttledSetValue]
+   // Warn user if there are unsaved changes before leaving
+   React.useEffect(() => {
+      const beforeUnloadHandler = (e: BeforeUnloadEvent) => {
+         if (hasPendingChanges.current) {
+            const message = "You have unsaved changes. Are you sure you want to leave?";
+            e.preventDefault();
+            e.returnValue = message;
+            return message;
+         }
+      };
+      window.addEventListener("beforeunload", beforeUnloadHandler);
+      return () => {
+         window.removeEventListener("beforeunload", beforeUnloadHandler);
+      };
+   }, []);
+
+   // Debounced save function
+   const debouncedSave = React.useMemo(
+      () =>
+         debounce((content: Content) => {
+            const newComparable = getComparableContent(content);
+            const lastComparable = getComparableContent(lastSavedContent.current);
+            if (!isEqual(newComparable, lastComparable)) {
+               if (process.env.NODE_ENV !== "production") {
+                  // eslint-disable-next-line no-console
+                  console.log("Save triggered. Diff:", {
+                     newComparable,
+                     lastComparable,
+                     rawNew: content,
+                     rawLast: lastSavedContent.current,
+                  });
+               }
+               // Simulate save logic
+               console.log("[Save] Content:", content);
+               // Simulate a save result
+               const result = { success: true };
+               if (!result.success) {
+                  showToast("Save failed", "error");
+               }
+               lastSavedContent.current = content;
+               onUpdate?.(content);
+            }
+            hasPendingChanges.current = false;
+         }, debounceDelay),
+      [debounceDelay, onUpdate]
    );
 
+   // Only set pending changes and trigger save if doc changed
    const handleBlur = React.useCallback((editor: Editor) => onBlur?.(getOutput(editor, output)), [output, onBlur]);
 
    // --- Inline suggestion & save integration ---
    const editorRef = React.useRef<Editor | null>(null);
    const abortControllerRef = React.useRef<AbortController | null>(null);
+   const getEditor = React.useCallback(() => editorRef.current, []);
+
+   // Get docId using hooks
+   const { data: user, isLoading: userLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const { doc } = useCurrentDocument(user, userLoading);
+   const docId = doc?._id;
+
    // Memoize extensions so they're only recreated when dependencies change
-   const extensions = createExtensions(
-      placeholder,
-      characterLimit,
-      () => null,
-      () => null,
-      abortControllerRef,
-      () => async () => {},
-      excludeExtensions,
-      enableVersionTracking,
-      versionTrackingOptions
+   const extensions = React.useMemo(
+      () =>
+         createExtensions(
+            placeholder,
+            characterLimit,
+            getEditor,
+            () => null,
+            abortControllerRef,
+            excludeExtensions,
+            enableVersionTracking,
+            versionTrackingOptions,
+            docId
+         ),
+      [placeholder, characterLimit, excludeExtensions, enableVersionTracking, versionTrackingOptions, getEditor, docId]
    );
 
    // Register editor and view in the store
@@ -340,37 +408,41 @@ export const useMinimalTiptapEditor = ({
 
    const handleCreate = React.useCallback(
       (editor: Editor) => {
-         // Set content only if the editor is empty to avoid breaking reactivity
-         if (value) {
-            editor.commands.setContent(value);
-         }
          editorRef.current = editor;
          if (registerInStore) {
             setEditor(editor);
          }
       },
-      [value, registerInStore, setEditor]
+      [registerInStore, setEditor]
    );
 
    const editor = useEditor({
       extensions,
-      immediatelyRender: false,
-      // shouldRerenderOnTransaction: false,
+      shouldRerenderOnTransaction: false,
+      immediatelyRender: true,
       content: value, // Set initial content directly
       editorProps: {
          attributes: {
             autocomplete: "off",
             autocorrect: "off",
             autocapitalize: "off",
-            class: cn("focus:outline-none flex-1 min-h-full", editorClassName),
+            class: cn("min-h-full flex-1 focus:outline-none", editorClassName),
          },
       },
-      onUpdate: ({ editor }) => handleUpdate(editor),
-      // onCreate: ({ editor }) => handleCreate(editor),
+      onUpdate: ({ editor, transaction }) => {
+         if (skipNextUpdate.current) {
+            skipNextUpdate.current = false;
+            return;
+         }
+         if (transaction.docChanged) {
+            hasPendingChanges.current = true;
+            debouncedSave(getOutput(editor, output));
+         }
+      },
+      onCreate: ({ editor }) => handleCreate(editor),
       onBlur: ({ editor }) => handleBlur(editor),
       ...props,
    });
-   console.log("editor", editor);
 
    return editor;
 };

@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { Editor } from "@tiptap/react";
+import { useEditorState, type Editor } from "@tiptap/react";
 import type { Level } from "@tiptap/extension-heading";
 import type { FormatAction } from "../../types";
 import type { VariantProps } from "class-variance-authority";
@@ -87,6 +87,23 @@ export const SectionOne: React.FC<SectionOneProps> = function SectionOne({
    variant,
    isDocLocked,
 }) {
+   // Log rerender
+   console.log("[SectionOne] rerender", { isDocLocked, activeLevels, size, variant });
+   const editorState = useEditorState({
+      editor,
+      selector: ({ editor }: { editor: Editor }) => {
+         const headingLevels: Record<number, boolean> = {};
+         [1, 2, 3, 4, 5, 6].forEach((level) => {
+            headingLevels[level] = editor.isActive("heading", { level });
+         });
+         return {
+            isHeading: editor.isActive("heading"),
+            isParagraph: editor.isActive("paragraph"),
+            isCodeBlock: editor.isActive("codeBlock"),
+            headingLevels,
+         };
+      },
+   });
    const [dialogOpen, setDialogOpen] = React.useState(false);
    const filteredActions = formatActions.filter((action) => !action.level || activeLevels.includes(action.level));
 
@@ -104,7 +121,7 @@ export const SectionOne: React.FC<SectionOneProps> = function SectionOne({
             key={label}
             onClick={() => handleStyleChange(level)}
             className={cn("flex flex-row items-center justify-between gap-4", {
-               "bg-accent": level ? editor.isActive("heading", { level }) : editor.isActive("paragraph"),
+               "bg-accent": level ? editorState.headingLevels[level] : editorState.isParagraph,
                "cursor-not-allowed": isDocLocked,
             })}
             aria-label={label}
@@ -231,12 +248,12 @@ export const SectionOne: React.FC<SectionOneProps> = function SectionOne({
          <DropdownMenu>
             <DropdownMenuTrigger asChild>
                <ToolbarButton
-                  isActive={editor.isActive("heading")}
+                  isActive={editorState.isHeading}
                   tooltip="Text styles"
                   aria-label="Text styles"
-                  pressed={editor.isActive("heading")}
+                  pressed={editorState.isHeading}
                   className="w-12"
-                  disabled={editor.isActive("codeBlock") || isDocLocked}
+                  disabled={editorState.isCodeBlock || isDocLocked}
                   size={size}
                   variant={variant}
                   disableHoverableContent
@@ -249,11 +266,11 @@ export const SectionOne: React.FC<SectionOneProps> = function SectionOne({
                {filteredActions.map(renderMenuItem)}
             </DropdownMenuContent>
          </DropdownMenu>
-         {process.env.NODE_ENV === "development" && (
+         {/* {process.env.NODE_ENV === "development" && (
             <Button type="button" variant="outline" size="sm" onClick={() => setDialogOpen(true)} className="ml-1">
                Show Blocks
             </Button>
-         )}
+         )} */}
          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogContent className="max-w-2xl">
                <DialogHeader>
@@ -300,7 +317,7 @@ export const SectionOne: React.FC<SectionOneProps> = function SectionOne({
                                  )}
                               </div>
                               <textarea
-                                 className="min-h-[60px] w-full rounded border bg-default p-2 font-mono text-xs"
+                                 className="min-h-[60px] w-full rounded border bg-background p-2 font-mono text-xs"
                                  value={edit.content}
                                  onChange={(e) => handleEditChange(idx, "content", e.target.value)}
                                  readOnly={edit.editType === "remove"}

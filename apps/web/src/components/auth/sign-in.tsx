@@ -6,7 +6,7 @@ import { env } from "@/env";
 import { COOKIES } from "@/utils/constants";
 import { authClient } from "@/lib/auth-client";
 import { useState, useEffect } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useCookies } from "react-cookie";
 
 type PreferredSignInProvider = "google" | "otp";
@@ -143,13 +143,13 @@ export const SignIn = ({ inviteCode }: { inviteCode?: string }) => {
 
          <p className="text-xs text-muted-foreground">
             By clicking continue, you acknowledge that you have read and agree to the{" "}
-            <a href="https://trycomp.ai/terms-and-conditions" className="underline">
+            <Link to="/terms" className="underline">
                Terms and Conditions
-            </a>{" "}
+            </Link>{" "}
             and{" "}
-            <a href="https://trycomp.ai/privacy-policy" className="underline">
+            <Link to="/policy" className="underline">
                Privacy Policy
-            </a>
+            </Link>
             .
          </p>
       </div>

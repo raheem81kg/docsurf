@@ -34,6 +34,7 @@ import {
 import { useSession } from "@/hooks/auth-hooks";
 import { BYOKSearchProviderCard } from "@/components/sandbox/right-inner/chat/settings/search-provider-card";
 import { Logo } from "@/components/sandbox/right-inner/chat/logo";
+import { Skeleton } from "@docsurf/ui/components/skeleton";
 
 export const Route = createFileRoute("/settings/providers")({
    component: ProvidersSettings,
@@ -382,7 +383,7 @@ const CustomProviderCard = memo(({ providerId, provider, onSave, onDelete, loadi
 });
 
 function ProvidersSettings() {
-   const { data: session } = useSession();
+   const { data: session, isPending } = useSession();
    const userSettings = useConvexQuery(api.settings.getUserSettings, session?.user?.id ? {} : "skip");
    const updateSettings = useMutation(api.settings.updateUserSettingsPartial);
 
@@ -523,6 +524,14 @@ function ProvidersSettings() {
          setLoading(false);
       }
    };
+
+   if (isPending) {
+      return (
+         <SettingsLayout title="Providers" description="Manage your AI provider API keys and configure custom providers.">
+            <Skeleton className="h-10 w-1/2" />
+         </SettingsLayout>
+      );
+   }
 
    if (!session?.user?.id) {
       return (

@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { Editor } from "@tiptap/react";
+import { useEditorState, type Editor } from "@tiptap/react";
 import { MAX_CHARACTERS } from "../../tiptap-util";
 import { ActionButton } from "../../extensions/image/components/image-actions";
 import { FileUpIcon, DownloadIcon, LockIcon, UnlockIcon, Trash2Icon } from "lucide-react";
@@ -7,6 +7,8 @@ import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 import { showProgressToast, hideProgressToast } from "@docsurf/ui/components/_c/toast/progressToast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@docsurf/ui/components/dialog";
 import { cn } from "@docsurf/ui/lib/utils";
+import { ClockRewind } from "@/editor/components/custom/ui/diffview/lib/icons";
+import VersionHistoryDialog from "@/editor/components/custom/version-history-dialog";
 
 /**
  * SectionSix displays character/word count and formatting actions in the bottom toolbar.
@@ -14,6 +16,7 @@ import { cn } from "@docsurf/ui/lib/utils";
  * - Center: Fixed text '30 | 3 words'
  * - Right: SectionTwo (formatting actions)
  */
+
 export interface SectionSixProps {
    editor: Editor;
    characterLimit?: number;
@@ -29,13 +32,21 @@ export const SectionSix: React.FC<SectionSixProps> = ({
    loadingDoc,
    toggleLock,
 }) => {
+   const { characterCount, wordCount } = useEditorState({
+      editor,
+      selector: (ctx) => {
+         return {
+            characterCount: ctx.editor.storage.characterCount.characters(),
+            wordCount: ctx.editor.storage.characterCount.words(),
+         };
+      },
+   });
+
    const [loading, setLoading] = React.useState(false);
    const fileInput = React.useRef<HTMLInputElement>(null);
    // Use character and word counts from editor.storage.characterCount
-   const used = editor.storage.characterCount?.characters?.() ?? 0;
-   const words = editor.storage.characterCount?.words?.() ?? 0;
-   console.log("[SectionSix] used", used);
-   console.log("[SectionSix] words", words);
+   const used = characterCount ?? 0;
+   const words = wordCount ?? 0;
    const remaining = characterLimit - used;
    const isLimit = used >= characterLimit;
    const [showClearDialog, setShowClearDialog] = React.useState(false);
@@ -160,7 +171,7 @@ export const SectionSix: React.FC<SectionSixProps> = ({
             />
 
             {/* Version History Dialog Trigger and Dialog */}
-            {/* <VersionHistoryDialog open={openVersionHistoryDialog} setOpen={setOpenVersionHistoryDialog} />
+            <VersionHistoryDialog open={openVersionHistoryDialog} setOpen={setOpenVersionHistoryDialog} />
 
             <ActionButton
                icon={<ClockRewind size={16} />}
@@ -169,7 +180,7 @@ export const SectionSix: React.FC<SectionSixProps> = ({
                title="Show version history"
                onClick={() => setOpenVersionHistoryDialog(true)}
                disabled={isDocLocked}
-            /> */}
+            />
 
             {/* Clear Editor */}
             <ActionButton

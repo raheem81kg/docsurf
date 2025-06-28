@@ -17,7 +17,7 @@ export default function Locked() {
    if (!doc?.isLocked) return null;
 
    return (
-      <div className="sticky top-0 z-30 w-full bg-default/80 border-b border-secondary backdrop-blur">
+      <div className="sticky top-0 z-30 w-full bg-background/80 border-b border-secondary backdrop-blur">
          <p className="flex items-center justify-center gap-x-2 p-2 text-xs font-medium text-blue-500/80">
             <LockIcon size={14} />
             Page is locked

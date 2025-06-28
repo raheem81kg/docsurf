@@ -228,3 +228,36 @@ export function hasExtension(editor: Editor, name: string): boolean {
    }
    return true;
 }
+
+// =====================
+// Content Comparison Utilities
+// =====================
+
+/**
+ * Recursively normalize content for comparison by removing non-essential fields.
+ * Only keeps type, content, and text fields.
+ */
+export function normalizeContentForComparison(node: any): any {
+   if (Array.isArray(node)) {
+      return node.map(normalizeContentForComparison);
+   }
+   if (node && typeof node === "object") {
+      // Only keep essential fields: type, content, text
+      const { type, content, text } = node;
+      const normalized: any = { type };
+      if (content) normalized.content = normalizeContentForComparison(content);
+      if (text) normalized.text = text;
+      return normalized;
+   }
+   return node;
+}
+
+/**
+ * Helper to extract comparable content (e.g., only the 'content' array, normalized)
+ */
+export function getComparableContent(content: any) {
+   if (content && typeof content === "object" && "content" in content) {
+      return normalizeContentForComparison(content.content);
+   }
+   return content;
+}

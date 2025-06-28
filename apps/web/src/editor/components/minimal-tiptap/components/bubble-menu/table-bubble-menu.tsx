@@ -110,7 +110,7 @@ export const TableBubbleMenu: React.FC<TableBubbleMenuProps> = ({ editor, disabl
          }}
       >
          {disabled ? null : (
-            <div className="flex justify-center rounded border bg-default p-1 shadow-lg">
+            <div className="flex justify-center rounded border bg-background p-1 shadow-lg">
                <div className="inline-flex items-center gap-1">
                   {/* Always show delete table and highlight at the beginning */}
                   <ToolbarButton

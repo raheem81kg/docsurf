@@ -14,6 +14,7 @@ import { Ban as BanIcon } from "lucide-react";
 import { Separator } from "@docsurf/ui/components/separator";
 import { Button } from "@docsurf/ui/components/button";
 import { HighlighterIcon } from "../../../custom/icons/highlighter-icon";
+import { useEditorState } from "@tiptap/react";
 
 interface ColorItem {
    cssVar: string;
@@ -328,16 +329,37 @@ export const HighlightPopoverButton = ({
 };
 
 export const SectionThree: React.FC<SectionThreeProps> = ({ editor, size, variant, isDocLocked }) => {
-   const color = editor.getAttributes("textStyle")?.color || "hsl(var(--foreground))";
-   const [selectedColor, setSelectedColor] = React.useState(color);
-   const [isDisabled, setIsDisabled] = React.useState(false);
-   console.log("editor in section three", editor);
+   // Log rerender
+   console.log("[SectionThree] rerender", { isDocLocked, size, variant });
+   const editorState = useEditorState({
+      editor,
+      selector: (context) => {
+         // Determine current text alignment
+         let textAlign = "left";
+         if (context.editor.isActive({ textAlign: "center" })) textAlign = "center";
+         else if (context.editor.isActive({ textAlign: "right" })) textAlign = "right";
+         else if (context.editor.isActive({ textAlign: "justify" })) textAlign = "justify";
+         // Determine if alignment controls should be disabled
+         const isAlignDisabled = context.editor.isActive("image") || context.editor.isActive("video") || !context.editor;
+         return {
+            color: context.editor.getAttributes("textStyle")?.color || "hsl(var(--foreground))",
+            highlightColor: context.editor.getAttributes("highlight")?.color || "",
+            isDisabled:
+               !context.editor ||
+               context.editor.isActive("code") ||
+               context.editor.isActive("codeBlock") ||
+               context.editor.isActive("imageUpload"),
+            textAlign,
+            isAlignDisabled,
+         };
+      },
+   });
+   const [selectedColor, setSelectedColor] = React.useState(editorState.color);
    const [alignOpen, setAlignOpen] = React.useState(false);
-   const alignValue = currentTextAlign(editor);
+   const alignValue = editorState.textAlign;
    const currentAlignOption = alignmentOptions.find((o) => o.value === alignValue);
    const [highlightOpen, setHighlightOpen] = React.useState(false);
    const highlightMenuRef = React.useRef(null);
-   const highlightColor = editor.getAttributes("highlight")?.color || "";
 
    function onCloseHighlight() {
       setHighlightOpen(false);
@@ -352,24 +374,6 @@ export const SectionThree: React.FC<SectionThreeProps> = ({ editor, size, varian
       editor.chain().setColor(value).run();
    }
 
-   React.useEffect(() => {
-      function updateIsDisabled() {
-         let isDisabled = false;
-         if (!editor) isDisabled = true;
-         const isInCompatibleContext = editor.isActive("code") || editor.isActive("codeBlock") || editor.isActive("imageUpload");
-         if (isInCompatibleContext) isDisabled = true;
-         setIsDisabled(isDisabled);
-      }
-      setSelectedColor(color);
-      updateIsDisabled();
-      editor.on("update", updateIsDisabled);
-      editor.on("selectionUpdate", updateIsDisabled);
-      return () => {
-         editor.off("update", updateIsDisabled);
-         editor.off("selectionUpdate", updateIsDisabled);
-      };
-   }, [color, editor]);
-
    // Alignment dropdown
    const alignDropdown = (
       <Popover open={alignOpen} onOpenChange={setAlignOpen}>
@@ -380,14 +384,11 @@ export const SectionThree: React.FC<SectionThreeProps> = ({ editor, size, varian
                className="w-12"
                size={size}
                variant={variant}
-               disabled={isAlignDisabled(editor) || isDocLocked}
-               isActive={!!editor?.isActive({ textAlign: alignValue })}
+               disabled={editorState.isAlignDisabled || isDocLocked}
+               isActive={!!alignValue}
                disableHoverableContent
             >
                {currentAlignOption?.icon}
-               {/* <span className="ml-2 hidden text-xs font-medium md:block">
-            {currentAlignOption?.name}
-          </span> */}
                <CaretDownIcon className="size-4.5" />
             </ToolbarButton>
          </PopoverTrigger>
@@ -396,19 +397,19 @@ export const SectionThree: React.FC<SectionThreeProps> = ({ editor, size, varian
                <button
                   key={option.value}
                   className={`flex w-full items-center rounded px-2 py-1.5 text-sm transition-colors hover:bg-accent ${
-                     alignValue === option.value ? "bg-accent" : ""
+                     editorState.textAlign === option.value ? "bg-accent" : ""
                   }`}
                   onClick={() => {
                      handleAlign(editor, option.value);
                      setAlignOpen(false);
                   }}
-                  disabled={isAlignDisabled(editor) || isDocLocked}
+                  disabled={editorState.isAlignDisabled || isDocLocked}
                   aria-label={option.name}
                   type="button"
                >
                   {option.icon}
                   <span className="ml-2 flex-1 text-left">{option.name}</span>
-                  {alignValue === option.value && <Check className="ml-auto h-4 w-4 text-primary" />}
+                  {editorState.textAlign === option.value && <Check className="ml-auto h-4 w-4 text-primary" />}
                </button>
             ))}
          </PopoverContent>
@@ -427,8 +428,8 @@ export const SectionThree: React.FC<SectionThreeProps> = ({ editor, size, varian
                      className="w-9"
                      size={size}
                      variant={variant}
-                     isActive={!!highlightColor}
-                     disabled={isDisabled || isDocLocked}
+                     isActive={!!editorState.highlightColor}
+                     disabled={editorState.isDisabled || isDocLocked}
                      disableHoverableContent
                   >
                      <HighlighterIcon className="size-4.5" />
@@ -443,7 +444,7 @@ export const SectionThree: React.FC<SectionThreeProps> = ({ editor, size, varian
                         type="button"
                         role="menuitem"
                         data-style="ghost"
-                        disabled={isDisabled || isDocLocked}
+                        disabled={editorState.isDisabled || isDocLocked}
                         className="mb-1 flex w-full items-center gap-2 rounded bg-muted bg-primary/80 px-2 py-1 text-xs"
                         style={{ minHeight: 28 }}
                      >
@@ -453,13 +454,13 @@ export const SectionThree: React.FC<SectionThreeProps> = ({ editor, size, varian
                      <Separator className="my-1" />
                      <HighlightPicker
                         colors={HIGHLIGHT_COLORS}
-                        selectedColor={highlightColor}
+                        selectedColor={editorState.highlightColor}
                         onColorChange={(value) => {
                            editor.chain().focus().setHighlight({ color: value }).run();
                            setHighlightOpen(false);
                         }}
                         selectedIndex={0}
-                        disabled={isDisabled || isDocLocked}
+                        disabled={editorState.isDisabled || isDocLocked}
                      />
                   </div>
                </PopoverContent>
@@ -481,7 +482,7 @@ export const SectionThree: React.FC<SectionThreeProps> = ({ editor, size, varian
                   className="w-12"
                   size={size}
                   variant={variant}
-                  disabled={isDisabled || isDocLocked}
+                  disabled={editorState.isDisabled || isDocLocked}
                   disableHoverableContent
                >
                   <svg

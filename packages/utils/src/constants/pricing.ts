@@ -19,7 +19,7 @@ export const PLANS = [
       },
       limits: {
          requests7d: 100, // Total Requests (last 7 days)
-         tokens7d: 10000, // Total Tokens (input + output + reasoning)
+         tokens7d: 200000, // Total Tokens (input + output + reasoning)
       },
    },
    {
@@ -35,7 +35,7 @@ export const PLANS = [
       },
       limits: {
          requests7d: 1000, // Total Requests (last 7 days)
-         tokens7d: 100000, // Total Tokens (input + output + reasoning)
+         tokens7d: 1000000, // Total Tokens (input + output + reasoning)
       },
       featureTitle: "Everything in Free, plus:",
       features: [

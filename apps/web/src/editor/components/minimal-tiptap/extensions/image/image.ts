@@ -212,18 +212,17 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
                                  fileName: image.src.name,
                               },
                            };
-                        } else {
-                           return {
-                              type: this.type.name,
-                              attrs: {
-                                 id: randomId(),
-                                 src: image.src,
-                                 alt: image.alt,
-                                 title: image.title,
-                                 fileName: null,
-                              },
-                           };
                         }
+                        return {
+                           type: this.type.name,
+                           attrs: {
+                              id: randomId(),
+                              src: image.src,
+                              alt: image.alt,
+                              title: image.title,
+                              fileName: null,
+                           },
+                        };
                      })
                   );
                }

@@ -1,36 +1,20 @@
 /* Table-specific styling */
 .minimal-tiptap-editor .ProseMirror table {
-   border: 1px solid;
    border-collapse: collapse;
-   border-color: rgba(0, 0, 0, 0.1);
-   table-layout: fixed;
-   box-sizing: border-box;
-   overflow-x: auto;
-   overflow-y: hidden;
-   display: block;
-   width: 100%;
    margin: 0;
-}
-
-.dark .minimal-tiptap-editor .ProseMirror table {
-   border-color: rgba(255, 255, 255, 0.2);
+   overflow: hidden;
+   table-layout: fixed;
+   width: 100%;
 }
 
 .minimal-tiptap-editor .ProseMirror table td,
 .minimal-tiptap-editor .ProseMirror table th {
-   border: 1px solid;
-   border-color: rgba(0, 0, 0, 0.1);
-   min-width: 1em;
-   padding: 0.5rem;
+   border: 1px solid var(--mt-accent-gray);
    box-sizing: border-box;
+   min-width: 1em;
+   padding: 6px 8px;
    position: relative;
-   text-align: left;
    vertical-align: top;
-}
-
-.dark .minimal-tiptap-editor .ProseMirror table td,
-.dark .minimal-tiptap-editor .ProseMirror table th {
-   border-color: rgba(255, 255, 255, 0.2);
 }
 
 .minimal-tiptap-editor .ProseMirror table td:first-of-type:not(a),
@@ -49,6 +33,7 @@
 }
 
 .minimal-tiptap-editor .ProseMirror table th {
+   background-color: var(--mt-bg-secondary);
    font-weight: bold;
    text-align: left;
 }
@@ -66,7 +51,7 @@
 }
 
 .minimal-tiptap-editor .ProseMirror table .column-resize-handle {
-   background-color: var(--color-background);
+   background-color: var(--color-primary);
    bottom: -2px;
    pointer-events: none;
    position: absolute;
@@ -78,4 +63,9 @@
 .minimal-tiptap-editor .ProseMirror .tableWrapper {
    margin: 1.5rem 0;
    overflow-x: auto;
+}
+
+.minimal-tiptap-editor .ProseMirror.resize-cursor {
+   cursor: ew-resize;
+   cursor: col-resize;
 }

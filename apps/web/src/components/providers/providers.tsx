@@ -7,29 +7,32 @@ import { ThemeProvider } from "./theme-provider";
 import { ClientOnly } from "@tanstack/react-router";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache";
 import { SuggestionOverlayProvider } from "@/editor/components/providers/suggestion-overlay/suggestion-overlay-provider";
+import { HotkeysProvider } from "react-hotkeys-hook";
 
 interface ProvidersProps extends ThemeProviderProps {}
 
 export function Providers({ children, ...props }: ProvidersProps) {
    return (
       <ClientOnly>
-         <SuggestionOverlayProvider>
-            <ConvexQueryCacheProvider>
-               <ThemeProvider>
-                  <PostHogProvider>
-                     <CookiesProvider>
-                        {/* <CompliantCookieProvider> */}
-                        {import.meta.env.NODE_ENV === "development" ? (
-                           <TooltipProvider delayDuration={300}>{children}</TooltipProvider>
-                        ) : (
-                           <TooltipProvider delayDuration={300}>{children}</TooltipProvider>
-                        )}
-                        {/* </CompliantCookieProvider> */}
-                     </CookiesProvider>
-                  </PostHogProvider>
-               </ThemeProvider>
-            </ConvexQueryCacheProvider>
-         </SuggestionOverlayProvider>
+         <HotkeysProvider initiallyActiveScopes={["global", "navigation"]}>
+            <SuggestionOverlayProvider>
+               <ConvexQueryCacheProvider>
+                  <ThemeProvider>
+                     <PostHogProvider>
+                        <CookiesProvider>
+                           {/* <CompliantCookieProvider> */}
+                           {import.meta.env.NODE_ENV === "development" ? (
+                              <TooltipProvider delayDuration={300}>{children}</TooltipProvider>
+                           ) : (
+                              <TooltipProvider delayDuration={300}>{children}</TooltipProvider>
+                           )}
+                           {/* </CompliantCookieProvider> */}
+                        </CookiesProvider>
+                     </PostHogProvider>
+                  </ThemeProvider>
+               </ConvexQueryCacheProvider>
+            </SuggestionOverlayProvider>
+         </HotkeysProvider>
       </ClientOnly>
    );
 }

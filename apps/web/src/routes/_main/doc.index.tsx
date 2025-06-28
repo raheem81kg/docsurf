@@ -74,6 +74,7 @@ export const Route = createFileRoute("/_main/doc/")({
       if (newDocId) {
          throw redirect({ to: "/doc/$documentId", params: { documentId: newDocId } });
       }
+      throw redirect({ to: "/", statusCode: 302 });
    },
    component: RouteComponent,
 });

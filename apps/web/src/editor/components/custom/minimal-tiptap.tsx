@@ -2,11 +2,11 @@
 import * as React from "react";
 import type { Content, Editor } from "@tiptap/react";
 import type { UseMinimalTiptapEditorProps } from "../minimal-tiptap/hooks/use-minimal-tiptap";
-import { EditorContent } from "@tiptap/react";
+import { EditorContent, EditorContext } from "@tiptap/react";
 import { Separator } from "@docsurf/ui/components/separator";
 import { cn } from "@docsurf/ui/lib/utils";
 import { SectionOne } from "../minimal-tiptap/components/section/one";
-// import { SectionTwo } from "../minimal-tiptap/components/section/two";
+import { SectionTwo } from "../minimal-tiptap/components/section/two";
 import { SectionThree } from "../minimal-tiptap/components/section/three";
 import { SectionFour } from "../minimal-tiptap/components/section/four";
 import { SectionFive } from "../minimal-tiptap/components/section/five";
@@ -26,8 +26,6 @@ import { api } from "@docsurf/backend/convex/_generated/api";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { useCurrentDocument } from "@/components/sandbox/left/_tree_components/SortableTree";
-import { useConvexTree } from "@/components/sandbox/left/_tree_components/use-convex-tree";
-import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "onUpdate"> {
    value?: Content;
@@ -43,12 +41,12 @@ const MobileTopToolbar = ({ editor, isDocLocked }: { editor: Editor; isDocLocked
       <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
       <SectionOne editor={editor} activeLevels={[1, 2, 3, 4, 5, 6]} isDocLocked={isDocLocked} />
       <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
-      {/* <SectionTwo
+      <SectionTwo
          editor={editor}
          activeActions={["bold", "italic", "underline", "strikethrough", "code", "clearFormatting", "superscript", "subscript"]}
          mainActionCount={3}
          isDocLocked={isDocLocked}
-      /> */}
+      />
       <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
       {/* <SectionThree editor={editor} isDocLocked={isDocLocked} /> */}
       <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
@@ -78,13 +76,13 @@ const TopToolbar = ({ editor, isDocLocked }: { editor: Editor; isDocLocked?: boo
          <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
          <SectionOne editor={editor} activeLevels={[1, 2, 3, 4]} variant="outline" isDocLocked={isDocLocked} />
          <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
-         {/* <SectionTwo
+         <SectionTwo
             editor={editor}
             activeActions={["italic", "bold", "underline", "code", "strikethrough", "clearFormatting", "superscript", "subscript"]}
             mainActionCount={5}
             variant="outline"
             isDocLocked={isDocLocked}
-         /> */}
+         />
          <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
          <SectionThree editor={editor} variant="outline" isDocLocked={isDocLocked} />
          <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
@@ -128,18 +126,15 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
       // Get user and workspaceId
       const { data: user, isLoading: userLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
       const { doc } = useCurrentDocument(user, userLoading);
-      const { isLoading: isTreeLoading } = useConvexTree({
-         workspaceId: user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">,
-      });
       const editor = useMinimalTiptapEditor({
          value,
          enableVersionTracking: false,
          onUpdate: onChange,
          characterLimit,
-         registerInStore: false,
-         // ...props,
+         ...props,
       });
 
+      console.log("[MinimalTiptap] editor", editor);
       // Register the editor instance in the global store
       React.useEffect(() => {
          useEditorRefStore.getState().setEditor(editor ?? null);
@@ -154,35 +149,37 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
 
       return (
          <div ref={ref} className={cn("flex flex-col h-full min-h-0 relative", className)}>
-            <Locked />
-            <Deleted />
-            <div className="sticky top-0 z-10 shrink-0 overflow-x-auto border-b border-border bg-default [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-               {isMobile ? (
-                  <MobileTopToolbar editor={editor} isDocLocked={doc?.isLocked ?? false} />
-               ) : (
-                  <TopToolbar editor={editor} isDocLocked={doc?.isLocked ?? false} />
-               )}
-            </div>
+            <EditorContext.Provider value={{ editor }}>
+               <Locked />
+               <Deleted />
+               <div className="sticky top-0 z-10 shrink-0 overflow-x-auto border-b border-border [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                  {isMobile ? (
+                     <MobileTopToolbar editor={editor} isDocLocked={doc?.isLocked ?? false} />
+                  ) : (
+                     <TopToolbar editor={editor} isDocLocked={doc?.isLocked ?? false} />
+                  )}
+               </div>
 
-            <div className="flex-1 min-h-0 overflow-auto flex flex-col">
-               <EditorContent
-                  style={{
-                     scrollbarWidth: "thin",
-                     scrollbarColor: "var(--border) transparent",
-                  }}
-                  editor={editor}
-                  className={cn("minimal-tiptap-editor min-h-full", editorContentClassName)}
-               />
-            </div>
+               <div className="flex-1 min-h-0 overflow-auto flex flex-col h-full">
+                  <EditorContent
+                     style={{
+                        scrollbarWidth: "thin",
+                        scrollbarColor: "var(--border) transparent",
+                     }}
+                     editor={editor}
+                     className={cn("minimal-tiptap-editor min-h-full", editorContentClassName)}
+                  />
+               </div>
 
-            {/* Wrap BubbleMenus in a div to avoid unmount errors (see https://github.com/ueberdosis/tiptap/issues/2658) */}
-            <div>
-               <LinkBubbleMenu editor={editor} />
-               <TableBubbleMenu editor={editor} />
-            </div>
-            <div className="z-10 bg-default sticky bottom-0">
-               <BottomToolbar editor={editor} characterLimit={characterLimit} isDocLocked={doc?.isLocked ?? false} />
-            </div>
+               {/* Wrap BubbleMenus in a div to avoid unmount errors (see https://github.com/ueberdosis/tiptap/issues/2658) */}
+               <div>
+                  <LinkBubbleMenu editor={editor} />
+                  <TableBubbleMenu editor={editor} />
+               </div>
+               <div className="z-10 sticky bottom-0">
+                  <BottomToolbar editor={editor} characterLimit={characterLimit} isDocLocked={doc?.isLocked ?? false} />
+               </div>
+            </EditorContext.Provider>
          </div>
       );
    }

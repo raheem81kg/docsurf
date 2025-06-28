@@ -143,7 +143,7 @@ const isBase64 = (str: string): boolean => {
    let base64String = str;
    if (str.startsWith("data:")) {
       const matches = str.match(/^data:[^;]+;base64,(.+)$/);
-      if (matches && matches[1]) {
+      if (matches?.[1]) {
          base64String = matches[1];
       } else {
          return false;

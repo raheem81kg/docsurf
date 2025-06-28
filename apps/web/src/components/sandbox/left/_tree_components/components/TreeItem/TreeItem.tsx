@@ -17,6 +17,8 @@ import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 import { cn } from "@docsurf/ui/lib/utils";
 import { Route as MainDocDocumentIdRoute } from "@/routes/_main/doc.$documentId";
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
+import { Input } from "@docsurf/ui/components/input";
+import { Button } from "@docsurf/ui/components/button";
 
 /**
  * TreeItem component renders a single document or folder in the tree view.
@@ -88,16 +90,43 @@ export const TreeItem = memo(
          const isActive = !isFolder && isDocDetailPage && params.documentId === value;
          const user = useQuery(api.auth.getCurrentUser, {});
          const workspaceId = user?.workspaces?.[0]?.workspace?._id;
-         const updateDocument = useMutation(api.documents.updateDocument);
+         const renameDocument = useMutation(api.documents.renameDocument).withOptimisticUpdate((localStore, args) => {
+            // Optimistically update the document tree
+            const tree = localStore.getQuery(api.documents.fetchDocumentTree, {
+               workspaceId: args.workspaceId,
+            });
+            if (tree && Array.isArray(tree.data)) {
+               localStore.setQuery(
+                  api.documents.fetchDocumentTree,
+                  { workspaceId: args.workspaceId },
+                  {
+                     data: tree.data.map((doc) => (doc._id === args.id ? { ...doc, title: args.title } : doc)),
+                  }
+               );
+            }
+            // Optimistically update the individual document if loaded
+            const doc = localStore.getQuery(api.documents.fetchDocumentById, {
+               workspaceId: args.workspaceId,
+               id: args.id,
+            });
+            if (doc) {
+               localStore.setQuery(
+                  api.documents.fetchDocumentById,
+                  { workspaceId: args.workspaceId, id: args.id },
+                  { ...doc, title: args.title }
+               );
+            }
+         });
          const [isRenameOpen, setIsRenameOpen] = useState(false);
          const [isOptionsOpen, setIsOptionsOpen] = useState(false);
          const inputRef = useRef<HTMLInputElement>(null);
          const [isRenaming, setIsRenaming] = useState(false);
-         const uuid = value;
+         const valueProp = value;
+         const [liveTitle, setLiveTitle] = useState(title);
 
          // TanStack React Form for renaming
          const form = useForm({
-            defaultValues: { title: title ?? value },
+            defaultValues: { title: title ?? valueProp },
             onSubmit: async ({ value }) => {
                if (!workspaceId) {
                   showToast("Workspace not found", "error");
@@ -105,10 +134,10 @@ export const TreeItem = memo(
                }
                setIsRenaming(true);
                try {
-                  await updateDocument({
+                  await renameDocument({
                      workspaceId: workspaceId as Id<"workspaces">,
-                     id: params.documentId as Id<"documents">,
-                     updates: { title: value.title },
+                     id: valueProp as Id<"documents">,
+                     title: value.title,
                   });
                   showToast("Renamed successfully", "success");
                   setIsRenameOpen(false);
@@ -183,6 +212,10 @@ export const TreeItem = memo(
             }
          }, [isRenaming, form, title, value]);
 
+         useEffect(() => {
+            if (isRenameOpen) setLiveTitle(form.state.values.title);
+         }, [isRenameOpen, form.state.values.title]);
+
          const icon = (
             <>
                {isLoading ? (
@@ -198,9 +231,6 @@ export const TreeItem = memo(
                )}
             </>
          );
-
-         const displayTitle = form.state.values.title;
-         const deferredDisplayTitle = useDeferredValue(displayTitle);
 
          // Only wrap the clickable area for documents (not folders) with Link
          const clickableContent = (
@@ -294,7 +324,7 @@ export const TreeItem = memo(
                                     !isMobile && "group-hover/item:pr-14"
                                  )}
                               >
-                                 {deferredDisplayTitle}
+                                 {isRenameOpen ? liveTitle : title}
                               </span>
                            </PopoverTrigger>
                            <PopoverContent
@@ -308,35 +338,41 @@ export const TreeItem = memo(
                                  onSubmit={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    void form.handleSubmit();
+                                    form.handleSubmit(e);
                                  }}
                               >
                                  <form.Field name="title">
                                     {(field) => (
-                                       <input
+                                       <Input
                                           ref={inputRef}
+                                          id={field.name}
+                                          name={field.name}
                                           value={field.state.value}
                                           onBlur={field.handleBlur}
-                                          onChange={(e) => field.handleChange(e.target.value)}
-                                          className="flex h-8 w-full rounded-sm border border-input bg-background px-3 py-1 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                          placeholder="Enter new name"
-                                          name="name"
-                                          autoComplete="off"
-                                          onClick={(e) => {
-                                             e.preventDefault();
-                                             e.stopPropagation();
+                                          onChange={(e) => {
+                                             field.handleChange(e.target.value);
+                                             setLiveTitle(e.target.value);
                                           }}
+                                          placeholder="Enter new name"
+                                          autoComplete="off"
                                           onKeyDown={(e) => {
                                              if (e.key === "Escape") setIsRenameOpen(false);
+                                             if (e.key === "Enter") {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                form.handleSubmit();
+                                             }
                                           }}
                                           disabled={isRenaming}
+                                          className="flex h-8 w-full rounded-sm border border-input bg-background px-3 py-1 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                        />
                                     )}
                                  </form.Field>
                                  <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
                                     {([canSubmit, isSubmitting]) => (
-                                       <button
+                                       <Button
                                           type="submit"
+                                          onClick={(e) => e.stopPropagation()}
                                           className="inline-flex cursor-pointer items-center relative gap-2 font-semibold justify-center whitespace-nowrap rounded-sm text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary-hover h-7 w-7 flex-shrink-0"
                                           disabled={!canSubmit || isSubmitting || isRenaming}
                                        >
@@ -345,7 +381,7 @@ export const TreeItem = memo(
                                           ) : (
                                              <Check className="size-4" />
                                           )}
-                                       </button>
+                                       </Button>
                                     )}
                                  </form.Subscribe>
                               </form>

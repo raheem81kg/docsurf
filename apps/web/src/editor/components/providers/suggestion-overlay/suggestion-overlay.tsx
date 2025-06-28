@@ -545,7 +545,7 @@ export default function SuggestionOverlay({
             <motion.div
                ref={overlayRef}
                className={cn(
-                  "fixed z-1150 bg-default rounded-none shadow-lg border border-border lg:max-w-[624px] md:max-w-[524px] max-w-[90vw] w-[calc(100vw-12rem)] overflow-hidden select-none",
+                  "fixed z-1150 bg-background rounded-none shadow-lg border border-border lg:max-w-[624px] md:max-w-[524px] max-w-[90vw] w-[calc(100vw-12rem)] overflow-hidden select-none",
                   isDragging && "pointer-events-none"
                )}
                style={{ top: `${currentPosition.y}px`, left: `${currentPosition.x}px` }}
@@ -639,7 +639,7 @@ export default function SuggestionOverlay({
 
                            {/* Action buttons - only show on completion */}
                            {!isGenerating && suggestion && (
-                              <div className="flex justify-end gap-2 p-2 border-t bg-default/50">
+                              <div className="flex justify-end gap-2 p-2 border-t bg-background/50">
                                  <TooltipProvider>
                                     <Tooltip>
                                        <TooltipTrigger asChild>
@@ -677,7 +677,7 @@ export default function SuggestionOverlay({
 
                            {/* Show loading state with spinner */}
                            {isGenerating && (
-                              <div className="flex justify-center items-center p-2 border-t bg-default/50">
+                              <div className="flex justify-center items-center p-2 border-t bg-background/50">
                                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                     <Loader2 className="h-3 w-3 animate-spin" />
                                     <span>Generating suggestion...</span>

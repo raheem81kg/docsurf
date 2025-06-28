@@ -26,6 +26,7 @@ export interface DocVersion {
    changesSinceLastSave: number;
    timeSinceLastSave: number;
    wordCount: number;
+   contentHash: string; // hash of normalized content for deduplication
 }
 
 /**

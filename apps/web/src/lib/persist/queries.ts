@@ -59,6 +59,23 @@ export const getLatestDocVersion = async (docId: string) => {
 };
 
 /**
+ * Compute a SHA-256 hash of the comparable content (as a string).
+ * Returns a hex string.
+ */
+export async function hashContent(content: any): Promise<string> {
+   const str = typeof content === "string" ? content : JSON.stringify(content);
+   if (typeof window !== "undefined" && window.crypto && window.crypto.subtle) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(str);
+      const hashBuffer = await window.crypto.subtle.digest("SHA-256", data);
+      return Array.from(new Uint8Array(hashBuffer))
+         .map((b) => b.toString(16).padStart(2, "0"))
+         .join("");
+   }
+   throw new Error("window.crypto.subtle is not available for hashing");
+}
+
+/**
  * Create a new version for a document.
  * Automatically prunes old versions if MAX_VERSIONS_PER_DOC or MAX_VERSIONS_TOTAL is exceeded.
  */
@@ -71,6 +88,8 @@ export const createDocVersion = async (
    wordCount: number
 ) => {
    const now = Date.now();
+   // Compute content hash for deduplication
+   const contentHash = await hashContent(content);
    const version: DocVersion = {
       id: `${docId}:${now}`,
       docId,
@@ -80,11 +99,14 @@ export const createDocVersion = async (
       changesSinceLastSave,
       timeSinceLastSave,
       wordCount,
+      contentHash,
    };
 
    await db.transaction("rw", db.doc_versions, async () => {
-      await db.doc_versions.add(version);
+      const addResult = await db.doc_versions.add(version);
+      console.log("Added version with id:", addResult);
       await pruneOldVersions(docId);
+      // TODO: Consider batching saves for optimization in the future.
    });
 
    return version;
@@ -126,4 +148,12 @@ export const deleteAllDocVersions = async () => {
  */
 export const getDocVersionsInRange = async (docId: string, startTime: number, endTime: number) => {
    return await db.doc_versions.where("[docId+timestamp]").between([docId, startTime], [docId, endTime]);
+};
+
+/**
+ * Get the last N versions for a document, sorted by timestamp descending (latest first).
+ */
+export const getLastNDocVersions = async (docId: string, n: number) => {
+   const versions = await db.doc_versions.where("docId").equals(docId).sortBy("timestamp");
+   return versions.slice(-n).reverse(); // latest first
 };
