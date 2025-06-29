@@ -1,0 +1,18 @@
+{
+   "name": "@docsurf/kv",
+   "version": "0.0.0",
+   "type": "module",
+   "private": true,
+   "scripts": {
+      "clean": "rm -rf .turbo node_modules",
+      "lint": "biome check .",
+      "format": "biome format --write .",
+      "typecheck": "tsc --noEmit"
+   },
+   "dependencies": {
+      "@upstash/redis": "^1.34.2"
+   },
+   "exports": {
+      "./*": "./src/*.ts"
+   }
+}

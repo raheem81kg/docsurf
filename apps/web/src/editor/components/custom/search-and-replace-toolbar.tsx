@@ -17,7 +17,8 @@ export function SearchAndReplaceToolbar({ editor }: { editor: Editor }) {
    const editorState = useEditorState({
       editor,
       selector: (context) => ({
-         searchAndReplace: context.editor.storage.searchAndReplace,
+         results: context.editor.storage.searchAndReplace.results,
+         selectedResult: context.editor.storage.searchAndReplace.selectedResult,
       }),
    });
 
@@ -27,11 +28,15 @@ export function SearchAndReplaceToolbar({ editor }: { editor: Editor }) {
    const [checked, setChecked] = useState(false);
    const searchInputRef = useRef<HTMLInputElement>(null);
 
-   const results = editorState?.searchAndReplace.results as SearchAndReplaceStorage["results"];
-   const selectedResult = editorState?.searchAndReplace.selectedResult as SearchAndReplaceStorage["selectedResult"];
+   const results = editorState?.results as SearchAndReplaceStorage["results"];
+   const selectedResult = editorState?.selectedResult as SearchAndReplaceStorage["selectedResult"];
 
    const replace = () => editor?.chain().replace().run();
-   const replaceAll = () => editor?.chain().replaceAll().run();
+   const replaceAll = () => {
+      editor?.chain().replaceAll().run();
+      // After replace all, re-trigger search to update match count
+      editor?.chain().setSearchTerm(searchText).run();
+   };
    const selectNext = () => editor?.chain().selectNextResult().run();
    const selectPrevious = () => editor?.chain().selectPreviousResult().run();
 
@@ -52,6 +57,26 @@ export function SearchAndReplaceToolbar({ editor }: { editor: Editor }) {
          searchInputRef.current.focus();
       }
    }, [replacing]);
+
+   // Clear search/replace on close and on unmount
+   const handleClose = () => {
+      setSearchText("");
+      setReplaceText("");
+      editor?.chain().setSearchTerm("").run();
+      editor?.chain().setReplaceTerm("").run();
+      const event = new CustomEvent("closeSearchReplacePanel");
+      window.dispatchEvent(event);
+   };
+
+   useEffect(() => {
+      return () => {
+         // Cleanup on unmount
+         setSearchText("");
+         setReplaceText("");
+         editor?.chain().setSearchTerm("").run();
+         editor?.chain().setReplaceTerm("").run();
+      };
+   }, [editor]);
 
    return (
       <motion.div
@@ -97,29 +122,13 @@ export function SearchAndReplaceToolbar({ editor }: { editor: Editor }) {
                >
                   <Repeat className="h-4 w-4" />
                </Button>
-               <Button
-                  onClick={() => {
-                     // Close panel: unmount from parent
-                     const event = new CustomEvent("closeSearchReplacePanel");
-                     window.dispatchEvent(event);
-                  }}
-                  size="icon"
-                  className="size-7"
-                  variant="ghost"
-               >
+               <Button onClick={handleClose} size="icon" className="size-7" variant="ghost">
                   <X className="h-4 w-4" />
                </Button>
             </div>
          ) : (
             <div className={cn("relative w-full")}>
-               <X
-                  onClick={() => {
-                     // Close panel: unmount from parent
-                     const event = new CustomEvent("closeSearchReplacePanel");
-                     window.dispatchEvent(event);
-                  }}
-                  className="absolute right-3 top-3 h-4 w-4 cursor-pointer"
-               />
+               <X onClick={handleClose} className="absolute right-3 top-3 h-4 w-4 cursor-pointer" />
                <div className="flex w-full items-center gap-3">
                   <Button
                      size="icon"

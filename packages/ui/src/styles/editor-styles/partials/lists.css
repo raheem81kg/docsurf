@@ -91,7 +91,7 @@
 }
 
 .minimal-tiptap-editor .ProseMirror ul[data-type="taskList"] li label input[type="checkbox"]:checked + span {
-   background: var(--color-background);
+   background: var(--color-primary);
    border-color: var(--color-background);
 }
 

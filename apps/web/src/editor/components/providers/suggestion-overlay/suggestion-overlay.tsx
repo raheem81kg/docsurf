@@ -58,6 +58,7 @@ interface SuggestionMetadata {
 
 interface SuggestionOverlayProps {
    documentId: string;
+   workspaceId: string;
    selectedText?: string;
    isOpen: boolean;
    onClose: () => void;
@@ -70,6 +71,7 @@ interface SuggestionOverlayProps {
 
 export default function SuggestionOverlay({
    documentId,
+   workspaceId,
    selectedText = "",
    isOpen,
    onClose,
@@ -415,6 +417,7 @@ export default function SuggestionOverlay({
             // Create request body
             const body = {
                documentId,
+               workspaceId,
                description: prompt.trim(),
                selectedText,
                aiOptions: {
@@ -514,7 +517,7 @@ export default function SuggestionOverlay({
             setIsGenerating(false);
          }
       },
-      [documentId, selectedText]
+      [documentId, selectedText, workspaceId]
    );
 
    const handleSubmit = useCallback(

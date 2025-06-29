@@ -52,7 +52,7 @@ const MobileTopToolbar = ({ editor, isDocLocked }: { editor: Editor; isDocLocked
          isDocLocked={isDocLocked}
       />
       <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
-      {/* <SectionThree editor={editor} isDocLocked={isDocLocked} /> */}
+      <SectionThree editor={editor} isDocLocked={isDocLocked} />
       <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
       <SectionFour
          editor={editor}

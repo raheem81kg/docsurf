@@ -33,6 +33,7 @@ export function SuggestionOverlayProvider({ children }: { children: ReactNode })
    const [selectionRange, setSelectionRange] = useState<{ from: number; to: number } | null>(null);
    // Get user and workspaceId
    const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const workspaceId = user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">;
    const { doc } = useCurrentDocument(user);
    const { isLoading: isTreeLoading } = useConvexTree({
       workspaceId: user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">,
@@ -141,7 +142,7 @@ export function SuggestionOverlayProvider({ children }: { children: ReactNode })
       const { from, to, empty } = editor.state.selection;
       if (empty) {
          console.log("empty selection editor ref", editor);
-         showToast("Select text in the editor before using AI commands.", "warning");
+         showToast("Select text in the document before using AI commands.", "warning");
          return;
       }
       const coords = editor.view.coordsAtPos(to);
@@ -205,6 +206,7 @@ export function SuggestionOverlayProvider({ children }: { children: ReactNode })
          {doc?._id && !isTreeLoading && (
             <SuggestionOverlay
                documentId={doc._id}
+               workspaceId={user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">}
                isOpen={isOpen}
                onClose={closeSuggestionOverlay}
                selectedText={selectedText}

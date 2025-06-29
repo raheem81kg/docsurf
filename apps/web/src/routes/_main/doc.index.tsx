@@ -7,6 +7,8 @@ import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 import type { CurrentUser } from "@docsurf/backend/convex/auth";
 import type { Doc } from "@docsurf/backend/convex/_generated/dataModel";
 import { Skeleton } from "@docsurf/ui/components/skeleton";
+import { useEffect, useState } from "react";
+import { motion } from "motion/react";
 
 export const Route = createFileRoute("/_main/doc/")({
    beforeLoad: async (ctx) => {
@@ -91,13 +93,28 @@ function logError(message: string, err: unknown) {
 
 function RouteComponent() {
    // Show a loading skeleton placeholder
+   const [showMessage, setShowMessage] = useState(false);
+   useEffect(() => {
+      const timeout = setTimeout(() => setShowMessage(true), 3000);
+      return () => clearTimeout(timeout);
+   }, []);
+
    return (
-      <div className="flex flex-col gap-2 p-8">
-         <Skeleton className="h-8 w-1/3" />
-         <Skeleton className="h-6 w-2/3" />
-         <Skeleton className="h-4 w-full" />
-         <Skeleton className="h-4 w-5/6" />
-         <Skeleton className="h-4 w-4/6" />
+      <div className="flex flex-col justify-between h-full">
+         <Skeleton className="h-[40px] bg-accent/40 w-full" />
+         <div className="bg-accent/10 flex-1 w-full flex items-center justify-center relative">
+            {showMessage && (
+               <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="absolute left-1/2 top-1/2 italic -translate-x-1/2 -translate-y-1/2 text-lg text-muted-foreground text-center pointer-events-none select-none"
+               >
+                  Click a document in the tree to view.
+               </motion.div>
+            )}
+         </div>
+         <Skeleton className="h-[40px] w-full bg-accent/40" />
       </div>
    );
 }

@@ -2,7 +2,7 @@
 // Purpose: Renders a single tree item (document or folder) in the document tree, with drag-and-drop, options, and actions. Integrates with the document store for metadata.
 
 import React, { forwardRef, type HTMLAttributes, memo, useState, useRef, useEffect, useDeferredValue } from "react";
-import { FolderIcon, FolderOpenIcon, ChevronRight, ChevronDown, FilePen, Loader2, Check, FolderCogIcon } from "lucide-react";
+import { FolderIcon, FolderOpenIcon, ChevronRight, ChevronDown, FilePen, Loader2, Check } from "lucide-react";
 import { ItemOptions } from "../Item/components/ItemOptions/ItemOptions";
 import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
 import { Add } from "../Item/components/Add/Add";
@@ -19,6 +19,8 @@ import { Route as MainDocDocumentIdRoute } from "@/routes/_main/doc.$documentId"
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 import { Input } from "@docsurf/ui/components/input";
 import { Button } from "@docsurf/ui/components/button";
+import { motion } from "motion/react";
+import { useSandStateStore } from "@/store/sandstate";
 
 /**
  * TreeItem component renders a single document or folder in the tree view.
@@ -39,7 +41,7 @@ export interface Props extends Omit<HTMLAttributes<HTMLLIElement>, "id"> {
    value: string;
    title?: string;
    isFolder?: boolean;
-   isDraggingOver?: boolean;
+   isDraggingOverFolder?: boolean;
    onCollapse?: (id: UniqueIdentifier) => void;
    onRemove?: (id: UniqueIdentifier) => void;
    onAddChild?(): void;
@@ -71,7 +73,7 @@ export const TreeItem = memo(
             value,
             title,
             isFolder,
-            isDraggingOver,
+            isDraggingOverFolder,
             wrapperRef,
             isLoading,
             isEmptyFolder,
@@ -81,6 +83,8 @@ export const TreeItem = memo(
          },
          ref
       ) => {
+         const set_l_sidebar_state = useSandStateStore((s) => s.set_l_sidebar_state);
+
          const isMobile = useIsMobile();
          const navigate = useNavigate();
          const pathname = useLocation({ select: (loc) => loc.pathname });
@@ -174,6 +178,9 @@ export const TreeItem = memo(
             if (isFolder && onCollapse) {
                onCollapse(value as UniqueIdentifier);
             } else if (!isFolder) {
+               if (isMobile) {
+                  set_l_sidebar_state(false);
+               }
                navigate({ to: `/doc/${value}` });
             }
          };
@@ -245,7 +252,7 @@ export const TreeItem = memo(
                      !ghost &&
                      !indicator && [
                         "hover:bg-gray-200/50 hover:shadow-sm",
-                        isDraggingOver && "bg-primary/50",
+                        isDraggingOverFolder && "bg-primary/50",
                         isActive && "bg-muted shadow-sm",
                      ]
                )}
@@ -278,9 +285,11 @@ export const TreeItem = memo(
                                  <div className={cn("transition-opacity duration-50 ease-in", "group-hover/item:opacity-0")}>
                                     {isFolder ? (
                                        collapsed ? (
-                                          <FolderCogIcon className={cn("size-5 md:size-4", isDraggingOver ? "text-primary" : "")} />
+                                          <FolderIcon className={cn("size-5 md:size-4", isDraggingOverFolder ? "text-primary" : "")} />
                                        ) : (
-                                          <FolderOpenIcon className={cn("size-5 md:size-4", isDraggingOver ? "text-primary" : "")} />
+                                          <FolderOpenIcon
+                                             className={cn("size-5 md:size-4", isDraggingOverFolder ? "text-primary" : "")}
+                                          />
                                        )
                                     ) : (
                                        <FilePen className={cn("size-5 md:size-4", ghost ? "text-primary" : "text-gray-500")} />
@@ -307,9 +316,9 @@ export const TreeItem = memo(
                               </button>
                            ) : isFolder ? (
                               collapsed ? (
-                                 <FolderCogIcon className={cn("size-5 md:size-4", isDraggingOver ? "text-primary" : "")} />
+                                 <FolderIcon className={cn("size-5 md:size-4", isDraggingOverFolder ? "text-primary" : "")} />
                               ) : (
-                                 <FolderOpenIcon className={cn("size-5 md:size-4", isDraggingOver ? "text-primary" : "")} />
+                                 <FolderOpenIcon className={cn("size-5 md:size-4", isDraggingOverFolder ? "text-primary" : "")} />
                               )
                            ) : (
                               <FilePen className={cn("size-5 md:size-4", ghost ? "text-gray-500" : "")} />
@@ -440,7 +449,7 @@ export const TreeItem = memo(
                style={{
                   paddingLeft: `${indentationWidth * depth}px`,
                   ...style,
-                  backgroundColor: isDraggingOver ? "rgba(0, 0, 0, 0.08)" : undefined,
+                  backgroundColor: isDraggingOverFolder ? "rgba(0, 0, 0, 0.08)" : undefined,
                }}
                {...handleProps}
                {...props}
@@ -461,12 +470,22 @@ export const TreeItem = memo(
                   </Link>
                )}
                {isFolder && !collapsed && isEmptyFolder && !clone && (
-                  <div
-                     className="text-xs text-muted-foreground italic pl-8 py-1"
+                  <motion.div
+                     initial={false}
+                     animate={{
+                        opacity: isDraggingOverFolder ? 0 : 1,
+                        y: isDraggingOverFolder ? 10 : 0,
+                        height: isDraggingOverFolder ? 0 : "auto",
+                        marginTop: isDraggingOverFolder ? 0 : undefined,
+                        marginBottom: isDraggingOverFolder ? 0 : undefined,
+                        pointerEvents: isDraggingOverFolder ? "none" : "auto",
+                     }}
+                     transition={{ duration: 0.2, ease: "easeOut" }}
+                     className="text-xs text-muted-foreground italic pl-8 py-1 overflow-hidden"
                      style={{ paddingLeft: `${indentationWidth * (depth + 1)}px` }}
                   >
                      This folder is empty
-                  </div>
+                  </motion.div>
                )}
             </li>
          );

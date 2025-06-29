@@ -326,7 +326,7 @@ export function SortableTree({ collapsible, indicator = false, indentationWidth 
             isFolder={isItemFolder}
             isLoading={false}
             isEmptyFolder={isEmptyFolder}
-            isDraggingOver={Boolean(activeId && id === overId && children.length > 0 && projected?.parentId === id)}
+            isDraggingOverFolder={Boolean(activeId && id === overId && isEmptyFolder)}
             activeId={activeId}
             updatedAt={updatedAt}
             {...restProps}

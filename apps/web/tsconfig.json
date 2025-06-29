@@ -26,7 +26,8 @@
          "@docsurf/ui/*": ["../../packages/ui/src/*"],
          "@docsurf/utils/*": ["../../packages/utils/src/*"],
          "@docsurf/supabase/*": ["../../packages/supabase/src/*"],
-         "@docsurf/backend/*": ["../../packages/backend/*"]
+         "@docsurf/backend/*": ["../../packages/backend/*"],
+         "@docsurf/kv/*": ["../../packages/kv/src/*"]
       }
    }
 }

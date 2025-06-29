@@ -24,7 +24,6 @@ export const SectionZero: React.FC<SectionZeroProps> = ({ editor, className, isD
          // It will only re-render if the bold or italic state changes
          canUndo: editor.can().undo(),
          canRedo: editor.can().redo(),
-         isSelectionEmpty: editor.state.selection.empty,
       }),
    });
    // Undo
@@ -87,7 +86,7 @@ export const SectionZero: React.FC<SectionZeroProps> = ({ editor, className, isD
             variant="outline"
             isActive={isOpen}
             disableHoverableContent
-            disabled={isDocLocked || !editor || editorState.isSelectionEmpty}
+            disabled={isDocLocked || !editor}
          >
             <WandSparkles className="size-4.5" />
          </ToolbarButton>

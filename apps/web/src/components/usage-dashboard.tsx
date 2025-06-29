@@ -41,11 +41,10 @@ interface UsageDashboardProps {
 }
 
 export function UsageDashboard({ className }: UsageDashboardProps) {
+   // All hooks at the top
    const [timeframe, setTimeframe] = useState<"1d" | "7d" | "30d">("7d");
    const isMobile = useIsMobile();
-
    const { data: session, isPending: sessionLoading } = useSession();
-
    const stats = useConvexQuery(api.analytics.getMyUsageStats, session?.user?.id ? { timeframe } : "skip");
    const chartData = useConvexQuery(api.analytics.getMyUsageChartData, session?.user?.id ? { timeframe } : "skip");
 
@@ -109,6 +108,29 @@ export function UsageDashboard({ className }: UsageDashboardProps) {
          label: "Reasoning Tokens",
       },
    } satisfies ChartConfig;
+
+   // Early returns for loading, error, or not signed in
+   if (sessionLoading || !session?.user?.id) {
+      return (
+         <div className={cn("space-y-4", className)}>
+            <div className="py-8 text-center text-muted-foreground">Sign in to view your usage analytics.</div>
+         </div>
+      );
+   }
+   if (!stats || !chartData) {
+      return (
+         <div className={cn("space-y-4", className)}>
+            <div className="py-8 text-center text-muted-foreground">Loading usage analytics...</div>
+         </div>
+      );
+   }
+   if ("error" in stats || "error" in chartData) {
+      return (
+         <div className={cn("space-y-4", className)}>
+            <div className="py-8 text-center text-destructive">Error loading usage analytics.</div>
+         </div>
+      );
+   }
 
    return (
       <div className={cn("space-y-4", className)}>

@@ -5,6 +5,12 @@ import React from "react";
 import { INNER_RIGHT_SIDEBAR_COOKIE_NAME, SIDEBAR_COOKIE_MAX_AGE } from "@/utils/constants";
 import { Chat } from "./chat/chat";
 import { useChatStore } from "./chat/lib/chat-store";
+import { useQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { useCurrentDocument } from "@/components/sandbox/left/_tree_components/SortableTree";
+import { useConvexTree } from "@/components/sandbox/left/_tree_components/use-convex-tree";
+import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
+import { api } from "@docsurf/backend/convex/_generated/api";
 
 export const InnerRightSidebar = ({
    ir_sidebar_state,
@@ -17,6 +23,11 @@ export const InnerRightSidebar = ({
 }) => {
    const { setOpen, setOpenMobile, open, openMobile, isMobile } = useSidebar();
    const set_ir_sidebar_state = useSandStateStore((s) => s.set_ir_sidebar_state);
+   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const { doc } = useCurrentDocument(user);
+   const { isLoading: isTreeLoading } = useConvexTree({
+      workspaceId: user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">,
+   });
 
    // Get the current threadId from the chat store
    const threadId = useChatStore((s) => s.threadId);
@@ -25,6 +36,13 @@ export const InnerRightSidebar = ({
    const handleRailClick = useCallback(() => {
       toggle_ir_sidebar();
    }, [toggle_ir_sidebar]);
+
+   // Close sidebar if doc is locked
+   useEffect(() => {
+      if (doc?.isLocked && open) {
+         toggle_ir_sidebar();
+      }
+   }, [doc?.isLocked, open, toggle_ir_sidebar]);
 
    React.useEffect(() => {
       if (isMobile) {

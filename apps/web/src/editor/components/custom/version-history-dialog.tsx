@@ -16,7 +16,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { getDocVersions, createDocVersion, deleteDocVersions } from "@/lib/persist/queries";
 import { Dialog as UIDialog, DialogContent as UIDialogContent, DialogTitle as UIDialogTitle } from "@docsurf/ui/components/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@docsurf/ui/components/tooltip";
-import { RotateCcwIcon, AlertTriangleIcon, BookmarkIcon, SaveIcon } from "lucide-react";
+import { RotateCcwIcon, AlertTriangleIcon, SaveIcon } from "lucide-react";
 import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
 import { Drawer, DrawerContent, DrawerTitle, DrawerClose } from "@docsurf/ui/components/drawer";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -206,7 +206,7 @@ const VersionItem = React.memo(
       >
          <span className="flex-grow min-w-0 truncate text-left">{format(new Date(v.timestamp), "MMM do, yyyy HH:mm")}</span>
          <span className="ml-2 flex items-center gap-1 flex-shrink-0">
-            <BookmarkIcon className="size-3.5" aria-label="Version" />
+            {/* <BookmarkIcon className="size-3.5" aria-label="Version" /> */}
             {/* <span className="text-[10px] text-muted-foreground">{format(new Date(v.timestamp), "HH:mm:ss")}</span> */}
          </span>
       </button>
@@ -666,7 +666,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
                                     size="icon"
                                     className={[
                                        "size-7 mr-8 transition-colors",
-                                       confirmingClear ? "bg-red-600 hover:bg-red-700 text-white" : "",
+                                       confirmingClear ? "bg-destructive hover:bg-destructive/90 text-destructive-foreground" : "",
                                     ].join(" ")}
                                     onClick={() => {
                                        if (!confirmingClear) {
@@ -722,7 +722,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
                                        {format(new Date(v.timestamp), "MMM do, yyyy HH:mm")}
                                     </span>
                                     <span className="ml-2 flex items-center gap-1 flex-shrink-0">
-                                       <BookmarkIcon className="size-3.5" aria-label="Version" />
+                                       {/* <BookmarkIcon className="size-3.5" aria-label="Version" /> */}
                                        {/* <span className="text-[10px] text-muted-foreground">
                                              {format(new Date(v.timestamp), "HH:mm:ss")}
                                           </span> */}
@@ -756,7 +756,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
                            size="sm"
                            className={[
                               "flex items-center gap-1 transition-colors",
-                              confirmingRestore ? "bg-red-600 hover:bg-red-700 text-white" : "",
+                              confirmingRestore ? "bg-destructive hover:bg-destructive/90 text-destructive-foreground" : "",
                            ].join(" ")}
                            onClick={handleMobileRestore}
                            aria-label={confirmingRestore ? "Confirm restore" : "Restore this version"}
@@ -809,7 +809,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
 
    return (
       <Dialog open={open} onOpenChange={setOpen}>
-         <DialogContent className="p-0 flex flex-col h-[600px] max-h-[90vh] w-full lg:max-w-[80vw] sm:max-w-[93vw] overflow-hidden">
+         <DialogContent className="p-0 flex flex-col h-[950px] max-h-[90vh] w-full lg:max-w-[80vw] sm:max-w-[93vw] overflow-hidden">
             <VisuallyHidden>
                <DialogTitle>Version History</DialogTitle>
             </VisuallyHidden>
@@ -899,7 +899,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
                                  scrollbarColor: "var(--border) transparent",
                               }}
                               editor={selectedTiptapEditor}
-                              className="focus:outline-none min-h-full"
+                              className="minimal-tiptap-editor min-h-full"
                            />
                         </div>
                      </div>

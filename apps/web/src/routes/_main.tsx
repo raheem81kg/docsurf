@@ -67,7 +67,7 @@ const WrapperInnerRightSidebar = () => {
 
    return (
       <SidebarProvider
-         defaultWidth="23.5rem"
+         defaultWidth="24.5rem"
          name="inner-right-sidebar"
          defaultOpen={ir_sidebar_state}
          className="w-fit overflow-hidden max-h-dvh min-h-[calc(100svh-95px)]"

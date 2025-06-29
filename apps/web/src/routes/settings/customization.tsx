@@ -56,6 +56,14 @@ function CustomizationSettings() {
       );
    }
 
+   if (userSettings && "error" in userSettings) {
+      return (
+         <SettingsLayout title="Customization" description="Personalize how the AI interacts with you">
+            <p className="text-destructive text-sm">Error loading settings.</p>
+         </SettingsLayout>
+      );
+   }
+
    if (!userSettings) {
       return (
          <SettingsLayout title="Customization" description="Personalize how the AI interacts with you">

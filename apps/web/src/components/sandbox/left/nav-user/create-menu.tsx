@@ -92,7 +92,7 @@ export function CreateMenu({ parentId = null }: CreateMenuProps) {
                      </DropdownMenuTrigger>
                   </TooltipTrigger>
                   <TooltipContent side="right" sideOffset={5}>
-                     <p>
+                     <p className="text-lg md:text-base">
                         Create doc
                         {/* (⌘⌥N) */}
                      </p>
@@ -105,12 +105,12 @@ export function CreateMenu({ parentId = null }: CreateMenuProps) {
                      type="button"
                      variant="ghost"
                      className={cn(
-                        "bg-transparent border-none outline-none cursor-pointer rounded-sm !p-2.5 text-sidebar transition-colors hover:bg-accent/50",
+                        "bg-transparent h-10 md:h-8 border-none outline-none cursor-pointer rounded-sm !p-2.5 text-sidebar transition-colors hover:bg-accent/50",
                         isPending && "opacity-50 cursor-not-allowed",
                         open && "bg-doc-brand"
                      )}
                   >
-                     <SquarePen className="size-5 md:size-4 text-primary" />
+                     <SquarePen className="size-5.5 md:size-4 text-primary" />
                   </Button>
                </DropdownMenuTrigger>
             )}
@@ -118,16 +118,16 @@ export function CreateMenu({ parentId = null }: CreateMenuProps) {
                <DropdownMenuContent
                   onCloseAutoFocus={(e) => e.preventDefault()}
                   align="start"
-                  className="w-48 bg-background p-1"
-                  alignOffset={isMobile ? -40 : 0}
+                  className="w-52 md:w-48 bg-background p-1"
+                  alignOffset={isMobile ? -20 : 0}
                >
                   <DropdownMenuItem
                      className="outline-none rounded-t-sm rounded-b-none hover:bg-accent/50 transition-colors"
                      onClick={() => throttledCreate("text/plain")}
                   >
                      <div className="flex items-center justify-between w-full">
-                        <div className="flex items-center">
-                           <FileText className="mr-2 size-3.5" />
+                        <div className="flex gap-1 items-center text-lg md:text-base">
+                           <FileText className="mr-2 size-4" />
                            Create Note
                         </div>
                         {/* {!isMobile && <DropdownMenuShortcut>⌘⌥N</DropdownMenuShortcut>} */}
@@ -138,8 +138,8 @@ export function CreateMenu({ parentId = null }: CreateMenuProps) {
                      onClick={() => throttledCreate("folder")}
                   >
                      <div className="flex items-center justify-between w-full">
-                        <div className="flex items-center">
-                           <FolderPlus className="mr-2 size-3.5" />
+                        <div className="flex gap-1 items-center text-lg md:text-base">
+                           <FolderPlus className="mr-2 size-4" />
                            Create Folder
                         </div>
                         {/* {!isMobile && <DropdownMenuShortcut>⌘⌥F</DropdownMenuShortcut>} */}

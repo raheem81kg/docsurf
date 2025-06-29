@@ -50,21 +50,16 @@ const getProviderStatus = (providerId: SearchProvider, userSettings: any): "BYOK
 };
 
 function AIOptionsSettings() {
-   const { data: session } = useSession();
-
+   const { data: session, isPending: sessionLoading } = useSession();
    const [isLoading, setIsLoading] = useState(false);
-
    const userSettings = useConvexQuery(api.settings.getUserSettings, session?.user?.id ? {} : "skip");
-
    const updateSettings = useConvexMutation(api.settings.updateUserSettingsPartial);
-
-   if (!session?.user?.id || !userSettings) return null;
 
    const availableSearchProviders = getAvailableSearchProviders(userSettings);
 
    const handleSearchProviderChange = async (provider: SearchProvider) => {
-      if (provider === userSettings.searchProvider) return;
-      if (!session.user) return;
+      if (provider === userSettings?.searchProvider) return;
+      if (!session?.user) return;
 
       setIsLoading(true);
       try {
@@ -79,7 +74,7 @@ function AIOptionsSettings() {
    };
 
    const handleIncludeSourcesToggle = async (includeSourcesByDefault: boolean) => {
-      if (!session.user) return;
+      if (!session?.user) return;
 
       setIsLoading(true);
       try {
@@ -96,7 +91,7 @@ function AIOptionsSettings() {
    };
 
    const handleSupermemoryUpdate = async (enabled: boolean, newKey?: string) => {
-      if (!session.user) return;
+      if (!session?.user) return;
 
       setIsLoading(true);
       try {
@@ -116,7 +111,7 @@ function AIOptionsSettings() {
    };
 
    const handleMCPServersUpdate = async (servers: Infer<typeof MCPServerConfig>[]) => {
-      if (!session.user) return;
+      if (!session?.user) return;
 
       setIsLoading(true);
       try {
@@ -130,6 +125,38 @@ function AIOptionsSettings() {
          setIsLoading(false);
       }
    };
+   if (sessionLoading) {
+      return (
+         <SettingsLayout title="AI Options" description="Configure AI search, memory, and web search preferences.">
+            <div className="flex items-center justify-center p-8">
+               <div className="h-8 w-8 animate-spin rounded-full border-primary border-b-2" />
+            </div>
+         </SettingsLayout>
+      );
+   }
+   if (!session?.user?.id) {
+      return (
+         <SettingsLayout title="AI Options" description="Configure AI search, memory, and web search preferences.">
+            <p className="text-muted-foreground text-sm">Sign in to configure AI options.</p>
+         </SettingsLayout>
+      );
+   }
+   if (!userSettings) {
+      return (
+         <SettingsLayout title="AI Options" description="Configure AI search, memory, and web search preferences.">
+            <div className="flex items-center justify-center p-8">
+               <div className="h-8 w-8 animate-spin rounded-full border-primary border-b-2" />
+            </div>
+         </SettingsLayout>
+      );
+   }
+   if ("error" in userSettings) {
+      return (
+         <SettingsLayout title="AI Options" description="Configure AI search, memory, and web search preferences.">
+            <p className="text-destructive text-sm">Error loading settings.</p>
+         </SettingsLayout>
+      );
+   }
 
    return (
       <SettingsLayout title="AI Options" description="Configure AI search, memory, and web search preferences.">

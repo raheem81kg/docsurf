@@ -184,8 +184,8 @@ export const LeftSidebar = ({
    }, [l_sidebar_state, set_l_sidebar_state]);
 
    return (
-      <Sidebar className="border-r bg-red-400" set_l_sidebar_state={set_l_sidebar_state}>
-         <SidebarHeader>
+      <Sidebar className="border-r bg-destructive" set_l_sidebar_state={set_l_sidebar_state}>
+         <SidebarHeader className="gap-3 md:gap-2">
             <SidebarMenu className="flex items-center justify-between gap-1.5 flex-row">
                <div className="">
                   <NavUser />
@@ -211,8 +211,9 @@ export const LeftSidebar = ({
                   setCommandKOpen(true);
                }}
                variant="outline"
+               className="h-10 md:h-8"
             >
-               <Search className="size-5 md:size-4" />
+               <Search className="size-5.5 md:size-4" />
                Search documents
                <div className="ml-auto flex items-center gap-1 text-xs">
                   <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-medium font-mono text-muted-foreground">

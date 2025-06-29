@@ -188,7 +188,7 @@ const ModelCard = memo(({ model, currentProviders, onEdit, onDelete }: ModelCard
 });
 
 function ModelsSettings() {
-   const { data: session, isPending } = useSession();
+   const { data: session, isPending: sessionLoading } = useSession();
    const userSettings = useConvexQuery(api.settings.getUserSettings, session?.user?.id ? {} : "skip");
    const updateSettings = useMutation(api.settings.updateUserSettingsPartial);
 
@@ -340,14 +340,13 @@ function ModelsSettings() {
       }
    };
 
-   if (isPending) {
+   if (sessionLoading) {
       return (
          <SettingsLayout title="Models" description="View available models and configure custom models from your providers.">
             <Skeleton className="h-10 w-1/2" />
          </SettingsLayout>
       );
    }
-
    if (!session?.user?.id) {
       return (
          <SettingsLayout title="Models" description="View available models and configure custom models from your providers.">

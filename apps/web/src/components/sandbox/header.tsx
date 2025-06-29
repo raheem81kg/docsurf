@@ -22,6 +22,10 @@ import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { useConvexTree } from "./left/_tree_components/use-convex-tree";
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
+import { Pencil } from "lucide-react";
+import { useMutation } from "convex/react";
+import { DEFAULT_TEXT_TITLE } from "@/utils/constants";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 /**
  * Header component for the doc page, including breadcrumb, doc title (editable), and action buttons.
  * Shows a skeleton for the doc title while loading.
@@ -53,6 +57,76 @@ const HeaderContent = () => {
       ? "hidden lg:block"
       : undefined;
    const showDocumentsSeparatorClass = showDocumentsBreadcrumbClass;
+   const [editing, setEditing] = React.useState(false);
+   const [title, setTitle] = React.useState("");
+   const inputRef = React.useRef<HTMLInputElement>(null);
+   const workspaceId = user?.workspaces?.[0]?.workspace?._id as Id<"workspaces"> | undefined;
+   const renameDocument = useMutation(api.documents.renameDocument).withOptimisticUpdate((localStore, args) => {
+      // Optimistically update the document tree
+      const tree = localStore.getQuery(api.documents.fetchDocumentTree, {
+         workspaceId: args.workspaceId,
+      });
+      if (tree && Array.isArray(tree.data)) {
+         localStore.setQuery(
+            api.documents.fetchDocumentTree,
+            { workspaceId: args.workspaceId },
+            {
+               data: tree.data.map((doc) => (doc._id === args.id ? { ...doc, title: args.title } : doc)),
+            }
+         );
+      }
+      // Optimistically update the individual document if loaded
+      const doc = localStore.getQuery(api.documents.fetchDocumentById, {
+         workspaceId: args.workspaceId,
+         id: args.id,
+      });
+      if (doc) {
+         localStore.setQuery(
+            api.documents.fetchDocumentById,
+            { workspaceId: args.workspaceId, id: args.id },
+            { ...doc, title: args.title }
+         );
+      }
+   });
+   React.useEffect(() => {
+      if (editing && inputRef.current) {
+         inputRef.current.focus();
+         inputRef.current.select();
+      }
+   }, [editing]);
+   React.useEffect(() => {
+      setTitle(doc?.title || DEFAULT_TEXT_TITLE);
+   }, [doc?.title]);
+   const handleEditClick = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setEditing(true);
+   };
+   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setTitle(e.target.value);
+   };
+   const handleInputBlur = async () => {
+      if (!editing) return;
+      await handleSave();
+   };
+   const handleInputKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+         await handleSave();
+      } else if (e.key === "Escape") {
+         setTitle(doc?.title || DEFAULT_TEXT_TITLE);
+         setEditing(false);
+      }
+   };
+   const handleSave = async () => {
+      if (!doc || !workspaceId) {
+         setEditing(false);
+         return;
+      }
+      const trimmed = title.trim() || DEFAULT_TEXT_TITLE;
+      if (trimmed !== doc.title) {
+         await renameDocument({ workspaceId, id: doc._id, title: trimmed });
+      }
+      setEditing(false);
+   };
    return (
       <header className="sticky top-0 flex h-[46px] shrink-0 items-center gap-2 border-b px-3">
          <Tooltip delayDuration={0} disableHoverableContent={!isMobile}>
@@ -113,13 +187,49 @@ const HeaderContent = () => {
                   {/* Doc title breadcrumb (only on detail page) */}
                   {isDocDetailPage && (
                      <BreadcrumbItem>
-                        <div className="flex items-center h-6">
-                           {isTreeLoading ? (
-                              <Skeleton className="h-6 w-[100px] md:w-[120px] lg:w-[180px] rounded-sm" />
-                           ) : (
-                              doc && <BreadcrumbPage className="line-clamp-1 truncate text-[13px]">{doc.title}</BreadcrumbPage>
+                        <button
+                           type="button"
+                           className={cn(
+                              "relative w-[160px] 3xl:w-[200px] max-w-[250px] -ml-1 flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden h-7 hover:bg-accent/80 justify-between gap-4 border",
+                              editing ? "bg-muted/50 border-primary" : "border-transparent",
+                              doc ? "cursor-pointer" : "cursor-default"
                            )}
-                        </div>
+                           onClick={() => {
+                              if (!editing && !isTreeLoading) {
+                                 setEditing(true);
+                              }
+                           }}
+                           aria-label={editing ? "Editing document title" : "Document title. Click to edit."}
+                           aria-live={editing ? undefined : "polite"}
+                           disabled={isTreeLoading}
+                        >
+                           {isTreeLoading ? (
+                              <Skeleton className="h-5 w-[100px] md:w-[120px] lg:w-[180px] rounded-sm" />
+                           ) : doc ? (
+                              <>
+                                 <input
+                                    type="text"
+                                    value={title}
+                                    readOnly={!editing}
+                                    onChange={editing ? handleInputChange : undefined}
+                                    onKeyDown={editing ? handleInputKeyDown : undefined}
+                                    ref={inputRef}
+                                    onBlur={editing ? handleInputBlur : undefined}
+                                    className={cn(
+                                       "w-full bg-transparent outline-none text-[13px] truncate",
+                                       editing
+                                          ? "border-none"
+                                          : "cursor-pointer select-none border-none shadow-none p-0 m-0 bg-transparent"
+                                    )}
+                                    placeholder="Enter title..."
+                                    maxLength={100}
+                                    aria-label={editing ? "Editing document title" : "Document title. Click to edit."}
+                                    aria-live={editing ? "polite" : undefined}
+                                 />
+                                 {editing && <VisuallyHidden>Editing document title</VisuallyHidden>}
+                              </>
+                           ) : null}
+                        </button>
                      </BreadcrumbItem>
                   )}
                </BreadcrumbList>

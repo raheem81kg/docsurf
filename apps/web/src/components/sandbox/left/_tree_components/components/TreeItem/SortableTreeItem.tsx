@@ -12,6 +12,7 @@ interface Props extends TreeItemProps {
    isLoading?: boolean;
    isEmptyFolder?: boolean;
    activeId?: UniqueIdentifier;
+   isDraggingOverFolder?: boolean;
 }
 
 const animateLayoutChanges: AnimateLayoutChanges = ({ isSorting, wasDragging }) => {
@@ -22,7 +23,7 @@ const animateLayoutChanges: AnimateLayoutChanges = ({ isSorting, wasDragging }) 
    return true;
 };
 
-function SortableTreeItemComponent({ id, depth, isLoading, isEmptyFolder, activeId, ...props }: Props) {
+function SortableTreeItemComponent({ id, depth, isLoading, isEmptyFolder, activeId, isDraggingOverFolder, ...props }: Props) {
    const { attributes, listeners, setDraggableNodeRef, setDroppableNodeRef, transform, transition } = useSortable({
       id,
       animateLayoutChanges,
@@ -53,6 +54,7 @@ function SortableTreeItemComponent({ id, depth, isLoading, isEmptyFolder, active
          data-dnd-draggable
          isLoading={isLoading}
          isEmptyFolder={isEmptyFolder}
+         isDraggingOverFolder={isDraggingOverFolder}
          handleProps={handleProps}
          {...props}
       />

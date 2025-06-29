@@ -383,7 +383,7 @@ const CustomProviderCard = memo(({ providerId, provider, onSave, onDelete, loadi
 });
 
 function ProvidersSettings() {
-   const { data: session, isPending } = useSession();
+   const { data: session, isPending: sessionLoading } = useSession();
    const userSettings = useConvexQuery(api.settings.getUserSettings, session?.user?.id ? {} : "skip");
    const updateSettings = useMutation(api.settings.updateUserSettingsPartial);
 
@@ -395,6 +395,35 @@ function ProvidersSettings() {
       enabled: true,
       key: "",
    });
+
+   if (sessionLoading) {
+      return (
+         <SettingsLayout title="Providers" description="Manage your model and search providers.">
+            <Skeleton className="h-10 w-full" />
+         </SettingsLayout>
+      );
+   }
+   if (!session?.user?.id) {
+      return (
+         <SettingsLayout title="Providers" description="Manage your model and search providers.">
+            <p className="text-muted-foreground text-sm">Sign in to manage your providers.</p>
+         </SettingsLayout>
+      );
+   }
+   if (!userSettings) {
+      return (
+         <SettingsLayout title="Providers" description="Manage your model and search providers.">
+            <Skeleton className="h-10 w-full" />
+         </SettingsLayout>
+      );
+   }
+   if ("error" in userSettings) {
+      return (
+         <SettingsLayout title="Providers" description="Manage your model and search providers.">
+            <p className="text-destructive text-sm">Error loading settings.</p>
+         </SettingsLayout>
+      );
+   }
 
    // Only call useAvailableModels if userSettings is valid
    const { currentProviders } = useAvailableModels(userSettings && !("error" in userSettings) ? userSettings : undefined);
@@ -524,30 +553,6 @@ function ProvidersSettings() {
          setLoading(false);
       }
    };
-
-   if (isPending) {
-      return (
-         <SettingsLayout title="Providers" description="Manage your AI provider API keys and configure custom providers.">
-            <Skeleton className="h-10 w-1/2" />
-         </SettingsLayout>
-      );
-   }
-
-   if (!session?.user?.id) {
-      return (
-         <SettingsLayout title="Providers" description="Manage your AI provider API keys and configure custom providers.">
-            <p className="text-muted-foreground text-sm">Sign in to manage your providers.</p>
-         </SettingsLayout>
-      );
-   }
-
-   if (!userSettings || "error" in userSettings) {
-      return (
-         <SettingsLayout title="Providers" description="Manage your AI provider API keys and configure custom providers.">
-            <p className="text-muted-foreground text-sm">Loading provider settings...</p>
-         </SettingsLayout>
-      );
-   }
 
    const currentSearchProviders = getCurrentSearchProviders();
 

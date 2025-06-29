@@ -5,6 +5,8 @@ import { createServerFileRoute } from "@tanstack/react-start/server";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { smoothStream, streamText } from "ai";
 import { fetchAuth } from "../__root";
+import { Ratelimit } from "@upstash/ratelimit";
+import { client as redisClient } from "@docsurf/kv/index";
 // ... other imports as in the provided code (leave out missing imports)
 
 export const ServerRoute = createServerFileRoute("/api/inline-suggestion").methods({
@@ -27,6 +29,35 @@ export const ServerRoute = createServerFileRoute("/api/inline-suggestion").metho
             status: 401,
             headers: { "Content-Type": "application/json" },
          });
+      }
+
+      // --- Upstash Rate Limiting by userId ---
+      const ratelimit = new Ratelimit({
+         limiter: Ratelimit.fixedWindow(200, "1 d"),
+         redis: redisClient,
+         prefix: "ai-inline-suggestion",
+      });
+      const { success, remaining, limit, reset } = await ratelimit.limit(userId);
+      if (!success) {
+         return new Response("You have reached your request limit for the day.", {
+            status: 429,
+            headers: {
+               "X-RateLimit-Limit": limit.toString(),
+               "X-RateLimit-Remaining": remaining.toString(),
+               "X-RateLimit-Reset": reset.toString(),
+            },
+         });
+      }
+      // --- End Rate Limiting ---
+
+      if (!workspaceId) {
+         return new Response(
+            JSON.stringify({ error: { message: "Workspace ID is required", description: "No workspace ID provided." } }),
+            {
+               status: 400,
+               headers: { "Content-Type": "application/json" },
+            }
+         );
       }
 
       if (!documentId) {

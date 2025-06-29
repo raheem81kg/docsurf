@@ -5,39 +5,41 @@ import { createServerFileRoute } from "@tanstack/react-start/server";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { smoothStream, streamText } from "ai";
 import { fetchAuth } from "../__root";
+import { Ratelimit } from "@upstash/ratelimit";
+import { client as redisClient } from "@docsurf/kv/index";
 // ... other imports as in the provided code (leave out missing imports)
 
 export const ServerRoute = createServerFileRoute("/api/suggestion").methods({
-   GET: async ({ request }) => {
-      // Parse query parameters
-      const url = new URL(request.url);
-      const documentId = url.searchParams.get("documentId") ?? undefined;
-      const description = url.searchParams.get("description") ?? undefined;
-      const selectedText = url.searchParams.get("selectedText") ?? undefined;
-      const suggestionLength = (url.searchParams.get("suggestionLength") as "short" | "medium" | "long") || "medium";
-      const customInstructions = url.searchParams.get("customInstructions") ?? undefined;
+   // GET: async ({ request }) => {
+   //    // Parse query parameters
+   //    const url = new URL(request.url);
+   //    const documentId = url.searchParams.get("documentId") ?? undefined;
+   //    const description = url.searchParams.get("description") ?? undefined;
+   //    const selectedText = url.searchParams.get("selectedText") ?? undefined;
+   //    const suggestionLength = (url.searchParams.get("suggestionLength") as "short" | "medium" | "long") || "medium";
+   //    const customInstructions = url.searchParams.get("customInstructions") ?? undefined;
 
-      // Get userId from fetchAuth
-      const { userId } = await fetchAuth();
-      if (!userId) {
-         return new Response(JSON.stringify({ error: { message: "Unauthorized", description: "No user session." } }), {
-            status: 401,
-            headers: { "Content-Type": "application/json" },
-         });
-      }
-      if (!documentId || !description) {
-         return new Response(
-            JSON.stringify({ error: { message: "Missing parameters", description: "documentId and description required." } }),
-            {
-               status: 400,
-               headers: { "Content-Type": "application/json" },
-            }
-         );
-      }
-      return await handleSuggestionRequest(documentId, description, userId, selectedText, suggestionLength, customInstructions);
-   },
+   //    // Get userId from fetchAuth
+   //    const { userId } = await fetchAuth();
+   //    if (!userId) {
+   //       return new Response(JSON.stringify({ error: { message: "Unauthorized", description: "No user session." } }), {
+   //          status: 401,
+   //          headers: { "Content-Type": "application/json" },
+   //       });
+   //    }
+   //    if (!documentId || !description) {
+   //       return new Response(
+   //          JSON.stringify({ error: { message: "Missing parameters", description: "documentId and description required." } }),
+   //          {
+   //             status: 400,
+   //             headers: { "Content-Type": "application/json" },
+   //          }
+   //       );
+   //    }
+   //    return await handleSuggestionRequest(documentId, description, userId, selectedText, suggestionLength, customInstructions);
+   // },
    POST: async ({ request }) => {
-      const { documentId, description, selectedText, aiOptions = {} } = await request.json();
+      const { documentId, description, selectedText, aiOptions = {}, workspaceId } = await request.json();
       const { suggestionLength = "medium", customInstructions = undefined } = aiOptions;
       const { userId } = await fetchAuth();
       if (!userId) {
@@ -45,6 +47,33 @@ export const ServerRoute = createServerFileRoute("/api/suggestion").methods({
             status: 401,
             headers: { "Content-Type": "application/json" },
          });
+      }
+      // --- Upstash Rate Limiting by userId ---
+      const ratelimit = new Ratelimit({
+         limiter: Ratelimit.fixedWindow(100, "1 d"),
+         redis: redisClient,
+         prefix: "ai-suggestion",
+      });
+      const { success, remaining, limit, reset } = await ratelimit.limit(userId);
+      if (!success) {
+         return new Response("You have reached your request limit for the day.", {
+            status: 429,
+            headers: {
+               "X-RateLimit-Limit": limit.toString(),
+               "X-RateLimit-Remaining": remaining.toString(),
+               "X-RateLimit-Reset": reset.toString(),
+            },
+         });
+      }
+      // --- End Rate Limiting ---
+      if (!workspaceId) {
+         return new Response(
+            JSON.stringify({ error: { message: "Workspace ID is required", description: "No workspace ID provided." } }),
+            {
+               status: 400,
+               headers: { "Content-Type": "application/json" },
+            }
+         );
       }
       if (!documentId || !description) {
          return new Response(
@@ -180,7 +209,7 @@ async function streamSuggestion({
       apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY!,
    });
    const { fullStream } = streamText({
-      model: google.languageModel("gemini-2.0-flash-lite"),
+      model: google.languageModel("gemini-2.0-flash"),
       system: getSuggestionSystemPrompt(),
       prompt,
       experimental_transform: smoothStream({ chunking: "word" }),
