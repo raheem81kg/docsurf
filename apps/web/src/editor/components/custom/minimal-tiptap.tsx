@@ -30,6 +30,7 @@ import { SearchAndReplaceToolbar } from "./search-and-replace-toolbar";
 import { AnimatePresence } from "motion/react";
 import { useMutation } from "convex/react";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
+import { useThrottle } from "../minimal-tiptap/hooks/use-throttle";
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "onUpdate"> {
    value?: Content;
@@ -163,9 +164,28 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
          };
       }, [editor]);
 
-      if (!editor) {
-         return null;
-      }
+      const ONE_HOUR = 60 * 60 * 1000;
+
+      // Throttle setContent to avoid rapid updates from live query
+      const throttledSetContent = useThrottle((val: any) => {
+         if (editor && val) {
+            const current = editor.getJSON();
+            if (JSON.stringify(current) !== JSON.stringify(val)) {
+               // Check if the update is old
+               if (doc?.updatedAt && Date.now() - doc.updatedAt > ONE_HOUR) {
+                  showToast(
+                     "Warning: You are viewing an old version of this document. Changes may have occurred since this version was saved.",
+                     "warning"
+                  );
+               }
+               editor.commands.setContent(val, false);
+            }
+         }
+      }, 500); // 500ms throttle
+
+      React.useEffect(() => {
+         throttledSetContent(value);
+      }, [value, editor, throttledSetContent]);
 
       // Search & Replace hotkey logic
       const [showSearchReplace, setShowSearchReplace] = React.useState(false);
@@ -185,7 +205,9 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
             window.removeEventListener("closeSearchReplacePanel", closeHandler);
          };
       }, []);
-
+      if (!editor) {
+         return null;
+      }
       return (
          <div ref={ref} className={cn("flex flex-col h-full min-h-0 relative", className)}>
             {/* Only show Locked if locked and not deleted */}

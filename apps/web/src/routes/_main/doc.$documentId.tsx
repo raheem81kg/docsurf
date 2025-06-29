@@ -27,6 +27,24 @@ function DocumentComponent() {
       workspaceId: user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">,
    });
 
+   // // Memoize the editor value for performance
+   const editorValue = React.useMemo(() => {
+      if (typeof doc?.content === "string" && doc.content.length > 0) {
+         try {
+            return JSON.parse(doc.content);
+         } catch (e) {
+            return {};
+         }
+      }
+      if (doc?.content && typeof doc.content === "object" && Object.keys(doc.content).length > 0) {
+         return doc.content;
+      }
+      if (doc?.content == null) {
+         return content;
+      }
+      return {};
+   }, [doc?.content]);
+
    if (isTreeLoading || isDocLoading) {
       return <AnimatedLoadingBar />;
    }
@@ -39,18 +57,6 @@ function DocumentComponent() {
          </div>
       );
    }
-
-   // // Memoize the editor value for performance
-   const editorValue = React.useMemo(() => {
-      if (doc?.content && typeof doc.content === "object" && Object.keys(doc.content).length > 0) {
-         return doc.content;
-      }
-      if (doc?.content == null) {
-         return content;
-      }
-      return {};
-   }, [doc?.content]);
-
    return (
       // <div className="h-full">
       <div className="relative h-full">

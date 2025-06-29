@@ -30,11 +30,11 @@ export const batchUpsertDocuments = mutation({
             documentType: v.union(
                v.literal("folder"),
                v.literal("text/plain"),
-               v.literal("video/mp4"),
-               v.literal("audio/mp3"),
-               v.literal("application/pdf"),
-               v.literal("application/octet-stream"),
-               v.literal("website")
+               // v.literal("video/mp4"),
+               // v.literal("audio/mp3"),
+               v.literal("application/pdf")
+               // v.literal("application/octet-stream"),
+               // v.literal("website")
             ),
             updatedAt: v.number(),
             isDeleted: v.optional(v.boolean()),
@@ -171,11 +171,11 @@ export const createDocument = mutation({
       documentType: v.union(
          v.literal("folder"),
          v.literal("text/plain"),
-         v.literal("video/mp4"),
-         v.literal("audio/mp3"),
-         v.literal("application/pdf"),
-         v.literal("application/octet-stream"),
-         v.literal("website")
+         // v.literal("video/mp4"),
+         // v.literal("audio/mp3"),
+         v.literal("application/pdf")
+         // v.literal("application/octet-stream"),
+         // v.literal("website")
       ),
       fileUrl: v.optional(v.string()),
       parentId: v.optional(v.id("documents")),
@@ -223,11 +223,11 @@ export const updateDocument = mutation({
             v.union(
                v.literal("folder"),
                v.literal("text/plain"),
-               v.literal("video/mp4"),
-               v.literal("audio/mp3"),
-               v.literal("application/pdf"),
-               v.literal("application/octet-stream"),
-               v.literal("website")
+               v.literal("application/pdf")
+               // v.literal("video/mp4"),
+               // v.literal("audio/mp3"),
+               // v.literal("application/octet-stream"),
+               // v.literal("website")
             )
          ),
       }),
@@ -261,11 +261,11 @@ export const updateDocumentMetadata = mutation({
             v.union(
                v.literal("folder"),
                v.literal("text/plain"),
-               v.literal("video/mp4"),
-               v.literal("audio/mp3"),
-               v.literal("application/pdf"),
-               v.literal("application/octet-stream"),
-               v.literal("website")
+               v.literal("application/pdf")
+               // v.literal("video/mp4"),
+               // v.literal("audio/mp3"),
+               // v.literal("application/octet-stream"),
+               // v.literal("website")
             )
          ),
          fileUrl: v.optional(v.string()),

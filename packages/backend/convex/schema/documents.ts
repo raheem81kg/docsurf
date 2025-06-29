@@ -14,11 +14,11 @@ export const Documents = v.object({
    documentType: v.union(
       v.literal("folder"),
       v.literal("text/plain"),
-      v.literal("video/mp4"),
-      v.literal("audio/mp3"),
-      v.literal("application/pdf"),
-      v.literal("application/octet-stream"),
-      v.literal("website")
+      // v.literal("video/mp4"),
+      // v.literal("audio/mp3"),
+      v.literal("application/pdf")
+      // v.literal("application/octet-stream"),
+      // v.literal("website")
    ),
    writingStyle: v.optional(
       v.union(
@@ -36,6 +36,7 @@ export const Documents = v.object({
    lastViewedAt: v.optional(v.number()),
    isDeleted: v.boolean(),
    metadata: v.optional(v.any()),
+   fileUrl: v.optional(v.string()),
    fileSize: v.optional(v.int64()),
    isPublic: v.boolean(),
    isLocked: v.boolean(),

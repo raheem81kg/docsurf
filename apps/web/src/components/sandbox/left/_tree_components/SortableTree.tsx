@@ -139,12 +139,8 @@ function NoItems() {
  * @returns The document object, or undefined/null if loading or not found.
  */
 export function useCurrentDocument(user: CurrentUser | undefined) {
-   let documentId: string | undefined;
-   try {
-      documentId = useParams({ strict: false }).documentId;
-   } catch {
-      documentId = undefined;
-   }
+   const params = useParams({ strict: false });
+   const documentId = params?.documentId;
    const workspaceId = user?.workspaces?.[0]?.workspace?._id;
 
    // Always call the hook, but only enable it when you have the data

@@ -49,7 +49,7 @@ class EmailService {
 
       return {
          provider,
-         from: process.env.EMAIL_FROM || "noreply@docsurf.ai",
+         from: process.env.EMAIL_FROM || "noreply@mail.docsurf.ai",
          resend:
             provider === "resend"
                ? {
@@ -177,7 +177,9 @@ class EmailService {
          to: data.user.email,
          subject: "Verify your email address - Docsurf",
          html,
-         text: `Hi ${data.user.name || ""},\n\nPlease verify your email address by clicking this link: ${data.url}\n\nIf you didn't create an account, you can safely ignore this email.`,
+         text: `Hi ${data.user.name || ""},\n\nPlease verify your email address by clicking this link: ${
+            data.url
+         }\n\nIf you didn't create an account, you can safely ignore this email.`,
       });
    }
 
@@ -193,7 +195,9 @@ class EmailService {
          to: data.user.email,
          subject: "Reset your password - Docsurf",
          html,
-         text: `Hi ${data.user.name || ""},\n\nYou can reset your password by clicking this link: ${data.url}\n\nIf you didn't request a password reset, you can safely ignore this email.`,
+         text: `Hi ${data.user.name || ""},\n\nYou can reset your password by clicking this link: ${
+            data.url
+         }\n\nIf you didn't request a password reset, you can safely ignore this email.`,
       });
    }
 

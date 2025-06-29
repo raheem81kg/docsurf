@@ -92,7 +92,7 @@ export function CreateMenu({ parentId = null }: CreateMenuProps) {
                      </DropdownMenuTrigger>
                   </TooltipTrigger>
                   <TooltipContent side="right" sideOffset={5}>
-                     <p className="text-lg md:text-base">
+                     <p>
                         Create doc
                         {/* (⌘⌥N) */}
                      </p>
@@ -126,7 +126,7 @@ export function CreateMenu({ parentId = null }: CreateMenuProps) {
                      onClick={() => throttledCreate("text/plain")}
                   >
                      <div className="flex items-center justify-between w-full">
-                        <div className="flex gap-1 items-center text-lg md:text-base">
+                        <div className="flex gap-1 items-center text-base md:text-sm">
                            <FileText className="mr-2 size-4" />
                            Create Note
                         </div>
@@ -138,7 +138,7 @@ export function CreateMenu({ parentId = null }: CreateMenuProps) {
                      onClick={() => throttledCreate("folder")}
                   >
                      <div className="flex items-center justify-between w-full">
-                        <div className="flex gap-1 items-center text-lg md:text-base">
+                        <div className="flex gap-1 items-center text-base md:text-sm">
                            <FolderPlus className="mr-2 size-4" />
                            Create Folder
                         </div>

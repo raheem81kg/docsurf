@@ -1,0 +1,544 @@
+{
+   "type": "doc",
+   "content": [
+      {
+         "type": "heading",
+         "attrs": {
+            "textAlign": null,
+            "level": 1
+         },
+         "content": [
+            {
+               "type": "text",
+               "text": "Welcome to DocSurf!"
+            }
+         ]
+      },
+      {
+         "type": "paragraph",
+         "attrs": {
+            "textAlign": null
+         },
+         "content": [
+            {
+               "type": "text",
+               "text": "DocSurf is your AI-powered document workspace. Here's how to get started:"
+            }
+         ]
+      },
+      {
+         "type": "heading",
+         "attrs": {
+            "textAlign": null,
+            "level": 2
+         },
+         "content": [
+            {
+               "type": "text",
+               "text": "Key Features"
+            }
+         ]
+      },
+      {
+         "type": "bulletList",
+         "content": [
+            {
+               "type": "listItem",
+               "attrs": {
+                  "indent": 0
+               },
+               "content": [
+                  {
+                     "type": "paragraph",
+                     "attrs": {
+                        "textAlign": null
+                     },
+                     "content": [
+                        {
+                           "type": "text",
+                           "text": "📝 Powerful rich-text editor with formatting, lists, images, and more."
+                        }
+                     ]
+                  }
+               ]
+            },
+            {
+               "type": "listItem",
+               "attrs": {
+                  "indent": 0
+               },
+               "content": [
+                  {
+                     "type": "paragraph",
+                     "attrs": {
+                        "textAlign": null
+                     },
+                     "content": [
+                        {
+                           "type": "text",
+                           "text": "🤖 Chat with AI to brainstorm, summarize, or generate content."
+                        }
+                     ]
+                  }
+               ]
+            },
+            {
+               "type": "listItem",
+               "attrs": {
+                  "indent": 0
+               },
+               "content": [
+                  {
+                     "type": "paragraph",
+                     "attrs": {
+                        "textAlign": null
+                     },
+                     "content": [
+                        {
+                           "type": "text",
+                           "text": "📁 Organize docs in folders."
+                        }
+                     ]
+                  }
+               ]
+            },
+            {
+               "type": "listItem",
+               "attrs": {
+                  "indent": 0
+               },
+               "content": [
+                  {
+                     "type": "paragraph",
+                     "attrs": {
+                        "textAlign": null
+                     },
+                     "content": [
+                        {
+                           "type": "text",
+                           "text": "🔍 Search across all your documents instantly."
+                        }
+                     ]
+                  }
+               ]
+            },
+            {
+               "type": "listItem",
+               "attrs": {
+                  "indent": 0
+               },
+               "content": [
+                  {
+                     "type": "paragraph",
+                     "attrs": {
+                        "textAlign": null
+                     },
+                     "content": [
+                        {
+                           "type": "text",
+                           "text": "🕑 Version history and undo for every document."
+                        }
+                     ]
+                  }
+               ]
+            },
+            {
+               "type": "listItem",
+               "attrs": {
+                  "indent": 0
+               },
+               "content": [
+                  {
+                     "type": "paragraph",
+                     "attrs": {
+                        "textAlign": null
+                     },
+                     "content": [
+                        {
+                           "type": "text",
+                           "text": "📎 Attach files, images, and PDFs to your docs."
+                        }
+                     ]
+                  }
+               ]
+            },
+            {
+               "type": "listItem",
+               "attrs": {
+                  "indent": 0
+               },
+               "content": [
+                  {
+                     "type": "paragraph",
+                     "attrs": {
+                        "textAlign": null
+                     },
+                     "content": [
+                        {
+                           "type": "text",
+                           "text": "🎨 Switch between light/dark themes and customize appearance."
+                        }
+                     ]
+                  }
+               ]
+            },
+            {
+               "type": "listItem",
+               "attrs": {
+                  "indent": 0
+               },
+               "content": [
+                  {
+                     "type": "paragraph",
+                     "attrs": {
+                        "textAlign": null
+                     },
+                     "content": [
+                        {
+                           "type": "text",
+                           "text": "⚡ Keyboard shortcuts for productivity (see below)."
+                        }
+                     ]
+                  }
+               ]
+            }
+         ]
+      },
+      {
+         "type": "heading",
+         "attrs": {
+            "textAlign": null,
+            "level": 2
+         },
+         "content": [
+            {
+               "type": "text",
+               "text": "Essential Keyboard Shortcuts"
+            }
+         ]
+      },
+      {
+         "type": "bulletList",
+         "content": [
+            {
+               "type": "listItem",
+               "attrs": {
+                  "indent": 0
+               },
+               "content": [
+                  {
+                     "type": "paragraph",
+                     "attrs": {
+                        "textAlign": null
+                     },
+                     "content": [
+                        {
+                           "type": "text",
+                           "text": "Bold: "
+                        },
+                        {
+                           "type": "text",
+                           "marks": [
+                              {
+                                 "type": "bold"
+                              }
+                           ],
+                           "text": "⌘/Ctrl+B"
+                        }
+                     ]
+                  }
+               ]
+            },
+            {
+               "type": "listItem",
+               "attrs": {
+                  "indent": 0
+               },
+               "content": [
+                  {
+                     "type": "paragraph",
+                     "attrs": {
+                        "textAlign": null
+                     },
+                     "content": [
+                        {
+                           "type": "text",
+                           "text": "Italic: "
+                        },
+                        {
+                           "type": "text",
+                           "marks": [
+                              {
+                                 "type": "italic"
+                              }
+                           ],
+                           "text": "⌘/Ctrl+I"
+                        }
+                     ]
+                  }
+               ]
+            },
+            {
+               "type": "listItem",
+               "attrs": {
+                  "indent": 0
+               },
+               "content": [
+                  {
+                     "type": "paragraph",
+                     "attrs": {
+                        "textAlign": null
+                     },
+                     "content": [
+                        {
+                           "type": "text",
+                           "text": "Underline: ⌘/Ctrl+U"
+                        }
+                     ]
+                  }
+               ]
+            },
+            {
+               "type": "listItem",
+               "attrs": {
+                  "indent": 0
+               },
+               "content": [
+                  {
+                     "type": "paragraph",
+                     "attrs": {
+                        "textAlign": null
+                     },
+                     "content": [
+                        {
+                           "type": "text",
+                           "text": "Strikethrough: ⌘/Ctrl+Shift+S"
+                        }
+                     ]
+                  }
+               ]
+            },
+            {
+               "type": "listItem",
+               "attrs": {
+                  "indent": 0
+               },
+               "content": [
+                  {
+                     "type": "paragraph",
+                     "attrs": {
+                        "textAlign": null
+                     },
+                     "content": [
+                        {
+                           "type": "text",
+                           "text": "Code: ⌘/Ctrl+E"
+                        }
+                     ]
+                  }
+               ]
+            },
+            {
+               "type": "listItem",
+               "attrs": {
+                  "indent": 0
+               },
+               "content": [
+                  {
+                     "type": "paragraph",
+                     "attrs": {
+                        "textAlign": null
+                     },
+                     "content": [
+                        {
+                           "type": "text",
+                           "text": "Clear formatting: ⌘/Ctrl+\\"
+                        }
+                     ]
+                  }
+               ]
+            },
+            {
+               "type": "listItem",
+               "attrs": {
+                  "indent": 0
+               },
+               "content": [
+                  {
+                     "type": "paragraph",
+                     "attrs": {
+                        "textAlign": null
+                     },
+                     "content": [
+                        {
+                           "type": "text",
+                           "text": "Superscript: ⌘/Ctrl+."
+                        }
+                     ]
+                  }
+               ]
+            },
+            {
+               "type": "listItem",
+               "attrs": {
+                  "indent": 0
+               },
+               "content": [
+                  {
+                     "type": "paragraph",
+                     "attrs": {
+                        "textAlign": null
+                     },
+                     "content": [
+                        {
+                           "type": "text",
+                           "text": "Subscript: ⌘/Ctrl+,"
+                        }
+                     ]
+                  }
+               ]
+            },
+            {
+               "type": "listItem",
+               "attrs": {
+                  "indent": 0
+               },
+               "content": [
+                  {
+                     "type": "paragraph",
+                     "attrs": {
+                        "textAlign": null
+                     },
+                     "content": [
+                        {
+                           "type": "text",
+                           "text": "Insert horizontal rule: ⌘/Ctrl+Alt+-"
+                        }
+                     ]
+                  }
+               ]
+            },
+            {
+               "type": "listItem",
+               "attrs": {
+                  "indent": 0
+               },
+               "content": [
+                  {
+                     "type": "paragraph",
+                     "attrs": {
+                        "textAlign": null
+                     },
+                     "content": [
+                        {
+                           "type": "text",
+                           "text": "Search/Replace: ⌘/Ctrl+F"
+                        }
+                     ]
+                  }
+               ]
+            }
+         ]
+      },
+      {
+         "type": "heading",
+         "attrs": {
+            "textAlign": null,
+            "level": 2
+         },
+         "content": [
+            {
+               "type": "text",
+               "text": "Tips & Next Steps"
+            }
+         ]
+      },
+      {
+         "type": "paragraph",
+         "attrs": {
+            "textAlign": null
+         },
+         "content": [
+            {
+               "type": "text",
+               "text": "- Use the sidebar to navigate your workspace, access settings, and switch themes."
+            }
+         ]
+      },
+      {
+         "type": "paragraph",
+         "attrs": {
+            "textAlign": null
+         },
+         "content": [
+            {
+               "type": "text",
+               "text": "- Start a new document or folder from the library view."
+            }
+         ]
+      },
+      {
+         "type": "paragraph",
+         "attrs": {
+            "textAlign": null
+         },
+         "content": [
+            {
+               "type": "text",
+               "text": "- Try the AI chat to get writing help, summaries, or brainstorm ideas."
+            }
+         ]
+      },
+      {
+         "type": "paragraph",
+         "attrs": {
+            "textAlign": null
+         },
+         "content": [
+            {
+               "type": "text",
+               "text": "- Attach files, images, or PDFs to enrich your docs."
+            }
+         ]
+      },
+      {
+         "type": "paragraph",
+         "attrs": {
+            "textAlign": null
+         },
+         "content": [
+            {
+               "type": "text",
+               "text": "- Explore version history to restore or review previous edits."
+            }
+         ]
+      },
+      {
+         "type": "paragraph",
+         "attrs": {
+            "textAlign": null
+         },
+         "content": [
+            {
+               "type": "text",
+               "text": "- Visit Settings to manage your account, subscription, and preferences."
+            }
+         ]
+      },
+      {
+         "type": "horizontalRule"
+      },
+      {
+         "type": "paragraph",
+         "attrs": {
+            "textAlign": null
+         },
+         "content": [
+            {
+               "type": "text",
+               "text": "Happy writing! "
+            }
+         ]
+      }
+   ]
+}

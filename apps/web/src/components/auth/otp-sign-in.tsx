@@ -36,8 +36,8 @@ export function OTPSignIn({ className }: Props) {
                onSuccess: () => {
                   setEmail(value.email);
                   setSent(true);
-                  setCookie(COOKIES.PreferredSignInProvider, "otp");
                   showToast("Verification code sent to your email.", "success");
+                  console.log("DEBUG: setSent(true), setEmail", value.email);
                },
                onError: (err) => {
                   showToast(err.error.message, "error");
@@ -56,10 +56,11 @@ export function OTPSignIn({ className }: Props) {
          },
          {
             onSuccess: async () => {
+               setCookie(COOKIES.PreferredSignInProvider, "otp");
                await navigate({ to: "/doc" });
             },
             onError: (err) => {
-               showToast(err.error.message, "error");
+               showToast("Invalid verification code. Please try again.", "error");
             },
             onSettled: () => {
                setIsVerifying(false);
@@ -99,10 +100,10 @@ export function OTPSignIn({ className }: Props) {
 
    return (
       <form
-         onSubmit={(e) => {
+         onSubmit={async (e) => {
             e.preventDefault();
             e.stopPropagation();
-            void form.handleSubmit();
+            await form.handleSubmit();
          }}
       >
          <div className={cn("flex flex-col space-y-4", className)}>
@@ -132,14 +133,9 @@ export function OTPSignIn({ className }: Props) {
                      className="flex w-full space-x-2 rounded-none font-medium active:scale-[0.98]"
                      disabled={!canSubmit || isSubmitting}
                   >
-                     {isSubmitting ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                     ) : (
-                        <>
-                           <Icons.EmailIcon className="!size-5 invert dark:invert-0" />
-                           <span>Sign in with email</span>
-                        </>
-                     )}
+                     {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+                     <Icons.EmailIcon className="!size-5 invert dark:invert-0" />
+                     <span>Sign in with email</span>
                   </Button>
                )}
             </form.Subscribe>

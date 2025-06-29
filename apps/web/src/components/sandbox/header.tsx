@@ -127,6 +127,10 @@ const HeaderContent = () => {
       }
       setEditing(false);
    };
+
+   const isShortTitle = title.length < 10;
+   const isLargeTitle = title.length > 12;
+   const isEvenLargerTitle = title.length > 18;
    return (
       <header className="sticky top-0 flex h-[46px] shrink-0 items-center gap-2 border-b px-3">
          <Tooltip delayDuration={0} disableHoverableContent={!isMobile}>
@@ -190,7 +194,11 @@ const HeaderContent = () => {
                         <button
                            type="button"
                            className={cn(
-                              "relative w-[160px] 3xl:w-[200px] max-w-[250px] -ml-1 flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden h-7 hover:bg-accent/80 justify-between gap-4 border",
+                              "relative max-w-[250px] -ml-1 flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden h-7 hover:bg-accent/80 justify-between gap-4 border",
+                              isEvenLargerTitle && "w-[250px]",
+                              isLargeTitle && !isEvenLargerTitle && "w-[180px]",
+                              isShortTitle && "w-[90px]",
+                              !isEvenLargerTitle && !isLargeTitle && !isShortTitle && "w-[120px]",
                               editing ? "bg-muted/50 border-primary" : "border-transparent",
                               doc ? "cursor-pointer" : "cursor-default"
                            )}

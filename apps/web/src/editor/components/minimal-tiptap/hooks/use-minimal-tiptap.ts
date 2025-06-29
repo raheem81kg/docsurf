@@ -58,6 +58,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ImageExtension } from "../extensions/custom/niazmorshed/image";
 import { ImagePlaceholder } from "../extensions/custom/niazmorshed/image-placeholder";
 import { Mathematics } from "@tiptap/extension-mathematics";
+import { useMutation } from "convex/react";
 // import { getHierarchicalIndexes, TableOfContents } from "@tiptap/extension-table-of-contents";
 export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
    value?: Content;
@@ -341,37 +342,6 @@ export const useMinimalTiptapEditor = ({
       };
    }, []);
 
-   // Debounced save function
-   const debouncedSave = React.useMemo(
-      () =>
-         debounce((content: Content) => {
-            const newComparable = getComparableContent(content);
-            const lastComparable = getComparableContent(lastSavedContent.current);
-            if (!isEqual(newComparable, lastComparable)) {
-               if (process.env.NODE_ENV !== "production") {
-                  // eslint-disable-next-line no-console
-                  console.log("Save triggered. Diff:", {
-                     newComparable,
-                     lastComparable,
-                     rawNew: content,
-                     rawLast: lastSavedContent.current,
-                  });
-               }
-               // Simulate save logic
-               console.log("[Save] Content:", content);
-               // Simulate a save result
-               const result = { success: true };
-               if (!result.success) {
-                  showToast("Save failed", "error");
-               }
-               lastSavedContent.current = content;
-               onUpdate?.(content);
-            }
-            hasPendingChanges.current = false;
-         }, debounceDelay),
-      [debounceDelay, onUpdate]
-   );
-
    // Only set pending changes and trigger save if doc changed
    const handleBlur = React.useCallback((editor: Editor) => onBlur?.(getOutput(editor, output)), [output, onBlur]);
 
@@ -386,6 +356,50 @@ export const useMinimalTiptapEditor = ({
    const docId = doc?._id;
    const userId = user?._id;
    const workspaceId = doc?.workspaceId;
+   // Convex mutation for saving document content
+   const updateDocument = useMutation(api.documents.updateDocument);
+
+   // Debounced save function
+   const debouncedSave = React.useMemo(
+      () =>
+         debounce(async (content: Content) => {
+            const newComparable = getComparableContent(content);
+            const lastComparable = getComparableContent(lastSavedContent.current);
+            if (!isEqual(newComparable, lastComparable)) {
+               if (process.env.NODE_ENV !== "production") {
+                  // eslint-disable-next-line no-console
+                  console.log("Save triggered. Diff:", {
+                     newComparable,
+                     lastComparable,
+                     rawNew: content,
+                     rawLast: lastSavedContent.current,
+                  });
+               }
+               if (docId && workspaceId) {
+                  try {
+                     await updateDocument({
+                        workspaceId,
+                        id: docId,
+                        updates: { content: JSON.stringify(content) },
+                     });
+                     lastSavedContent.current = content;
+                     onUpdate?.(content);
+                  } catch (err) {
+                     showToast("Save failed", "error");
+                     if (process.env.NODE_ENV !== "production") {
+                        // eslint-disable-next-line no-console
+                        console.error("Save error:", err);
+                     }
+                  }
+               } else {
+                  showToast("Cannot save: missing document or workspace ID", "error");
+               }
+            }
+            hasPendingChanges.current = false;
+         }, debounceDelay),
+      [debounceDelay, onUpdate, docId, workspaceId, updateDocument]
+   );
+
    // Memoize extensions so they're only recreated when dependencies change
    const extensions = React.useMemo(
       () =>

@@ -59,7 +59,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
             </div>
             <div className="text-center">
                <h3 className="font-bold text-2xl text-foreground">Welcome to Docsurf</h3>
-               <span className="text-muted-foreground text-sm">The best open-source chatbot. Made by interns, for interns.</span>
+               <span className="text-muted-foreground text-sm">The best AI document editor. Made by students, for students.</span>
             </div>
          </div>
       ),
@@ -238,7 +238,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
             <div className="space-y-3">
                <h3 className="font-semibold text-xl tracking-tight">Feature packed</h3>
                <p className="text-muted-foreground text-sm leading-relaxed">
-                  Our intern couldn't fit our tremendous feature list into actual slides, so here's a list instead.
+                  We couldn't fit our tremendous feature list into actual slides, so here's a list instead.
                </p>
             </div>
          </div>
@@ -345,8 +345,8 @@ export function OnboardingDialog({ isOpen, onComplete }: OnboardingDialogProps) 
             <VisuallyHidden>
                <DialogTitle>Welcome to Docsurf</DialogTitle>
                <DialogDescription>
-                  Docsurf is a powerful AI chatbot that allows you to chat with AI and make Docsurf truly yours! Don't forget to
-                  checkout the Settings page to customize your experience.
+                  Docsurf is a powerful AI document editor that allows you to chat with AI and make Docsurf truly yours! Don't forget
+                  to checkout the Settings page to customize your experience.
                </DialogDescription>
             </VisuallyHidden>
             <MotionConfig

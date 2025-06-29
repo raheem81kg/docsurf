@@ -7,8 +7,9 @@ import { asyncMap } from "convex-helpers";
 import { api, components, internal } from "./_generated/api";
 import type { DataModel, Id, Doc } from "./_generated/dataModel";
 import { type GenericCtx, query } from "./_generated/server";
-import { sendEmailVerification, sendMagicLink, sendOTPVerification } from "./email";
+import { sendEmailVerification, sendMagicLink, sendSignInOTP } from "./email";
 import type { SafeSubscription } from "./subscriptions";
+import gettingStartedContent from "./getting_started.json";
 
 // The user object returned by the getCurrentUser query. It combines authentication
 // data with the user's subscription status and application-specific data.
@@ -58,14 +59,14 @@ export const createAuth = (ctx: GenericCtx) =>
             enabled: true,
          },
       },
-      emailVerification: {
-         sendVerificationEmail: async ({ user, url }) => {
-            await sendEmailVerification({
-               to: user.email,
-               url,
-            });
-         },
-      },
+      // emailVerification: {
+      //    sendVerificationEmail: async ({ user, url }) => {
+      //       await sendEmailVerification({
+      //          to: user.email,
+      //          url,
+      //       });
+      //    },
+      // },
       emailAndPassword: {
          enabled: false,
       },
@@ -81,28 +82,33 @@ export const createAuth = (ctx: GenericCtx) =>
          },
       },
       plugins: [
-         magicLink({
-            sendMagicLink: async ({ email, url }) => {
-               if (process.env.NODE_ENV === "development") {
-                  console.log("Magic link sent to", email, "with url", url);
-                  return;
-               }
-               await sendMagicLink({
-                  to: email,
-                  url,
-               });
-            },
-         }),
+         // magicLink({
+         //    sendMagicLink: async ({ email, url }) => {
+         //       if (process.env.NODE_ENV === "development") {
+         //          console.log("Magic link sent to", email, "with url", url);
+         //          return;
+         //       }
+         //       await sendMagicLink({
+         //          to: email,
+         //          url,
+         //       });
+         //    },
+         // }),
          emailOTP({
-            async sendVerificationOTP({ email, otp }) {
+            otpLength: 6,
+            expiresIn: 10 * 60, // 10  mintutes
+            allowedAttempts: 3,
+            async sendVerificationOTP({ email, otp, type }) {
                if (process.env.NODE_ENV === "development") {
                   console.log("OTP verification email sent to", email, "with code", otp);
-                  return;
+                  // return;
                }
-               await sendOTPVerification({
-                  to: email,
-                  code: otp,
-               });
+               if (type === "sign-in") {
+                  await sendSignInOTP({
+                     to: email,
+                     code: otp,
+                  });
+               }
             },
          }),
          twoFactor(),
@@ -138,6 +144,23 @@ export const { createUser, deleteUser, updateUser, createSession, isAuthenticate
             userId,
             role: "owner",
             createdAt: Date.now(),
+         });
+
+         // Insert a Getting Started document for the new user
+         await ctx.db.insert("documents", {
+            userId,
+            workspaceId,
+            parentId: undefined,
+            title: "Getting Started",
+            documentType: "text/plain",
+            fileUrl: undefined,
+            content: JSON.stringify(gettingStartedContent),
+            orderPosition: 0,
+            updatedAt: Date.now(),
+            isDeleted: false,
+            depth: 0,
+            isPublic: false,
+            isLocked: false,
          });
 
          // This function must return the user id.
