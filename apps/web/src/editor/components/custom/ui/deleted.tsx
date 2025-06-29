@@ -13,11 +13,11 @@ import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 
 export default function Deleted() {
    // Get user and workspaceId
-   const { data: user, isLoading: userLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
    const workspaceId = user?.workspaces?.[0]?.workspace?._id;
 
    // Get current document
-   const { doc } = useCurrentDocument(user, userLoading);
+   const { doc } = useCurrentDocument(user);
 
    // Restore mutation
    const restoreDocument = useMutation(api.documents.restoreDocument);

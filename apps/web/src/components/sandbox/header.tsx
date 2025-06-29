@@ -32,8 +32,8 @@ const HeaderContent = () => {
    const ir_sidebar_state = useSandStateStore((s) => s.ir_sidebar_state);
    const toggle_l_sidebar = useSandStateStore((s) => s.toggle_l_sidebar);
    const toggle_ir_sidebar = useSandStateStore((s) => s.toggle_ir_sidebar);
-   const { data: user, isLoading: userLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
-   const { doc } = useCurrentDocument(user, userLoading);
+   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const { doc } = useCurrentDocument(user);
    const { isLoading: isTreeLoading } = useConvexTree({
       workspaceId: user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">,
    });

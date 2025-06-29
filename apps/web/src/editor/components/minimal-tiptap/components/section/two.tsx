@@ -13,7 +13,6 @@ import {
    UnderlineIcon,
 } from "@radix-ui/react-icons";
 import { ToolbarSection } from "../toolbar-section";
-import { useTiptapEditor } from "../../hooks/use-tiptap-editor";
 
 type TextStyleAction = "bold" | "italic" | "underline" | "strikethrough" | "code" | "clearFormatting" | "superscript" | "subscript";
 
@@ -29,7 +28,7 @@ interface SectionTwoProps extends VariantProps<typeof toggleVariants> {
 }
 
 export const SectionTwo: React.FC<SectionTwoProps> = ({
-   editor: providedEditor,
+   editor,
    activeActions = ["bold", "italic", "underline", "strikethrough", "code", "clearFormatting", "superscript", "subscript"],
    mainActionCount = 2,
    size,
@@ -38,7 +37,6 @@ export const SectionTwo: React.FC<SectionTwoProps> = ({
 }) => {
    // Log rerender
    console.log("[SectionTwo] rerender", { isDocLocked, activeActions, size, variant });
-   const editor = useTiptapEditor(providedEditor);
    if (!editor) return null;
    const editorState = useEditorState({
       editor,

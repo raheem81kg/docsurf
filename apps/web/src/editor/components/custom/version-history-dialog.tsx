@@ -216,7 +216,7 @@ const VersionItem = React.memo(
 
 const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOpen }) => {
    const { data: user, isLoading: userLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
-   const { doc } = useCurrentDocument(user, userLoading);
+   const { doc } = useCurrentDocument(user);
    const docId = doc?._id;
    const [isSaving, setIsSaving] = useState(false);
    const liveVersions = useLiveQuery(() => (docId ? getDocVersions(docId) : Promise.resolve([])), [docId], []);
@@ -229,7 +229,6 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
    const [drawerVersion, setDrawerVersion] = useState<(typeof liveVersions)[0] | null>(null);
    const [confirmingRestore, setConfirmingRestore] = useState(false);
    const drawerContentRef = useRef<HTMLDivElement>(null);
-   // const tiptapEditor = useTiptapEditor();
    const mainEditor = useEditorRefStore.getState().editor;
    const [showClearDialog, setShowClearDialog] = useState(false);
    const [confirmingClear, setConfirmingClear] = useState(false);

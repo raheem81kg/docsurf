@@ -948,6 +948,7 @@ body {
 
 @layer components {
    /* Inline Suggestion 3D Tab Key Styling */
+   /* Start of Selection */
    .inline-suggestion-wrapper {
       @apply items-baseline gap-1;
    }
@@ -963,6 +964,8 @@ body {
       opacity: 0;
       animation: fadeInInlineTab 0.3s ease-out 0.8s forwards;
    }
+   /* End of Selection */
+   /* End of Selection */
    @keyframes fadeInInlineTab {
       to {
          opacity: 1;

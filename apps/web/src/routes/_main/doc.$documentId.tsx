@@ -21,8 +21,8 @@ export const Route = createFileRoute("/_main/doc/$documentId")({
 });
 
 function DocumentComponent() {
-   const { data: user, isLoading: userLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
-   const { doc, docLoading: isDocLoading } = useCurrentDocument(user, userLoading);
+   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const { doc, docLoading: isDocLoading } = useCurrentDocument(user);
    const { isLoading: isTreeLoading } = useConvexTree({
       workspaceId: user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">,
    });

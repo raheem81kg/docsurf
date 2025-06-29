@@ -109,12 +109,13 @@ const createExtensions = (
    placeholder: string,
    characterLimit: number,
    getEditor: () => Editor | null,
-   getDoc: () => any,
+   userId: string | undefined,
+   docId: string | undefined,
+   workspaceId: string | undefined,
    abortControllerRef: React.RefObject<AbortController | null>,
    excludeExtensions: string[] = [],
    enableVersionTracking = false,
-   versionTrackingOptions = {},
-   docId?: string
+   versionTrackingOptions = {}
 ) => {
    // TODO: For debugging, comment out custom extensions below and test with only core extensions if state is not reactive.
    const allExtensions = [
@@ -234,6 +235,11 @@ const createExtensions = (
       Highlight.configure({ multicolor: true }),
       TextStyle,
       Selection,
+      InlineSuggestionExtension.configure({
+         requestSuggestion: createRequestInlineSuggestionCallback(userId, docId, workspaceId, abortControllerRef),
+         debounceMs: 500,
+         contextLength: 300,
+      }),
       Typography,
       Superscript,
       Subscript,
@@ -255,11 +261,7 @@ const createExtensions = (
             return Promise.resolve(f);
          },
       }),
-      InlineSuggestionExtension.configure({
-         requestSuggestion: createRequestInlineSuggestionCallback(getEditor, getDoc, abortControllerRef),
-         debounceMs: 500,
-         contextLength: 4000,
-      }),
+
       // WindowEventListener.configure({
       //    listeners: {
       //       "editor:block-edit": (event, editor) => {
@@ -379,10 +381,11 @@ export const useMinimalTiptapEditor = ({
    const getEditor = React.useCallback(() => editorRef.current, []);
 
    // Get docId using hooks
-   const { data: user, isLoading: userLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
-   const { doc } = useCurrentDocument(user, userLoading);
+   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const { doc } = useCurrentDocument(user);
    const docId = doc?._id;
-
+   const userId = user?._id;
+   const workspaceId = doc?.workspaceId;
    // Memoize extensions so they're only recreated when dependencies change
    const extensions = React.useMemo(
       () =>
@@ -390,14 +393,15 @@ export const useMinimalTiptapEditor = ({
             placeholder,
             characterLimit,
             getEditor,
-            () => null,
+            userId,
+            docId,
+            workspaceId,
             abortControllerRef,
             excludeExtensions,
             enableVersionTracking,
-            versionTrackingOptions,
-            docId
+            versionTrackingOptions
          ),
-      [placeholder, characterLimit, excludeExtensions, enableVersionTracking, versionTrackingOptions, getEditor, docId]
+      [placeholder, characterLimit, excludeExtensions, enableVersionTracking, versionTrackingOptions, getEditor, docId, userId]
    );
 
    // Register editor and view in the store

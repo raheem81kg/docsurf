@@ -531,7 +531,7 @@ export default function SuggestionOverlay({
          if (typeof from !== "number" || typeof to !== "number" || !selectedText) return;
          setSuggestionIsLoading(true);
          setTimeout(() => {
-            onAcceptSuggestion(suggestedText);
+            onAcceptSuggestion(suggestedText.trim());
          }, 300);
       },
       [onAcceptSuggestion, setSuggestionIsLoading, from, to, selectedText]

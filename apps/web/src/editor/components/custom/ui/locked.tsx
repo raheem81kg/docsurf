@@ -8,8 +8,8 @@ import { useConvexTree } from "@/components/sandbox/left/_tree_components/use-co
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 export default function Locked() {
    // Get user and workspaceId
-   const { data: user, isLoading: userLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
-   const { doc } = useCurrentDocument(user, userLoading);
+   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const { doc } = useCurrentDocument(user);
    const { isLoading: isTreeLoading } = useConvexTree({
       workspaceId: user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">,
    });

@@ -24,7 +24,7 @@ export interface RouterAppContext {
 }
 
 // Server side session request
-const fetchAuth = createServerFn({ method: "GET" }).handler(async () => {
+export const fetchAuth = createServerFn({ method: "GET" }).handler(async () => {
    const sessionCookieName = await getCookieName(createAuth);
    const token = getCookie(sessionCookieName);
    const request = getWebRequest();

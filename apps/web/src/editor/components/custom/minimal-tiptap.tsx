@@ -130,8 +130,8 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
    ({ value, onChange, className, editorContentClassName, characterLimit = MAX_CHARACTERS, ...props }, ref) => {
       const isMobile = useIsMobile();
       // Get user and workspaceId
-      const { data: user, isLoading: userLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
-      const { doc } = useCurrentDocument(user, userLoading);
+      const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+      const { doc } = useCurrentDocument(user);
       const editor = useMinimalTiptapEditor({
          value,
          enableVersionTracking: false,

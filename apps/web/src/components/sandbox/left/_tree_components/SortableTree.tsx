@@ -138,7 +138,7 @@ function NoItems() {
  * Fetches the current document using the documentId from the route and workspaceId from user session.
  * @returns The document object, or undefined/null if loading or not found.
  */
-export function useCurrentDocument(user: CurrentUser | undefined, userLoading: boolean) {
+export function useCurrentDocument(user: CurrentUser | undefined) {
    let documentId: string | undefined;
    try {
       documentId = useParams({ strict: false }).documentId;
@@ -148,7 +148,7 @@ export function useCurrentDocument(user: CurrentUser | undefined, userLoading: b
    const workspaceId = user?.workspaces?.[0]?.workspace?._id;
 
    // Always call the hook, but only enable it when you have the data
-   const enabled = !!documentId && !!workspaceId && !userLoading;
+   const enabled = !!documentId && !!workspaceId && !!user;
    const { data: doc, isLoading: docLoading } = useQuery(
       convexQuery(
          api.documents.fetchDocumentById,
@@ -163,7 +163,7 @@ export function useCurrentDocument(user: CurrentUser | undefined, userLoading: b
 
    // Return loading state if user is loading, or if the query is not enabled
    // Also return loading state if the query is enabled but still loading
-   if (userLoading || (enabled && docLoading)) {
+   if (!user || (enabled && docLoading)) {
       return { doc: undefined, docLoading: true };
    }
    if (!enabled) {
@@ -174,10 +174,10 @@ export function useCurrentDocument(user: CurrentUser | undefined, userLoading: b
 
 export function SortableTree({ collapsible, indicator = false, indentationWidth = 28, removable }: Props) {
    // Get workspace ID from user
-   const { data: user, isLoading: userLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
    const workspaceId = user?.workspaces?.[0]?.workspace?._id;
 
-   const currentDocument = useCurrentDocument(user, userLoading);
+   const currentDocument = useCurrentDocument(user);
 
    const {
       treeItems,

@@ -9,6 +9,9 @@
       "dev": "vite dev --port=3001"
    },
    "dependencies": {
+      "@ai-sdk/anthropic": "^1.2.12",
+      "@ai-sdk/google": "^1.2.19",
+      "@ai-sdk/openai": "^1.3.22",
       "@ai-sdk/react": "^1.2.12",
       "@ai-sdk/ui-utils": "^1.2.11",
       "@codesandbox/sandpack-react": "^2.20.0",

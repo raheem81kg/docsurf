@@ -34,6 +34,8 @@ import { Route as MainDocIndexRouteImport } from './routes/_main/doc.index'
 import { Route as AuthedClientOnlyIndexRouteImport } from './routes/_authed/client-only.index'
 import { Route as MainDocLibraryRouteImport } from './routes/_main/doc.library'
 import { Route as MainDocDocumentIdRouteImport } from './routes/_main/doc.$documentId'
+import { ServerRoute as ApiSuggestionServerRouteImport } from './routes/api/suggestion'
+import { ServerRoute as ApiInlineSuggestionServerRouteImport } from './routes/api/inline-suggestion'
 import { ServerRoute as ApiPhrSplatServerRouteImport } from './routes/api/phr/$'
 import { ServerRoute as ApiCheckoutSuccessServerRouteImport } from './routes/api/checkout/success'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
@@ -196,6 +198,17 @@ const MainDocDocumentIdRoute = MainDocDocumentIdRouteImport.update({
   path: '/doc/$documentId',
   getParentRoute: () => MainRoute,
 } as any)
+const ApiSuggestionServerRoute = ApiSuggestionServerRouteImport.update({
+  id: '/api/suggestion',
+  path: '/api/suggestion',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
+const ApiInlineSuggestionServerRoute =
+  ApiInlineSuggestionServerRouteImport.update({
+    id: '/api/inline-suggestion',
+    path: '/api/inline-suggestion',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
 const ApiPhrSplatServerRoute = ApiPhrSplatServerRouteImport.update({
   id: '/api/phr/$',
   path: '/api/phr/$',
@@ -388,30 +401,54 @@ export interface RootRouteChildren {
   SettingsRouteLazyRoute: typeof SettingsRouteLazyRouteWithChildren
 }
 export interface FileServerRoutesByFullPath {
+  '/api/inline-suggestion': typeof ApiInlineSuggestionServerRoute
+  '/api/suggestion': typeof ApiSuggestionServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
   '/api/checkout/success': typeof ApiCheckoutSuccessServerRoute
   '/api/phr/$': typeof ApiPhrSplatServerRoute
 }
 export interface FileServerRoutesByTo {
+  '/api/inline-suggestion': typeof ApiInlineSuggestionServerRoute
+  '/api/suggestion': typeof ApiSuggestionServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
   '/api/checkout/success': typeof ApiCheckoutSuccessServerRoute
   '/api/phr/$': typeof ApiPhrSplatServerRoute
 }
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
+  '/api/inline-suggestion': typeof ApiInlineSuggestionServerRoute
+  '/api/suggestion': typeof ApiSuggestionServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
   '/api/checkout/success': typeof ApiCheckoutSuccessServerRoute
   '/api/phr/$': typeof ApiPhrSplatServerRoute
 }
 export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/api/auth/$' | '/api/checkout/success' | '/api/phr/$'
+  fullPaths:
+    | '/api/inline-suggestion'
+    | '/api/suggestion'
+    | '/api/auth/$'
+    | '/api/checkout/success'
+    | '/api/phr/$'
   fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/api/auth/$' | '/api/checkout/success' | '/api/phr/$'
-  id: '__root__' | '/api/auth/$' | '/api/checkout/success' | '/api/phr/$'
+  to:
+    | '/api/inline-suggestion'
+    | '/api/suggestion'
+    | '/api/auth/$'
+    | '/api/checkout/success'
+    | '/api/phr/$'
+  id:
+    | '__root__'
+    | '/api/inline-suggestion'
+    | '/api/suggestion'
+    | '/api/auth/$'
+    | '/api/checkout/success'
+    | '/api/phr/$'
   fileServerRoutesById: FileServerRoutesById
 }
 export interface RootServerRouteChildren {
+  ApiInlineSuggestionServerRoute: typeof ApiInlineSuggestionServerRoute
+  ApiSuggestionServerRoute: typeof ApiSuggestionServerRoute
   ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
   ApiCheckoutSuccessServerRoute: typeof ApiCheckoutSuccessServerRoute
   ApiPhrSplatServerRoute: typeof ApiPhrSplatServerRoute
@@ -619,6 +656,20 @@ declare module '@tanstack/react-router' {
 }
 declare module '@tanstack/react-start/server' {
   interface ServerFileRoutesByPath {
+    '/api/suggestion': {
+      id: '/api/suggestion'
+      path: '/api/suggestion'
+      fullPath: '/api/suggestion'
+      preLoaderRoute: typeof ApiSuggestionServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/inline-suggestion': {
+      id: '/api/inline-suggestion'
+      path: '/api/inline-suggestion'
+      fullPath: '/api/inline-suggestion'
+      preLoaderRoute: typeof ApiInlineSuggestionServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
     '/api/phr/$': {
       id: '/api/phr/$'
       path: '/api/phr/$'
@@ -751,6 +802,8 @@ export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 const rootServerRouteChildren: RootServerRouteChildren = {
+  ApiInlineSuggestionServerRoute: ApiInlineSuggestionServerRoute,
+  ApiSuggestionServerRoute: ApiSuggestionServerRoute,
   ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
   ApiCheckoutSuccessServerRoute: ApiCheckoutSuccessServerRoute,
   ApiPhrSplatServerRoute: ApiPhrSplatServerRoute,

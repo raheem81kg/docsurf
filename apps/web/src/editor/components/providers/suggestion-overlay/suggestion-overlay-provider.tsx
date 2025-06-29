@@ -32,8 +32,8 @@ export function SuggestionOverlayProvider({ children }: { children: ReactNode })
    const [position, setPosition] = useState({ x: 100, y: 100 });
    const [selectionRange, setSelectionRange] = useState<{ from: number; to: number } | null>(null);
    // Get user and workspaceId
-   const { data: user, isLoading: userLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
-   const { doc } = useCurrentDocument(user, userLoading);
+   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const { doc } = useCurrentDocument(user);
    const { isLoading: isTreeLoading } = useConvexTree({
       workspaceId: user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">,
    });

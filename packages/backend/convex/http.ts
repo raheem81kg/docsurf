@@ -6,6 +6,7 @@ import { getFile, uploadFile } from "./attachments";
 import { chatGET } from "./chat_http/get.route";
 import { chatPOST } from "./chat_http/post.route";
 import { transcribeAudio } from "./speech_to_text";
+// import { inlineSuggestion } from "./inline_suggestion";
 const http = httpRouter();
 
 betterAuthComponent.registerRoutes(http, createAuth);
@@ -48,5 +49,12 @@ http.route({
    method: "GET",
    handler: getFile,
 });
+
+// Inline suggestion route
+// cors.route({
+//    path: "/inline-suggestion",
+//    method: "POST",
+//    // handler: inlineSuggestion,
+// });
 
 export default http;
