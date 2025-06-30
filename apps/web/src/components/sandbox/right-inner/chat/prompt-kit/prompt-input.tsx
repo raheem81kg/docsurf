@@ -59,6 +59,7 @@ const PromptInput = forwardRef<PromptInputRef, PromptInputProps>(
             clear: () => {
                if (textareaRef.current) {
                   textareaRef.current.value = "";
+                  textareaRef.current.style.height = "auto";
                   localStorage.removeItem("user-input");
                }
             },

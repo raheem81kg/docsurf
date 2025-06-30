@@ -6,7 +6,7 @@ import { Toaster } from "@docsurf/ui/components/sonner";
 import appCss from "@docsurf/ui/globals.css?url";
 import type { QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts, useRouteContext } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+// import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
 import { getCookie, getWebRequest } from "@tanstack/react-start/server";
 import type { ConvexReactClient } from "convex/react";
@@ -35,9 +35,22 @@ export const fetchAuth = createServerFn({ method: "GET" }).handler(async () => {
    };
 });
 
+export const fetchToken = createServerFn({ method: "GET" }).handler(async () => {
+   const sessionCookieName = await getCookieName(createAuth);
+   return getCookie(sessionCookieName);
+});
+
 export const Route = createRootRouteWithContext<RouterAppContext>()({
    head: () => ({
       meta: [
+         // --- SEO Meta Tags ---
+         ...seo({
+            title: "Docsurf: The AI document editor",
+            description: "Docsurf is an AI document editor that allows you to create, edit, and share documents with ease.",
+            image: `${getAppUrl()}/opengraph.jpg`,
+            // keywords: "docs, surf, webapp, ..." // Add if you want
+         }),
+         // --- App & Theme Meta Tags ---
          {
             charSet: "utf-8",
          },
@@ -49,7 +62,6 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
             name: "mobile-web-app-capable",
             content: "yes",
          },
-         // Theme color meta tags
          {
             name: "theme-color",
             content: "oklch(1 0 0)",
@@ -61,33 +73,9 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
             media: "(prefers-color-scheme: dark)",
          },
          {
-            name: "twitter:card",
-            content: "summary_large_image",
-         },
-         {
-            name: "twitter:title",
-            content: "Docsurf",
-         },
-         {
-            name: "twitter:description",
-            content: "Docsurf is a web application",
-         },
-         {
             property: "og:url",
             content: getAppUrl(),
          },
-         {
-            property: "og:image",
-            content: `${getAppUrl()}/opengraph.jpg`,
-         },
-         {
-            name: "twitter:image",
-            content: `${getAppUrl()}/opengraph.jpg`,
-         },
-         ...seo({
-            title: "Docsurf",
-            description: "Docsurf is a web application",
-         }),
       ],
       links: [
          {
@@ -103,6 +91,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
             sizes: "180x180",
             href: "/apple-touch-icon.png",
          },
+         { rel: "manifest", href: "/manifest.webmanifest" },
          {
             rel: "icon",
             type: "image/png",

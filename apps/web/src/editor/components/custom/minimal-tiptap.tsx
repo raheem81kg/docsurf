@@ -171,13 +171,6 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
          if (editor && val) {
             const current = editor.getJSON();
             if (JSON.stringify(current) !== JSON.stringify(val)) {
-               // Check if the update is old
-               if (doc?.updatedAt && Date.now() - doc.updatedAt > ONE_HOUR) {
-                  showToast(
-                     "Warning: You are viewing an old version of this document. Changes may have occurred since this version was saved.",
-                     "warning"
-                  );
-               }
                editor.commands.setContent(val, false);
             }
          }

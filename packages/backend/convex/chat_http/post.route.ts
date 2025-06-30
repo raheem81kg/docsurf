@@ -25,6 +25,7 @@ import { manualStreamTransform } from "./manual_stream_transform";
 import { buildPrompt } from "./prompt";
 import { RESPONSE_OPTS } from "./shared";
 import { requireUserId } from "../users";
+import { getUserIdentity } from "../lib/identity";
 
 const buildGoogleProviderOptions = (modelId: string, reasoningEffort?: ReasoningEffort): GoogleGenerativeAIProviderOptions => {
    const options: GoogleGenerativeAIProviderOptions = {};
@@ -87,12 +88,12 @@ export const chatPOST = httpAction(async (ctx, req) => {
          return new ChatError("bad_request:chat").toResponse();
       }
 
-      const userId = await requireUserId(ctx);
-      if (!userId) return new ChatError("unauthorized:chat").toResponse();
+      const user = await getUserIdentity(ctx, { allowAnons: false });
+      if ("error" in user) return new ChatError("unauthorized:chat").toResponse();
 
       const mutationResult = await ctx.runMutation(internal.threads.createThreadOrInsertMessages, {
          threadId: body.id as Id<"threads">,
-         authorId: userId,
+         authorId: user.id as Id<"users">,
          userMessage: "message" in body ? body.message : undefined,
          proposedNewAssistantId: body.proposedNewAssistantId,
          targetFromMessageId: body.targetFromMessageId,
@@ -125,7 +126,7 @@ export const chatPOST = httpAction(async (ctx, req) => {
 
       const uploadPromises: Promise<void>[] = [];
       const settings = await ctx.runQuery(internal.settings.getUserSettingsInternal, {
-         userId: userId,
+         userId: user.id,
       });
 
       if (settings.mcpServers && settings.mcpServers.length > 0) {
@@ -158,7 +159,7 @@ export const chatPOST = httpAction(async (ctx, req) => {
 
             let nameGenerationPromise: Promise<string | ChatError> | undefined;
             if (!body.id) {
-               nameGenerationPromise = generateThreadName(ctx, mutationResult.threadId, mapped_messages, userId, settings);
+               nameGenerationPromise = generateThreadName(ctx, mutationResult.threadId, mapped_messages, user.id, settings);
             }
 
             dataStream.writeData({
@@ -252,7 +253,7 @@ export const chatPOST = httpAction(async (ctx, req) => {
                         imageSize,
                         imageModel: model,
                         modelId: body.model,
-                        userId: userId,
+                        userId: user.id,
                         threadId: mutationResult.threadId,
                         actionCtx: ctx,
                      });
@@ -352,7 +353,7 @@ export const chatPOST = httpAction(async (ctx, req) => {
 
                dataStream.merge(
                   result.fullStream.pipeThrough(
-                     manualStreamTransform(parts, totalTokenUsage, mutationResult.assistantMessageId, uploadPromises, userId, ctx)
+                     manualStreamTransform(parts, totalTokenUsage, mutationResult.assistantMessageId, uploadPromises, user.id, ctx)
                   )
                );
 

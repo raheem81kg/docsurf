@@ -7,4 +7,7 @@ const crons = cronJobs();
 
 // crons.cron("reset credits", "0 0 * * *", internal.users.resetCredits);
 
-// export default crons;
+// Run every day at 2:00 AM UTC
+crons.cron("delete old trashed documents and files", "0 2 * * *", internal.maintenance.deleteOldTrashedDocumentsAndFiles);
+
+export default crons;

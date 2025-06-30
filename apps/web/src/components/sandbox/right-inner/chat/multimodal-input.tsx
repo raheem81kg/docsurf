@@ -39,7 +39,8 @@ import {
    type PromptInputRef,
 } from "./prompt-kit/prompt-input";
 import { ModelSelector } from "./model-selector";
-import { useSession, useEphemeralToken, useVerifyToken } from "@/hooks/auth-hooks";
+import { useSession } from "@/hooks/auth-hooks";
+import { useAuthTokenStore } from "@/hooks/use-auth-store";
 
 interface ExtendedUploadedFile extends UploadedFile {
    file?: File;
@@ -166,8 +167,8 @@ export function MultimodalInput({
    const { uploadedFiles, addUploadedFile, removeUploadedFile, uploading, setUploading } = useChatStore();
    const { chatWidthState } = useChatWidthStore();
 
-   const performSubmitAction = useVerifyToken(useEphemeralToken()?.token ?? "", "You must be logged in to send a message.");
-   const performUploadAction = useVerifyToken(useEphemeralToken()?.token ?? "", "You must be logged in to upload files.");
+   const performSubmitAction = useAuthTokenStore.getState().refetchToken;
+   const performUploadAction = useAuthTokenStore.getState().refetchToken;
 
    const isLoading = status === "streaming";
    const uploadInputRef = useRef<HTMLInputElement>(null);
@@ -190,8 +191,6 @@ export function MultimodalInput({
       },
       session?.user?.id && !auth.isLoading ? {} : "skip"
    );
-
-   const { token: ephemeralToken } = useEphemeralToken();
 
    // Voice recording state
    const {
@@ -238,19 +237,18 @@ export function MultimodalInput({
    }, [modelSupportsFunctionCalling, enabledTools, setEnabledTools]);
 
    const handleSubmit = async () => {
-      performSubmitAction(() => {
-         const inputValue = promptInputRef.current?.getValue() || "";
+      // Refresh token before submitting
+      await useAuthTokenStore.getState().refetchToken();
 
-         if (!inputValue.trim()) {
-            promptInputRef.current?.focus();
-            return;
-         }
-
-         promptInputRef.current?.clear();
-         localStorage.removeItem("user-input");
-         setInputValue(""); // Update our state too
-         onSubmit(inputValue, uploadedFiles);
-      });
+      const inputValue = promptInputRef.current?.getValue() || "";
+      if (!inputValue.trim()) {
+         promptInputRef.current?.focus();
+         return;
+      }
+      promptInputRef.current?.clear();
+      localStorage.removeItem("user-input");
+      setInputValue("");
+      onSubmit(inputValue, uploadedFiles);
    };
 
    // Check if input is empty for mic button display
@@ -303,116 +301,114 @@ export function MultimodalInput({
       });
    }, []);
 
-   const uploadFile = useCallback(
-      async (file: File): Promise<ExtendedUploadedFile> => {
-         const formData = new FormData();
-         formData.append("file", file);
-         formData.append("fileName", file.name);
+   const uploadFile = useCallback(async (file: File): Promise<ExtendedUploadedFile> => {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("fileName", file.name);
 
-         const response = await fetch(`${env.VITE_CONVEX_SITE_URL}/upload`, {
-            method: "POST",
-            body: formData,
-            headers: {
-               Authorization: `Bearer ${ephemeralToken}`,
-            },
-         });
+      const response = await fetch(`${env.VITE_CONVEX_SITE_URL}/upload`, {
+         method: "POST",
+         body: formData,
+         headers: {
+            Authorization: `Bearer ${useAuthTokenStore.getState().token}`,
+         },
+      });
 
-         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || "Upload failed");
-         }
+      if (!response.ok) {
+         const errorData = await response.json();
+         throw new Error(errorData.error || "Upload failed");
+      }
 
-         const result = await response.json();
-         return {
-            ...result,
-            file,
-         };
-      },
-      [ephemeralToken]
-   );
+      const result = await response.json();
+      return {
+         ...result,
+         file,
+      };
+   }, []);
 
    const handleFileUpload = useCallback(
       async (filesToUpload: File[]) => {
-         await performUploadAction(async () => {
-            if (filesToUpload.length === 0) return;
+         // Refresh token before uploading
+         await useAuthTokenStore.getState().refetchToken();
 
-            // Validate files before uploading
-            const validFiles: File[] = [];
-            const errors: string[] = [];
+         if (filesToUpload.length === 0) return;
 
-            for (const file of filesToUpload) {
-               // Check file size
-               if (file.size > MAX_FILE_SIZE) {
-                  errors.push(`${file.name}: File size exceeds 5MB limit`);
-                  continue;
-               }
+         // Validate files before uploading
+         const validFiles: File[] = [];
+         const errors: string[] = [];
 
-               // Check if file type is supported
-               if (!isSupportedFile(file.name, file.type)) {
-                  errors.push(`${file.name}: Unsupported file type`);
-                  continue;
-               }
+         for (const file of filesToUpload) {
+            // Check file size
+            if (file.size > MAX_FILE_SIZE) {
+               errors.push(`${file.name}: File size exceeds 5MB limit`);
+               continue;
+            }
 
-               const fileTypeInfo = getFileTypeInfo(file.name, file.type);
+            // Check if file type is supported
+            if (!isSupportedFile(file.name, file.type)) {
+               errors.push(`${file.name}: Unsupported file type`);
+               continue;
+            }
 
-               // If file is an image but model doesn't support vision, reject it
-               if (fileTypeInfo.isImage && !modelSupportsVision) {
-                  errors.push(`${file.name}: Current model doesn't support image files`);
-                  continue;
-               }
+            const fileTypeInfo = getFileTypeInfo(file.name, file.type);
 
-               // For text files, check token count
-               if (fileTypeInfo.isText && !fileTypeInfo.isImage) {
-                  try {
-                     const content = await readFileContent(file);
-                     const tokenCount = estimateTokenCount(content);
-                     if (tokenCount > MAX_TOKENS_PER_FILE) {
-                        errors.push(`${file.name}: File exceeds ${MAX_TOKENS_PER_FILE.toLocaleString()} token limit`);
-                        continue;
-                     }
-                  } catch (error) {
-                     errors.push(`${file.name}: Error reading file content`);
+            // If file is an image but model doesn't support vision, reject it
+            if (fileTypeInfo.isImage && !modelSupportsVision) {
+               errors.push(`${file.name}: Current model doesn't support image files`);
+               continue;
+            }
+
+            // For text files, check token count
+            if (fileTypeInfo.isText && !fileTypeInfo.isImage) {
+               try {
+                  const content = await readFileContent(file);
+                  const tokenCount = estimateTokenCount(content);
+                  if (tokenCount > MAX_TOKENS_PER_FILE) {
+                     errors.push(`${file.name}: File exceeds ${MAX_TOKENS_PER_FILE.toLocaleString()} token limit`);
                      continue;
                   }
+               } catch (error) {
+                  errors.push(`${file.name}: Error reading file content`);
+                  continue;
                }
-
-               validFiles.push(file);
             }
 
-            // Show validation errors
-            if (errors.length > 0) {
-               toast.error(`File validation failed:\n${errors.join("\n")}`);
-               if (validFiles.length === 0) return;
+            validFiles.push(file);
+         }
+
+         // Show validation errors
+         if (errors.length > 0) {
+            toast.error(`File validation failed:\n${errors.join("\n")}`);
+            if (validFiles.length === 0) return;
+         }
+
+         setUploading(true);
+         try {
+            const uploadPromises = validFiles.map((file) => uploadFile(file));
+            const uploadedResults = await Promise.all(uploadPromises);
+
+            for (const result of uploadedResults) {
+               addUploadedFile(result);
+
+               if (result.file) {
+                  const content = await readFileContent(result.file);
+                  setFileContents((prev) => ({
+                     ...prev,
+                     [result.key]: content,
+                  }));
+               }
             }
 
-            setUploading(true);
-            try {
-               const uploadPromises = validFiles.map((file) => uploadFile(file));
-               const uploadedResults = await Promise.all(uploadPromises);
-
-               for (const result of uploadedResults) {
-                  addUploadedFile(result);
-
-                  if (result.file) {
-                     const content = await readFileContent(result.file);
-                     setFileContents((prev) => ({
-                        ...prev,
-                        [result.key]: content,
-                     }));
-                  }
-               }
-
-               if (uploadInputRef.current) {
-                  uploadInputRef.current.value = "";
-               }
-            } catch (error) {
-               toast.error(error instanceof Error ? error.message : "Upload failed");
-            } finally {
-               setUploading(false);
+            if (uploadInputRef.current) {
+               uploadInputRef.current.value = "";
             }
-         });
+         } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Upload failed");
+         } finally {
+            setUploading(false);
+         }
       },
-      [uploadFile, addUploadedFile, setUploading, readFileContent, modelSupportsVision, performUploadAction]
+      [uploadFile, addUploadedFile, setUploading, readFileContent, modelSupportsVision]
    );
 
    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {

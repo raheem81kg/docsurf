@@ -25,7 +25,8 @@
 
 html,
 body {
-   @apply bg-background text-text-default;
+   @apply bg-background text-foreground;
+   /* text-text-default */
 
    @media (prefers-color-scheme: dark) {
       color-scheme: dark;
@@ -509,9 +510,6 @@ body {
 @layer base {
    * {
       @apply border-border outline-ring/50;
-   }
-   body {
-      @apply bg-background text-foreground;
    }
    /* Drag and drop styles */
    body.dragging * {

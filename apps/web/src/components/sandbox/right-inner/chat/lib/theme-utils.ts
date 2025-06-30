@@ -4,6 +4,8 @@ export const THEME_URLS = [
    "https://tweakcn.com/editor/theme?theme=t3-chat",
    "https://tweakcn.com/editor/theme?theme=tangerine",
    "https://tweakcn.com/editor/theme?theme=perpetuity",
+   "https://tweakcn.com/editor/theme?theme=bubblegum",
+   "https://tweakcn.com/editor/theme?theme=graphite",
    "https://tweakcn.com/editor/theme?theme=modern-minimal",
    "https://tweakcn.com/r/themes/vintage-paper.json",
    "https://tweakcn.com/r/themes/amethyst-haze.json",

@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/nursery/useUniqueElementIds: <explanation> */
 import { Button } from "@docsurf/ui/components/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@docsurf/ui/components/dialog";
 import { Input } from "@docsurf/ui/components/input";

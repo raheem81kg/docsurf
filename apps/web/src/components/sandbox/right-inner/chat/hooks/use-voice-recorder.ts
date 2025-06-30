@@ -1,7 +1,8 @@
-import { useVerifyToken, useEphemeralToken } from "@/hooks/auth-hooks";
+import { useVerifyToken } from "@/hooks/auth-hooks";
 import { env } from "@/env";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
+import { useAuthTokenStore } from "@/hooks/use-auth-store";
 
 interface UseVoiceRecorderOptions {
    onTranscript: (text: string) => void;
@@ -77,7 +78,9 @@ const getBestSupportedMimeType = (): string => {
 };
 
 export const useVoiceRecorder = ({ onTranscript }: UseVoiceRecorderOptions) => {
-   const verifyToken = useVerifyToken(useEphemeralToken()?.token ?? "", "You must be logged in to use voice input.");
+   // Always get the token from the store
+   const token = useAuthTokenStore.getState().token;
+   const verifyToken = useVerifyToken(token, "You must be logged in to use voice input.");
 
    const [state, setState] = useState<VoiceRecorderState>({
       isRecording: false,
@@ -356,10 +359,13 @@ export const useVoiceRecorder = ({ onTranscript }: UseVoiceRecorderOptions) => {
             const formData = new FormData();
             formData.append("audio", audioBlob);
 
+            await useAuthTokenStore.getState().refetchToken();
+            const token = useAuthTokenStore.getState().token;
+
             const response = await fetch(`${env.VITE_CONVEX_SITE_URL}/transcribe`, {
                method: "POST",
                headers: {
-                  Authorization: `Bearer ${useEphemeralToken()?.token ?? ""}`,
+                  Authorization: `Bearer ${token}`,
                },
                body: formData,
             });

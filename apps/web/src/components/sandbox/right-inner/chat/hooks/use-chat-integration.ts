@@ -2,7 +2,7 @@ import { api } from "@docsurf/backend/convex/_generated/api";
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 import { backendToUiMessages } from "@docsurf/backend/convex/lib/backend_to_ui_messages";
 import type { SharedThread, Thread } from "@docsurf/backend/convex/schema";
-import { useVerifyToken, useEphemeralToken, useSession } from "@/hooks/auth-hooks";
+import { useVerifyToken, useSession } from "@/hooks/auth-hooks";
 import { useAutoResume } from "./use-auto-resume";
 import { env } from "@/env";
 import { useChatStore } from "../lib/chat-store";
@@ -12,6 +12,7 @@ import { useQuery as useConvexQuery } from "convex-helpers/react/cache";
 import type { Infer } from "convex/values";
 import { nanoid } from "nanoid";
 import { useCallback, useMemo, useRef, useEffect } from "react";
+import { useAuthTokenStore } from "@/hooks/use-auth-store";
 
 export function useChatIntegration<IsShared extends boolean>({
    threadId,
@@ -27,7 +28,8 @@ export function useChatIntegration<IsShared extends boolean>({
    const { selectedModel, enabledTools, selectedImageSize, reasoningEffort, getEffectiveMcpOverrides } = useModelStore();
    const { rerenderTrigger, shouldUpdateQuery, setShouldUpdateQuery, triggerRerender } = useChatStore();
    const seededNextId = useRef<string | null>(null);
-   const verifyToken = useVerifyToken(useEphemeralToken()?.token ?? "");
+   const token = useAuthTokenStore.getState().token;
+   const verifyToken = useVerifyToken(token);
 
    // For regular threads, use getThreadMessages
    const threadMessages = useConvexQuery(
@@ -64,7 +66,7 @@ export function useChatIntegration<IsShared extends boolean>({
       headers: isShared
          ? {}
          : {
-              authorization: `Bearer ${useEphemeralToken()?.token ?? ""}`,
+              authorization: `Bearer ${token}`,
            },
       experimental_throttle: 50,
       experimental_prepareRequestBody(body) {

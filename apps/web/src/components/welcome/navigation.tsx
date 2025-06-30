@@ -13,9 +13,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@doc
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { Icons } from "@/components/assets/icons";
-// import logo from "/icons/logo.svg";
-// import logoDark from "/logo-dark.svg";
-// import { DynamicImage } from "./dynamic-image";
+import logo from "/images/icon_x48.png";
 
 const resources = [
    // {
@@ -80,7 +78,7 @@ export default function Navigation({ profile }: { profile: Profile }) {
          <nav className="relative z-20 flex h-[50px] items-center justify-between rounded-[4px] border border-border bg-[#FFFFFF] bg-opacity-70 px-4 backdrop-blur-xl backdrop-filter md:justify-center dark:bg-[#121212] ">
             <div className="flex items-center gap-6">
                <Link to="/" className="relative bottom-1 cursor-pointer" title="Home">
-                  {/* <DynamicImage lightSrc={logo} darkSrc={logoDark} alt="DocSurf" width={22} height={22} /> */}
+                  <img src={logo} alt="DocSurf" width={22} height={22} />
                   <span className="-right-[-0.5px] absolute text-[10px] text-muted-foreground">beta</span>
                </Link>
                <div className="hidden md:block">
@@ -118,23 +116,23 @@ export default function Navigation({ profile }: { profile: Profile }) {
                            </NavigationMenuContent>
                         </NavigationMenuItem>
                         <NavigationMenuItem>
-                           <a href="/pricing">
-                              <Button variant="ghost" className="h-9 text-text-default">
+                           <Link to="/pricing">
+                              <Button variant="ghost" className="h-9">
                                  Pricing
                               </Button>
-                           </a>
+                           </Link>
                         </NavigationMenuItem>
                      </NavigationMenuList>
                   </NavigationMenu>
                </div>
                <Separator orientation="vertical" className="h-8 w-[1px] bg-border" />
                <div className="hidden md:block">
-                  <a href={profile.email ? "/doc" : "/auth"}>
+                  <Link to={profile.email ? "/doc" : "/auth"}>
                      <Button size="lg" className="!h-9 flex items-center gap-2">
-                        <span className="text-default">Go to app</span>
+                        <span className="">Go to app</span>
                         <ArrowRight className="size-4" />
                      </Button>
-                  </a>
+                  </Link>
                </div>
             </div>
             <div className="flex items-center gap-2">
@@ -156,17 +154,17 @@ export default function Navigation({ profile }: { profile: Profile }) {
                      <SheetContent side="left" className="w-[300px] gap-0 bg-sidebar px-6 py-7 sm:w-[400px]" hideCloseButton>
                         <SheetHeader className="flex flex-row items-center justify-between p-0">
                            <SheetTitle>
-                              {/* <DynamicImage lightSrc={logo} darkSrc={logoDark} alt="DocSurf" width={22} height={22} /> */}
+                              <img src={logo} alt="DocSurf" width={22} height={22} />
                            </SheetTitle>
-                           <a href="/auth">
+                           <Link to="/auth">
                               <Button size="lg" className="!h-9.5">
                                  Sign in
                               </Button>
-                           </a>
+                           </Link>
                         </SheetHeader>
                         <div className="mt-8 flex flex-col gap-3">
                            <div className="flex flex-col gap-3">
-                              <Link to="/pricing" className="mt-2 text-text-default transition-opacity duration-200 hover:opacity-80">
+                              <Link to="/pricing" className="mt-2 transition-opacity duration-200 hover:opacity-80">
                                  Pricing
                               </Link>
                               {aboutLinks.map((link) => (
@@ -177,7 +175,7 @@ export default function Navigation({ profile }: { profile: Profile }) {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     aria-label={link.title}
-                                    className="block font-medium text-text-default transition-opacity duration-200 hover:opacity-80"
+                                    className="block font-medium transition-opacity duration-200 hover:opacity-80"
                                  >
                                     {link.title}
                                  </Link>

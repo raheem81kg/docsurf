@@ -7,17 +7,16 @@ import {
    SidebarGroupLabel,
    SidebarHeader,
    SidebarMenu,
-   SidebarMenuButton,
    SidebarMenuItem,
    SidebarRail,
    useSidebar,
 } from "@docsurf/ui/components/sidebar";
 import { useSandStateStore } from "@/store/sandstate";
-import { Command, ExternalLink, Home, Settings, ChevronsLeft, ImageIcon, Search, Trash2 } from "lucide-react";
+import { ExternalLink, Home, Settings, ChevronsLeft, ImageIcon, Search, Trash2 } from "lucide-react";
 import { NavUser } from "./nav-user/nav-user";
 import { CreateMenu } from "./nav-user/create-menu";
 import { Link } from "@tanstack/react-router";
-import React, { Suspense, useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 
 import {
    InfoCard,
@@ -33,8 +32,6 @@ import { Button, buttonVariants } from "@docsurf/ui/components/button";
 import { LEFT_SIDEBAR_COOKIE_NAME } from "@/utils/constants";
 import { cn } from "@docsurf/ui/lib/utils";
 import { CommandK } from "../right-inner/chat/commandkdocs";
-import { NewFolderButton } from "../right-inner/chat/threads/new-folder-button";
-import { FolderItem } from "../right-inner/chat/threads/folder-item";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { useDiskCachedQuery } from "../right-inner/chat/lib/convex-cached-query";
 import { convexQuery } from "@convex-dev/react-query";
@@ -42,6 +39,7 @@ import { useQuery } from "@tanstack/react-query";
 import { TrashPopover } from "./trash-popover";
 import { SortableTree } from "./_tree_components/SortableTree";
 import { Usage } from "./usage";
+import { NewDocumentButton } from "../right-inner/chat/threads/new-document-button";
 
 const data = {
    navMain: [
@@ -253,13 +251,12 @@ export const LeftSidebar = ({
                      </SidebarMenu>
                   </SidebarGroupContent>
                </SidebarGroup> */}
-               {/* <OfflineStatus /> */}
                <SidebarGroup className="h-full">
                   <SidebarGroupLabel className="pr-0 font-medium md:text-sm text-base">
                      <Link to="/doc">Documents</Link>
 
                      <div className="flex-grow" />
-                     <NewFolderButton onClick={() => setOpenMobile(false)} />
+                     <NewDocumentButton onClick={() => setOpenMobile(false)} />
                   </SidebarGroupLabel>
                   <SidebarGroupContent className="h-full">
                      <SidebarMenu className=" h-full mt-1">

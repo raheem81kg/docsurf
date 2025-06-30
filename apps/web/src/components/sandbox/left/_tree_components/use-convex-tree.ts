@@ -68,9 +68,6 @@ const buildTreeFromDocuments = (documents: Doc<"documents">[] | undefined): Tree
 };
 
 export const useConvexTree = ({ workspaceId }: UseConvexTreeOptions): TreeState & TreeActions => {
-   // Always call hooks in the same order
-   const [collapsedFolders, setCollapsedFolders] = useState<Set<string>>(new Set());
-
    // Always call these hooks, even if workspaceId is undefined
    const documents = useQuery(
       api.documents.fetchDocumentTree,
@@ -97,10 +94,24 @@ export const useConvexTree = ({ workspaceId }: UseConvexTreeOptions): TreeState 
             documentType: update.documentType,
             updatedAt: update.updatedAt,
             isDeleted: update.isDeleted ?? doc.isDeleted,
+            isCollapsed: typeof update.isCollapsed === "boolean" ? update.isCollapsed : doc.isCollapsed,
          };
       });
       // Sort by orderPosition for correct tree rendering
       newDocs.sort((a, b) => (a.orderPosition ?? 0) - (b.orderPosition ?? 0));
+      localStore.setQuery(api.documents.fetchDocumentTree, { workspaceId }, { data: newDocs });
+   });
+   const toggleCollapseMutation = useMutation(api.documents.toggleCollapse).withOptimisticUpdate((localStore, args) => {
+      // Optimistically update the isCollapsed field for the toggled folder
+      const { workspaceId, id } = args;
+      const current = localStore.getQuery(api.documents.fetchDocumentTree, { workspaceId });
+      if (!current || !Array.isArray(current.data)) return;
+      const newDocs = current.data.map((doc) => {
+         if (doc._id === id && doc.documentType === "folder") {
+            return { ...doc, isCollapsed: !doc.isCollapsed };
+         }
+         return doc;
+      });
       localStore.setQuery(api.documents.fetchDocumentTree, { workspaceId }, { data: newDocs });
    });
 
@@ -109,7 +120,7 @@ export const useConvexTree = ({ workspaceId }: UseConvexTreeOptions): TreeState 
       return {
          treeItems: [],
          documents: [],
-         collapsedFolders,
+         collapsedFolders: new Set(),
          isLoading: true,
          error: null,
          toggleCollapse: () => {},
@@ -129,22 +140,21 @@ export const useConvexTree = ({ workspaceId }: UseConvexTreeOptions): TreeState 
    const treeItems = buildTreeFromDocuments(queryResult ?? []);
    const isLoading = queryResult === undefined;
 
-   // Toggle collapse for folders
-   function toggleCollapse(folderId: string) {
-      setCollapsedFolders((prev) => {
-         const next = new Set(prev);
-         if (next.has(folderId)) {
-            next.delete(folderId);
-         } else {
-            next.add(folderId);
-         }
-         return next;
-      });
+   // Toggle collapse for folders (persisted)
+   async function toggleCollapse(folderId: string) {
+      const doc = documents?.data?.find((d: Doc<"documents">) => d._id === folderId);
+      if (!doc || doc.documentType !== "folder") return;
+      try {
+         await toggleCollapseMutation({ workspaceId: workspaceId as Id<"workspaces">, id: folderId as Id<"documents"> });
+      } catch (e) {
+         showToast("Failed to toggle folder", "error");
+      }
    }
 
-   // Check if item is collapsed
+   // Check if item is collapsed (persisted)
    function isCollapsed(id: string) {
-      return collapsedFolders.has(id);
+      const doc = documents?.data?.find((d: Doc<"documents">) => d._id === id);
+      return doc?.isCollapsed === true;
    }
 
    // Check if item is a folder
@@ -299,7 +309,7 @@ export const useConvexTree = ({ workspaceId }: UseConvexTreeOptions): TreeState 
    return {
       treeItems,
       documents: Array.isArray(documents?.data) ? documents.data : [],
-      collapsedFolders,
+      collapsedFolders: new Set(),
       isLoading,
       error: null,
       toggleCollapse,

@@ -24,22 +24,22 @@ export function Footer() {
                      <span className="font-medium">Features</span>
                      <ul>
                         <li className="text-[#878787] transition-colors">
-                           <Link to="/" title="Editor">
+                           <Link to="/doc" title="Editor">
                               Editor
                            </Link>
                         </li>
                         <li className="text-[#878787] transition-colors">
-                           <Link to="/" title="AI Features">
+                           <Link to="/doc" title="AI Features">
                               AI Features
                            </Link>
                         </li>
                         <li className="text-[#878787] transition-colors">
-                           <Link to="/" title="Version Control">
+                           <Link to="/doc" title="Version Control">
                               Version Control
                            </Link>
                         </li>
                         <li className="text-[#878787] transition-colors">
-                           <Link to="/" title="Import/Export">
+                           <Link to="/doc" title="Import/Export">
                               Import/Export
                            </Link>
                         </li>
@@ -54,16 +54,11 @@ export function Footer() {
                   <div>
                      <span>Resources</span>
                      <ul>
-                        <li className="text-[#878787] transition-colors">
-                           <a href="https://github.com/docsurf" target="_blank" rel="noopener noreferrer">
-                              GitHub
-                           </a>
-                        </li>
-                        <li className="text-[#878787] transition-colors">
+                        {/* <li className="text-[#878787] transition-colors">
                            <Link to="/" title="Support">
                               Support
                            </Link>
-                        </li>
+                        </li> */}
                         <li className="text-[#878787] transition-colors">
                            <Link to="/policy" title="Privacy Policy">
                               Privacy Policy
@@ -85,11 +80,11 @@ export function Footer() {
                               About
                            </Link>
                         </li>
-                        <li className="text-[#878787] transition-colors">
+                        {/* <li className="text-[#878787] transition-colors">
                            <Link to="/" title="Contact">
                               Contact
                            </Link>
-                        </li>
+                        </li> */}
                      </ul>
                   </div>
                </div>

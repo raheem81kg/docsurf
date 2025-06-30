@@ -9,6 +9,8 @@ import type { Documents } from "./schema/documents";
 import type { Infer } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
 import { requireWorkspacePermission } from "./lib/identity";
+import { r2 } from "./attachments";
+import { rateLimiter } from "./rateLimiter";
 type DocumentType = Infer<typeof Documents>["documentType"];
 
 /**
@@ -39,6 +41,7 @@ export const batchUpsertDocuments = mutation({
             updatedAt: v.number(),
             isDeleted: v.optional(v.boolean()),
             depth: v.number(),
+            isCollapsed: v.optional(v.boolean()),
          })
       ),
    },
@@ -56,6 +59,7 @@ export const batchUpsertDocuments = mutation({
                updatedAt: update.updatedAt,
                isDeleted: update.isDeleted ?? existing.isDeleted,
                depth: update.depth,
+               isCollapsed: typeof update.isCollapsed === "boolean" ? update.isCollapsed : existing.isCollapsed,
             });
             successCount++;
          }
@@ -72,7 +76,7 @@ export const batchUpsertDocuments = mutation({
  * @param ids Array of document Convex Ids to delete
  * @returns Success/failure result
  */
-export const batchDeleteDocuments = mutation({
+export const batchTrashDocuments = mutation({
    args: {
       workspaceId: v.id("workspaces"),
       ids: v.array(v.id("documents")),
@@ -81,7 +85,7 @@ export const batchDeleteDocuments = mutation({
       const { userId } = await requireWorkspacePermission(ctx, workspaceId);
       let successCount = 0;
       // Recursive helper to mark a document and all its descendants as deleted
-      const recursiveDelete = async (docId: Id<"documents">) => {
+      const recursiveTrash = async (docId: Id<"documents">) => {
          await ctx.db.patch(docId, {
             isDeleted: true,
             parentId: undefined,
@@ -98,13 +102,13 @@ export const batchDeleteDocuments = mutation({
             )
             .collect();
          for (const child of children) {
-            await recursiveDelete(child._id);
+            await recursiveTrash(child._id);
          }
       };
       for (const id of ids) {
          const existing = await ctx.db.get(id);
          if (existing && existing.userId === userId && existing.workspaceId === workspaceId) {
-            await recursiveDelete(id);
+            await recursiveTrash(id);
             successCount++;
          }
       }
@@ -181,10 +185,12 @@ export const createDocument = mutation({
       parentId: v.optional(v.id("documents")),
       content: v.optional(v.any()),
       orderPosition: v.optional(v.number()),
+      isCollapsed: v.optional(v.boolean()),
    },
    handler: async (ctx, args) => {
       const { userId } = await requireWorkspacePermission(ctx, args.workspaceId);
       const now = Date.now();
+      await rateLimiter.limit(ctx, "createDocument", { key: userId, throws: true });
       const doc = {
          userId: userId as Id<"users">,
          workspaceId: args.workspaceId,
@@ -199,6 +205,7 @@ export const createDocument = mutation({
          depth: 0,
          isPublic: false,
          isLocked: false,
+         isCollapsed: args.documentType === "folder" ? false : undefined,
       };
       // Insert document
       const id = await ctx.db.insert("documents", doc);
@@ -230,6 +237,7 @@ export const updateDocument = mutation({
                // v.literal("website")
             )
          ),
+         isCollapsed: v.optional(v.boolean()),
       }),
    },
    handler: async (ctx, { workspaceId, id, updates }) => {
@@ -307,6 +315,14 @@ export const deleteDocumentPermanently = mutation({
             .collect();
          for (const child of children) {
             await recursiveDelete(child._id);
+         }
+         const doc = await ctx.db.get(docId);
+         if (doc?.fileUrl) {
+            try {
+               await r2.deleteObject(ctx, doc.fileUrl);
+            } catch (e) {
+               console.warn("Failed to delete fileUrl for doc", doc._id, doc.fileUrl, e);
+            }
          }
          await ctx.db.delete(docId);
       };
@@ -578,4 +594,41 @@ export const searchDocuments = query({
    },
 });
 
+/**
+ * Toggle the collapsed state of a folder document.
+ */
+export const toggleCollapse = mutation({
+   args: {
+      workspaceId: v.id("workspaces"),
+      id: v.id("documents"),
+   },
+   handler: async (ctx, { workspaceId, id }) => {
+      const { userId } = await requireWorkspacePermission(ctx, workspaceId);
+      const doc = await ctx.db.get(id);
+      if (!doc) return { error: "Document not found" };
+      if (doc.userId !== userId || doc.workspaceId !== workspaceId) {
+         return { error: "Unauthorized" };
+      }
+      if (doc.documentType !== "folder") {
+         return { error: "Only folders can be collapsed" };
+      }
+      const newCollapsed = !doc.isCollapsed;
+      await ctx.db.patch(id, { isCollapsed: newCollapsed, updatedAt: Date.now() });
+      return { success: true, isCollapsed: newCollapsed };
+   },
+});
+
 // TODO: Update all client calls to use _id instead of uuid for document operations. Remove uuid from all client-side types and API calls.
+
+export const { getRateLimit: getCreateDocumentRateLimit, getServerTime: getCreateDocumentServerTime } = rateLimiter.hookAPI(
+   "createDocument",
+   {
+      key: async (ctx) => {
+         const identity = await ctx.auth.getUserIdentity();
+         if (!identity) {
+            return "NOT_AUTHENTICATED";
+         }
+         return identity.subject;
+      },
+   }
+);

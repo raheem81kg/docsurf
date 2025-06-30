@@ -6,3 +6,6 @@ export const SEARCH_COST = 1;
 export const RESEARCH_COST = 2;
 
 export const DELETE_IRREVERSIBLE_MESSAGE = "This is irreversible. Please be certain.";
+
+// Document creation rate limit
+export const DOCUMENT_CREATION_RATE_LIMIT = 100;

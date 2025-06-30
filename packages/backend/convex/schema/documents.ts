@@ -40,4 +40,5 @@ export const Documents = v.object({
    fileSize: v.optional(v.int64()),
    isPublic: v.boolean(),
    isLocked: v.boolean(),
+   isCollapsed: v.optional(v.boolean()),
 });

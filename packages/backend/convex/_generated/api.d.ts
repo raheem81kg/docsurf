@@ -48,6 +48,7 @@ import type * as lib_tools_adapters_tavily_search_adapter from "../lib/tools/ada
 import type * as lib_tools_mcp_adapter from "../lib/tools/mcp_adapter.js";
 import type * as lib_tools_supermemory from "../lib/tools/supermemory.js";
 import type * as lib_tools_web_search from "../lib/tools/web_search.js";
+import type * as maintenance from "../maintenance.js";
 import type * as messages from "../messages.js";
 import type * as polar from "../polar.js";
 import type * as rateLimiter from "../rateLimiter.js";
@@ -124,6 +125,7 @@ declare const fullApi: ApiFromModules<{
   "lib/tools/mcp_adapter": typeof lib_tools_mcp_adapter;
   "lib/tools/supermemory": typeof lib_tools_supermemory;
   "lib/tools/web_search": typeof lib_tools_web_search;
+  maintenance: typeof maintenance;
   messages: typeof messages;
   polar: typeof polar;
   rateLimiter: typeof rateLimiter;

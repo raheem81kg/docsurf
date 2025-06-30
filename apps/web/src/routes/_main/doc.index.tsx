@@ -113,7 +113,7 @@ function RouteComponent() {
                      transition={{ duration: 0.5 }}
                      className="absolute left-1/2 top-1/2 italic -translate-x-1/2 -translate-y-1/2 text-lg text-muted-foreground text-center pointer-events-none select-none"
                   >
-                     Click a document in the tree to view.
+                     Redirecting to your document...
                   </motion.div>
                )}
             </div>

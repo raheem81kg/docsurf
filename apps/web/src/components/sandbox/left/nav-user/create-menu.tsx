@@ -21,6 +21,8 @@ import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 import throttle from "lodash/throttle";
 import { useNavigate } from "@tanstack/react-router";
+import { useRateLimit } from "@convex-dev/rate-limiter/react";
+import { DOCUMENT_CREATION_RATE_LIMIT } from "@docsurf/utils/constants/constants";
 
 interface CreateMenuProps {
    parentId?: string | null;
@@ -37,27 +39,75 @@ export function CreateMenu({ parentId = null }: CreateMenuProps) {
    const workspaceId = user?.workspaces?.[0]?.workspace?._id as Id<"workspaces"> | undefined;
    const createDocument = useMutation(api.documents.createDocument);
 
+   // Rate limit for document creation
+   const { status } = useRateLimit(api.documents.getCreateDocumentRateLimit, {
+      getServerTimeMutation: api.documents.getCreateDocumentServerTime,
+   });
+
+   const topLevelDocs = useQuery(api.documents.fetchDocumentTree, workspaceId ? { workspaceId } : "skip");
+
    const throttledCreate = throttle(
       (type: "text/plain" | "folder") => {
          if (!workspaceId) return;
+         if (status && !status.ok) {
+            showToast(
+               (status as any).reason ||
+                  `Document creation rate limit reached (${DOCUMENT_CREATION_RATE_LIMIT} per day). Try again tomorrow.`,
+               "error"
+            );
+            return;
+         }
+         // Find min orderPosition among top-level docs
+         let minOrder = 0;
+         if (topLevelDocs && Array.isArray(topLevelDocs.data) && topLevelDocs.data.length > 0) {
+            minOrder = Math.min(...topLevelDocs.data.map((d) => (typeof d.orderPosition === "number" ? d.orderPosition : 0)));
+            minOrder = minOrder - 1;
+         }
          startTransition(async () => {
+            let loadingToastId: string | number | null = null;
+            let timer: NodeJS.Timeout | null = null;
+            let finished = false;
             try {
+               // Start a 2s timer to show loading toast if not finished
+               timer = setTimeout(() => {
+                  if (!finished) {
+                     loadingToastId = showToast("Creating document...", "warning", { duration: Number.POSITIVE_INFINITY });
+                  }
+               }, 2000);
                const doc = await createDocument({
                   workspaceId,
                   title: type === "text/plain" ? DEFAULT_TEXT_TITLE : DEFAULT_FOLDER_TITLE,
                   documentType: type,
                   parentId: undefined, // Top-level
-                  orderPosition: -1, // -1 means at the top
+                  orderPosition: minOrder,
                });
+               finished = true;
+               if (timer) clearTimeout(timer);
+               if (loadingToastId) {
+                  showToast(`${type === "text/plain" ? "Document" : "Folder"} created!`, "success", {
+                     duration: 3000,
+                     id: loadingToastId,
+                  });
+               }
                if (type === "text/plain") {
                   navigate({ to: "/doc/$documentId", params: { documentId: doc.id } });
                }
                setOpen(false);
             } catch (err) {
-               showToast(
-                  `Couldn't create ${type === "text/plain" ? "document" : "folder"}. Please check your connection and try again.`,
-                  "error"
-               );
+               finished = true;
+               if (timer) clearTimeout(timer);
+               if (loadingToastId) {
+                  showToast(
+                     `Couldn't create ${type === "text/plain" ? "document" : "folder"}. Please check your connection and try again.`,
+                     "error",
+                     { duration: 4000, id: loadingToastId }
+                  );
+               } else {
+                  showToast(
+                     `Couldn't create ${type === "text/plain" ? "document" : "folder"}. Please check your connection and try again.`,
+                     "error"
+                  );
+               }
             }
          });
       },
@@ -86,6 +136,7 @@ export function CreateMenu({ parentId = null }: CreateMenuProps) {
                               isPending && "opacity-50 cursor-not-allowed",
                               open && "bg-doc-brand"
                            )}
+                           // disabled={status && !status.ok}
                         >
                            <SquarePen className="size-5 md:size-4 " />
                         </Button>
@@ -109,6 +160,7 @@ export function CreateMenu({ parentId = null }: CreateMenuProps) {
                         isPending && "opacity-50 cursor-not-allowed",
                         open && "bg-doc-brand"
                      )}
+                     // disabled={status && !status.ok}
                   >
                      <SquarePen className="size-5.5 md:size-4 text-primary" />
                   </Button>
@@ -124,6 +176,7 @@ export function CreateMenu({ parentId = null }: CreateMenuProps) {
                   <DropdownMenuItem
                      className="outline-none rounded-t-sm rounded-b-none hover:bg-accent/50 transition-colors"
                      onClick={() => throttledCreate("text/plain")}
+                     // disabled={status && !status.ok}
                   >
                      <div className="flex items-center justify-between w-full">
                         <div className="flex gap-1 items-center text-base md:text-sm">
@@ -136,6 +189,7 @@ export function CreateMenu({ parentId = null }: CreateMenuProps) {
                   <DropdownMenuItem
                      className="outline-none rounded-none hover:bg-accent/50 transition-colors"
                      onClick={() => throttledCreate("folder")}
+                     // disabled={status && !status.ok}
                   >
                      <div className="flex items-center justify-between w-full">
                         <div className="flex gap-1 items-center text-base md:text-sm">

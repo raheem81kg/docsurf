@@ -1,7 +1,7 @@
 {
-   "name": "Docsurf",
+   "name": "Docsurf: The AI document editor",
    "short_name": "Docsurf",
-   "description": "Docsurf is a web application",
+   "description": "Docsurf is an AI document editor that allows you to create, edit, and share documents with ease.",
    "start_url": "/",
    "display": "standalone",
    "background_color": "#ffffff",

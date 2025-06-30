@@ -24,7 +24,7 @@ export function FooterCTA() {
                <Link to="/auth" title="Start Writing For Free">
                   <Button className="flex h-12 items-center gap-2 px-5">
                      <span className="text-default">Start Writing For Free</span>
-                     <ArrowRight className="size-5" />
+                     <ArrowRight className="size-5 text-default" />
                   </Button>
                </Link>
             </div>

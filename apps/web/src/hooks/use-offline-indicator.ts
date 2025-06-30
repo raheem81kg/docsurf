@@ -12,7 +12,7 @@ export function useOfflineIndicator() {
                toast.dismiss(offlineToastId);
                offlineToastId = null;
             }
-            showToast("Back online", "success", {
+            showToast("Back online!", "success", {
                duration: 2000,
             });
          } else {

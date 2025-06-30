@@ -25,7 +25,7 @@ export const SignIn = ({ inviteCode }: { inviteCode?: string }) => {
 
    if (!mounted) return null;
 
-   const preferredSignInProvider = cookies[COOKIES.PreferredSignInProvider] as PreferredSignInProvider;
+   const preferredSignInProvider = cookies[COOKIES.PreferredSignInProvider] as PreferredSignInProvider | "google";
    let preferredSignInOption: React.ReactNode;
 
    const handleGoogleSignIn = async () => {
