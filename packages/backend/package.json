@@ -4,7 +4,8 @@
    "private": true,
    "scripts": {
       "dev": "convex dev",
-      "setup": "convex dev --configure --until-success"
+      "setup": "convex dev --configure --until-success",
+      "postinstall": "patch-package"
    },
    "author": "",
    "license": "ISC",
@@ -25,7 +26,7 @@
       "@convex-dev/aggregate": "^0.1.21",
       "@convex-dev/better-auth": "^0.6.1",
       "@convex-dev/polar": "^0.5.0",
-      "@convex-dev/r2": "git://github.com/f1shy-dev/r2#e83fb238e98062188e703c5cb2c108535af340b9",
+      "@docsurf/r2": "workspace:*",
       "@convex-dev/rate-limiter": "^0.2.10",
       "@docsurf/utils": "workspace:*",
       "@modelcontextprotocol/sdk": "^1.13.0",

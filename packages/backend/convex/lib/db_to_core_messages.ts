@@ -1,4 +1,4 @@
-import { R2 } from "@convex-dev/r2";
+import { R2 } from "@docsurf/r2/client/index";
 import type {
    AssistantContent,
    CoreAssistantMessage,

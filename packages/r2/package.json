@@ -1,0 +1,33 @@
+{
+   "name": "@docsurf/r2",
+   "version": "0.0.0",
+   "private": true,
+   "type": "module",
+   "scripts": {
+      "clean": "rm -rf .turbo node_modules",
+      "lint": "biome check .",
+      "format": "biome format --write .",
+      "typecheck": "tsc --noEmit"
+   },
+   "dependencies": {
+      "@aws-sdk/client-s3": "^3.840.0",
+      "@aws-sdk/s3-request-presigner": "^3.840.0",
+      "@convex-dev/action-retrier": "^0.2.1",
+      "convex": "^1.24.8",
+      "convex-helpers": "^0.1.94",
+      "file-type": "^21.0.0",
+      "react": "19.0.0",
+      "uuid": "^11.1.0"
+   },
+   "devDependencies": {
+      "@docsurf/typescript-config": "workspace:*",
+      "@types/node": "^20",
+      "@types/react": "^19",
+      "@types/react-dom": "^19.0.4",
+      "@types/uuid": "^10.0.0",
+      "typescript": "^5.8.3"
+   },
+   "exports": {
+      "./*": "./src/*.ts"
+   }
+}

@@ -1,8 +1,5 @@
 // convex/attachments.ts
-import { R2 } from "@convex-dev/r2";
-import { v } from "convex/values";
-import { components } from "./_generated/api";
-import { httpAction, mutation, query } from "./_generated/server";
+import { R2 } from "@docsurf/r2/client/index";
 import {
    MAX_FILE_SIZE,
    MAX_TOKENS_PER_FILE,
@@ -11,6 +8,9 @@ import {
    getFileTypeInfo,
    isSupportedFile,
 } from "@docsurf/utils/constants/file_constants";
+import { v } from "convex/values";
+import { components } from "./_generated/api";
+import { httpAction, mutation, query } from "./_generated/server";
 import { getUserIdentity } from "./lib/identity";
 
 export const r2 = new R2(components.r2);

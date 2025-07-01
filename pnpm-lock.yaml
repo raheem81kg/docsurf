@@ -14,6 +14,9 @@ importers:
       '@types/node':
         specifier: ^24.0.3
         version: 24.0.8
+      '@types/uuid':
+        specifier: ^10.0.0
+        version: 10.0.0
       husky:
         specifier: ^9.1.7
         version: 9.1.7
@@ -558,12 +561,12 @@ importers:
       '@convex-dev/polar':
         specifier: ^0.5.0
         version: 0.5.0(@modelcontextprotocol/sdk@1.13.2)(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react@19.1.8)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)
-      '@convex-dev/r2':
-        specifier: git://github.com/f1shy-dev/r2#e83fb238e98062188e703c5cb2c108535af340b9
-        version: https://codeload.github.com/f1shy-dev/r2/tar.gz/e83fb238e98062188e703c5cb2c108535af340b9(convex@1.25.2(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)
       '@convex-dev/rate-limiter':
         specifier: ^0.2.10
         version: 0.2.10(convex@1.25.2(react@19.0.0))(react@19.0.0)
+      '@docsurf/r2':
+        specifier: workspace:*
+        version: link:../r2
       '@docsurf/utils':
         specifier: workspace:*
         version: link:../utils
@@ -646,6 +649,52 @@ importers:
       '@docsurf/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+
+  packages/r2:
+    dependencies:
+      '@aws-sdk/client-s3':
+        specifier: ^3.840.0
+        version: 3.840.0
+      '@aws-sdk/s3-request-presigner':
+        specifier: ^3.840.0
+        version: 3.840.0
+      '@convex-dev/action-retrier':
+        specifier: ^0.2.1
+        version: 0.2.1(convex@1.25.2(react@19.0.0))
+      convex:
+        specifier: ^1.24.8
+        version: 1.25.2(react@19.0.0)
+      convex-helpers:
+        specifier: ^0.1.94
+        version: 0.1.95(convex@1.25.2(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)
+      file-type:
+        specifier: ^21.0.0
+        version: 21.0.0
+      react:
+        specifier: 19.0.0
+        version: 19.0.0
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
+    devDependencies:
+      '@docsurf/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: ^20
+        version: 20.19.2
+      '@types/react':
+        specifier: ^19
+        version: 19.1.8
+      '@types/react-dom':
+        specifier: ^19.0.4
+        version: 19.1.6(@types/react@19.1.8)
+      '@types/uuid':
+        specifier: ^10.0.0
+        version: 10.0.0
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
 
   packages/typescript-config: {}
 
@@ -1361,10 +1410,10 @@ packages:
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
     engines: {node: '>=0.1.90'}
 
-  '@convex-dev/action-retrier@0.1.6':
-    resolution: {integrity: sha512-On+VgeMVz1Rlly/sbtJJ1GoHRbZz8PoFrxC3OEoPEW4u8JpNeYHTV/VsxlMq3gIfNx7dAOMm7pOT9lMaCmpg9w==}
+  '@convex-dev/action-retrier@0.2.1':
+    resolution: {integrity: sha512-yxc2ECtgFAAync8Yf1ykh1nzgXkXjrCA5mFYB0lRq/Dgx1TFyFuYfw10ECn7v9/aMUjzUpyJEJp9vRscrfFsng==}
     peerDependencies:
-      convex: ~1.16.5 || >=1.17.0 <1.25.0
+      convex: ~1.16.5 || >=1.17.0 <1.35.0
 
   '@convex-dev/aggregate@0.1.21':
     resolution: {integrity: sha512-R14Ztj96H6waUqzyGBjDiw6Bj/hVwu28g4ootQlJB+pQd7mBMt6RGoDjDtQ9JLh3964xul5KqSEyj99n5Xd+0g==}
@@ -1396,13 +1445,6 @@ packages:
       convex: ^1.19.2 || >=1.17.0 <1.35.0
       react: ^18 || ^19
       react-dom: ^18 || ^19
-
-  '@convex-dev/r2@https://codeload.github.com/f1shy-dev/r2/tar.gz/e83fb238e98062188e703c5cb2c108535af340b9':
-    resolution: {tarball: https://codeload.github.com/f1shy-dev/r2/tar.gz/e83fb238e98062188e703c5cb2c108535af340b9}
-    version: 0.6.2
-    peerDependencies:
-      convex: ~1.16.5 || >=1.17.0 <1.35.0
-      react: ^18.3.1
 
   '@convex-dev/rate-limiter@0.2.10':
     resolution: {integrity: sha512-EU6wJ5XEAE1s1GnYW85w/PpcFs2/q6sJY9ndKX6oVk6nhhRmxmwNzwITl5/Y3ufS6BtoQ12sQ+0tqYy2SQWlkg==}
@@ -4693,6 +4735,9 @@ packages:
   '@types/use-sync-external-store@0.0.6':
     resolution: {integrity: sha512-zFDAD+tlpf2r4asuHEj0XH6pY6i0g5NeAHPn+15wk3BV6JA69eERFXC1gyGThDkVa1zCyKr5jox1+2LbV/AMLg==}
 
+  '@types/uuid@10.0.0':
+    resolution: {integrity: sha512-7gqG38EyHgyP1S+7+xomFtL+ZNHcKv6DwNaCZmJmo1vgMugyF3TCnXVg4t1uk89mLNwnLtnY3TpOpCOyp1/xHQ==}
+
   '@types/uuid@9.0.8':
     resolution: {integrity: sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==}
 
@@ -6197,9 +6242,9 @@ packages:
     resolution: {integrity: sha512-yaduQFRKLXYOGgEn6AZau90j3ggSOyiqXU0F9JZfeXYhNa+Jk4X+s45A2zg5jns87GAFa34BBm2kXw4XpNcbdg==}
     engines: {node: '>=8'}
 
-  file-type@20.5.0:
-    resolution: {integrity: sha512-BfHZtG/l9iMm4Ecianu7P8HRD2tBHLtjXinm4X62XBOYzi7CYA7jyqfJzOvXHqzVrVPYqBo2/GvbARMaaJkKVg==}
-    engines: {node: '>=18'}
+  file-type@21.0.0:
+    resolution: {integrity: sha512-ek5xNX2YBYlXhiUXui3D/BXa3LdqPmoLJ7rqEx2bKJ7EAUEfmXgW0Das7Dc6Nr9MvqaOnIqiPV0mZk/r/UpNAg==}
+    engines: {node: '>=20'}
 
   file-uri-to-path@1.0.0:
     resolution: {integrity: sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw==}
@@ -10710,7 +10755,7 @@ snapshots:
 
   '@colors/colors@1.6.0': {}
 
-  '@convex-dev/action-retrier@0.1.6(convex@1.25.2(react@19.0.0))':
+  '@convex-dev/action-retrier@0.2.1(convex@1.25.2(react@19.0.0))':
     dependencies:
       convex: 1.25.2(react@19.0.0)
 
@@ -10793,24 +10838,6 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
       - hono
-      - typescript
-      - zod
-
-  '@convex-dev/r2@https://codeload.github.com/f1shy-dev/r2/tar.gz/e83fb238e98062188e703c5cb2c108535af340b9(convex@1.25.2(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)':
-    dependencies:
-      '@aws-sdk/client-s3': 3.840.0
-      '@aws-sdk/s3-request-presigner': 3.840.0
-      '@convex-dev/action-retrier': 0.1.6(convex@1.25.2(react@19.0.0))
-      convex: 1.25.2(react@19.0.0)
-      convex-helpers: 0.1.95(convex@1.25.2(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)
-      file-type: 20.5.0
-      react: 19.0.0
-      uuid: 11.1.0
-    transitivePeerDependencies:
-      - '@standard-schema/spec'
-      - aws-crt
-      - hono
-      - supports-color
       - typescript
       - zod
 
@@ -14361,7 +14388,7 @@ snapshots:
   '@types/glob@7.2.0':
     dependencies:
       '@types/minimatch': 5.1.2
-      '@types/node': 20.19.2
+      '@types/node': 24.0.8
 
   '@types/hast@3.0.4':
     dependencies:
@@ -14435,7 +14462,7 @@ snapshots:
 
   '@types/through@0.0.33':
     dependencies:
-      '@types/node': 20.19.2
+      '@types/node': 24.0.8
 
   '@types/tinycolor2@1.4.6': {}
 
@@ -14453,6 +14480,8 @@ snapshots:
   '@types/unist@3.0.3': {}
 
   '@types/use-sync-external-store@0.0.6': {}
+
+  '@types/uuid@10.0.0': {}
 
   '@types/uuid@9.0.8': {}
 
@@ -16068,7 +16097,7 @@ snapshots:
     dependencies:
       escape-string-regexp: 1.0.5
 
-  file-type@20.5.0:
+  file-type@21.0.0:
     dependencies:
       '@tokenizer/inflate': 0.2.7
       strtok3: 10.3.1

@@ -21,7 +21,8 @@
       "noEmit": true,
       "paths": {
          "@docsurf/backend/*": ["../../packages/backend/src/*"],
-         "@docsurf/utils/*": ["../../packages/utils/src/*"]
+         "@docsurf/utils/*": ["../../packages/utils/src/*"],
+         "@docsurf/r2/*": ["../../packages/r2/src/*"]
       }
    },
 
