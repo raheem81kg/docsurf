@@ -10,6 +10,8 @@
       "prepare": "husky",
       "dev": "turbo dev",
       "build": "turbo build",
+      "clean": "git clean -xdf node_modules",
+      "clean:workspaces": "turbo clean",
       "check-types": "turbo check-types",
       "dev:native": "turbo -F native dev",
       "dev:web": "turbo -F web dev",
