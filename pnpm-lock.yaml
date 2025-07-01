@@ -559,7 +559,7 @@ importers:
         specifier: ^0.5.0
         version: 0.5.0(@modelcontextprotocol/sdk@1.13.2)(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react@19.1.8)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)
       '@convex-dev/r2':
-        specifier: github:f1shy-dev/r2#e83fb238e98062188e703c5cb2c108535af340b9
+        specifier: git://github.com/f1shy-dev/r2#e83fb238e98062188e703c5cb2c108535af340b9
         version: https://codeload.github.com/f1shy-dev/r2/tar.gz/e83fb238e98062188e703c5cb2c108535af340b9(convex@1.25.2(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)
       '@convex-dev/rate-limiter':
         specifier: ^0.2.10
