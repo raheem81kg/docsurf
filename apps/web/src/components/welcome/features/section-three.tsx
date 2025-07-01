@@ -1,8 +1,8 @@
 import { Button } from "@docsurf/ui/components/button";
 import { Check, GripVertical, X } from "lucide-react";
 import { motion } from "motion/react";
-import docsurfEditorSuggestionDark from "/images/docsurf-editor-suggestion.png";
-import docsurfEditorSuggestionLight from "/images/docsurf-editor-suggestion-light.png";
+import docsurfEditorSuggestionDark from "/welcome/docsurf-editor-suggestion.png";
+import docsurfEditorSuggestionLight from "/welcome/docsurf-editor-suggestion-light.png";
 import { DynamicImage } from "../dynamic-image";
 import { CtaLink } from "./cta-link";
 

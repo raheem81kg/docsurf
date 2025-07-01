@@ -14,11 +14,13 @@ export const seo = ({
       { name: "description", content: description },
       { name: "keywords", content: keywords },
       { name: "twitter:title", content: title },
+
       { name: "twitter:description", content: description },
       { name: "twitter:creator", content: "@docsurf_ai" },
       { name: "twitter:site", content: "@docsurf_ai" },
       { name: "og:type", content: "website" },
       { name: "og:title", content: title },
+      { property: "og:site_name", content: "Docsurf" },
       { name: "og:description", content: description },
       ...(image
          ? [

@@ -57,11 +57,11 @@ export function StatusWidget() {
    }
 
    return (
-      <a
+      <div
          className="flex justify-between space-x-2 items-center w-full border border-border rounded-full px-3 py-1.5"
-         href="https://midday.openstatus.dev"
-         target="_blank"
-         rel="noreferrer"
+         // href="https://midday.openstatus.dev"
+         // target="_blank"
+         // rel="noreferrer"
       >
          <div>
             <p className="text-xs font-mono">{level.label}</p>
@@ -71,6 +71,6 @@ export function StatusWidget() {
             <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75", level.color2)} />
             <span className={cn("relative inline-flex rounded-full h-1.5 w-1.5", level.color)} />
          </span>
-      </a>
+      </div>
    );
 }

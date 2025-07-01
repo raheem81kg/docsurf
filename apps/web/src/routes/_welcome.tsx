@@ -7,23 +7,25 @@ import { FooterCTA } from "@/components/welcome/footer/footer-cta";
 import Navigation from "@/components/welcome/navigation";
 
 export const Route = createFileRoute("/_welcome")({
-	component: LayoutComponent,
+   component: LayoutComponent,
 });
 
 function LayoutComponent() {
-	const user = useSuspenseQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const user = useSuspenseQuery(convexQuery(api.auth.getCurrentUser, {}));
 
-	return (
-		<div className="max-w-full overflow-x-hidden">
-			<Navigation
-				profile={{
-					full_name: user?.data?.name ?? null,
-					email: user?.data?.email ?? null,
-				}}
-			/>
-			<Outlet />
-			<FooterCTA />
-			<Footer />
-		</div>
-	);
+   return (
+      <div className="relative max-w-full">
+         <Navigation
+            profile={{
+               full_name: user?.data?.name ?? null,
+               email: user?.data?.email ?? null,
+            }}
+         />
+         <div className="px-4">
+            <Outlet />
+         </div>
+         <FooterCTA />
+         <Footer />
+      </div>
+   );
 }

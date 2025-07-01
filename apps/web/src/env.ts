@@ -9,7 +9,6 @@ export const env = createEnv({
       VITE_GOOGLE_CLIENT_SECRET: z.string(),
       VITE_SITE_URL: z.string().url(),
       VITE_CONVEX_SITE_URL: z.string().url(),
-      VITE_RESEND_API_KEY: z.string(),
       VITE_DOCSURF_VERSION: z.string(),
       VITE_COMPANY_NAME: z.string(),
       VITE_POSTHOG_HOST: z.string().url(),

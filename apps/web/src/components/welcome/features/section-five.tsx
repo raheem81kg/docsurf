@@ -8,8 +8,8 @@ export function SectionFive() {
       <section className="mb-12 flex flex-col justify-between space-y-12 overflow-hidden lg:flex-row lg:space-x-8 lg:space-y-0">
          <div className="group flex flex-col-reverse border border-border p-10 lg:basis-2/3 lg:flex-row lg:items-start lg:space-x-8 dark:bg-[#121212]">
             <DynamicImage
-               lightSrc="/images/docsurf-file-system-light.png"
-               darkSrc="/images/docsurf-file-system.png"
+               lightSrc="/welcome/docsurf-file-system-light.png"
+               darkSrc="/welcome/docsurf-file-system.png"
                alt="Document Management"
                className="mt-8 max-w-[70%] basis-1/2 object-contain sm:max-w-[50%] md:max-w-[35%] lg:mt-0"
             />

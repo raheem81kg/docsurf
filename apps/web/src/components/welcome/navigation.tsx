@@ -1,4 +1,4 @@
-import { Button } from "@docsurf/ui/components/button";
+import { Button, buttonVariants } from "@docsurf/ui/components/button";
 import {
    ListItem,
    NavigationMenu,
@@ -13,7 +13,10 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@doc
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { Icons } from "@/components/assets/icons";
-import logo from "/images/icon_x48.png";
+import logo from "/logo-black.png";
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { cn } from "@docsurf/ui/lib/utils";
 
 const resources = [
    // {
@@ -73,14 +76,36 @@ type Profile = {
 };
 
 export default function Navigation({ profile }: { profile: Profile }) {
+   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+   // Animation variants for mobile menu
+   const mobileMenuVariants = {
+      closed: { opacity: 0, x: "100%" },
+      open: {
+         opacity: 1,
+         x: "0%",
+         transition: { stiffness: 400, damping: 30, staggerChildren: 0.1 },
+      },
+   };
+   const mobileItemVariants = {
+      closed: { opacity: 0, x: 20 },
+      open: { opacity: 1, x: 0 },
+   };
+
    return (
-      <header className="sticky top-4 z-50 mt-4 justify-center px-2 md:flex md:px-4 ">
-         <nav className="relative z-20 flex h-[50px] items-center justify-between rounded-[4px] border border-border bg-[#FFFFFF] bg-opacity-70 px-4 backdrop-blur-xl backdrop-filter md:justify-center dark:bg-[#121212] ">
-            <div className="flex items-center gap-6">
-               <Link to="/" className="relative bottom-1 cursor-pointer" title="Home">
+      <header className="sticky top-3 z-50 justify-center px-2 md:flex md:px-4 ">
+         <nav className="relative z-20 flex h-[50px] w-full items-center justify-between rounded-[4px] border backdrop-blur-sm border-border bg-opacity-70 px-4 backdrop-blur-xl backdrop-filter">
+            {/* Left group: logo + nav menu */}
+            <div className="flex gap-4 items-center">
+               <Link to="/" className="flex text-[#0B100F] dark:text-foreground items-center gap-2.5">
+                  <img src={logo} alt="DocSurf" className="rounded-lg dark:invert" width={33} height={33} />
+                  {/* <p className="text-xl">Docsurf</p> */}
+               </Link>
+
+               {/* <Link to="/" className="relative bottom-1 cursor-pointer" title="Home">
                   <img src={logo} alt="DocSurf" width={22} height={22} />
                   <span className="-right-[-0.5px] absolute text-[10px] text-muted-foreground">beta</span>
-               </Link>
+               </Link> */}
                <div className="hidden md:block">
                   <NavigationMenu className="!rounded-sm">
                      <NavigationMenuList className="gap-1">
@@ -125,74 +150,113 @@ export default function Navigation({ profile }: { profile: Profile }) {
                      </NavigationMenuList>
                   </NavigationMenu>
                </div>
-               <Separator orientation="vertical" className="h-8 w-[1px] bg-border" />
-               <div className="hidden md:block">
-                  <Link to={profile.email ? "/doc" : "/auth"}>
-                     <Button size="lg" className="!h-9 flex items-center gap-2">
-                        <span className="">Go to app</span>
-                        <ArrowRight className="size-4" />
-                     </Button>
-                  </Link>
-               </div>
             </div>
-            <div className="flex items-center gap-2">
-               <div className="block md:hidden">
-                  <Sheet>
-                     <SheetTrigger asChild>
-                        <button
-                           type="button"
-                           className="ml-auto rounded-sm p-2 transition-all hover:bg-muted disabled:pointer-events-none disabled:opacity-50 md:hidden"
-                        >
-                           <svg xmlns="http://www.w3.org/2000/svg" width={18} height={13} fill="none">
-                              <path
-                                 fill="currentColor"
-                                 d="M0 12.195v-2.007h18v2.007H0Zm0-5.017V5.172h18v2.006H0Zm0-5.016V.155h18v2.007H0Z"
-                              />
-                           </svg>
-                        </button>
-                     </SheetTrigger>
-                     <SheetContent side="left" className="w-[300px] gap-0 bg-sidebar px-6 py-7 sm:w-[400px]" hideCloseButton>
-                        <SheetHeader className="flex flex-row items-center justify-between p-0">
-                           <SheetTitle>
-                              <img src={logo} alt="DocSurf" width={22} height={22} />
-                           </SheetTitle>
-                           <Link to="/auth">
-                              <Button size="lg" className="!h-9.5">
-                                 Sign in
-                              </Button>
-                           </Link>
-                        </SheetHeader>
-                        <div className="mt-8 flex flex-col gap-3">
-                           <div className="flex flex-col gap-3">
-                              <Link to="/pricing" className="mt-2 transition-opacity duration-200 hover:opacity-80">
+            {/* Right group: button (and separator if needed) */}
+            <div className="hidden md:flex items-center gap-2">
+               <Separator orientation="vertical" className="h-8 w-[1px] bg-border" />
+               <Link to={profile.email ? "/doc" : "/auth"}>
+                  <Button size="lg" className="!h-9 flex items-center gap-2">
+                     <span className="">Go to app</span>
+                     <ArrowRight className="size-4" />
+                  </Button>
+               </Link>
+            </div>
+            {/* Mobile menu button */}
+            <div className="flex items-center gap-2 md:hidden">
+               <button
+                  type="button"
+                  className="ml-auto rounded-sm p-2 transition-all hover:bg-muted disabled:pointer-events-none disabled:opacity-50 md:hidden"
+                  onClick={() => setIsMobileMenuOpen((v) => !v)}
+                  aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+               >
+                  {isMobileMenuOpen ? (
+                     <svg xmlns="http://www.w3.org/2000/svg" width={18} height={18} fill="none">
+                        <path
+                           fill="currentColor"
+                           d="M2.343 2.343a1 1 0 0 1 1.414 0L9 7.586l5.243-5.243a1 1 0 1 1 1.414 1.414L10.414 9l5.243 5.243a1 1 0 0 1-1.414 1.414L9 10.414l-5.243 5.243a1 1 0 0 1-1.414-1.414L7.586 9 2.343 3.757a1 1 0 0 1 0-1.414Z"
+                        />
+                     </svg>
+                  ) : (
+                     <svg xmlns="http://www.w3.org/2000/svg" width={18} height={13} fill="none">
+                        <path
+                           fill="currentColor"
+                           d="M0 12.195v-2.007h18v2.007H0Zm0-5.017V5.172h18v2.006H0Zm0-5.016V.155h18v2.007H0Z"
+                        />
+                     </svg>
+                  )}
+               </button>
+            </div>
+         </nav>
+         {/* Animated mobile menu and backdrop - moved outside nav for full viewport coverage */}
+         <AnimatePresence>
+            {isMobileMenuOpen && (
+               <>
+                  {/* Backdrop */}
+                  <motion.div
+                     className="fixed inset-0 z-40 bg-black/20 md:hidden"
+                     initial={{ opacity: 0 }}
+                     animate={{ opacity: 1 }}
+                     exit={{ opacity: 0 }}
+                     onClick={() => setIsMobileMenuOpen(false)}
+                  />
+                  {/* Slide-in menu */}
+                  <motion.div
+                     className="fixed right-4 top-16 z-50 w-80 overflow-hidden rounded-2xl border border-border bg-background shadow-2xl md:hidden"
+                     variants={mobileMenuVariants}
+                     initial="closed"
+                     animate="open"
+                     exit="closed"
+                  >
+                     <div className="space-y-6 p-6">
+                        <div className="space-y-1">
+                           {/* Pricing and about links */}
+                           <motion.div variants={mobileItemVariants}>
+                              <Link
+                                 to="/pricing"
+                                 className="block rounded-lg px-4 py-3 font-medium text-foreground transition-colors duration-200 hover:bg-muted"
+                                 onClick={() => setIsMobileMenuOpen(false)}
+                              >
                                  Pricing
                               </Link>
-                              {aboutLinks.map((link) => (
+                           </motion.div>
+                           {aboutLinks.map((link) => (
+                              <motion.div key={link.title} variants={mobileItemVariants}>
                                  <Link
-                                    key={link.title}
-                                    title={link.title}
                                     to={link.href}
+                                    title={link.title}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     aria-label={link.title}
-                                    className="block font-medium transition-opacity duration-200 hover:opacity-80"
+                                    className="block rounded-lg px-4 py-3 font-medium text-foreground transition-colors duration-200 hover:bg-muted"
+                                    onClick={() => setIsMobileMenuOpen(false)}
                                  >
                                     {link.title}
                                  </Link>
-                              ))}
-                           </div>
-                           {/* <Link
-                              rel="noopener noreferrer"
-                              target="_blank"
-                              href="https://cal.com/team/docsurf"
-                              aria-label="Contact Us"
-                              className="font-medium text-text-default transition-opacity duration-200 hover:opacity-80"
-                           >
-                              Contact Us
-                           </Link> */}
+                              </motion.div>
+                           ))}
                         </div>
-                        <Separator className="mt-8" />
-                        <div className="mt-8 flex flex-row items-center justify-center gap-4">
+                        <div className="space-y-3 border-t border-border pt-6">
+                           <motion.div variants={mobileItemVariants}>
+                              <Link
+                                 to="/auth"
+                                 className={cn(buttonVariants({ variant: "ghost" }), "w-full")}
+                                 onClick={() => setIsMobileMenuOpen(false)}
+                              >
+                                 Sign In
+                              </Link>
+                           </motion.div>
+                           <motion.div variants={mobileItemVariants}>
+                              <Link
+                                 to="/auth"
+                                 className={cn(buttonVariants({ variant: "default" }), "w-full")}
+                                 // className="block w-full rounded-lg bg-foreground py-3 text-center font-medium text-background transition-all duration-200 hover:bg-foreground/90"
+                                 onClick={() => setIsMobileMenuOpen(false)}
+                              >
+                                 Get Started
+                              </Link>
+                           </motion.div>
+                        </div>
+                        <div className="flex flex-row items-center justify-center gap-4 pt-4">
                            {resources.map((resource) => {
                               const Icon = IconComponent[resource.platform];
                               return (
@@ -203,6 +267,7 @@ export default function Navigation({ profile }: { profile: Profile }) {
                                     rel="noopener noreferrer"
                                     target="_blank"
                                     className="flex items-center gap-2 font-medium transition-opacity duration-200 hover:opacity-80"
+                                    onClick={() => setIsMobileMenuOpen(false)}
                                  >
                                     {resource.platform && (
                                        <Icon className="h-5 w-5 fill-muted-foreground transition-colors duration-200 ease-in-out hover:fill-brand" />
@@ -211,11 +276,11 @@ export default function Navigation({ profile }: { profile: Profile }) {
                               );
                            })}
                         </div>
-                     </SheetContent>
-                  </Sheet>
-               </div>
-            </div>
-         </nav>
+                     </div>
+                  </motion.div>
+               </>
+            )}
+         </AnimatePresence>
       </header>
    );
 }

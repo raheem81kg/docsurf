@@ -29,7 +29,7 @@ export const SignupMessagePrompt = () => {
                transition={{ delay: 0.2, duration: 0.4 }}
             >
                <div className="mx-auto mb-4 h-16 w-16 rounded-full border dark:border-0">
-                  <Logo />
+                  <img src="/logo-black.png" alt="DocSurf" className="dark:invert" width={64} height={64} />
                </div>
                <h1 className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text font-bold text-4xl text-transparent tracking-tight">
                   Docsurf

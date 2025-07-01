@@ -1,8 +1,8 @@
 import { motion } from "motion/react";
 import { useState } from "react";
 import { DynamicImage } from "@/components/welcome/dynamic-image";
-import docSurfDashDark from "/images/docsurf-dash.png";
-import docSurfDash from "/images/docsurf-dash-light.png";
+import docSurfDashDark from "/welcome/docsurf-dash.png";
+import docSurfDash from "/welcome/docsurf-dash-light.png";
 
 export function HeroImage() {
    const [isLoaded, setIsLoaded] = useState(false);

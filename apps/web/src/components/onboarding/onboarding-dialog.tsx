@@ -54,12 +54,47 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
       icon: Sparkles,
       content: (
          <div className="flex flex-col items-center space-y-4 text-center">
-            <div className="mx-auto h-24 w-24 rounded-full border-2 border-primary/20">
-               <Logo />
+            <div className="mx-auto h-24 w-24 rounded-full">
+               <img src="/logo-black.png" alt="DocSurf" className="dark:invert" width={90} height={90} />
             </div>
             <div className="text-center">
                <h3 className="font-bold text-2xl text-foreground">Welcome to Docsurf</h3>
                <span className="text-muted-foreground text-sm">The best AI document editor. Made by students, for students.</span>
+            </div>
+         </div>
+      ),
+   },
+   {
+      id: "ai-autocomplete",
+      title: "AI Autocomplete",
+      icon: Wand2,
+      content: (
+         <div className="flex flex-col items-center space-y-4 w-full">
+            <div className="flex flex-col items-center space-y-2">
+               <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 mb-2">
+                  <Wand2 className="h-8 w-8 text-primary" />
+               </div>
+               <h3 className="font-bold text-xl text-foreground">AI Autocomplete</h3>
+               <span className="text-muted-foreground text-sm max-w-xs text-center">
+                  Get real-time, context-aware suggestions as you type. Docsurf's AI Autocomplete helps you write faster, smarter, and
+                  with less effort.
+               </span>
+            </div>
+            <div className="flex flex-col items-start w-full max-w-md mt-2">
+               <div className="flex items-baseline gap-1 text-base text-left">
+                  <span className="demo-text-base">You start typing, and the AI offers</span>
+                  <span className="inline-flex items-baseline gap-1">
+                     <span
+                        className="demo-inline-suggestion-animated text-muted-foreground/65"
+                        data-suggestion=" a helpful completion."
+                        style={{ minWidth: 120, display: "inline-block" }}
+                     />
+                     {/* <kbd className="inline-tab-icon ml-1">Tab</kbd> */}
+                  </span>
+               </div>
+               <span className="text-xs text-muted-foreground mt-1">
+                  Press <kbd className="inline-tab-icon">Tab</kbd> to accept
+               </span>
             </div>
          </div>
       ),
@@ -91,7 +126,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
                   <div className="flex items-start justify-between">
                      <div className="flex items-start gap-3">
                         <div className="flex size-8 items-center justify-center rounded-lg">
-                           <Logo />
+                           <img src="/logo-black.png" alt="DocSurf" className="dark:invert" width={32} height={32} />
                         </div>
                         <div>
                            <h4 className="font-semibold text-sm">Docsurf Built-in</h4>

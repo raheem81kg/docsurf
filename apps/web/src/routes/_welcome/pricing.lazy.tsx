@@ -10,77 +10,79 @@ export const Route = createLazyFileRoute("/_welcome/pricing")({
 function RouteComponent() {
    return (
       <>
-         <div className="container mx-auto text-primary-foreground">
+         <div className="container mx-auto text-text-default">
             <div className="relative flex flex-col items-center text-center">
-               <h1 className="mt-24 mb-4 text-center font-medium text-5xl">Simple, transparent pricing</h1>
-               <p className="mb-12 max-w-2xl text-md text-muted-foreground">
-                  Choose the plan that's right for you and start your 14-day trial today.
-               </p>
+               <h1 className="mt-24 mb-4 text-center font-medium text-5xl text-text-default">Simple, transparent pricing</h1>
+               <p className="mb-12 max-w-2xl text-md text-[#878787]">Choose the plan that's right for you and start Docsurf today.</p>
 
                <div className="mt-8 grid w-full max-w-5xl grid-cols-1 gap-10 md:grid-cols-2">
                   {/* Starter Plan */}
-                  <div className="flex flex-col rounded-[4px] border bg-primary p-8">
-                     <h2 className="mb-2 text-left text-xl">Starter</h2>
+                  <div className="flex flex-col rounded-[4px] border border-border bg-[#F2F1EF] dark:bg-[#121212] p-8">
+                     <h2 className="mb-2 text-left text-xl text-text-default">Starter</h2>
                      <div className="mt-4 flex items-baseline">
-                        <span className="font-medium text-[40px] tracking-tight">$29</span>
-                        <span className="ml-1 font-medium text-2xl">/mo</span>
-                        <span className="ml-2 text-muted-foreground text-sm">Excl. VAT</span>
+                        <span className="font-medium text-[40px] tracking-tight opacity-70 text-text-default">$29</span>
+                        <span className="ml-1 font-medium text-2xl text-text-default">/mo</span>
+                        <span className="ml-2 text-[#878787] text-sm">Excl. VAT</span>
                      </div>
-                     <p className="mt-4 text-left text-sm">For freelancers and solo founders who need the essentials.</p>
+                     <p className="mt-4 text-left text-[#878787] text-sm">
+                        For freelancers and solo founders who need the essentials.
+                     </p>
 
                      <div className="mt-8">
-                        <h3 className="text-left font-medium font-mono text-xs uppercase tracking-wide">INCLUDING</h3>
+                        <h3 className="text-left font-medium font-mono text-xs uppercase tracking-wide text-text-default">
+                           INCLUDING
+                        </h3>
                         <ul className="mt-4 space-y-2">
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">AI-powered writing assistance</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">AI-powered writing assistance</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">Smart text suggestions & completions</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">Smart text suggestions & completions</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">Standard grammar & style checks</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">Standard grammar & style checks</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">AI-driven document organization</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">AI-driven document organization</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">30-day version history</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">30-day version history</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">Import & export .docx files</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">Import & export .docx files</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">Create up to 50 documents</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">Create up to 50 documents</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">2 users included</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">2 users included</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">10GB secure storage</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">10GB secure storage</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">Community support access</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">Community support access</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">Basic document analytics</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">Basic document analytics</span>
                            </li>
                         </ul>
                      </div>
 
                      <div className="mt-8 border-border border-t-[1px] pt-8">
                         <Link to="/auth">
-                           <Button className="border-border hover:border-border h-12 w-full border hover:bg-primary/90">
+                           <Button variant="outline" className="border border-brand text-primary h-12 w-full">
                               Get Started
                            </Button>
                         </Link>
@@ -88,74 +90,76 @@ function RouteComponent() {
                   </div>
 
                   {/* Pro Plan */}
-                  <div className="relative flex flex-col rounded-[4px] border border-brand bg-primary p-8">
-                     <div className="absolute top-0 right-0 mt-4 mr-4 rounded-full border px-2 py-1 font-mono font-normal text-[9px]">
+                  <div className="relative flex flex-col rounded-[4px] border border-border bg-[#F2F1EF] dark:bg-[#121212] p-8">
+                     <div className="absolute top-0 right-0 mt-4 mr-4 rounded-full border px-2 py-1 font-mono font-normal text-[9px] text-text-default border-border bg-[#fff] dark:bg-[#121212]">
                         Limited offer
                      </div>
-                     <h2 className="mb-2 text-left text-xl">Pro</h2>
+                     <h2 className="mb-2 text-left text-xl text-text-default">Pro</h2>
                      <div className="mt-1 flex items-baseline">
-                        <span className="font-medium text-[40px] tracking-tight line-through">$99</span>
-
-                        <span className="ml-1 font-medium text-[40px] tracking-tight">49</span>
-
-                        <span className="ml-1 font-medium text-xl">/mo</span>
-                        <span className="ml-2 text-muted-foreground text-xs">Excl. VAT</span>
+                        <span className="font-medium text-[40px] tracking-tight line-through opacity-70 text-text-default">$99</span>
+                        <span className="ml-1 font-medium text-[40px] tracking-tight text-text-default">49</span>
+                        <span className="ml-1 font-medium text-xl text-text-default">/mo</span>
+                        <span className="ml-2 text-[#878787] text-xs">Excl. VAT</span>
                      </div>
-                     <p className="mt-4 text-left text-sm">For growing teams and businesses that need more flexibility.</p>
+                     <p className="mt-4 text-left text-[#878787] text-sm">
+                        For growing teams and businesses that need more flexibility.
+                     </p>
 
                      <div className="mt-8">
-                        <h3 className="text-left font-medium font-mono text-xs uppercase tracking-wide">INCLUDING</h3>
+                        <h3 className="text-left font-medium font-mono text-xs uppercase tracking-wide text-text-default">
+                           INCLUDING
+                        </h3>
                         <ul className="mt-4 space-y-2">
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">Advanced AI writing assistance</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">Advanced AI writing assistance</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">Smart text suggestions & completions</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">Smart text suggestions & completions</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">Premium grammar & style checks</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">Premium grammar & style checks</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">AI-driven document organization</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">AI-driven document organization</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">Unlimited version history</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">Unlimited version history</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">Import & export .docx files</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">Import & export .docx files</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">Create unlimited documents</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">Create unlimited documents</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">10 users included</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">10 users included</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">100GB secure storage</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">100GB secure storage</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">Priority email support</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">Priority email support</span>
                            </li>
                            <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-primary" />
-                              <span className="text-sm">Advanced document analytics</span>
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">Advanced document analytics</span>
                            </li>
                         </ul>
                      </div>
 
                      <div className="mt-8 border-border border-t pt-8">
                         <Link to="/auth">
-                           <Button variant="secondary" className="h-12 w-full">
+                           <Button className="h-12 w-full" variant="default">
                               Get Started
                            </Button>
                         </Link>
@@ -164,15 +168,15 @@ function RouteComponent() {
                </div>
 
                <div className="mt-4 flex w-full max-w-5xl items-center justify-between">
-                  <p className="mt-4 font-mono text-muted-foreground text-xs">14 day trial (No credit card required)</p>
+                  <p className="mt-4 font-mono text-muted-foreground text-xs">(No credit card required)</p>
 
-                  <p className="mt-4 hidden font-mono text-muted-foreground text-xs md:block">
+                  {/* <p className="mt-4 hidden font-mono text-muted-foreground text-xs md:block">
                      Need more? Feel free to{" "}
                      <Link to="/auth" className="underline">
                         contact us
                      </Link>
                      .
-                  </p>
+                  </p> */}
                </div>
             </div>
          </div>

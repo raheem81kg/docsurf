@@ -9,20 +9,27 @@ export function Hero() {
    return (
       <section className="relative mt-[60px] min-h-[530px] lg:mt-[180px] lg:h-[calc(100vh-300px)]">
          <div className="flex flex-col">
-            {/* <Link href="/updates/april-product-update">
+            <Link to="/doc">
                <Button variant="outline" className="rounded-full border-border flex space-x-2 items-center">
-                  <span className="font-mono text-xs">April Product Updates</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width={12} height={12} fill="none">
+                  <span className="font-mono text-xs">Join the future</span>
+                  {/* <svg
+                     xmlns="http://www.w3.org/2000/svg"
+                     className="flex items-center justify-center"
+                     width={12}
+                     height={12}
+                     fill="none"
+                     viewBox="0 0 12 12"
+                  >
                      <path
                         fill="currentColor"
                         d="M8.783 6.667H.667V5.333h8.116L5.05 1.6 6 .667 11.333 6 6 11.333l-.95-.933 3.733-3.733Z"
                      />
-                  </svg>
+                  </svg> */}
                </Button>
-            </Link> */}
+            </Link>
 
             <h2 className="mt-6 max-w-[580px] font-medium text-[#878787] text-[24px] leading-tight md:mt-10 md:text-[36px]">
-               Transform your writing with AI-powered edits, suggestions & your personal companion for <WordAnimation />
+               Transform your writing with AI-powered edits & your personal companion for <WordAnimation />
             </h2>
 
             <div className="mt-8 md:mt-10">

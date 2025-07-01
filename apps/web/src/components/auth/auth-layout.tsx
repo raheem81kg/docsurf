@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { BlurImage } from "./blur-image";
 import { ClientOnly } from "./client-only";
 
-import DocsurfDashboardPreview from "/images/docsurf-dashboard-preview.png";
+import DocsurfDashboardPreview from "/welcome/docsurf-dashboard-preview.png";
 import { Icons } from "../assets/icons";
 import { Link } from "@tanstack/react-router";
 
@@ -31,13 +31,14 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
          <header className="w-full fixed left-0 right-0 z-50">
             <div className="ml-5 mt-4 md:ml-10 md:mt-10">
                <Link to="/">
-                  <Icons.Logo />
+                  <img src="/logo-black.png" alt="DocSurf" className="dark:invert" width={40} height={40} />
+                  {/* <Icons.Logo /> */}
                </Link>
             </div>
          </header>
          <div className="col-span-1 flex min-h-screen flex-col items-center justify-between border-r border-neutral-200 dark:border-neutral-800 backdrop-blur sm:col-span-3">
             <div className="flex h-full w-full flex-col items-center justify-center">
-               <ClientOnly className="relative flex w-full flex-col items-center justify-center">{children}</ClientOnly>
+               <ClientOnly className="relative flex w-full flex-col items-center justify-center px-4">{children}</ClientOnly>
             </div>
          </div>
 

@@ -573,7 +573,7 @@ function ProvidersSettings() {
                   <div className="flex items-start justify-between">
                      <div className="flex items-start gap-3">
                         <div className="flex size-8 items-center justify-center rounded-lg">
-                           <Logo />
+                           <img src="/logo-black.png" alt="DocSurf" className="dark:invert" width={32} height={32} />
                         </div>
                         <div>
                            <h4 className="font-semibold text-sm">Docsurf Built-in</h4>

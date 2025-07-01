@@ -16,6 +16,7 @@ import { authClient } from "@/lib/auth-client";
 import { seo } from "@/utils/seo";
 import { getAppUrl } from "@docsurf/utils/envs";
 import { ThemeScript } from "@/components/providers/theme-script";
+import { Analytics } from "@vercel/analytics/react";
 
 export interface RouterAppContext {
    queryClient: QueryClient;
@@ -76,6 +77,12 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
             property: "og:url",
             content: getAppUrl(),
          },
+
+         // --- Added for Apple Web App Title ---
+         {
+            name: "apple-mobile-web-app-title",
+            content: "Docsurf",
+         },
       ],
       links: [
          {
@@ -103,6 +110,24 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
             type: "image/png",
             sizes: "16x16",
             href: "/favicon-16x16.png",
+         },
+         // --- Added favicon-96x96.png ---
+         {
+            rel: "icon",
+            type: "image/png",
+            sizes: "96x96",
+            href: "/favicon-96x96.png",
+         },
+         // --- Added SVG favicon ---
+         {
+            rel: "icon",
+            type: "image/svg+xml",
+            href: "/favicon.svg",
+         },
+         // --- Added shortcut icon ---
+         {
+            rel: "shortcut icon",
+            href: "/favicon.ico",
          },
          {
             rel: "preconnect",
@@ -156,6 +181,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
          <body className="min-h-screen max-w-screen antialiased">
             <Providers attribute="class" enableSystem disableTransitionOnChange defaultTheme="dark" storageKey="vite-ui-theme">
                {children}
+               <Analytics />
                {/* TODO: Add cookie consent */}
                {/* <CookieConsent /> */}
                <Toaster richColors />

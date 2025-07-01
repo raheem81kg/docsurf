@@ -96,6 +96,10 @@ export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
       saveOnSignificantChange?: boolean;
       debounceMs?: number;
    };
+   /**
+    * Optional callback to run after a successful save.
+    */
+   onSave?: (content: Content) => void;
 }
 
 const useLatest = <T>(value: T) => {
@@ -317,6 +321,7 @@ export const useMinimalTiptapEditor = ({
    registerInStore = true,
    enableVersionTracking = false,
    versionTrackingOptions = {},
+   onSave,
    ...props
 }: UseMinimalTiptapEditorProps) => {
    // Track if there are unsaved changes
@@ -384,6 +389,7 @@ export const useMinimalTiptapEditor = ({
                      });
                      lastSavedContent.current = content;
                      onUpdate?.(content);
+                     onSave?.(content);
                   } catch (err) {
                      showToast("Save failed", "error");
                      if (process.env.NODE_ENV !== "production") {
@@ -397,7 +403,7 @@ export const useMinimalTiptapEditor = ({
             }
             hasPendingChanges.current = false;
          }, debounceDelay),
-      [debounceDelay, onUpdate, docId, workspaceId, updateDocument]
+      [debounceDelay, onUpdate, docId, workspaceId, updateDocument, onSave]
    );
 
    // Memoize extensions so they're only recreated when dependencies change
@@ -446,6 +452,8 @@ export const useMinimalTiptapEditor = ({
       },
       onCreate: ({ editor }) => {
          editorRef.current = editor;
+         // Expose hasPendingChanges ref on the editor instance
+         (editor as any).hasPendingChanges = hasPendingChanges;
       },
       onBlur: ({ editor }) => handleBlur(editor),
       ...props,

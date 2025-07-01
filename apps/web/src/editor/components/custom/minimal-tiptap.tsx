@@ -31,6 +31,7 @@ import { AnimatePresence } from "motion/react";
 import { useMutation } from "convex/react";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 import { useThrottle } from "../minimal-tiptap/hooks/use-throttle";
+import { toast } from "sonner";
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "onUpdate"> {
    value?: Content;
@@ -127,17 +128,22 @@ const BottomToolbar = ({
    </ScrollArea>
 );
 
+const TOAST_ID = "sync-server-content";
+
 export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps>(
    ({ value, onChange, className, editorContentClassName, characterLimit = MAX_CHARACTERS, ...props }, ref) => {
       const isMobile = useIsMobile();
       // Get user and workspaceId
       const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
       const { doc } = useCurrentDocument(user);
+      const pendingSyncValue = React.useRef<any>(null);
+
       const editor = useMinimalTiptapEditor({
          value,
          enableVersionTracking: false,
          onUpdate: onChange,
          characterLimit,
+         onSave: () => toast.dismiss(TOAST_ID),
          ...props,
       });
 
@@ -169,9 +175,31 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
       // Throttle setContent to avoid rapid updates from live query
       const throttledSetContent = useThrottle((val: any) => {
          if (editor && val) {
+            // Skip if there are unsaved changes
+            if ((editor as any).hasPendingChanges?.current) return;
             const current = editor.getJSON();
             if (JSON.stringify(current) !== JSON.stringify(val)) {
-               editor.commands.setContent(val, false);
+               // If out of sync but no pending changes, show sync toast instead of syncing automatically
+               pendingSyncValue.current = val;
+               showToast("Server content is out of sync with your local changes.", "warning", {
+                  id: TOAST_ID,
+                  duration: Number.POSITIVE_INFINITY,
+
+                  action: {
+                     label: "Sync Now",
+                     onClick: () => {
+                        if (pendingSyncValue.current && editor) {
+                           editor.commands.setContent(pendingSyncValue.current, false);
+                           if ((editor as any).hasPendingChanges) {
+                              (editor as any).hasPendingChanges.current = false;
+                           }
+                           // Optionally update lastSavedContent if you have access
+                           showToast("Changes synced from server", "success", { id: TOAST_ID });
+                        }
+                     },
+                  },
+               });
+               return;
             }
          }
       }, 500); // 500ms throttle
