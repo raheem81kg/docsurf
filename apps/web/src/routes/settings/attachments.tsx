@@ -158,7 +158,7 @@ const FileCard = memo(({ file, onDelete }: { file: FileMetadata; onDelete: (key:
 FileCard.displayName = "FileCard";
 
 function AttachmentsPage() {
-   const { data: session } = useSession();
+   const { data: session, isPending: isSessionPending } = useSession();
    const filesResult = useQuery(api.attachments.listFiles, session?.user?.id ? {} : "skip");
    const deleteFile = useMutation(api.attachments.deleteFile);
 
@@ -217,6 +217,57 @@ function AttachmentsPage() {
 
       return { totalSize: total, fileStats: stats };
    }, [files]);
+
+   if (isSessionPending) {
+      return (
+         <SettingsLayout title="Attachments" description="Manage your uploaded files and attachments.">
+            <div className="space-y-4">
+               {/* Skeleton for Files List */}
+               <Card className="gap-3 p-4">
+                  <CardHeader className="gap-0 px-0">
+                     <CardTitle>Your Files</CardTitle>
+                     <CardDescription>All your uploaded attachments and files</CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-0 pt-0">
+                     <div className="space-y-3">
+                        {Array.from({ length: 3 }).map((_, i) => (
+                           <div key={i} className="flex items-center gap-3 rounded-lg border p-4">
+                              <Skeleton className="h-10 w-10 rounded-lg" />
+                              <div className="flex-1 space-y-2">
+                                 <Skeleton className="h-4 w-32" />
+                                 <Skeleton className="h-3 w-24" />
+                              </div>
+                              <div className="flex gap-1">
+                                 <Skeleton className="h-8 w-8" />
+                                 <Skeleton className="h-8 w-8" />
+                              </div>
+                           </div>
+                        ))}
+                     </div>
+                  </CardContent>
+               </Card>
+
+               {/* Skeleton for Storage Info */}
+               <Card className="gap-3 p-4">
+                  <CardHeader className="gap-2 px-0">
+                     <CardTitle>Storage Information</CardTitle>
+                     <CardDescription>Information about your file storage usage</CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-0 pt-0">
+                     <div className="space-y-2">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                           <div key={i} className="flex items-center justify-between text-sm">
+                              <Skeleton className="h-4 w-24" />
+                              <Skeleton className="h-4 w-16" />
+                           </div>
+                        ))}
+                     </div>
+                  </CardContent>
+               </Card>
+            </div>
+         </SettingsLayout>
+      );
+   }
 
    if (!session?.user?.id) {
       return (
