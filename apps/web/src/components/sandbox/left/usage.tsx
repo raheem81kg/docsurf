@@ -73,6 +73,7 @@ function UsageInner() {
    const requestsLimit = plan.limits.requests7d ?? INFINITY_NUMBER;
    const tokensUsed = usageStats?.totalTokens ?? 0;
    const tokensLimit = plan.limits.tokens7d ?? INFINITY_NUMBER;
+   // TODO: Use usage stats in UsageRows when we add limits
 
    // Next plan limits
    const nextRequestsLimit = nextPlan?.limits.requests7d;
@@ -112,7 +113,7 @@ function UsageInner() {
                   icon={Activity}
                   label="Requests"
                   usage={requestsUsed}
-                  limit={requestsLimit}
+                  limit={INFINITY_NUMBER}
                   showNextPlan={hovered}
                   nextPlanLimit={nextRequestsLimit}
                   warning={warnings[0] ?? false}
@@ -122,7 +123,7 @@ function UsageInner() {
                   icon={Zap}
                   label="Tokens"
                   usage={tokensUsed}
-                  limit={tokensLimit}
+                  limit={INFINITY_NUMBER}
                   showNextPlan={hovered}
                   nextPlanLimit={nextTokensLimit}
                   warning={warnings[1] ?? false}

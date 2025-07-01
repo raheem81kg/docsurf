@@ -5,7 +5,37 @@
       "build": {
          "dependsOn": ["^build"],
          "inputs": ["$TURBO_DEFAULT$", ".env*"],
-         "outputs": ["dist/**", ".output/**", "vinxi/**", ".vercel/**", ".tanstack/**"]
+         "outputs": ["dist/**", ".output/**", "vinxi/**", ".vercel/**", ".tanstack/**"],
+         "env": [
+            "VITE_CONVEX_URL",
+            "VITE_GOOGLE_CLIENT_ID",
+            "VITE_GOOGLE_CLIENT_SECRET",
+            "VITE_SITE_URL",
+            "VITE_CONVEX_SITE_URL",
+            "VITE_DOCSURF_VERSION",
+            "VITE_COMPANY_NAME",
+            "VITE_POSTHOG_HOST",
+            "VITE_POSTHOG_KEY",
+            "VITE_VERCEL_ENV",
+            "VITE_NODE_ENV",
+            "VITE_VERCEL_URL",
+            "GOOGLE_GENERATIVE_AI_API_KEY",
+            "CONVEX_SITE_URL",
+            "POLAR_ORGANIZATION_TOKEN",
+            "POLAR_WEBHOOK_SECRET",
+            "UPSTASH_REDIS_REST_URL",
+            "UPSTASH_REDIS_REST_TOKEN",
+            "FIRECRAWL_API_KEY",
+            "TAVILY_API_KEY",
+            "OPENAI_API_KEY",
+            "ANTHROPIC_API_KEY",
+            "GOOGLE_API_KEY",
+            "GROQ_API_KEY",
+            "FAL_API_KEY",
+            "RESEND_API_KEY",
+            "EMAIL_FROM",
+            "ENCRYPTION_KEY"
+         ]
       },
       "lint": {
          "dependsOn": ["^lint"]
@@ -21,5 +51,6 @@
          "cache": false,
          "persistent": true
       }
-   }
+   },
+   "globalEnv": ["GITHUB_TOKEN"]
 }

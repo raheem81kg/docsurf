@@ -160,6 +160,17 @@ export declare const internal: FilterApi<
 
 export declare const components: {
   betterAuth: {
+    adapterTest: {
+      count: FunctionReference<"query", "internal", any, any>;
+      create: FunctionReference<"mutation", "internal", any, any>;
+      delete: FunctionReference<"mutation", "internal", any, any>;
+      deleteMany: FunctionReference<"mutation", "internal", any, any>;
+      findMany: FunctionReference<"query", "internal", any, any>;
+      findOne: FunctionReference<"query", "internal", any, any>;
+      isAuthenticated: FunctionReference<"query", "internal", {}, any>;
+      update: FunctionReference<"mutation", "internal", any, any>;
+      updateMany: FunctionReference<"mutation", "internal", any, any>;
+    };
     lib: {
       create: FunctionReference<
         "mutation",

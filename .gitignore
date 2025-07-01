@@ -8,6 +8,9 @@ node_modules
 # Turbo
 .turbo
 
+# Nitro
+.nitro
+
 # Vercel
 .vercel
 
@@ -16,11 +19,11 @@ node_modules
 out/
 build
 dist
+.vinxi
+.output
 
-# Supabase
-.branches
-.temp
-supabase/config.toml
+# Tanstack
+.tanstack
 
 # Environment Variables
 .env
@@ -38,3 +41,6 @@ supabase/config.toml
 packages/email/public
 !packages/email/public/.gitkeep
 !packages/email/.react-email/.gitkeep
+
+# Others
+app.config.timestamp_*
