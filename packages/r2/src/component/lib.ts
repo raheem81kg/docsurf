@@ -10,7 +10,7 @@ import { paginator } from "convex-helpers/server/pagination";
 import { ActionRetrier } from "@convex-dev/action-retrier";
 import type { R2Callbacks } from "../client";
 import { type PaginationResult } from "convex/server";
-import { type Id } from "./_generated/dataModel";
+import type { Id } from "./_generated/dataModel.js";
 
 const DEFAULT_LIST_LIMIT = 100;
 const retrier = new ActionRetrier(components.actionRetrier);

@@ -15,6 +15,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+
 /**
  * A utility for referencing Convex functions in your app's API.
  *
@@ -41,6 +42,7 @@ export type Mounts = {
         accessKeyId: string;
         bucket: string;
         endpoint: string;
+        forcePathStyle?: boolean;
         key: string;
         secretAccessKey: string;
       },
@@ -53,6 +55,7 @@ export type Mounts = {
         accessKeyId: string;
         bucket: string;
         endpoint: string;
+        forcePathStyle?: boolean;
         key: string;
         secretAccessKey: string;
       },
@@ -65,10 +68,12 @@ export type Mounts = {
         accessKeyId: string;
         bucket: string;
         endpoint: string;
+        forcePathStyle?: boolean;
         key: string;
         secretAccessKey: string;
       },
       {
+        authorId?: string;
         bucket: string;
         bucketLink: string;
         contentType?: string;
@@ -85,9 +90,11 @@ export type Mounts = {
       "public",
       {
         accessKeyId: string;
+        authorId?: string;
         bucket: string;
         cursor?: string;
         endpoint: string;
+        forcePathStyle?: boolean;
         limit?: number;
         secretAccessKey: string;
       },
@@ -95,6 +102,7 @@ export type Mounts = {
         continueCursor: string;
         isDone: boolean;
         page: Array<{
+          authorId?: string;
           bucket: string;
           bucketLink: string;
           contentType?: string;
@@ -116,6 +124,7 @@ export type Mounts = {
         accessKeyId: string;
         bucket: string;
         endpoint: string;
+        forcePathStyle?: boolean;
         secretAccessKey: string;
         url: string;
       },
@@ -126,8 +135,10 @@ export type Mounts = {
       "public",
       {
         accessKeyId: string;
+        authorId?: string;
         bucket: string;
         endpoint: string;
+        forcePathStyle?: boolean;
         key: string;
         onComplete?: string;
         secretAccessKey: string;
@@ -138,6 +149,7 @@ export type Mounts = {
       "mutation",
       "public",
       {
+        authorId?: string;
         bucket: string;
         contentType?: string;
         key: string;
@@ -191,6 +203,8 @@ export declare const components: {
             logLevel: "DEBUG" | "INFO" | "WARN" | "ERROR";
             maxFailures: number;
             onComplete?: string;
+            runAfter?: number;
+            runAt?: number;
           };
         },
         string
