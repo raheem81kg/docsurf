@@ -154,6 +154,7 @@
       "utils": "link:@/lib/utils/utils",
       "vaul": "^1.1.2",
       "virtua": "^0.41.5",
+      "vite-bundle-analyzer": "^1.0.0",
       "vite-plugin-svgr": "^4.3.0",
       "vite-tsconfig-paths": "^5.1.4",
       "zod": "^3.24.2",

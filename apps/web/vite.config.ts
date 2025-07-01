@@ -3,7 +3,7 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import svgr from "vite-plugin-svgr";
-
+import analyzer from "vite-bundle-analyzer";
 export default defineConfig({
    server: {
       proxy: {
@@ -15,6 +15,7 @@ export default defineConfig({
       },
    },
    plugins: [
+      (process.env.ANALYZE && analyzer()) || null,
       tsconfigPaths(),
       tailwindcss(),
       tanstackStart({
