@@ -464,6 +464,9 @@ importers:
       virtua:
         specifier: ^0.41.5
         version: 0.41.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(solid-js@1.9.7)
+      vite-bundle-analyzer:
+        specifier: ^1.0.0
+        version: 1.0.0
       vite-plugin-svgr:
         specifier: ^4.3.0
         version: 4.3.0(rollup@4.44.1)(typescript@5.8.3)(vite@6.3.5(@types/node@24.0.8)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0))
@@ -9532,6 +9535,10 @@ packages:
         optional: true
       vue:
         optional: true
+
+  vite-bundle-analyzer@1.0.0:
+    resolution: {integrity: sha512-Y9u467LqvDyvvd7+6BVm9drgIUGrRbZHcV//GUsziTvIKm+cQcREDrZFBiLzShvUokmUCA9BVeLGuIiNhkxGUQ==}
+    hasBin: true
 
   vite-plugin-svgr@4.3.0:
     resolution: {integrity: sha512-Jy9qLB2/PyWklpYy0xk0UU3TlU0t2UMpJXZvf+hWII1lAmRHrOUKi11Uw8N3rxoNk7atZNYO3pR3vI1f7oi+6w==}
@@ -19974,6 +19981,8 @@ snapshots:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
       solid-js: 1.9.7
+
+  vite-bundle-analyzer@1.0.0: {}
 
   vite-plugin-svgr@4.3.0(rollup@4.44.1)(typescript@5.8.3)(vite@6.3.5(@types/node@24.0.8)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0)):
     dependencies:
