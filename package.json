@@ -8,6 +8,7 @@
    "scripts": {
       "check": "biome check --write .",
       "prepare": "husky",
+      "postinstall": "cd packages/backend && pnpm patch",
       "dev": "turbo dev",
       "build": "turbo build",
       "check-types": "turbo check-types",
