@@ -1,5 +1,5 @@
 {
-   "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "src/editor/components/custom/ui/diffview/lib/diff.js"],
+   "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
    "compilerOptions": {
       "target": "ES2022",
       "jsx": "react-jsx",

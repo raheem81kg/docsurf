@@ -1,3 +1,8 @@
+.cache
+/api/
+/server/build
+.nitro
+
 # Dependencies
 /node_modules
 /.pnp
@@ -16,6 +21,7 @@
 /out/
 /build/
 /dist/
+.tanstack
 .vinxi
 .output
 .react-router/
