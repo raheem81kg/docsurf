@@ -2,7 +2,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@d
 import Balancer from "react-wrap-balancer";
 import { GoogleSignIn } from "./google-sign-in";
 import { OTPSignIn } from "./otp-sign-in";
-import { env } from "@/env";
 import { COOKIES } from "@/utils/constants";
 import { authClient } from "@/lib/auth-client";
 import { useState, useEffect } from "react";
@@ -41,7 +40,6 @@ export const SignIn = ({ inviteCode }: { inviteCode?: string }) => {
             onSuccess: async () => {
                setAuthLoading(false);
                setCookie(COOKIES.PreferredSignInProvider, "otp");
-               // await navigate({ to: "/doc" });
             },
             onError: (ctx) => {
                setAuthLoading(false);
@@ -51,71 +49,35 @@ export const SignIn = ({ inviteCode }: { inviteCode?: string }) => {
       );
    };
 
+   // Determine which sign-in option to show based on preference
    switch (preferredSignInProvider) {
       case "google":
-         if (env.VITE_GOOGLE_CLIENT_ID && env.VITE_GOOGLE_CLIENT_SECRET) {
-            preferredSignInOption = (
-               <div className="flex flex-col space-y-2">
-                  <GoogleSignIn onClick={handleGoogleSignIn} disabled={authLoading} />
-               </div>
-            );
-         } else {
-            preferredSignInOption = (
-               <div className="flex flex-col space-y-2">
-                  <OTPSignIn />
-               </div>
-            );
-         }
+         preferredSignInOption = (
+            <div className="flex flex-col space-y-2">
+               <GoogleSignIn onClick={handleGoogleSignIn} disabled={authLoading} />
+            </div>
+         );
          break;
       case "otp":
+      default:
          preferredSignInOption = (
             <div className="flex flex-col space-y-2">
                <OTPSignIn />
             </div>
          );
-         break;
-      default:
-         if (env.VITE_GOOGLE_CLIENT_ID && env.VITE_GOOGLE_CLIENT_SECRET) {
-            preferredSignInOption = (
-               <div className="flex flex-col space-y-2">
-                  <GoogleSignIn onClick={handleGoogleSignIn} disabled={authLoading} />
-               </div>
-            );
-         } else {
-            preferredSignInOption = (
-               <div className="flex flex-col space-y-2">
-                  <OTPSignIn />
-               </div>
-            );
-         }
    }
 
-   let moreSignInOptions: React.ReactNode;
-
-   switch (preferredSignInProvider) {
-      case "google":
-         moreSignInOptions = (
-            <div className="flex flex-col space-y-2">
-               <OTPSignIn />
-            </div>
-         );
-         break;
-      case "otp":
-         if (env.VITE_GOOGLE_CLIENT_ID && env.VITE_GOOGLE_CLIENT_SECRET) {
-            moreSignInOptions = (
-               <div className="flex flex-col space-y-2">
-                  <GoogleSignIn onClick={handleGoogleSignIn} disabled={authLoading} />
-               </div>
-            );
-         }
-         break;
-      default:
-         moreSignInOptions = (
-            <div className="flex flex-col space-y-2">
-               <OTPSignIn />
-            </div>
-         );
-   }
+   // Show the alternative sign-in option in the accordion
+   const moreSignInOptions =
+      preferredSignInProvider === "google" ? (
+         <div className="flex flex-col space-y-2">
+            <OTPSignIn />
+         </div>
+      ) : (
+         <div className="flex flex-col space-y-2">
+            <GoogleSignIn onClick={handleGoogleSignIn} disabled={authLoading} />
+         </div>
+      );
 
    return (
       <div className="flex w-full flex-col relative">
