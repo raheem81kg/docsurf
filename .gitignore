@@ -20,7 +20,7 @@ node_modules
 # Build Outputs
 .next/
 out/
-build
+/build/
 dist
 .vinxi
 .output
