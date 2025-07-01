@@ -1,45 +1,44 @@
 {
-	"name": "docsurf",
-	"private": true,
-	"workspaces": [
-		"apps/*",
-		"packages/*"
-	],
-	"scripts": {
-		"check": "biome check --write .",
-		"prepare": "husky || true",
-		"postinstall": "[ \"$CI\" = \"true\" ] && exit 0 || husky",
-		"dev": "turbo dev",
-		"build": "turbo build",
-		"check-types": "turbo check-types",
-		"dev:native": "turbo -F native dev",
-		"dev:web": "turbo -F web dev",
-		"dev:server": "turbo -F @docsurf/backend dev",
-		"dev:setup": "turbo -F @docsurf/backend setup"
-	},
-	"keywords": [
-		"docsurf"
-	],
-	"author": "Docsurf",
-	"devDependencies": {
-		"@biomejs/biome": "^2.0.0",
-		"@types/node": "^24.0.3",
-		"husky": "^9.1.7",
-		"lint-staged": "^15.5.0",
-		"turbo": "^2.5.4",
-		"typescript": "^5.8.3"
-	},
-	"lint-staged": {
-		"*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
-			"biome check --write --files-ignore-unknown=true --no-errors-on-unmatched"
-		]
-	},
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"@parcel/watcher",
-			"esbuild",
-			"sharp"
-		]
-	},
-	"packageManager": "pnpm@10.8.1"
+   "name": "docsurf",
+   "private": true,
+   "workspaces": [
+      "apps/*",
+      "packages/*"
+   ],
+   "scripts": {
+      "check": "biome check --write .",
+      "prepare": "husky",
+      "dev": "turbo dev",
+      "build": "turbo build",
+      "check-types": "turbo check-types",
+      "dev:native": "turbo -F native dev",
+      "dev:web": "turbo -F web dev",
+      "dev:server": "turbo -F @docsurf/backend dev",
+      "dev:setup": "turbo -F @docsurf/backend setup"
+   },
+   "keywords": [
+      "docsurf"
+   ],
+   "author": "Docsurf",
+   "devDependencies": {
+      "@biomejs/biome": "^2.0.0",
+      "@types/node": "^24.0.3",
+      "husky": "^9.1.7",
+      "lint-staged": "^15.5.0",
+      "turbo": "^2.5.4",
+      "typescript": "^5.8.3"
+   },
+   "lint-staged": {
+      "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
+         "biome check --write --files-ignore-unknown=true --no-errors-on-unmatched"
+      ]
+   },
+   "pnpm": {
+      "onlyBuiltDependencies": [
+         "@parcel/watcher",
+         "esbuild",
+         "sharp"
+      ]
+   },
+   "packageManager": "pnpm@10.8.1"
 }

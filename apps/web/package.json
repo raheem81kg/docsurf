@@ -151,7 +151,6 @@
       "unpdf": "^1.0.6",
       "use-stick-to-bottom": "^1.1.1",
       "usehooks-ts": "^3.1.1",
-      "utils": "link:@/lib/utils/utils",
       "vaul": "^1.1.2",
       "virtua": "^0.41.5",
       "vite-bundle-analyzer": "^1.0.0",
