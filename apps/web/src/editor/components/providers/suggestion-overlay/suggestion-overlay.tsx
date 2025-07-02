@@ -548,7 +548,7 @@ export default function SuggestionOverlay({
             <motion.div
                ref={overlayRef}
                className={cn(
-                  "fixed z-1150 bg-background rounded-none shadow-lg border border-border lg:max-w-[624px] md:max-w-[524px] max-w-[90vw] w-[calc(100vw-12rem)] overflow-hidden select-none",
+                  "fixed z-1150 bg-background rounded-none shadow-lg border border-border lg:max-w-[624px] md:max-w-[524px] max-w-[90vw] w-[87vw] overflow-hidden select-none",
                   isDragging && "pointer-events-none"
                )}
                style={{ top: `${currentPosition.y}px`, left: `${currentPosition.x}px` }}
@@ -611,7 +611,8 @@ export default function SuggestionOverlay({
                            ref={inputRef}
                            type="text"
                            placeholder={selectedText ? "Describe what changes you'd like to make..." : "Select text first..."}
-                           className="w-full p-2 rounded-[3.5px] border border-input text-sm bg-transparent outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                           // mobile font size to prevent zooming issue
+                           className="w-full p-2 rounded-[3.5px] border border-input text-sm bg-transparent outline-none focus-visible:ring-1 focus-visible:ring-ring [font-size:16px] md:text-sm"
                            value={inputValue}
                            onChange={(e) => setInputValue(e.target.value)}
                            onKeyDown={(e) => {

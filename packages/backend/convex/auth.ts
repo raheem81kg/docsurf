@@ -112,6 +112,9 @@ export const { createUser, deleteUser, updateUser, createSession, isAuthenticate
             name,
             email: user.email,
             image: user.image,
+            weekStartsOnMonday: false,
+            timeFormat: 24,
+            locale: "en",
          });
 
          // Create a workspace for the user and assign them as owner

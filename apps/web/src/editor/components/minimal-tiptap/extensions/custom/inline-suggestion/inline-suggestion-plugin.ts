@@ -2,11 +2,24 @@ import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { EditorState, Transaction } from "@tiptap/pm/state";
 import { Decoration, DecorationSet, EditorView } from "@tiptap/pm/view";
 import { Extension } from "@tiptap/react";
+import { addSwipeRightListener } from "./swipe";
+
+// Mobile detection utility
+const MOBILE_BREAKPOINT = 768;
+const isMobile = () => typeof window !== "undefined" && window.innerWidth < MOBILE_BREAKPOINT;
 
 export interface InlineSuggestionState {
    suggestionText: string | null;
    suggestionPos: number | null;
    isLoading: boolean;
+   cachedSuggestion?: {
+      text: string;
+      pos: number;
+      contextBefore: string;
+      contextAfter: string;
+      docSize: number; // Track document size when suggestion was cached
+      timestamp: number; // Track when suggestion was cached
+   } | null;
 }
 
 export const inlineSuggestionPluginKey = new PluginKey<InlineSuggestionState>("inlineSuggestion");
@@ -15,12 +28,14 @@ const initialState: InlineSuggestionState = {
    suggestionText: null,
    suggestionPos: null,
    isLoading: false,
+   cachedSuggestion: null,
 };
 
 export const START_SUGGESTION_LOADING = "startSuggestionLoading";
 export const SET_SUGGESTION = "setSuggestion";
 export const CLEAR_SUGGESTION = "clearSuggestion";
 export const FINISH_SUGGESTION_LOADING = "finishSuggestionLoading";
+export const ACCEPT_SUGGESTION = "acceptSuggestion";
 
 // Add debounce utility
 function debounce<T extends (...args: any[]) => void>(fn: T, delay: number): (...args: Parameters<T>) => void {
@@ -35,6 +50,12 @@ function debounce<T extends (...args: any[]) => void>(fn: T, delay: number): (..
 const CONTEXT_LENGTH = 300;
 const ENABLE_CONTEXT_AFTER_CURSOR = true;
 
+// Typing threshold - clear cache if user types this many characters
+const TYPING_THRESHOLD = 5;
+
+// Cache expiration time in milliseconds (20 seconds)
+const CACHE_EXPIRATION_MS = 20 * 1000;
+
 // Add type declaration for window property
 declare global {
    interface Window {
@@ -46,8 +67,27 @@ declare global {
  * ProseMirror/Tiptap plugin for inline suggestions with context windowing.
  * Extracts context before and optionally after the cursor for AI suggestions.
  *
+ * Trigger methods:
+ * - Ctrl+Space: Manual trigger for suggestions
+ * - "++": Type two plus signs to automatically trigger suggestions (removes the "++" after detection)
+ *
+ * Accept methods:
+ * - Ctrl+Space: Accept current suggestion (when suggestion is visible)
+ * - Right Arrow: Accept current suggestion (when suggestion is visible)
+ * - Swipe Right: Accept current suggestion on mobile/touch devices (when suggestion is visible)
+ * - Click decorator: Click the "Ctrl+Space" or "Swipe right →" button to accept
+ *
+ * Features:
  * - CONTEXT_LENGTH: Number of characters before/after cursor to include (default 300)
  * - ENABLE_CONTEXT_AFTER_CURSOR: Toggle to include after-cursor context
+ * - TYPING_THRESHOLD: Clear cached suggestions if user types this many characters (default 5)
+ * - Glowing cursor animation during loading state
+ * - Mobile touch gesture support for accepting suggestions
+ * - Responsive UI: Shows "Ctrl+Space" on desktop, "Swipe right →" on mobile
+ * - Clickable acceptance button with hover/active states
+ * - Smart caching: Suggestions are cached and restored when returning to the same position with identical context
+ * - Time-based cache expiration: Cached suggestions expire after 20 seconds
+ * - Adaptive cache clearing: Cache is cleared when user types extensively, indicating active writing
  */
 
 // Update options interface to support debounceMs and contextLength
@@ -59,12 +99,18 @@ export interface InlineSuggestionOptions {
    debounceMs?: number;
    contextLength?: number;
    enableContextAfterCursor?: boolean;
+   typingThreshold?: number;
 }
 
 export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin<InlineSuggestionState> {
    const debounceMs = options.debounceMs ?? 500;
    const contextLength = options.contextLength ?? CONTEXT_LENGTH;
    const enableContextAfterCursor = options.enableContextAfterCursor ?? ENABLE_CONTEXT_AFTER_CURSOR;
+   const typingThreshold = options.typingThreshold ?? TYPING_THRESHOLD;
+
+   // Store swipe listener cleanup function
+   let swipeListenerCleanup: (() => void) | null = null;
+
    // Debounced requestSuggestion
    const debouncedRequestSuggestion = debounce(
       (state: EditorState, contextBefore: string, contextAfter: string, forceRefresh?: boolean) => {
@@ -96,6 +142,7 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
             const metaSet = tr.getMeta(SET_SUGGESTION);
             const metaClear = tr.getMeta(CLEAR_SUGGESTION);
             const metaFinish = tr.getMeta(FINISH_SUGGESTION_LOADING);
+            const metaAccept = tr.getMeta(ACCEPT_SUGGESTION);
 
             if (metaStart) {
                const pos = newState.selection.head;
@@ -112,18 +159,107 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
 
             if (metaFinish) {
                if (pluginState.isLoading && pluginState.suggestionPos !== null) {
-                  return { ...pluginState, isLoading: false };
+                  // Cache the suggestion when finishing loading
+                  const pos = pluginState.suggestionPos;
+                  const contextBefore = newState.doc.textBetween(Math.max(0, pos - CONTEXT_LENGTH), pos, " ");
+                  const contextAfter = newState.doc.textBetween(pos, Math.min(newState.doc.content.size, pos + CONTEXT_LENGTH), " ");
+
+                  return {
+                     ...pluginState,
+                     isLoading: false,
+                     cachedSuggestion: pluginState.suggestionText
+                        ? {
+                             text: pluginState.suggestionText,
+                             pos,
+                             contextBefore,
+                             contextAfter,
+                             docSize: newState.doc.content.size,
+                             timestamp: Date.now(),
+                          }
+                        : null,
+                  };
                }
                return initialState;
             }
 
             if (metaClear) {
+               // Clear both current and cached suggestions when explicitly clearing
                return initialState;
+            }
+
+            if (metaAccept) {
+               // Clear both current and cached suggestions when accepting
+               return initialState;
+            }
+
+            // Check for expired cache entries
+            if (pluginState.cachedSuggestion) {
+               const now = Date.now();
+               const cacheAge = now - pluginState.cachedSuggestion.timestamp;
+
+               if (cacheAge > CACHE_EXPIRATION_MS) {
+                  return {
+                     ...pluginState,
+                     cachedSuggestion: null,
+                  };
+               }
+            }
+
+            // Check for excessive typing that should clear cached suggestions
+            if (pluginState.cachedSuggestion && tr.docChanged) {
+               const currentDocSize = newState.doc.content.size;
+               const originalDocSize = pluginState.cachedSuggestion.docSize;
+               const sizeIncrease = currentDocSize - originalDocSize;
+
+               // If user typed significantly more content, clear the cache
+               if (sizeIncrease >= typingThreshold) {
+                  return {
+                     ...pluginState,
+                     cachedSuggestion: null,
+                  };
+               }
             }
 
             if (pluginState.suggestionPos !== null && (pluginState.isLoading || pluginState.suggestionText)) {
                if (tr.docChanged || !newState.selection.empty || newState.selection.head !== pluginState.suggestionPos) {
-                  return initialState;
+                  // Keep the cached suggestion when clearing current suggestion
+                  return {
+                     suggestionText: null,
+                     suggestionPos: null,
+                     isLoading: false,
+                     cachedSuggestion: pluginState.cachedSuggestion,
+                  };
+               }
+            }
+
+            // Check if cursor returned to a cached suggestion position
+            if (!pluginState.suggestionText && !pluginState.isLoading && pluginState.cachedSuggestion) {
+               const { head } = newState.selection;
+               const cached = pluginState.cachedSuggestion;
+
+               // Check if we're at the same position and context matches
+               if (head === cached.pos && newState.selection.empty) {
+                  const currentContextBefore = newState.doc.textBetween(Math.max(0, head - CONTEXT_LENGTH), head, " ");
+                  const currentContextAfter = newState.doc.textBetween(
+                     head,
+                     Math.min(newState.doc.content.size, head + CONTEXT_LENGTH),
+                     " "
+                  );
+
+                  // If context matches exactly, restore the cached suggestion instantly
+                  if (currentContextBefore === cached.contextBefore && currentContextAfter === cached.contextAfter) {
+                     return {
+                        ...pluginState,
+                        suggestionText: cached.text,
+                        suggestionPos: cached.pos,
+                     };
+                  }
+
+                  // Context changed slightly - clear the stale cache
+                  return {
+                     ...pluginState,
+                     cachedSuggestion: null,
+                  };
                }
             }
 
@@ -155,7 +291,7 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
             if (pluginState.suggestionText) {
                const decoration = Decoration.widget(
                   pluginState.suggestionPos,
-                  () => {
+                  (view) => {
                      const wrapper = document.createElement("span");
                      wrapper.className = "inline-suggestion-wrapper";
 
@@ -167,7 +303,40 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
                      const kbd = document.createElement("kbd");
                      kbd.className = "inline-tab-icon";
                      kbd.style.marginLeft = "0.25em";
-                     kbd.textContent = "Ctrl+Space";
+                     kbd.style.cursor = "pointer";
+
+                     // Set text based on device type
+                     if (isMobile()) {
+                        kbd.textContent = "Swipe right →";
+                     } else {
+                        kbd.textContent = "Ctrl+Space";
+                     }
+
+                     // Add click handler to accept suggestion
+                     kbd.addEventListener("click", (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        // Accept the suggestion
+                        const currentPluginState = inlineSuggestionPluginKey.getState(view.state);
+                        if (currentPluginState?.suggestionText && currentPluginState.suggestionPos !== null) {
+                           let text = currentPluginState.suggestionText;
+                           if (currentPluginState.suggestionPos > 0) {
+                              const prevChar = view.state.doc.textBetween(
+                                 currentPluginState.suggestionPos - 1,
+                                 currentPluginState.suggestionPos
+                              );
+                              if (/\w|[\.\?!,;:]/.test(prevChar) && !text.startsWith(" ")) {
+                                 text = " " + text;
+                              }
+                           }
+                           let tr = view.state.tr.insertText(text, currentPluginState.suggestionPos);
+                           tr = tr.setMeta(ACCEPT_SUGGESTION, true);
+                           tr = tr.scrollIntoView();
+                           view.dispatch(tr);
+                        }
+                     });
+
                      wrapper.appendChild(kbd);
 
                      return wrapper;
@@ -191,24 +360,8 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
             const now = Date.now();
             const DOUBLE_HOTKEY_THRESHOLD = 600; // ms
 
-            // Trigger suggestion on Ctrl+Space (robust key check)
-            if ((event.key === " " || event.key === "Spacebar" || event.key === "Space") && event.ctrlKey) {
-               if (pluginState.suggestionText && pluginState.suggestionPos !== null) {
-                  event.preventDefault();
-                  let text = pluginState.suggestionText;
-                  if (pluginState.suggestionPos > 0) {
-                     const prevChar = view.state.doc.textBetween(pluginState.suggestionPos - 1, pluginState.suggestionPos);
-                     if (/\w|[\.\?!,;:]/.test(prevChar) && !text.startsWith(" ")) {
-                        text = " " + text;
-                     }
-                  }
-                  let tr = view.state.tr.insertText(text, pluginState.suggestionPos);
-                  tr = tr.setMeta(CLEAR_SUGGESTION, true);
-                  tr = tr.scrollIntoView();
-                  view.dispatch(tr);
-                  return true;
-               }
-               event.preventDefault();
+            // Helper function to trigger suggestion
+            const triggerSuggestion = (forceRefresh = false) => {
                // Block node awareness: don't trigger suggestion if at a block node
                const { doc, selection } = view.state;
                const node = doc.nodeAt(selection.head);
@@ -225,14 +378,62 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
                   const docSize = doc.content.size;
                   contextAfter = doc.textBetween(head, Math.min(docSize, head + CONTEXT_LENGTH), " ");
                }
+               debouncedRequestSuggestion(view.state, contextBefore, contextAfter, forceRefresh);
+               return true;
+            };
+
+            // Detect "++" trigger - check if user just typed the second "+"
+            if (event.key === "+" && !event.ctrlKey && !event.altKey && !event.metaKey) {
+               const { doc, selection } = view.state;
+               const { head } = selection;
+
+               // Check if the previous character is also "+"
+               if (head > 0) {
+                  const prevChar = doc.textBetween(head - 1, head);
+                  if (prevChar === "+") {
+                     // We have "++" - prevent the default insertion and trigger suggestion
+                     event.preventDefault();
+
+                     // Remove the first "+" and don't insert the second one
+                     let tr = view.state.tr.delete(head - 1, head);
+                     view.dispatch(tr);
+
+                     // Trigger suggestion after the deletion
+                     setTimeout(() => {
+                        triggerSuggestion();
+                     }, 10);
+
+                     return true;
+                  }
+               }
+            }
+
+            // Trigger suggestion on Ctrl+Space (robust key check)
+            if ((event.key === " " || event.key === "Spacebar" || event.key === "Space") && event.ctrlKey) {
+               if (pluginState.suggestionText && pluginState.suggestionPos !== null) {
+                  event.preventDefault();
+                  let text = pluginState.suggestionText;
+                  if (pluginState.suggestionPos > 0) {
+                     const prevChar = view.state.doc.textBetween(pluginState.suggestionPos - 1, pluginState.suggestionPos);
+                     if (/\w|[\.\?!,;:]/.test(prevChar) && !text.startsWith(" ")) {
+                        text = " " + text;
+                     }
+                  }
+                  let tr = view.state.tr.insertText(text, pluginState.suggestionPos);
+                  tr = tr.setMeta(ACCEPT_SUGGESTION, true);
+                  tr = tr.scrollIntoView();
+                  view.dispatch(tr);
+                  return true;
+               }
+               event.preventDefault();
+
                // Double hotkey detection
                let forceRefresh = false;
                if (now - window.__inlineSuggestionLastRequest < DOUBLE_HOTKEY_THRESHOLD) {
                   forceRefresh = true;
                }
                window.__inlineSuggestionLastRequest = now;
-               debouncedRequestSuggestion(view.state, contextBefore, contextAfter, forceRefresh);
-               return true;
+               return triggerSuggestion(forceRefresh);
             }
 
             // Accept suggestion with right arrow key
@@ -246,7 +447,7 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
                   }
                }
                let tr = view.state.tr.insertText(text, pluginState.suggestionPos);
-               tr = tr.setMeta(CLEAR_SUGGESTION, true);
+               tr = tr.setMeta(ACCEPT_SUGGESTION, true);
                tr = tr.scrollIntoView();
                view.dispatch(tr);
                return true;
@@ -260,6 +461,49 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
 
             return false;
          },
+      },
+      view(editorView) {
+         // Helper function to accept suggestion
+         const acceptSuggestion = () => {
+            const pluginState = inlineSuggestionPluginKey.getState(editorView.state);
+            if (pluginState?.suggestionText && pluginState.suggestionPos !== null) {
+               let text = pluginState.suggestionText;
+               if (pluginState.suggestionPos > 0) {
+                  const prevChar = editorView.state.doc.textBetween(pluginState.suggestionPos - 1, pluginState.suggestionPos);
+                  if (/\w|[\.\?!,;:]/.test(prevChar) && !text.startsWith(" ")) {
+                     text = " " + text;
+                  }
+               }
+               let tr = editorView.state.tr.insertText(text, pluginState.suggestionPos);
+               tr = tr.setMeta(ACCEPT_SUGGESTION, true);
+               tr = tr.scrollIntoView();
+               editorView.dispatch(tr);
+               return true;
+            }
+            return false;
+         };
+
+         // Set up swipe right listener on the editor DOM
+         const handleSwipeRight = (_force: number, e: TouchEvent) => {
+            const pluginState = inlineSuggestionPluginKey.getState(editorView.state);
+            if (pluginState?.suggestionText && pluginState.suggestionPos !== null) {
+               e.preventDefault();
+               acceptSuggestion();
+            }
+         };
+
+         // Add swipe listener to editor DOM element
+         swipeListenerCleanup = addSwipeRightListener(editorView.dom as HTMLElement, handleSwipeRight);
+
+         return {
+            destroy() {
+               // Clean up swipe listener when plugin is destroyed
+               if (swipeListenerCleanup) {
+                  swipeListenerCleanup();
+                  swipeListenerCleanup = null;
+               }
+            },
+         };
       },
    });
 }

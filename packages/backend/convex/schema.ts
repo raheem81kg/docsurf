@@ -21,6 +21,7 @@ export default defineSchema({
       image: v.optional(v.string()),
       weekStartsOnMonday: v.optional(v.boolean()),
       timezone: v.optional(v.string()),
+      locale: v.optional(v.string()),
       timeFormat: v.optional(v.number()),
       dateFormat: v.optional(v.string()),
       creditsUsed: v.optional(v.number()),

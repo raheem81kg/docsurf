@@ -20,6 +20,7 @@ import { DEFAULT_TEXT_TITLE } from "@/utils/constants";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 import { useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
+import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
 
 // Beautiful 404 component for documents
 function DocumentNotFound() {
@@ -153,6 +154,8 @@ function DocumentComponent() {
       workspaceId: user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">,
    });
 
+   const isMobile = useIsMobile();
+
    // // Memoize the editor value for performance
    const editorValue = React.useMemo(() => {
       if (typeof doc?.content === "string" && doc.content.length > 0) {
@@ -219,7 +222,11 @@ function DocumentComponent() {
             onChange={(value) => {
                console.log("[Tiptap Editor] onChange", value);
             }}
-            placeholder="Start writing, or press Ctrl+Space for AI autocomplete..."
+            placeholder={
+               isMobile
+                  ? `Start writing..., or type "++" to get an AI suggestion`
+                  : "Start writing, or press Ctrl+Space for AI autocomplete..."
+            }
             editable={!isUserLoading && !!user}
             editorClassName="focus:outline-none px-8 py-4 min-h-full"
          />

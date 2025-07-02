@@ -31,7 +31,7 @@ interface InlineSuggestionApiResponse {
 // --- Memoization Cache ---
 const suggestionCache = new LRUCache<string, string>({
    max: 100, // Adjust as needed
-   ttl: 1000 * 60 * 5, // 5 minutes
+   ttl: 1000 * 15, // 15 seconds for each suggestion
 });
 
 export function createRequestInlineSuggestionCallback(
