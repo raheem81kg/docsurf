@@ -17,6 +17,7 @@ import { seo } from "@/utils/seo";
 import { ThemeScript } from "@/components/providers/theme-script";
 import { Analytics } from "@vercel/analytics/react";
 import { getClientAppUrl } from "@/utils/envs";
+import { env } from "@/env";
 
 export interface RouterAppContext {
    queryClient: QueryClient;
@@ -41,7 +42,7 @@ export const fetchToken = createServerFn({ method: "GET" }).handler(async () => 
    return getCookie(sessionCookieName);
 });
 
-const PROD_APP_URL = "https://docsurf.vercel.app";
+const PROD_APP_URL = env.VITE_PROD_APP_URL;
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
    head: () => ({

@@ -31,7 +31,7 @@ export function getConvexAppUrls(): string[] {
 
 export function getAppUrl() {
    if (process.env.VERCEL_ENV === "production" || process.env.NODE_ENV === "production") {
-      return "https://docsurf.vercel.app";
+      return "https://docsurf.ai";
    }
 
    if (process.env.VERCEL_ENV === "preview") {
