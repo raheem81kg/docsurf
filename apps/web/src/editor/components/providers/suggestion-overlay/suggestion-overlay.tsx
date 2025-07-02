@@ -183,7 +183,7 @@ export default function SuggestionOverlay({
          newX = coords.right - overlayWidth;
       }
 
-      // Ensure the overlay stays within viewport bounds
+      // Ensure the overlay stays within viewport bounds horizontally
       newX = Math.max(padding, Math.min(viewportWidth - overlayWidth - padding, newX));
 
       // Calculate vertical position
@@ -196,13 +196,29 @@ export default function SuggestionOverlay({
          newY = coords.top - overlayHeight - VERTICAL_GAP;
       }
 
+      // Critical fix: Ensure the overlay never goes above the viewport
+      newY = Math.max(padding, newY);
+
+      // Also ensure it doesn't go below the viewport
+      if (newY + overlayHeight > viewportHeight - padding) {
+         newY = viewportHeight - overlayHeight - padding;
+      }
+
+      // Final fallback: if the overlay is too tall for the viewport, center it vertically
+      if (overlayHeight > viewportHeight - padding * 2) {
+         newY = padding;
+      }
+
       return { x: newX, y: newY };
    }, [editor]);
 
-   // Modify handleMouseMove to update manual position
-   const handleMouseMove = useCallback(
-      (e: MouseEvent) => {
+   // Handle both mouse and touch move events
+   const handleMove = useCallback(
+      (e: MouseEvent | TouchEvent) => {
          if (!isDragging || !overlayRef.current) return;
+
+         e.preventDefault();
+         e.stopPropagation();
 
          frameServiceRef.current.debounce(() => {
             const viewportWidth = window.innerWidth;
@@ -210,13 +226,30 @@ export default function SuggestionOverlay({
             const overlayWidth = overlayRef.current?.offsetWidth || 0;
             const overlayHeight = overlayRef.current?.offsetHeight || 0;
 
-            let newX = e.clientX - dragOffset.x;
-            let newY = e.clientY - dragOffset.y;
+            const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+            const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
 
-            // Constrain to viewport bounds with padding
+            let newX = clientX - dragOffset.x;
+            let newY = clientY - dragOffset.y;
+
+            // Enhanced viewport bounds constraint with padding
             const padding = 10;
+
+            // Horizontal constraints
             newX = Math.max(padding, Math.min(viewportWidth - overlayWidth - padding, newX));
-            newY = Math.max(padding, Math.min(viewportHeight - overlayHeight - padding, newY));
+
+            // Vertical constraints with better bounds checking
+            newY = Math.max(padding, newY);
+
+            // Ensure bottom doesn't go below viewport
+            if (newY + overlayHeight > viewportHeight - padding) {
+               newY = viewportHeight - overlayHeight - padding;
+            }
+
+            // Final safety check for very tall overlays
+            if (overlayHeight > viewportHeight - padding * 2) {
+               newY = padding;
+            }
 
             setCurrentPosition({ x: newX, y: newY });
             setIsManuallyPositioned(true);
@@ -272,39 +305,66 @@ export default function SuggestionOverlay({
       }
    }, [isOpen]);
 
-   // Modify the existing handleMouseDown to work with the new positioning
-   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+   // Handle both mouse and touch events for dragging
+   const handleDragStart = useCallback((e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
       if (!(e.target as HTMLElement).closest(".drag-handle")) return;
 
       e.preventDefault();
+      e.stopPropagation();
+
+      // Blur the input to prevent focus-related scrolling issues
+      if (inputRef.current) {
+         inputRef.current.blur();
+      }
+
       setIsDragging(true);
 
       const rect = overlayRef.current?.getBoundingClientRect();
       if (rect) {
+         const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+         const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+
          setDragOffset({
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top,
+            x: clientX - rect.left,
+            y: clientY - rect.top,
          });
       }
    }, []);
 
-   // Modify handleMouseUp to maintain manual position
-   const handleMouseUp = useCallback(() => {
+   // Handle end of drag for both mouse and touch
+   const handleDragEnd = useCallback(() => {
       setIsDragging(false);
    }, []);
 
-   // Add and remove mouse move and up listeners
+   // Global scroll prevention during drag
+   const preventScroll = useCallback(
+      (e: TouchEvent) => {
+         if (isDragging) {
+            e.preventDefault();
+         }
+      },
+      [isDragging]
+   );
+
+   // Add and remove both mouse and touch event listeners
    useEffect(() => {
       if (isDragging) {
-         window.addEventListener("mousemove", handleMouseMove);
-         window.addEventListener("mouseup", handleMouseUp);
+         window.addEventListener("mousemove", handleMove);
+         window.addEventListener("mouseup", handleDragEnd);
+         window.addEventListener("touchmove", handleMove, { passive: false });
+         window.addEventListener("touchend", handleDragEnd, { passive: false });
+         // Prevent all touch scrolling during drag
+         document.body.addEventListener("touchmove", preventScroll, { passive: false });
       }
 
       return () => {
-         window.removeEventListener("mousemove", handleMouseMove);
-         window.removeEventListener("mouseup", handleMouseUp);
+         window.removeEventListener("mousemove", handleMove);
+         window.removeEventListener("mouseup", handleDragEnd);
+         window.removeEventListener("touchmove", handleMove);
+         window.removeEventListener("touchend", handleDragEnd);
+         document.body.removeEventListener("touchmove", preventScroll);
       };
-   }, [isDragging, handleMouseMove, handleMouseUp]);
+   }, [isDragging, handleMove, handleDragEnd, preventScroll]);
 
    // Reset state when the overlay opens
    useEffect(() => {
@@ -548,11 +608,18 @@ export default function SuggestionOverlay({
             <motion.div
                ref={overlayRef}
                className={cn(
-                  "fixed z-1150 bg-background rounded-none shadow-lg border border-border lg:max-w-[624px] md:max-w-[524px] max-w-[90vw] w-[87vw] overflow-hidden select-none",
+                  "fixed z-1150 bg-background rounded-none shadow-lg border border-border lg:max-w-[624px] md:max-w-[524px] max-w-[90vw] w-[87vw] overflow-hidden select-none touch-manipulation",
                   isDragging && "pointer-events-none"
                )}
-               style={{ top: `${currentPosition.y}px`, left: `${currentPosition.x}px` }}
-               onMouseDown={handleMouseDown}
+               style={{
+                  top: `${currentPosition.y}px`,
+                  left: `${currentPosition.x}px`,
+                  userSelect: "none",
+                  WebkitUserSelect: "none",
+                  touchAction: isDragging ? "none" : "auto",
+               }}
+               onMouseDown={handleDragStart}
+               onTouchStart={handleDragStart}
                initial={{ opacity: 0, scale: 0.95 }}
                animate={{ opacity: 1, scale: 1 }}
                exit={{ opacity: 0, scale: 0.95 }}
@@ -561,7 +628,7 @@ export default function SuggestionOverlay({
                <div className="pb-3.5 pt-1.5">
                   {/* Header with close button */}
                   <div className="flex justify-between items-center px-3 mb-1">
-                     <div className="flex items-center gap-2 drag-handle cursor-move">
+                     <div className="flex items-center gap-2 drag-handle cursor-move touch-manipulation">
                         <GripVertical size={14} className="text-muted-foreground" />
                         <h3 className="text-xs font-medium">Suggestion</h3>
                      </div>
@@ -571,7 +638,7 @@ export default function SuggestionOverlay({
                            <button
                               type="button"
                               onClick={onClose}
-                              className="text-muted-foreground hover:text-foreground transition-colors p-2"
+                              className="text-muted-foreground hover:text-foreground transition-colors p-2 cursor-pointer touch-manipulation"
                               aria-label="Close"
                            >
                               <X size={16} />
@@ -589,7 +656,7 @@ export default function SuggestionOverlay({
                            <button
                               type="button"
                               onClick={() => setIsSelectionExpanded(!isSelectionExpanded)}
-                              className="w-full px-3 py-2 flex items-center justify-between text-sm text-muted-foreground hover:bg-muted/50 transition-colors"
+                              className="w-full px-3 py-2 flex items-center justify-between text-sm text-muted-foreground hover:bg-muted/50 transition-colors cursor-pointer touch-manipulation"
                            >
                               <span className="truncate">{isSelectionExpanded ? "Selected Text" : truncateText(selectedText)}</span>
                               <ChevronDown
@@ -620,7 +687,19 @@ export default function SuggestionOverlay({
                                  handleSubmitPrompt(inputValue);
                               }
                            }}
+                           onTouchStart={(e) => {
+                              // Prevent input from interfering with drag operations
+                              e.stopPropagation();
+                           }}
+                           onTouchMove={(e) => {
+                              // Prevent input from causing scroll during drag
+                              if (isDragging) {
+                                 e.preventDefault();
+                                 e.stopPropagation();
+                              }
+                           }}
                            disabled={isGenerating || !selectedText}
+                           draggable={false}
                         />
                      </div>
 
@@ -650,7 +729,7 @@ export default function SuggestionOverlay({
                                           <button
                                              type="button"
                                              onClick={onClose}
-                                             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-sm transition-colors text-muted-foreground hover:text-destructive"
+                                             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-sm transition-colors text-muted-foreground hover:text-destructive cursor-pointer touch-manipulation"
                                           >
                                              <X size={13} strokeWidth={2.5} />
                                              <span className="text-xs">Reject</span>
@@ -665,7 +744,7 @@ export default function SuggestionOverlay({
                                           <button
                                              type="button"
                                              onClick={() => handleAcceptSuggestion(suggestion)}
-                                             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-sm transition-colors text-muted-foreground hover:text-primary"
+                                             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-sm transition-colors text-muted-foreground hover:text-primary cursor-pointer touch-manipulation"
                                           >
                                              <Check size={13} strokeWidth={2.5} />
                                              <span className="text-xs">Accept</span>

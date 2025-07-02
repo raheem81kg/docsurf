@@ -1,7 +1,6 @@
 import { createServerFileRoute } from "@tanstack/react-start/server";
-import { env } from "@/env";
 
-const POSTHOG_HOST = env.VITE_POSTHOG_HOST;
+const POSTHOG_HOST = process.env.POSTHOG_HOST;
 
 function filterHeaders(headers: Headers): Record<string, string> {
    const filtered: Record<string, string> = {};

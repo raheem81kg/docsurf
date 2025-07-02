@@ -24,7 +24,7 @@ export const Route = createFileRoute("/settings/profile")({
 function UserAccountSettings() {
    const { data: session, isPending: sessionLoading } = useSession();
    const queryClient = useQueryClient();
-   const { data: sessions = [], isPending: sessionsLoading } = useListSessions();
+   // const { data: sessions = [], isPending: sessionsLoading } = useListSessions();
    const updateUser = useUpdateUser();
    const revokeSession = useRevokeSession();
    const revokeOtherSessions = useRevokeOtherSessions();
@@ -233,7 +233,7 @@ function UserAccountSettings() {
             </Card>
 
             {/* Session Management */}
-            <Card>
+            {/* <Card>
                <CardHeader>
                   <CardTitle>Active Sessions</CardTitle>
                   <CardDescription>Manage your active login sessions across devices</CardDescription>
@@ -335,7 +335,7 @@ function UserAccountSettings() {
                      </>
                   )}
                </CardContent>
-            </Card>
+            </Card> */}
          </div>
       </SettingsLayout>
    );

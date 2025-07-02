@@ -174,6 +174,11 @@ function DocumentComponent() {
       return {};
    }, [doc?.content]);
 
+   // Show loading only when we're actually loading something
+   if (isUserLoading || (user && isTreeLoading) || (user && isDocLoading) || isPending) {
+      return <AnimatedLoadingBar />;
+   }
+
    // Same authentication pattern as chat.tsx
    if (!session?.user && !isPending) {
       return (
@@ -181,11 +186,6 @@ function DocumentComponent() {
             <SignupMessagePrompt />
          </div>
       );
-   }
-
-   // Show loading only when we're actually loading something
-   if (isUserLoading || (user && isTreeLoading) || (user && isDocLoading)) {
-      return <AnimatedLoadingBar />;
    }
 
    // If we have a user but no document and we're not loading, show beautiful 404
