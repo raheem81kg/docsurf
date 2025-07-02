@@ -14,9 +14,9 @@ import type * as React from "react";
 import { Providers } from "@/components/providers/providers";
 import { authClient } from "@/lib/auth-client";
 import { seo } from "@/utils/seo";
-import { getAppUrl } from "@docsurf/utils/envs";
 import { ThemeScript } from "@/components/providers/theme-script";
 import { Analytics } from "@vercel/analytics/react";
+import { getClientAppUrl } from "@/utils/envs";
 
 export interface RouterAppContext {
    queryClient: QueryClient;
@@ -48,7 +48,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
          ...seo({
             title: "Docsurf: The AI document editor",
             description: "Docsurf is an AI document editor that allows you to create, edit, and share documents with ease.",
-            image: `${getAppUrl()}/opengraph.jpg`,
+            image: `${getClientAppUrl()}/opengraph.jpg`,
             // keywords: "docs, surf, webapp, ..." // Add if you want
          }),
          // --- App & Theme Meta Tags ---
@@ -75,7 +75,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
          },
          {
             property: "og:url",
-            content: getAppUrl(),
+            content: getClientAppUrl(),
          },
 
          // --- Added for Apple Web App Title ---
