@@ -3,5 +3,5 @@ import { emailOTPClient, magicLinkClient, twoFactorClient } from "better-auth/cl
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({
-   plugins: [magicLinkClient(), emailOTPClient(), twoFactorClient(), convexClient(), crossDomainClient()],
+   plugins: [magicLinkClient(), emailOTPClient(), twoFactorClient(), convexClient()],
 });

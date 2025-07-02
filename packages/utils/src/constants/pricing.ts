@@ -1,4 +1,4 @@
-import { getAppUrl } from "../envs.js";
+import { HARDCODED_APP_URL } from "./constants.js";
 
 export type PlanFeature = {
    id?: string;
@@ -10,6 +10,8 @@ export type PlanFeature = {
    };
 };
 
+// Warning:
+// The links getAppUrl will behave differently depending on the environment (vite, convex, vercel)
 export const PLANS = [
    {
       name: "Free",
@@ -18,13 +20,13 @@ export const PLANS = [
          yearly: 0,
       },
       limits: {
-         requests7d: 100, // Total Requests (last 7 days)
-         tokens7d: 200000, // Total Tokens (input + output + reasoning)
+         requests7d: 100000, // Total Requests (last 7 days)
+         tokens7d: 100000000, // Total Tokens (input + output + reasoning)
       },
    },
    {
       name: "Pro",
-      link: `${getAppUrl()}/pricing`,
+      link: `${HARDCODED_APP_URL}/pricing`,
       price: {
          monthly: 30,
          yearly: 25,
@@ -34,8 +36,8 @@ export const PLANS = [
          ],
       },
       limits: {
-         requests7d: 1000, // Total Requests (last 7 days)
-         tokens7d: 1000000, // Total Tokens (input + output + reasoning)
+         requests7d: 100000, // Total Requests (last 7 days)
+         tokens7d: 100000000, // Total Tokens (input + output + reasoning)
       },
       featureTitle: "Everything in Free, plus:",
       features: [

@@ -48,28 +48,21 @@ function CustomizationSettings() {
       }
    };
 
-   if (!session?.user?.id) {
-      return (
-         <SettingsLayout title="Customization" description="Personalize how the AI interacts with you">
-            <p className="text-muted-foreground text-sm">Sign in to customize your AI experience.</p>
-         </SettingsLayout>
-      );
-   }
-
-   if (userSettings && "error" in userSettings) {
-      return (
-         <SettingsLayout title="Customization" description="Personalize how the AI interacts with you">
-            <p className="text-destructive text-sm">Error loading settings.</p>
-         </SettingsLayout>
-      );
-   }
-
-   if (!userSettings) {
+   // Consolidated loading state
+   if (!userSettings || "error" in userSettings) {
       return (
          <SettingsLayout title="Customization" description="Personalize how the AI interacts with you">
             <div className="flex items-center justify-center p-8">
                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
+         </SettingsLayout>
+      );
+   }
+
+   if (!session?.user?.id) {
+      return (
+         <SettingsLayout title="Customization" description="Personalize how the AI interacts with you">
+            <p className="text-muted-foreground text-sm">Sign in to customize your AI experience.</p>
          </SettingsLayout>
       );
    }

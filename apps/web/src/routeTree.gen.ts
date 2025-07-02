@@ -12,10 +12,8 @@ import { createFileRoute } from '@tanstack/react-router'
 import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TodosRouteImport } from './routes/todos'
 import { Route as WelcomeRouteImport } from './routes/_welcome'
 import { Route as MainRouteImport } from './routes/_main'
-import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as WelcomeIndexRouteImport } from './routes/_welcome/index'
 import { Route as SettingsUsageRouteImport } from './routes/settings/usage'
@@ -57,21 +55,12 @@ const SettingsRouteLazyRoute = SettingsRouteLazyRouteImport.update({
 } as any).lazy(() =>
   import('./routes/settings/route.lazy').then((d) => d.Route),
 )
-const TodosRoute = TodosRouteImport.update({
-  id: '/todos',
-  path: '/todos',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/_welcome',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MainRoute = MainRouteImport.update({
   id: '/_main',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthedRoute = AuthedRouteImport.update({
-  id: '/_authed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -157,14 +146,14 @@ const SettingsAiOptionsRoute = SettingsAiOptionsRouteImport.update({
   getParentRoute: () => SettingsRouteLazyRoute,
 } as any)
 const AuthedServerRoute = AuthedServerRouteImport.update({
-  id: '/server',
+  id: '/_authed/server',
   path: '/server',
-  getParentRoute: () => AuthedRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthedClientOnlyRoute = AuthedClientOnlyRouteImport.update({
-  id: '/client-only',
+  id: '/_authed/client-only',
   path: '/client-only',
-  getParentRoute: () => AuthedRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthAuthRoute = AuthAuthRouteImport.update({
   id: '/auth',
@@ -227,7 +216,6 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/todos': typeof TodosRoute
   '/settings': typeof SettingsRouteLazyRouteWithChildren
   '/auth': typeof AuthAuthRoute
   '/client-only': typeof AuthedClientOnlyRouteWithChildren
@@ -253,7 +241,6 @@ export interface FileRoutesByFullPath {
   '/doc': typeof MainDocIndexRoute
 }
 export interface FileRoutesByTo {
-  '/todos': typeof TodosRoute
   '/settings': typeof SettingsRouteLazyRouteWithChildren
   '/auth': typeof AuthAuthRoute
   '/server': typeof AuthedServerRoute
@@ -280,10 +267,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_auth': typeof AuthRouteWithChildren
-  '/_authed': typeof AuthedRouteWithChildren
   '/_main': typeof MainRouteWithChildren
   '/_welcome': typeof WelcomeRouteWithChildren
-  '/todos': typeof TodosRoute
   '/settings': typeof SettingsRouteLazyRouteWithChildren
   '/_auth/auth': typeof AuthAuthRoute
   '/_authed/client-only': typeof AuthedClientOnlyRouteWithChildren
@@ -311,7 +296,6 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/todos'
     | '/settings'
     | '/auth'
     | '/client-only'
@@ -337,7 +321,6 @@ export interface FileRouteTypes {
     | '/doc'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/todos'
     | '/settings'
     | '/auth'
     | '/server'
@@ -363,10 +346,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_auth'
-    | '/_authed'
     | '/_main'
     | '/_welcome'
-    | '/todos'
     | '/settings'
     | '/_auth/auth'
     | '/_authed/client-only'
@@ -394,11 +375,11 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
-  AuthedRoute: typeof AuthedRouteWithChildren
   MainRoute: typeof MainRouteWithChildren
   WelcomeRoute: typeof WelcomeRouteWithChildren
-  TodosRoute: typeof TodosRoute
   SettingsRouteLazyRoute: typeof SettingsRouteLazyRouteWithChildren
+  AuthedClientOnlyRoute: typeof AuthedClientOnlyRouteWithChildren
+  AuthedServerRoute: typeof AuthedServerRoute
 }
 export interface FileServerRoutesByFullPath {
   '/api/inline-suggestion': typeof ApiInlineSuggestionServerRoute
@@ -463,13 +444,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/todos': {
-      id: '/todos'
-      path: '/todos'
-      fullPath: '/todos'
-      preLoaderRoute: typeof TodosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_welcome': {
       id: '/_welcome'
       path: ''
@@ -482,13 +456,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof MainRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authed': {
-      id: '/_authed'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof AuthedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
@@ -601,14 +568,14 @@ declare module '@tanstack/react-router' {
       path: '/server'
       fullPath: '/server'
       preLoaderRoute: typeof AuthedServerRouteImport
-      parentRoute: typeof AuthedRoute
+      parentRoute: typeof rootRouteImport
     }
     '/_authed/client-only': {
       id: '/_authed/client-only'
       path: '/client-only'
       fullPath: '/client-only'
       preLoaderRoute: typeof AuthedClientOnlyRouteImport
-      parentRoute: typeof AuthedRoute
+      parentRoute: typeof rootRouteImport
     }
     '/_auth/auth': {
       id: '/_auth/auth'
@@ -704,30 +671,6 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
-interface AuthedClientOnlyRouteChildren {
-  AuthedClientOnlyIndexRoute: typeof AuthedClientOnlyIndexRoute
-}
-
-const AuthedClientOnlyRouteChildren: AuthedClientOnlyRouteChildren = {
-  AuthedClientOnlyIndexRoute: AuthedClientOnlyIndexRoute,
-}
-
-const AuthedClientOnlyRouteWithChildren =
-  AuthedClientOnlyRoute._addFileChildren(AuthedClientOnlyRouteChildren)
-
-interface AuthedRouteChildren {
-  AuthedClientOnlyRoute: typeof AuthedClientOnlyRouteWithChildren
-  AuthedServerRoute: typeof AuthedServerRoute
-}
-
-const AuthedRouteChildren: AuthedRouteChildren = {
-  AuthedClientOnlyRoute: AuthedClientOnlyRouteWithChildren,
-  AuthedServerRoute: AuthedServerRoute,
-}
-
-const AuthedRouteWithChildren =
-  AuthedRoute._addFileChildren(AuthedRouteChildren)
-
 interface MainRouteChildren {
   MainDocDocumentIdRoute: typeof MainDocDocumentIdRoute
   MainDocLibraryRoute: typeof MainDocLibraryRoute
@@ -790,13 +733,24 @@ const SettingsRouteLazyRouteChildren: SettingsRouteLazyRouteChildren = {
 const SettingsRouteLazyRouteWithChildren =
   SettingsRouteLazyRoute._addFileChildren(SettingsRouteLazyRouteChildren)
 
+interface AuthedClientOnlyRouteChildren {
+  AuthedClientOnlyIndexRoute: typeof AuthedClientOnlyIndexRoute
+}
+
+const AuthedClientOnlyRouteChildren: AuthedClientOnlyRouteChildren = {
+  AuthedClientOnlyIndexRoute: AuthedClientOnlyIndexRoute,
+}
+
+const AuthedClientOnlyRouteWithChildren =
+  AuthedClientOnlyRoute._addFileChildren(AuthedClientOnlyRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
-  AuthedRoute: AuthedRouteWithChildren,
   MainRoute: MainRouteWithChildren,
   WelcomeRoute: WelcomeRouteWithChildren,
-  TodosRoute: TodosRoute,
   SettingsRouteLazyRoute: SettingsRouteLazyRouteWithChildren,
+  AuthedClientOnlyRoute: AuthedClientOnlyRouteWithChildren,
+  AuthedServerRoute: AuthedServerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -93,7 +93,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
                   </span>
                </div>
                <span className="text-xs text-muted-foreground mt-1">
-                  Press <kbd className="inline-tab-icon">Tab</kbd> to accept
+                  Press <kbd className="inline-tab-icon">Ctrl+Space</kbd> to accept
                </span>
             </div>
          </div>

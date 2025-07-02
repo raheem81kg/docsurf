@@ -387,6 +387,9 @@ function ProvidersSettings() {
    const userSettings = useConvexQuery(api.settings.getUserSettings, session?.user?.id ? {} : "skip");
    const updateSettings = useMutation(api.settings.updateUserSettingsPartial);
 
+   // Call hooks at the top to avoid conditional hook calls
+   const { currentProviders } = useAvailableModels(userSettings && !("error" in userSettings) ? userSettings : undefined);
+
    const [loading, setLoading] = useState(false);
    const [addingCustomProvider, setAddingCustomProvider] = useState(false);
    const [customProviderForm, setCustomProviderForm] = useState({
@@ -396,13 +399,17 @@ function ProvidersSettings() {
       key: "",
    });
 
-   if (sessionLoading) {
+   // Consolidated loading state
+   if (sessionLoading || !userSettings || "error" in userSettings) {
       return (
          <SettingsLayout title="Providers" description="Manage your model and search providers.">
-            <Skeleton className="h-10 w-full" />
+            <div className="flex items-center justify-center p-8">
+               <Skeleton className="h-10 w-full" />
+            </div>
          </SettingsLayout>
       );
    }
+
    if (!session?.user?.id) {
       return (
          <SettingsLayout title="Providers" description="Manage your model and search providers.">
@@ -410,23 +417,6 @@ function ProvidersSettings() {
          </SettingsLayout>
       );
    }
-   if (!userSettings) {
-      return (
-         <SettingsLayout title="Providers" description="Manage your model and search providers.">
-            <Skeleton className="h-10 w-full" />
-         </SettingsLayout>
-      );
-   }
-   if ("error" in userSettings) {
-      return (
-         <SettingsLayout title="Providers" description="Manage your model and search providers.">
-            <p className="text-destructive text-sm">Error loading settings.</p>
-         </SettingsLayout>
-      );
-   }
-
-   // Only call useAvailableModels if userSettings is valid
-   const { currentProviders } = useAvailableModels(userSettings && !("error" in userSettings) ? userSettings : undefined);
 
    // Helper function to get current search provider state
    const getCurrentSearchProviders = () => {

@@ -140,7 +140,7 @@ export function SectionFour() {
                            className="demo-inline-suggestion-animated text-muted-foreground/65"
                            data-suggestion=" a helpful completion."
                         />
-                        <kbd className="inline-tab-icon">Tab</kbd>
+                        <kbd className="inline-tab-icon">Ctrl+Space</kbd>
                      </span>
                   </p>
                </div>

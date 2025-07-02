@@ -8,18 +8,21 @@ import { INNER_RIGHT_SIDEBAR_COOKIE_NAME, LEFT_SIDEBAR_COOKIE_NAME, RIGHT_SIDEBA
 import { OnboardingProvider } from "@/components/onboarding/onboarding-provider";
 import { SuggestionOverlayProvider } from "@/editor/components/providers/suggestion-overlay/suggestion-overlay-provider";
 import { useOfflineIndicator } from "@/hooks/use-offline-indicator";
+import { useSession } from "@/hooks/auth-hooks";
 
 export const Route = createFileRoute("/_main")({
    component: MainLayoutComponent,
    beforeLoad: ({ context }) => {
-      if (!context.userId) {
-         throw redirect({ to: "/auth", statusCode: 302 });
-      }
+      // if (!context.userId) {
+      //    throw redirect({ to: "/auth", statusCode: 302 });
+      // }
    },
 });
 
 function MainLayoutComponent() {
+   const { data: session, isPending } = useSession();
    useOfflineIndicator();
+   const isUserNotSignedIn = !session?.user && !isPending;
    return (
       <SuggestionOverlayProvider>
          <OnboardingProvider>
@@ -35,7 +38,7 @@ function MainLayoutComponent() {
                      </div>
 
                      {/* sidebar 3 */}
-                     <WrapperInnerRightSidebar />
+                     {!isUserNotSignedIn && <WrapperInnerRightSidebar />}
                   </div>
                </SidebarInset>
             </div>
@@ -66,7 +69,7 @@ const WrapperInnerRightSidebar = () => {
 
    return (
       <SidebarProvider
-         defaultWidth="28rem"
+         defaultWidth="26rem"
          name="inner-right-sidebar"
          defaultOpen={ir_sidebar_state}
          className="w-fit overflow-hidden max-h-dvh min-h-[calc(100svh-95px)]"

@@ -233,7 +233,28 @@ function buildPrompt(
    const relevantContent = currentContent.slice(-contextWindow);
    const lengthMap = { short: "at least 8 words", medium: "at least 12 words", long: "at least 20 words" };
    const lengthInstruction = lengthMap[suggestionLength] || lengthMap.medium;
-   let promptContent = `Text before cursor:\n${relevantContent}[CURSOR] Continue the text from the [CURSOR] position. Write a natural, flowing continuation of ${lengthInstruction}, but no more than 30. Do not repeat any text that appears before the cursor. Output only the new continuation, and do not stop after a single phrase.`;
+
+   // Check if there's meaningful context (more than just whitespace)
+   const meaningfulContent = relevantContent.trim();
+   const hasContext = meaningfulContent.length > 0;
+
+   let promptContent: string;
+
+   if (!hasContext) {
+      // No context - use a prompt for starting fresh
+      promptContent = `The user is starting to write in a blank document. Suggest a helpful writing starter of ${lengthInstruction}. This could be:
+- A thought-provoking question to explore
+- An interesting opening sentence for an essay or article
+- A creative writing prompt
+- A professional statement starter
+- A simple greeting or introduction
+
+Make it engaging and useful for someone who wants to start writing but needs inspiration. Output only the suggested text, no explanations or meta-commentary.`;
+   } else {
+      // Has context - use continuation prompt
+      promptContent = `Text before cursor:\n${relevantContent}[CURSOR] Continue the text from the [CURSOR] position. Write a natural, flowing continuation of ${lengthInstruction}, but no more than 30. Do not repeat any text that appears before the cursor. Output only the new continuation, and do not stop after a single phrase.`;
+   }
+
    if (customInstructions) {
       promptContent = `${customInstructions}\n\n${promptContent}`;
    } else {

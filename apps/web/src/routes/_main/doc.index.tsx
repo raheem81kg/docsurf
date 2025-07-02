@@ -6,7 +6,11 @@ import { Skeleton } from "@docsurf/ui/components/skeleton";
 import { useEffect, useState, useRef } from "react";
 import { motion } from "motion/react";
 import { useNavigate } from "@tanstack/react-router";
-import { useQuery, useMutation } from "convex/react";
+import { useMutation } from "convex/react";
+import { useSession } from "@/hooks/auth-hooks";
+import { SignupMessagePrompt } from "@/components/sandbox/right-inner/chat/signup-message-prompt";
+import { useConvexQuery } from "@convex-dev/react-query";
+import { buildTree, flattenTree } from "@/components/sandbox/left/_tree_components/components/utilities";
 
 export const Route = createFileRoute("/_main/doc/")({
    component: RouteComponent,
@@ -17,22 +21,23 @@ function RouteComponent() {
    const [error, setError] = useState<string | null>(null);
    const navigate = useNavigate();
 
+   // Session hook (same as chat.tsx)
+   const { data: session, isPending } = useSession();
+
    // Convex hooks
-   const user = useQuery(api.auth.getCurrentUser, {});
+   const user = useConvexQuery(api.auth.getCurrentUser, session?.user?.id ? {} : "skip");
    const createWorkspace = useMutation(api.workspaces.createWorkspace);
    const createDocument = useMutation(api.documents.createDocument);
 
    // Get workspaceId from user
    const workspaceId = user?.workspaces?.[0]?.workspace?._id as Id<"workspaces"> | undefined;
 
-   // Fetch docs only if workspaceId is available
-   const docsResult = useQuery(
+   // Fetch all documents to find the first text document in tree order
+   const docsResult = useConvexQuery(
       api.documents.fetchDocumentTree,
-      workspaceId
+      workspaceId && user?._id
          ? {
               workspaceId,
-              limit: 1,
-              documentType: "text/plain",
            }
          : "skip"
    );
@@ -67,10 +72,40 @@ function RouteComponent() {
                setError("No workspace found or created.");
                return;
             }
-            // If docs exist, redirect
+            // If docs exist, find the first text document using existing tree utilities
             if (docsResult?.data && docsResult.data.length > 0) {
-               navigate({ to: "/doc/$documentId", params: { documentId: docsResult.data[0]._id } });
-               return;
+               const allDocs = docsResult.data;
+
+               // Use existing tree utilities to get proper tree order
+               const treeItems = buildTree(
+                  allDocs.map((doc, idx) => ({
+                     id: doc._id,
+                     parentId: doc.parentId ?? null,
+                     depth: doc.depth,
+                     children: [],
+                     documentType: doc.documentType,
+                     title: doc.title || DEFAULT_TEXT_TITLE,
+                     orderPosition: doc.orderPosition,
+                     updatedAt: doc.updatedAt ?? doc._creationTime,
+                     index: idx,
+                  }))
+               );
+
+               // Flatten the tree to get items in proper traversal order
+               const flattenedItems = flattenTree(treeItems);
+
+               // Find the first text document in the flattened (properly ordered) list
+               const firstTextDoc = flattenedItems.find((item) => item.documentType === "text/plain");
+               if (firstTextDoc) {
+                  navigate({ to: "/doc/$documentId", params: { documentId: firstTextDoc.id as string } });
+                  return;
+               }
+
+               // Fallback: if no text documents exist, go to first document overall
+               if (flattenedItems.length > 0) {
+                  navigate({ to: "/doc/$documentId", params: { documentId: flattenedItems[0].id as string } });
+                  return;
+               }
             }
             // If no docs, create one
             creatingRef.current = true;
@@ -96,9 +131,18 @@ function RouteComponent() {
    }, [user, docsResult, createWorkspace, createDocument, navigate, workspaceId]);
 
    useEffect(() => {
-      const timeout = setTimeout(() => setShowMessage(true), 3000);
+      const timeout = setTimeout(() => setShowMessage(true), 2500);
       return () => clearTimeout(timeout);
    }, []);
+
+   // Same authentication pattern as chat.tsx
+   if (!session?.user && !isPending) {
+      return (
+         <div className="relative flex h-[calc(100dvh-64px)] items-center justify-center">
+            <SignupMessagePrompt />
+         </div>
+      );
+   }
 
    if (user === undefined || docsResult === undefined) {
       // Still loading
@@ -108,12 +152,16 @@ function RouteComponent() {
             <div className="bg-accent/10 flex-1 w-full flex items-center justify-center relative">
                {showMessage && (
                   <motion.div
-                     initial={{ opacity: 0, y: 16 }}
+                     initial={{ opacity: 0, y: 20 }}
                      animate={{ opacity: 1, y: 0 }}
-                     transition={{ duration: 0.5 }}
-                     className="absolute left-1/2 top-1/2 italic -translate-x-1/2 -translate-y-1/2 text-lg text-muted-foreground text-center pointer-events-none select-none"
+                     transition={{ duration: 0.5, ease: "easeOut" }}
+                     className="text-center max-w-sm mx-auto px-6"
                   >
-                     Redirecting to your document...
+                     <div className="mb-4">
+                        <div className="w-8 h-8 mx-auto mb-3 border-2 border-muted-foreground/30 border-t-primary rounded-full animate-spin" />
+                     </div>
+                     <p className="text-base font-medium text-foreground mb-2">Setting up your workspace</p>
+                     <p className="text-sm text-muted-foreground">Redirecting to your document...</p>
                   </motion.div>
                )}
             </div>

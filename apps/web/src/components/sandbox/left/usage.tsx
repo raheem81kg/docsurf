@@ -70,9 +70,9 @@ function UsageInner() {
 
    // Usage values
    const requestsUsed = usageStats?.totalRequests ?? 0;
-   const requestsLimit = plan.limits.requests7d ?? INFINITY_NUMBER;
+   const requestsLimit = plan.limits.requests7d ?? 999999999;
    const tokensUsed = usageStats?.totalTokens ?? 0;
-   const tokensLimit = plan.limits.tokens7d ?? INFINITY_NUMBER;
+   const tokensLimit = plan.limits.tokens7d ?? 999999999;
    // TODO: Use usage stats in UsageRows when we add limits
 
    // Next plan limits
@@ -104,7 +104,7 @@ function UsageInner() {
                className="group flex items-center gap-0.5 text-xs font-normal text-muted-foreground opacity-50 transition-colors hover:text-text-default"
                to="/settings/usage"
             >
-               Usage
+               Chat Usage
                <ChevronRight className="size-3 text-neutral-400 transition-all group-hover:translate-x-0.5 group-hover:text-neutral-500" />
             </Link>
 
@@ -113,7 +113,7 @@ function UsageInner() {
                   icon={Activity}
                   label="Requests"
                   usage={requestsUsed}
-                  limit={INFINITY_NUMBER}
+                  limit={requestsLimit}
                   showNextPlan={hovered}
                   nextPlanLimit={nextRequestsLimit}
                   warning={warnings[0] ?? false}
@@ -123,7 +123,7 @@ function UsageInner() {
                   icon={Zap}
                   label="Tokens"
                   usage={tokensUsed}
-                  limit={INFINITY_NUMBER}
+                  limit={tokensLimit}
                   showNextPlan={hovered}
                   nextPlanLimit={nextTokensLimit}
                   warning={warnings[1] ?? false}

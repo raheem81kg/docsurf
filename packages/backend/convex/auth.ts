@@ -1,6 +1,6 @@
 import { type AuthFunctions, BetterAuth, convexAdapter, type PublicAuthFunctions } from "@convex-dev/better-auth";
-import { convex } from "@convex-dev/better-auth/plugins";
-import { getAppUrl } from "@docsurf/utils/envs";
+import { convex, crossDomain } from "@convex-dev/better-auth/plugins";
+import { getConvexAppUrl } from "@docsurf/utils/envs";
 import { betterAuth } from "better-auth";
 import { emailOTP, magicLink, twoFactor } from "better-auth/plugins";
 import { asyncMap } from "convex-helpers";
@@ -10,27 +10,7 @@ import { type GenericCtx, query } from "./_generated/server";
 import { sendEmailVerification, sendMagicLink, sendSignInOTP } from "./email";
 import type { SafeSubscription } from "./subscriptions";
 import gettingStartedContent from "./getting_started.json";
-
-// The user object returned by the getCurrentUser query. It combines authentication
-// data with the user's subscription status and application-specific data.
-export type CurrentUser =
-   | (Doc<"users"> &
-        CurrentUserMetadata & {
-           subscription: SafeSubscription | null;
-           workspaces: Array<{ workspace: Doc<"workspaces">; role: string }>;
-        })
-   | null;
-
-type CurrentUserMetadata = {
-   image?: string | undefined;
-   twoFactorEnabled?: boolean | undefined;
-   name?: string | undefined;
-   email: string;
-   emailVerified: boolean;
-   userId: string;
-   createdAt: number;
-   updatedAt: number;
-} | null;
+import type { CurrentUser } from "./users";
 
 const authFunctions: AuthFunctions = internal.auth;
 const publicAuthFunctions: PublicAuthFunctions = api.auth;
@@ -52,7 +32,7 @@ export const betterAuthComponent = new BetterAuth(components.betterAuth, {
 
 export const createAuth = (ctx: GenericCtx) =>
    betterAuth({
-      baseURL: getAppUrl(),
+      baseURL: getConvexAppUrl(),
       database: convexAdapter(ctx, betterAuthComponent),
       account: {
          accountLinking: {
@@ -148,7 +128,7 @@ export const { createUser, deleteUser, updateUser, createSession, isAuthenticate
 
          // Insert a Getting Started document for the new user
          await ctx.db.insert("documents", {
-            userId,
+            authorId: userId,
             workspaceId,
             parentId: undefined,
             title: "Getting Started",

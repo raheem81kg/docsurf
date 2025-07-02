@@ -72,31 +72,22 @@ export const Route = createLazyFileRoute("/settings")({
 const Inner = () => {
    const { data: session, isPending } = useSession();
    const userSettings = useConvexQuery(api.settings.getUserSettings, session?.user?.id ? {} : "skip");
-   if (isPending) {
+
+   // Consolidated loading state
+   if (isPending || !userSettings || "error" in userSettings) {
       return (
-         <SettingsLayout title="API Keys" description="Manage your models and providers. Keys are encrypted and stored securely.">
-            <Skeleton className="h-10 w-full" />
+         <SettingsLayout title="Settings" description="Manage your account preferences and configuration.">
+            <div className="flex items-center justify-center p-8">
+               <Skeleton className="h-10 w-full" />
+            </div>
          </SettingsLayout>
       );
    }
+
    if (!session?.user?.id) {
       return (
-         <SettingsLayout title="API Keys" description="Manage your models and providers. Keys are encrypted and stored securely.">
+         <SettingsLayout title="Settings" description="Manage your account preferences and configuration.">
             <p className="text-muted-foreground text-sm">Sign in to manage your settings.</p>
-         </SettingsLayout>
-      );
-   }
-   if (!userSettings) {
-      return (
-         <SettingsLayout title="API Keys" description="Manage your models and providers. Keys are encrypted and stored securely.">
-            <Skeleton className="h-10 w-full" />
-         </SettingsLayout>
-      );
-   }
-   if ("error" in userSettings) {
-      return (
-         <SettingsLayout title="API Keys" description="Manage your models and providers. Keys are encrypted and stored securely.">
-            <p className="text-muted-foreground text-sm">Error loading settings.</p>
          </SettingsLayout>
       );
    }

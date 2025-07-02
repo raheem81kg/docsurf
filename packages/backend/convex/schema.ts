@@ -35,15 +35,15 @@ export default defineSchema({
    }).index("userId", ["userId"]),
 
    documents: defineTable(Documents)
-      .index("byUser", ["userId"])
+      .index("byUser", ["authorId"])
       .index("byParentId", ["parentId"])
       .index("byWorkspaceUpdated", ["workspaceId", "updatedAt"])
       .index("byWorkspaceDeleted", ["workspaceId", "isDeleted"])
       .index("byParentOrder", ["parentId", "orderPosition"])
-      .index("byUserWorkspaceDeleted", ["userId", "workspaceId", "isDeleted"])
+      .index("byUserWorkspaceDeleted", ["authorId", "workspaceId", "isDeleted"])
       .searchIndex("search_title", {
          searchField: "title",
-         filterFields: ["workspaceId", "userId", "isDeleted"],
+         filterFields: ["workspaceId", "authorId", "isDeleted"],
       }),
 
    // apiKeys: defineTable({

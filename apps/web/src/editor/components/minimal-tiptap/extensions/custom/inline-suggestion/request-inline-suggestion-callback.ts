@@ -73,11 +73,6 @@ export function createRequestInlineSuggestionCallback(
 
       try {
          const fullContent = state.doc.textContent;
-         if (contextBefore.length < 3) {
-            showToast("Please type at least 3 characters to get a suggestion.", "warning");
-            editor.view?.dispatch(editor.state.tr.setMeta(CLEAR_SUGGESTION, true));
-            return;
-         }
 
          console.log("[Editor Component] Requesting inline suggestion via plugin callback...");
 

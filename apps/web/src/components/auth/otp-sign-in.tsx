@@ -37,7 +37,9 @@ export function OTPSignIn({ className }: Props) {
                   setEmail(value.email);
                   setSent(true);
                   showToast("Verification code sent to your email.", "success");
-                  console.log("DEBUG: setSent(true), setEmail", value.email);
+                  if (import.meta.env.DEV) {
+                     console.log("DEBUG: setSent(true), setEmail", value.email);
+                  }
                },
                onError: (err) => {
                   showToast(err.error.message, "error");

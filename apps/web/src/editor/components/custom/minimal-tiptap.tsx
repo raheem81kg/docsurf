@@ -32,6 +32,7 @@ import { useMutation } from "convex/react";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 import { useThrottle } from "../minimal-tiptap/hooks/use-throttle";
 import { toast } from "sonner";
+import { useSession } from "@/hooks/auth-hooks";
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "onUpdate"> {
    value?: Content;
@@ -39,6 +40,7 @@ export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "o
    className?: string;
    editorContentClassName?: string;
    characterLimit?: number;
+   isMainEditor: boolean;
 }
 
 const MobileTopToolbar = ({ editor, isDocLocked }: { editor: Editor; isDocLocked?: boolean }) => (
@@ -132,6 +134,8 @@ const TOAST_ID = "sync-server-content";
 
 export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps>(
    ({ value, onChange, className, editorContentClassName, characterLimit = MAX_CHARACTERS, ...props }, ref) => {
+      const { data: session, isPending } = useSession();
+      const isUserNotSignedIn = !session?.user && !isPending;
       const isMobile = useIsMobile();
       // Get user and workspaceId
       const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
@@ -149,7 +153,7 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
 
       const toggleDocumentLock = useMutation(api.documents.toggleDocumentLock);
       const handleToggleLock = React.useCallback(async () => {
-         if (!doc?._id || !doc.workspaceId) return;
+         if (!doc?._id || !doc.workspaceId || isUserNotSignedIn) return;
          try {
             await toggleDocumentLock({
                workspaceId: doc.workspaceId,
@@ -159,7 +163,7 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
             showToast("Failed to toggle lock", "error");
             console.error("Failed to toggle lock", err);
          }
-      }, [doc, toggleDocumentLock]);
+      }, [doc, toggleDocumentLock, isUserNotSignedIn]);
 
       console.log("[MinimalTiptap] editor", editor);
       // Register the editor instance in the global store
@@ -172,41 +176,45 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
 
       const ONE_HOUR = 60 * 60 * 1000;
 
-      // Throttle setContent to avoid rapid updates from live query
-      const throttledSetContent = useThrottle((val: any) => {
-         if (editor && val) {
-            // Skip if there are unsaved changes
-            if ((editor as any).hasPendingChanges?.current) return;
-            const current = editor.getJSON();
-            if (JSON.stringify(current) !== JSON.stringify(val)) {
-               // If out of sync but no pending changes, show sync toast instead of syncing automatically
-               pendingSyncValue.current = val;
-               showToast("Server content is out of sync with your local changes.", "warning", {
-                  id: TOAST_ID,
-                  duration: Number.POSITIVE_INFINITY,
-
-                  action: {
-                     label: "Sync Now",
-                     onClick: () => {
-                        if (pendingSyncValue.current && editor) {
-                           editor.commands.setContent(pendingSyncValue.current, false);
-                           if ((editor as any).hasPendingChanges) {
-                              (editor as any).hasPendingChanges.current = false;
-                           }
-                           // Optionally update lastSavedContent if you have access
-                           showToast("Changes synced from server", "success", { id: TOAST_ID });
-                        }
-                     },
-                  },
-               });
-               return;
+      // Memoize the sync callback to avoid recreating it on every render
+      const handleSync = React.useCallback(() => {
+         if (pendingSyncValue.current && editor && !isUserNotSignedIn) {
+            editor.commands.setContent(pendingSyncValue.current, false);
+            if ((editor as any).hasPendingChanges) {
+               (editor as any).hasPendingChanges.current = false;
             }
+            showToast("Changes synced from server", "success", { id: TOAST_ID });
          }
-      }, 500); // 500ms throttle
+      }, [editor, isUserNotSignedIn]);
+
+      // Memoize the content comparison function
+      const compareAndShowSync = React.useCallback(
+         (val: any) => {
+            if (editor && val && doc && !isUserNotSignedIn) {
+               if ((editor as any).hasPendingChanges?.current) return;
+               const current = editor.getJSON();
+               if (JSON.stringify(current) !== JSON.stringify(val)) {
+                  pendingSyncValue.current = val;
+                  showToast("Server content is out of sync with your local changes.", "warning", {
+                     id: TOAST_ID,
+                     duration: Number.POSITIVE_INFINITY,
+                     action: {
+                        label: "Sync Now",
+                        onClick: handleSync,
+                     },
+                  });
+               }
+            }
+         },
+         [editor, handleSync, doc, isUserNotSignedIn]
+      );
+
+      const throttledSetContent = useThrottle(compareAndShowSync, 500);
 
       React.useEffect(() => {
+         if (!props.isMainEditor || !doc || isUserNotSignedIn) return;
          throttledSetContent(value);
-      }, [value, editor, throttledSetContent]);
+      }, [props.isMainEditor, value, throttledSetContent, doc]);
 
       // Search & Replace hotkey logic
       const [showSearchReplace, setShowSearchReplace] = React.useState(false);
@@ -236,7 +244,7 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
             <Deleted />
             <AnimatePresence>{showSearchReplace && <SearchAndReplaceToolbar editor={editor} />}</AnimatePresence>
             {/* Hide top toolbars if deleted or locked */}
-            {!(doc?.isDeleted || doc?.isLocked) && (
+            {!(doc?.isDeleted || doc?.isLocked) && !isUserNotSignedIn && (
                <div className="sticky top-0 z-10 shrink-0 overflow-x-auto border-b border-border [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                   {isMobile ? (
                      <MobileTopToolbar editor={editor} isDocLocked={doc?.isLocked ?? false} />

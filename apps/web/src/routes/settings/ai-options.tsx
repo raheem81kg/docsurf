@@ -58,7 +58,8 @@ function AIOptionsSettings() {
    const availableSearchProviders = getAvailableSearchProviders(userSettings);
 
    const handleSearchProviderChange = async (provider: SearchProvider) => {
-      if (provider === userSettings?.searchProvider) return;
+      if (!userSettings || "error" in userSettings) return;
+      if (provider === userSettings.searchProvider) return;
       if (!session?.user) return;
 
       setIsLoading(true);
@@ -125,7 +126,9 @@ function AIOptionsSettings() {
          setIsLoading(false);
       }
    };
-   if (sessionLoading) {
+
+   // Consolidated loading state
+   if (sessionLoading || !userSettings || "error" in userSettings) {
       return (
          <SettingsLayout title="AI Options" description="Configure AI search, memory, and web search preferences.">
             <div className="flex items-center justify-center p-8">
@@ -134,26 +137,11 @@ function AIOptionsSettings() {
          </SettingsLayout>
       );
    }
+
    if (!session?.user?.id) {
       return (
          <SettingsLayout title="AI Options" description="Configure AI search, memory, and web search preferences.">
             <p className="text-muted-foreground text-sm">Sign in to configure AI options.</p>
-         </SettingsLayout>
-      );
-   }
-   if (!userSettings) {
-      return (
-         <SettingsLayout title="AI Options" description="Configure AI search, memory, and web search preferences.">
-            <div className="flex items-center justify-center p-8">
-               <div className="h-8 w-8 animate-spin rounded-full border-primary border-b-2" />
-            </div>
-         </SettingsLayout>
-      );
-   }
-   if ("error" in userSettings) {
-      return (
-         <SettingsLayout title="AI Options" description="Configure AI search, memory, and web search preferences.">
-            <p className="text-destructive text-sm">Error loading settings.</p>
          </SettingsLayout>
       );
    }
@@ -194,7 +182,7 @@ function AIOptionsSettings() {
                         <SearchProviderCard
                            key={providerId}
                            provider={providerId}
-                           isSelected={userSettings.searchProvider === providerId}
+                           isSelected={!("error" in userSettings) && userSettings.searchProvider === providerId}
                            onSelect={handleSearchProviderChange}
                            title={`${provider.name} ${status === "BYOK" ? "(BYOK)" : ""}`}
                            description={provider.description}
@@ -222,7 +210,7 @@ function AIOptionsSettings() {
                         </div>
                      </div>
                      <Switch
-                        checked={userSettings.searchIncludeSourcesByDefault}
+                        checked={!("error" in userSettings) && userSettings.searchIncludeSourcesByDefault}
                         onCheckedChange={handleIncludeSourcesToggle}
                         disabled={isLoading}
                      />

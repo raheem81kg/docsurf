@@ -133,31 +133,51 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
       props: {
          decorations(state: EditorState): DecorationSet | null {
             const pluginState = inlineSuggestionPluginKey.getState(state);
-            if (!pluginState?.suggestionText || pluginState.suggestionPos === null) {
+            if (!pluginState || pluginState.suggestionPos === null) {
                return null;
             }
-            const decoration = Decoration.widget(
-               pluginState.suggestionPos,
-               () => {
-                  const wrapper = document.createElement("span");
-                  wrapper.className = "inline-suggestion-wrapper";
 
-                  const suggestionSpan = document.createElement("span");
-                  suggestionSpan.className = "suggestion-decoration-inline";
-                  suggestionSpan.setAttribute("data-suggestion", pluginState.suggestionText || "");
-                  wrapper.appendChild(suggestionSpan);
+            // Show glowing cursor when loading
+            if (pluginState.isLoading) {
+               const loadingDecoration = Decoration.widget(
+                  pluginState.suggestionPos,
+                  () => {
+                     const cursor = document.createElement("span");
+                     cursor.className = "inline-suggestion-loading-cursor";
+                     return cursor;
+                  },
+                  { side: 1 }
+               );
+               return DecorationSet.create(state.doc, [loadingDecoration]);
+            }
 
-                  const kbd = document.createElement("kbd");
-                  kbd.className = "inline-tab-icon";
-                  kbd.style.marginLeft = "0.25em";
-                  kbd.textContent = "Ctrl+Space";
-                  wrapper.appendChild(kbd);
+            // Show suggestion text when available
+            if (pluginState.suggestionText) {
+               const decoration = Decoration.widget(
+                  pluginState.suggestionPos,
+                  () => {
+                     const wrapper = document.createElement("span");
+                     wrapper.className = "inline-suggestion-wrapper";
 
-                  return wrapper;
-               },
-               { side: 1 }
-            );
-            return DecorationSet.create(state.doc, [decoration]);
+                     const suggestionSpan = document.createElement("span");
+                     suggestionSpan.className = "suggestion-decoration-inline";
+                     suggestionSpan.setAttribute("data-suggestion", pluginState.suggestionText || "");
+                     wrapper.appendChild(suggestionSpan);
+
+                     const kbd = document.createElement("kbd");
+                     kbd.className = "inline-tab-icon";
+                     kbd.style.marginLeft = "0.25em";
+                     kbd.textContent = "Ctrl+Space";
+                     wrapper.appendChild(kbd);
+
+                     return wrapper;
+                  },
+                  { side: 1 }
+               );
+               return DecorationSet.create(state.doc, [decoration]);
+            }
+
+            return null;
          },
          handleKeyDown(view: EditorView, event: KeyboardEvent): boolean {
             // console.log("[InlineSuggestionPlugin] Keydown event", event.key, event.ctrlKey, event.shiftKey, event);
@@ -171,7 +191,7 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
             const now = Date.now();
             const DOUBLE_HOTKEY_THRESHOLD = 600; // ms
 
-            // Trigger suggestion on Control+Space (robust key check)
+            // Trigger suggestion on Ctrl+Space (robust key check)
             if ((event.key === " " || event.key === "Spacebar" || event.key === "Space") && event.ctrlKey) {
                if (pluginState.suggestionText && pluginState.suggestionPos !== null) {
                   event.preventDefault();
@@ -212,6 +232,23 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
                }
                window.__inlineSuggestionLastRequest = now;
                debouncedRequestSuggestion(view.state, contextBefore, contextAfter, forceRefresh);
+               return true;
+            }
+
+            // Accept suggestion with right arrow key
+            if (event.key === "ArrowRight" && pluginState.suggestionText && pluginState.suggestionPos !== null) {
+               event.preventDefault();
+               let text = pluginState.suggestionText;
+               if (pluginState.suggestionPos > 0) {
+                  const prevChar = view.state.doc.textBetween(pluginState.suggestionPos - 1, pluginState.suggestionPos);
+                  if (/\w|[\.\?!,;:]/.test(prevChar) && !text.startsWith(" ")) {
+                     text = " " + text;
+                  }
+               }
+               let tr = view.state.tr.insertText(text, pluginState.suggestionPos);
+               tr = tr.setMeta(CLEAR_SUGGESTION, true);
+               tr = tr.scrollIntoView();
+               view.dispatch(tr);
                return true;
             }
 

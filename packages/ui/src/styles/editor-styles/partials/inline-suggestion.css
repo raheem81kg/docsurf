@@ -14,3 +14,30 @@
    white-space: pre-wrap;
    vertical-align: initial;
 }
+
+/* Glowing cursor effect during inline suggestion loading */
+.inline-suggestion-loading-cursor {
+   display: inline-block;
+   width: 2px;
+   height: 1.2em;
+   background: linear-gradient(135deg, var(--primary), var(--ring));
+   border-radius: 1px;
+   animation: glow-pulse 1.5s ease-in-out infinite;
+   box-shadow: 0 0 8px var(--primary), 0 0 16px var(--primary);
+   vertical-align: text-bottom;
+   margin: 0 1px;
+}
+
+@keyframes glow-pulse {
+   0%,
+   100% {
+      opacity: 0.6;
+      transform: scaleY(1);
+      box-shadow: 0 0 8px var(--primary), 0 0 16px var(--primary);
+   }
+   50% {
+      opacity: 1;
+      transform: scaleY(1.1);
+      box-shadow: 0 0 12px var(--primary), 0 0 24px var(--primary), 0 0 32px var(--primary);
+   }
+}

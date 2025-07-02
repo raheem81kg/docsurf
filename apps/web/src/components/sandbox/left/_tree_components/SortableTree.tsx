@@ -49,7 +49,7 @@ import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 import { useConvexTree } from "./use-convex-tree";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
-import type { CurrentUser } from "@docsurf/backend/convex/auth";
+import type { CurrentUser } from "@docsurf/backend/convex/users";
 
 const measuring = {
    droppable: {
@@ -157,14 +157,26 @@ export function useCurrentDocument(user: CurrentUser | undefined) {
       )
    );
 
-   // Return loading state if user is loading, or if the query is not enabled
-   // Also return loading state if the query is enabled but still loading
-   if (!user || (enabled && docLoading)) {
-      return { doc: undefined, docLoading: true };
-   }
-   if (!enabled) {
+   // If there's no documentId in the route, we're not loading and have no doc
+   if (!documentId) {
       return { doc: undefined, docLoading: false };
    }
+
+   // If we don't have user data yet, we're loading
+   if (!user) {
+      return { doc: undefined, docLoading: true };
+   }
+
+   // If the query is enabled but still loading
+   if (enabled && docLoading) {
+      return { doc: undefined, docLoading: true };
+   }
+
+   // If we have a user and documentId but no workspace, we're not loading (error state)
+   if (!workspaceId) {
+      return { doc: undefined, docLoading: false };
+   }
+
    return { doc, docLoading: false };
 }
 

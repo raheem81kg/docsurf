@@ -26,6 +26,7 @@ import { Pencil } from "lucide-react";
 import { useMutation } from "convex/react";
 import { DEFAULT_TEXT_TITLE } from "@/utils/constants";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { useSession } from "@/hooks/auth-hooks";
 /**
  * Header component for the doc page, including breadcrumb, doc title (editable), and action buttons.
  * Shows a skeleton for the doc title while loading.
@@ -36,6 +37,7 @@ const HeaderContent = () => {
    const ir_sidebar_state = useSandStateStore((s) => s.ir_sidebar_state);
    const toggle_l_sidebar = useSandStateStore((s) => s.toggle_l_sidebar);
    const toggle_ir_sidebar = useSandStateStore((s) => s.toggle_ir_sidebar);
+   const { data: session, isPending } = useSession();
    const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
    const { doc } = useCurrentDocument(user);
    const { isLoading: isTreeLoading } = useConvexTree({
@@ -48,6 +50,8 @@ const HeaderContent = () => {
    const isDocDetailPage = isDocPage && documentId;
    const isBothSidebarsOpen = l_sidebar_state && ir_sidebar_state;
    const isEitherSidebarOpen = l_sidebar_state || ir_sidebar_state;
+   // Check if user is not signed in
+   const isUserNotSignedIn = !session?.user && !isPending;
    // Helper for Documents breadcrumb visibility
    const showDocumentsBreadcrumbClass = isMobile
       ? undefined
@@ -281,7 +285,7 @@ const HeaderContent = () => {
                data-slot="sidebar-trigger"
                variant="ghost"
                size="icon"
-               disabled={doc?.isLocked || doc?.isDeleted}
+               disabled={isUserNotSignedIn || !doc || doc?.isLocked || doc?.isDeleted || !isDocDetailPage}
                className={cn("size-7 text-primary cursor-pointer")}
                onClick={() => {
                   toggle_ir_sidebar();

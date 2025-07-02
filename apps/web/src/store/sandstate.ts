@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { LEFT_SIDEBAR_COOKIE_NAME, RIGHT_SIDEBAR_COOKIE_NAME, INNER_RIGHT_SIDEBAR_COOKIE_NAME } from "@/utils/constants";
+import { MOBILE_BREAKPOINT } from "@docsurf/ui/hooks/use-mobile";
 
 // Helper to get cookie value
 const getCookie = (name: string): string | null => {
@@ -12,13 +13,29 @@ const getCookie = (name: string): string | null => {
    return null;
 };
 
+// Helper to check if mobile (matching the same logic as useIsMobile)
+const getIsMobile = (): boolean => {
+   if (typeof window === "undefined") return false;
+   return window.innerWidth < MOBILE_BREAKPOINT; // MOBILE_BREAKPOINT from useIsMobile
+};
+
 const leftSidebarCookie = getCookie(LEFT_SIDEBAR_COOKIE_NAME);
 const rightSidebarCookie = getCookie(RIGHT_SIDEBAR_COOKIE_NAME);
 const innerRightSidebarCookie = getCookie(INNER_RIGHT_SIDEBAR_COOKIE_NAME);
 
-const initialLeftSidebarOpen = leftSidebarCookie === null ? true : leftSidebarCookie === "true";
-const initialRightSidebarOpen = rightSidebarCookie === "true";
-const initialInnerRightSidebarOpen = innerRightSidebarCookie === "true";
+// On mobile, default to closed. On desktop, default to open if no cookie exists
+const isMobile = getIsMobile();
+const initialLeftSidebarOpen = isMobile
+   ? false // Always closed on mobile
+   : leftSidebarCookie === null
+   ? true
+   : leftSidebarCookie === "true";
+const initialRightSidebarOpen = isMobile
+   ? false // Always closed on mobile
+   : rightSidebarCookie === "true";
+const initialInnerRightSidebarOpen = isMobile
+   ? false // Always closed on mobile
+   : innerRightSidebarCookie === "true";
 
 interface SandStateProps {
    l_sidebar_state: boolean;

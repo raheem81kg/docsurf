@@ -6,14 +6,14 @@ import { getFile, uploadFile } from "./attachments";
 import { chatGET } from "./chat_http/get.route";
 import { chatPOST } from "./chat_http/post.route";
 import { transcribeAudio } from "./speech_to_text";
-// import { inlineSuggestion } from "./inline_suggestion";
+import { getConvexAppUrls } from "@docsurf/utils/envs";
 const http = httpRouter();
 
 betterAuthComponent.registerRoutes(http, createAuth);
 polar.registerRoutes(http);
 
 const cors = corsRouter(http, {
-   allowedOrigins: ["http://localhost:3001", "https://docsurf.vercel.app", "https://docsurf.ai", "https://www.docsurf.ai"],
+   allowedOrigins: getConvexAppUrls(),
    allowedHeaders: ["Content-Type", "Authorization"],
    allowCredentials: true,
 });

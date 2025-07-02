@@ -1,6 +1,28 @@
 import { internalMutation, type ActionCtx, QueryCtx } from "./_generated/server";
 import { ConvexError } from "convex/values";
-import { Id } from "./_generated/dataModel";
+import { Doc, Id } from "./_generated/dataModel";
+import { SafeSubscription } from "./subscriptions";
+
+type CurrentUserMetadata = {
+   image?: string | undefined;
+   twoFactorEnabled?: boolean | undefined;
+   name?: string | undefined;
+   email: string;
+   emailVerified: boolean;
+   userId: string;
+   createdAt: number;
+   updatedAt: number;
+} | null;
+
+// The user object returned by the getCurrentUser query. It combines authentication
+// data with the user's subscription status and application-specific data.
+export type CurrentUser =
+   | (Doc<"users"> &
+        CurrentUserMetadata & {
+           subscription: SafeSubscription | null;
+           workspaces: Array<{ workspace: Doc<"workspaces">; role: string }>;
+        })
+   | null;
 
 // export const resetCredits = internalMutation({
 //    args: {},

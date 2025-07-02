@@ -1,5 +1,21 @@
+/* Display placeholder only for the first paragraph in an empty editor */
 .minimal-tiptap-editor .ProseMirror > p.is-editor-empty::before {
    content: attr(data-placeholder);
    @apply pointer-events-none float-left h-0;
    color: var(--color-muted-foreground) !important;
+   opacity: 0.5;
+}
+
+/* Display placeholders on every empty paragraph where cursor is positioned */
+.minimal-tiptap-editor .ProseMirror p.is-empty::before {
+   content: attr(data-placeholder);
+   @apply pointer-events-none float-left h-0;
+   color: var(--color-muted-foreground) !important;
+   opacity: 0.5;
+}
+
+/* Hide placeholder when inline suggestion is present */
+.minimal-tiptap-editor .ProseMirror p.is-empty:has(.inline-suggestion-wrapper)::before,
+.minimal-tiptap-editor .ProseMirror > p.is-editor-empty:has(.inline-suggestion-wrapper)::before {
+   display: none;
 }

@@ -323,6 +323,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
    const selectedVersionContent = selectedVersion?.content ? parseVersionContent(selectedVersion.content) : EMPTY_TIPTAP_CONTENT;
 
    const drawerTiptapEditor = useMinimalTiptapEditor({
+      isMainEditor: false,
       value: drawerVersionContent,
       excludeExtensions: [
          "confirmblockchange",
@@ -348,8 +349,26 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
    });
 
    const selectedTiptapEditor = useMinimalTiptapEditor({
+      isMainEditor: false,
       value: selectedVersionContent,
       output: "json",
+      excludeExtensions: [
+         "confirmblockchange",
+         "windoweventlistener",
+         "indenthandler",
+         "trailingnode",
+         "filehandler",
+         "saveextension",
+         "selection",
+         "resetmarksonenter",
+         "placeholder",
+         "importword",
+         "exportword",
+         "charactercount",
+         "filehandler",
+         "inlinesuggestion",
+         "selectioncontext",
+      ],
       editable: false,
       editorClassName: "border-none shadow-none bg-transparent  focus:outline-none px-8 py-4",
       registerInStore: false,
@@ -368,8 +387,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
 
    useEffect(() => {
       if (
-         selectedTiptapEditor &&
-         selectedTiptapEditor.commands &&
+         selectedTiptapEditor?.commands &&
          selectedTiptapEditor.isDestroyed === false &&
          typeof selectedTiptapEditor.commands.setContent === "function" &&
          selectedVersionContent

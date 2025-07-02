@@ -32,6 +32,7 @@ export const SignIn = ({ inviteCode }: { inviteCode?: string }) => {
          {
             provider: "google",
             callbackURL: "/doc",
+            errorCallbackURL: "/auth",
          },
          {
             onRequest: () => {
@@ -39,7 +40,7 @@ export const SignIn = ({ inviteCode }: { inviteCode?: string }) => {
             },
             onSuccess: async () => {
                setAuthLoading(false);
-               setCookie(COOKIES.PreferredSignInProvider, "otp");
+               setCookie(COOKIES.PreferredSignInProvider, "google");
             },
             onError: (ctx) => {
                setAuthLoading(false);

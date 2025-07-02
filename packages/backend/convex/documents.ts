@@ -51,7 +51,7 @@ export const batchUpsertDocuments = mutation({
       for (const update of updates) {
          // Find by id
          const existing = await ctx.db.get(update.id);
-         if (existing && existing.userId === userId && existing.workspaceId === workspaceId) {
+         if (existing && existing.authorId === userId && existing.workspaceId === workspaceId) {
             await ctx.db.patch(existing._id, {
                parentId: update.parentId,
                orderPosition: update.orderPosition,
@@ -95,7 +95,7 @@ export const batchTrashDocuments = mutation({
             .withIndex("byParentId", (q) => q.eq("parentId", docId))
             .filter((q) =>
                q.and(
-                  q.eq(q.field("userId"), userId as Id<"users">),
+                  q.eq(q.field("authorId"), userId as Id<"users">),
                   q.eq(q.field("workspaceId"), workspaceId),
                   q.or(q.eq(q.field("isDeleted"), false), q.eq(q.field("isDeleted"), undefined), q.eq(q.field("isDeleted"), null))
                )
@@ -107,7 +107,7 @@ export const batchTrashDocuments = mutation({
       };
       for (const id of ids) {
          const existing = await ctx.db.get(id);
-         if (existing && existing.userId === userId && existing.workspaceId === workspaceId) {
+         if (existing && existing.authorId === userId && existing.workspaceId === workspaceId) {
             await recursiveTrash(id);
             successCount++;
          }
@@ -146,7 +146,7 @@ export const fetchDocumentTree = query({
       const max = typeof limit === "number" && limit > 0 ? limit : 200;
       let queryBuilder = ctx.db
          .query("documents")
-         .withIndex("byUserWorkspaceDeleted", (q) => q.eq("userId", userId).eq("workspaceId", workspaceId).eq("isDeleted", false));
+         .withIndex("byUserWorkspaceDeleted", (q) => q.eq("authorId", userId).eq("workspaceId", workspaceId).eq("isDeleted", false));
       if (documentType) {
          queryBuilder = queryBuilder.filter((q) => q.eq(q.field("documentType"), documentType));
       }
@@ -192,7 +192,7 @@ export const createDocument = mutation({
       const now = Date.now();
       await rateLimiter.limit(ctx, "createDocument", { key: userId, throws: true });
       const doc = {
-         userId: userId as Id<"users">,
+         authorId: userId as Id<"users">,
          workspaceId: args.workspaceId,
          parentId: args.parentId,
          title: args.title,
@@ -244,7 +244,7 @@ export const updateDocument = mutation({
       const { userId } = await requireWorkspacePermission(ctx, workspaceId);
       const doc = await ctx.db
          .query("documents")
-         .withIndex("byUser", (q) => q.eq("userId", userId))
+         .withIndex("byUser", (q) => q.eq("authorId", userId))
          .filter((q) => q.and(q.eq(q.field("_id"), id), q.eq(q.field("workspaceId"), workspaceId)))
          .first();
       if (!doc) {
@@ -285,7 +285,7 @@ export const updateDocumentMetadata = mutation({
       const { userId } = await requireWorkspacePermission(ctx, workspaceId);
       const doc = await ctx.db
          .query("documents")
-         .withIndex("byUser", (q) => q.eq("userId", userId))
+         .withIndex("byUser", (q) => q.eq("authorId", userId))
          .filter((q) => q.and(q.eq(q.field("_id"), id), q.eq(q.field("workspaceId"), workspaceId)))
          .first();
       if (!doc) {
@@ -311,7 +311,7 @@ export const deleteDocumentPermanently = mutation({
          const children = await ctx.db
             .query("documents")
             .withIndex("byParentId", (q) => q.eq("parentId", docId))
-            .filter((q) => q.and(q.eq(q.field("userId"), userId), q.eq(q.field("workspaceId"), workspaceId)))
+            .filter((q) => q.and(q.eq(q.field("authorId"), userId), q.eq(q.field("workspaceId"), workspaceId)))
             .collect();
          for (const child of children) {
             await recursiveDelete(child._id);
@@ -328,7 +328,7 @@ export const deleteDocumentPermanently = mutation({
       };
       const doc = await ctx.db
          .query("documents")
-         .withIndex("byUser", (q) => q.eq("userId", userId))
+         .withIndex("byUser", (q) => q.eq("authorId", userId))
          .filter((q) => q.and(q.eq(q.field("_id"), id), q.eq(q.field("workspaceId"), workspaceId)))
          .first();
       if (!doc) {
@@ -356,7 +356,7 @@ export const moveDocumentToTrash = mutation({
             .withIndex("byParentId", (q) => q.eq("parentId", docId))
             .filter((q) =>
                q.and(
-                  q.eq(q.field("userId"), userId),
+                  q.eq(q.field("authorId"), userId),
                   q.eq(q.field("workspaceId"), workspaceId),
                   q.or(q.eq(q.field("isDeleted"), false), q.eq(q.field("isDeleted"), undefined), q.eq(q.field("isDeleted"), null))
                )
@@ -368,7 +368,7 @@ export const moveDocumentToTrash = mutation({
       };
       const doc = await ctx.db
          .query("documents")
-         .withIndex("byUser", (q) => q.eq("userId", userId))
+         .withIndex("byUser", (q) => q.eq("authorId", userId))
          .filter((q) => q.and(q.eq(q.field("_id"), id), q.eq(q.field("workspaceId"), workspaceId)))
          .first();
       if (!doc) {
@@ -395,7 +395,7 @@ export const fetchDocuments = query({
          .withIndex("byParentId", (q) => q.eq("parentId", parentId ?? undefined))
          .filter((q) =>
             q.and(
-               q.eq(q.field("userId"), userId),
+               q.eq(q.field("authorId"), userId),
                q.eq(q.field("workspaceId"), workspaceId),
                q.or(q.eq(q.field("isDeleted"), false), q.eq(q.field("isDeleted"), undefined), q.eq(q.field("isDeleted"), null))
             )
@@ -431,7 +431,7 @@ export const toggleDocumentLock = mutation({
       const { userId } = await requireWorkspacePermission(ctx, workspaceId);
       const doc = await ctx.db
          .query("documents")
-         .withIndex("byUser", (q) => q.eq("userId", userId))
+         .withIndex("byUser", (q) => q.eq("authorId", userId))
          .filter((q) => q.and(q.eq(q.field("_id"), id), q.eq(q.field("workspaceId"), workspaceId)))
          .first();
       if (!doc) return { error: "Document not found" };
@@ -457,14 +457,14 @@ export const fetchTrashedDocuments = query({
          return await ctx.db
             .query("documents")
             .withIndex("byWorkspaceDeleted", (q) => q.eq("workspaceId", workspaceId).eq("isDeleted", true))
-            .filter((q) => q.eq(q.field("userId"), userId))
+            .filter((q) => q.eq(q.field("authorId"), userId))
             .order("desc")
             .paginate(paginationOpts);
       }
       return await ctx.db
          .query("documents")
          .withIndex("byWorkspaceDeleted", (q) => q.eq("workspaceId", workspaceId).eq("isDeleted", true))
-         .filter((q) => q.and(q.eq(q.field("userId"), userId), q.eq(q.field("title"), query)))
+         .filter((q) => q.and(q.eq(q.field("authorId"), userId), q.eq(q.field("title"), query)))
          .order("desc")
          .paginate(paginationOpts);
    },
@@ -485,7 +485,7 @@ export const restoreDocument = mutation({
       const { userId } = await requireWorkspacePermission(ctx, workspaceId);
       const doc = await ctx.db
          .query("documents")
-         .withIndex("byUser", (q) => q.eq("userId", userId))
+         .withIndex("byUser", (q) => q.eq("authorId", userId))
          .filter((q) => q.and(q.eq(q.field("_id"), documentId), q.eq(q.field("workspaceId"), workspaceId)))
          .first();
       if (!doc) {
@@ -510,7 +510,7 @@ export const fetchDocumentById = query({
    handler: async (ctx, { workspaceId, id }) => {
       const { userId } = await requireWorkspacePermission(ctx, workspaceId);
       const doc = await ctx.db.get(id);
-      if (!doc || doc.workspaceId !== workspaceId || doc.userId !== userId) return null;
+      if (!doc || doc.workspaceId !== workspaceId || doc.authorId !== userId) return null;
       return doc;
    },
 });
@@ -530,7 +530,7 @@ export const renameDocument = mutation({
       const doc = await ctx.db.get(id);
       if (!doc) return { error: "Document not found" };
       // Validate user is the owner and document is in the workspace
-      if (doc.userId !== userId || doc.workspaceId !== workspaceId) {
+      if (doc.authorId !== userId || doc.workspaceId !== workspaceId) {
          return { error: "Unauthorized" };
       }
       // Validate title is not empty and reasonable length
@@ -563,7 +563,7 @@ export const searchDocuments = query({
             .withIndex("byWorkspaceUpdated", (q) => q.eq("workspaceId", workspaceId))
             .filter((qBuilder) =>
                qBuilder.and(
-                  qBuilder.eq(qBuilder.field("userId"), userId),
+                  qBuilder.eq(qBuilder.field("authorId"), userId),
                   qBuilder.or(
                      qBuilder.eq(qBuilder.field("isDeleted"), false),
                      qBuilder.eq(qBuilder.field("isDeleted"), undefined),
@@ -581,7 +581,7 @@ export const searchDocuments = query({
          .filter((qBuilder) =>
             qBuilder.and(
                qBuilder.eq(qBuilder.field("workspaceId"), workspaceId),
-               qBuilder.eq(qBuilder.field("userId"), userId),
+               qBuilder.eq(qBuilder.field("authorId"), userId),
                qBuilder.or(
                   qBuilder.eq(qBuilder.field("isDeleted"), false),
                   qBuilder.eq(qBuilder.field("isDeleted"), undefined),
@@ -606,7 +606,7 @@ export const toggleCollapse = mutation({
       const { userId } = await requireWorkspacePermission(ctx, workspaceId);
       const doc = await ctx.db.get(id);
       if (!doc) return { error: "Document not found" };
-      if (doc.userId !== userId || doc.workspaceId !== workspaceId) {
+      if (doc.authorId !== userId || doc.workspaceId !== workspaceId) {
          return { error: "Unauthorized" };
       }
       if (doc.documentType !== "folder") {

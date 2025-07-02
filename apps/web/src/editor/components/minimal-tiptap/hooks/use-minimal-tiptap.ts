@@ -100,6 +100,10 @@ export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
     * Optional callback to run after a successful save.
     */
    onSave?: (content: Content) => void;
+   /**
+    * Whether this is the main editor instance that should handle content syncing and saving.
+    */
+   isMainEditor: boolean;
 }
 
 const useLatest = <T>(value: T) => {
@@ -253,7 +257,11 @@ const createExtensions = (
       HorizontalRule,
       ResetMarksOnEnter,
       CodeBlockLowlight,
-      Placeholder.configure({ placeholder: () => placeholder }),
+      Placeholder.configure({
+         placeholder: () => placeholder,
+         showOnlyCurrent: true,
+         includeChildren: false,
+      }),
       Table,
       ConfirmBlockChange,
       ExportWord,
@@ -322,6 +330,7 @@ export const useMinimalTiptapEditor = ({
    enableVersionTracking = false,
    versionTrackingOptions = {},
    onSave,
+   isMainEditor,
    ...props
 }: UseMinimalTiptapEditorProps) => {
    // Track if there are unsaved changes
@@ -403,7 +412,7 @@ export const useMinimalTiptapEditor = ({
             }
             hasPendingChanges.current = false;
          }, debounceDelay),
-      [debounceDelay, onUpdate, docId, workspaceId, updateDocument, onSave]
+      [debounceDelay, onUpdate, docId, workspaceId, updateDocument, onSave, isMainEditor]
    );
 
    // Memoize extensions so they're only recreated when dependencies change
@@ -441,6 +450,7 @@ export const useMinimalTiptapEditor = ({
          },
       },
       onUpdate: ({ editor, transaction }) => {
+         if (!isMainEditor) return;
          if (skipNextUpdate.current) {
             skipNextUpdate.current = false;
             return;

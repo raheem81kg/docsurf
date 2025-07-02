@@ -41,6 +41,8 @@ export const fetchToken = createServerFn({ method: "GET" }).handler(async () => 
    return getCookie(sessionCookieName);
 });
 
+const PROD_APP_URL = "https://docsurf.vercel.app";
+
 export const Route = createRootRouteWithContext<RouterAppContext>()({
    head: () => ({
       meta: [
@@ -48,7 +50,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
          ...seo({
             title: "Docsurf: The AI document editor",
             description: "Docsurf is an AI document editor that allows you to create, edit, and share documents with ease.",
-            image: `${getClientAppUrl()}/opengraph.jpg`,
+            image: `${PROD_APP_URL}/opengraph.jpg`,
             // keywords: "docs, surf, webapp, ..." // Add if you want
          }),
          // --- App & Theme Meta Tags ---
@@ -75,7 +77,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
          },
          {
             property: "og:url",
-            content: getClientAppUrl(),
+            content: PROD_APP_URL,
          },
 
          // --- Added for Apple Web App Title ---
@@ -142,21 +144,21 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
          // { rel: "manifest", href: "/site.webmanifest", color: "#ffffff" },
       ],
    }),
-   beforeLoad: async (ctx) => {
-      const auth = await fetchAuth();
-      const { userId, token } = auth;
+   // beforeLoad: async (ctx) => {
+   //    const auth = await fetchAuth();
+   //    const { userId, token } = auth;
 
-      // During SSR only (the only time serverHttpClient exists),
-      // set the auth token to make HTTP queries with.
-      if (token) {
-         ctx.context.convexQueryClient.serverHttpClient?.setAuth(token);
-      }
+   //    // During SSR only (the only time serverHttpClient exists),
+   //    // set the auth token to make HTTP queries with.
+   //    if (token) {
+   //       ctx.context.convexQueryClient.serverHttpClient?.setAuth(token);
+   //    }
 
-      return {
-         userId,
-         token,
-      };
-   },
+   //    return {
+   //       userId,
+   //       token,
+   //    };
+   // },
    component: RootComponent,
 });
 

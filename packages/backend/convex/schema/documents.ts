@@ -4,7 +4,7 @@ import { v } from "convex/values";
 
 export const Documents = v.object({
    workspaceId: v.id("workspaces"),
-   userId: v.id("users"),
+   authorId: v.id("users"),
    parentId: v.optional(v.id("documents")),
    title: v.string(),
    description: v.optional(v.string()),

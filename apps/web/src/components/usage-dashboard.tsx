@@ -109,25 +109,19 @@ export function UsageDashboard({ className }: UsageDashboardProps) {
       },
    } satisfies ChartConfig;
 
-   // Early returns for loading, error, or not signed in
-   if (sessionLoading || !session?.user?.id) {
+   if (!session?.user?.id) {
       return (
          <div className={cn("space-y-4", className)}>
             <div className="py-8 text-center text-muted-foreground">Sign in to view your usage analytics.</div>
          </div>
       );
    }
-   if (!stats || !chartData) {
+
+   // Consolidated loading state
+   if (sessionLoading || !stats || !chartData || "error" in stats || "error" in chartData) {
       return (
          <div className={cn("space-y-4", className)}>
             <div className="py-8 text-center text-muted-foreground">Loading usage analytics...</div>
-         </div>
-      );
-   }
-   if ("error" in stats || "error" in chartData) {
-      return (
-         <div className={cn("space-y-4", className)}>
-            <div className="py-8 text-center text-destructive">Error loading usage analytics.</div>
          </div>
       );
    }
