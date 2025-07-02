@@ -9,7 +9,6 @@ export const env = createEnv({
       VITE_CONVEX_SITE_URL: z.string().url(),
       VITE_DOCSURF_VERSION: z.string(),
       VITE_COMPANY_NAME: z.string(),
-      VITE_POSTHOG_HOST: z.string().url(),
       VITE_POSTHOG_KEY: z.string(),
       VITE_PROD_APP_URL: z.string(),
    },
