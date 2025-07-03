@@ -132,6 +132,27 @@ const BottomToolbar = ({
 
 const TOAST_ID = "sync-server-content";
 
+// Helper function to check if content is effectively empty
+const isEffectivelyEmptyContent = (content: any): boolean => {
+   if (!content) return true;
+   if (typeof content === "object" && Object.keys(content).length === 0) return true;
+
+   // Check if it's an empty Tiptap document structure
+   if (content.type === "doc" && (!content.content || content.content.length === 0)) return true;
+
+   // Check if it's just an empty paragraph
+   if (
+      content.type === "doc" &&
+      content.content?.length === 1 &&
+      content.content[0]?.type === "paragraph" &&
+      (!content.content[0]?.content || content.content[0]?.content.length === 0)
+   ) {
+      return true;
+   }
+
+   return false;
+};
+
 export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps>(
    ({ value, onChange, className, editorContentClassName, characterLimit = MAX_CHARACTERS, ...props }, ref) => {
       const { data: session, isPending } = useSession();
@@ -192,8 +213,21 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
          (val: any) => {
             if (editor && val && doc && !isUserNotSignedIn) {
                if ((editor as any).hasPendingChanges?.current) return;
+
                const current = editor.getJSON();
-               if (JSON.stringify(current) !== JSON.stringify(val)) {
+               const serverContent = val;
+
+               // Check if both contents are effectively empty (avoid false positives for new documents)
+               const isCurrentEmpty = isEffectivelyEmptyContent(current);
+               const isServerEmpty = isEffectivelyEmptyContent(serverContent);
+
+               if (isCurrentEmpty && isServerEmpty) {
+                  // Both are empty, no sync needed
+                  return;
+               }
+
+               // Only show sync warning if contents are meaningfully different
+               if (JSON.stringify(current) !== JSON.stringify(serverContent)) {
                   pendingSyncValue.current = val;
                   showToast("Server content is out of sync with your local changes.", "warning", {
                      id: TOAST_ID,

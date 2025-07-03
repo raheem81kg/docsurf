@@ -4,7 +4,6 @@ import { NotFound } from "@/components/not-found";
 import MinimalTiptap from "@/editor/components/custom/minimal-tiptap";
 import { cn } from "@docsurf/ui/lib/utils";
 import * as React from "react";
-import content from "@/editor/data/content.json";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
@@ -162,16 +161,15 @@ function DocumentComponent() {
          try {
             return JSON.parse(doc.content);
          } catch (e) {
-            return {};
+            // If parsing fails, return empty document structure
+            return { type: "doc", content: [] };
          }
       }
       if (doc?.content && typeof doc.content === "object" && Object.keys(doc.content).length > 0) {
          return doc.content;
       }
-      if (doc?.content == null) {
-         return content;
-      }
-      return {};
+      // Return proper empty Tiptap document structure instead of empty object
+      return { type: "doc", content: [] };
    }, [doc?.content]);
 
    // Show loading only when we're actually loading something
