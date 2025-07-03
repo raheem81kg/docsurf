@@ -30,8 +30,6 @@ import { SearchAndReplaceToolbar } from "./search-and-replace-toolbar";
 import { AnimatePresence } from "motion/react";
 import { useMutation } from "convex/react";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
-import { useThrottle } from "../minimal-tiptap/hooks/use-throttle";
-import { toast } from "sonner";
 import { useSession } from "@/hooks/auth-hooks";
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "onUpdate"> {
@@ -130,28 +128,7 @@ const BottomToolbar = ({
    </ScrollArea>
 );
 
-const TOAST_ID = "sync-server-content";
-
-// Helper function to check if content is effectively empty
-const isEffectivelyEmptyContent = (content: any): boolean => {
-   if (!content) return true;
-   if (typeof content === "object" && Object.keys(content).length === 0) return true;
-
-   // Check if it's an empty Tiptap document structure
-   if (content.type === "doc" && (!content.content || content.content.length === 0)) return true;
-
-   // Check if it's just an empty paragraph
-   if (
-      content.type === "doc" &&
-      content.content?.length === 1 &&
-      content.content[0]?.type === "paragraph" &&
-      (!content.content[0]?.content || content.content[0]?.content.length === 0)
-   ) {
-      return true;
-   }
-
-   return false;
-};
+// Simple sync logic - just update editor when value prop changes and differs from current content
 
 export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps>(
    ({ value, onChange, className, editorContentClassName, characterLimit = MAX_CHARACTERS, ...props }, ref) => {
@@ -161,14 +138,15 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
       // Get user and workspaceId
       const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
       const { doc } = useCurrentDocument(user);
-      const pendingSyncValue = React.useRef<any>(null);
 
       const editor = useMinimalTiptapEditor({
          value,
          enableVersionTracking: false,
          onUpdate: onChange,
          characterLimit,
-         onSave: () => toast.dismiss(TOAST_ID),
+         // Performance optimizations from TipTap 2.5+
+         immediatelyRender: true,
+         shouldRerenderOnTransaction: false,
          ...props,
       });
 
@@ -186,7 +164,6 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
          }
       }, [doc, toggleDocumentLock, isUserNotSignedIn]);
 
-      console.log("[MinimalTiptap] editor", editor);
       // Register the editor instance in the global store
       React.useEffect(() => {
          useEditorRefStore.getState().setEditor(editor ?? null);
@@ -195,60 +172,92 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
          };
       }, [editor]);
 
-      const ONE_HOUR = 60 * 60 * 1000;
+      // Track last user input time for conflict detection
+      const lastInputTime = React.useRef<number>(0);
+      const syncTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
-      // Memoize the sync callback to avoid recreating it on every render
-      const handleSync = React.useCallback(() => {
-         if (pendingSyncValue.current && editor && !isUserNotSignedIn) {
-            editor.commands.setContent(pendingSyncValue.current, false);
-            if ((editor as any).hasPendingChanges) {
-               (editor as any).hasPendingChanges.current = false;
-            }
-            showToast("Changes synced from server", "success", { id: TOAST_ID });
-         }
-      }, [editor, isUserNotSignedIn]);
-
-      // Memoize the content comparison function
-      const compareAndShowSync = React.useCallback(
-         (val: any) => {
-            if (editor && val && doc && !isUserNotSignedIn) {
-               if ((editor as any).hasPendingChanges?.current) return;
-
-               const current = editor.getJSON();
-               const serverContent = val;
-
-               // Check if both contents are effectively empty (avoid false positives for new documents)
-               const isCurrentEmpty = isEffectivelyEmptyContent(current);
-               const isServerEmpty = isEffectivelyEmptyContent(serverContent);
-
-               if (isCurrentEmpty && isServerEmpty) {
-                  // Both are empty, no sync needed
-                  return;
-               }
-
-               // Only show sync warning if contents are meaningfully different
-               if (JSON.stringify(current) !== JSON.stringify(serverContent)) {
-                  pendingSyncValue.current = val;
-                  showToast("Server content is out of sync with your local changes.", "warning", {
-                     id: TOAST_ID,
-                     duration: Number.POSITIVE_INFINITY,
-                     action: {
-                        label: "Sync Now",
-                        onClick: handleSync,
-                     },
-                  });
-               }
-            }
-         },
-         [editor, handleSync, doc, isUserNotSignedIn]
-      );
-
-      const throttledSetContent = useThrottle(compareAndShowSync, 500);
-
+      // Track user input to detect active typing
       React.useEffect(() => {
-         if (!props.isMainEditor || !doc || isUserNotSignedIn) return;
-         throttledSetContent(value);
-      }, [props.isMainEditor, value, throttledSetContent, doc]);
+         if (!editor) return;
+
+         const updateInputTime = () => {
+            lastInputTime.current = Date.now();
+         };
+
+         editor.on("update", updateInputTime);
+         return () => {
+            editor.off("update", updateInputTime);
+         };
+      }, [editor]);
+
+      // Improved sync: preserve cursor position and handle conflicts
+      React.useEffect(() => {
+         if (!editor || !props.isMainEditor || isUserNotSignedIn) return;
+
+         const currentContent = editor.getJSON();
+         const incomingContent = value;
+
+         // Only update if content actually differs
+         if (JSON.stringify(currentContent) !== JSON.stringify(incomingContent)) {
+            // Clear any pending sync
+            if (syncTimeoutRef.current) {
+               clearTimeout(syncTimeoutRef.current);
+            }
+
+            const performSync = () => {
+               if (!editor) return;
+
+               // Preserve cursor position and selection
+               const { selection } = editor.state;
+               const { from, to } = selection;
+               const wasFocused = editor.isFocused;
+
+               // Update content
+               editor.commands.setContent(incomingContent || "", false);
+
+               // Restore cursor position if possible and editor was focused
+               if (wasFocused) {
+                  try {
+                     // Only restore selection if positions are still valid
+                     const docSize = editor.state.doc.content.size;
+                     if (from <= docSize && to <= docSize) {
+                        editor.commands.setTextSelection({ from, to });
+                     } else {
+                        // If position is invalid, focus at end of document
+                        editor.commands.focus();
+                        editor.commands.selectTextblockEnd();
+                     }
+                  } catch {
+                     // If selection restoration fails, just focus
+                     editor.commands.focus();
+                  }
+               }
+            };
+
+            // Check if user is actively typing
+            const timeSinceLastInput = Date.now() - lastInputTime.current;
+
+            if (timeSinceLastInput < 1000 && editor.isFocused) {
+               // User is actively typing, delay sync to avoid interruption
+               syncTimeoutRef.current = setTimeout(() => {
+                  // Only sync if editor is no longer focused or enough time has passed
+                  if (!editor.isFocused || Date.now() - lastInputTime.current >= 1000) {
+                     performSync();
+                  }
+               }, 1000);
+            } else {
+               // Safe to sync immediately
+               performSync();
+            }
+         }
+
+         // Cleanup timeout on unmount
+         return () => {
+            if (syncTimeoutRef.current) {
+               clearTimeout(syncTimeoutRef.current);
+            }
+         };
+      }, [editor, value, props.isMainEditor, isUserNotSignedIn]);
 
       // Search & Replace hotkey logic
       const [showSearchReplace, setShowSearchReplace] = React.useState(false);

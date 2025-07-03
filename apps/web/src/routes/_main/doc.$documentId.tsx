@@ -161,15 +161,13 @@ function DocumentComponent() {
          try {
             return JSON.parse(doc.content);
          } catch (e) {
-            // If parsing fails, return empty document structure
-            return { type: "doc", content: [] };
+            return {};
          }
       }
       if (doc?.content && typeof doc.content === "object" && Object.keys(doc.content).length > 0) {
          return doc.content;
       }
-      // Return proper empty Tiptap document structure instead of empty object
-      return { type: "doc", content: [] };
+      return {};
    }, [doc?.content]);
 
    // Show loading only when we're actually loading something
