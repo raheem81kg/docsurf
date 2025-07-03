@@ -17,7 +17,6 @@ import { Route as MainRouteImport } from './routes/_main'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as WelcomeIndexRouteImport } from './routes/_welcome/index'
 import { Route as SettingsUsageRouteImport } from './routes/settings/usage'
-import { Route as SettingsSubscriptionRouteImport } from './routes/settings/subscription'
 import { Route as SettingsProvidersRouteImport } from './routes/settings/providers'
 import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
 import { Route as SettingsModelsRouteImport } from './routes/settings/models'
@@ -103,11 +102,6 @@ const WelcomeAboutLazyRoute = WelcomeAboutLazyRouteImport.update({
 const SettingsUsageRoute = SettingsUsageRouteImport.update({
   id: '/usage',
   path: '/usage',
-  getParentRoute: () => SettingsRouteLazyRoute,
-} as any)
-const SettingsSubscriptionRoute = SettingsSubscriptionRouteImport.update({
-  id: '/subscription',
-  path: '/subscription',
   getParentRoute: () => SettingsRouteLazyRoute,
 } as any)
 const SettingsProvidersRoute = SettingsProvidersRouteImport.update({
@@ -227,7 +221,6 @@ export interface FileRoutesByFullPath {
   '/settings/models': typeof SettingsModelsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/providers': typeof SettingsProvidersRoute
-  '/settings/subscription': typeof SettingsSubscriptionRoute
   '/settings/usage': typeof SettingsUsageRoute
   '/about': typeof WelcomeAboutLazyRoute
   '/policy': typeof WelcomePolicyLazyRoute
@@ -251,7 +244,6 @@ export interface FileRoutesByTo {
   '/settings/models': typeof SettingsModelsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/providers': typeof SettingsProvidersRoute
-  '/settings/subscription': typeof SettingsSubscriptionRoute
   '/settings/usage': typeof SettingsUsageRoute
   '/about': typeof WelcomeAboutLazyRoute
   '/policy': typeof WelcomePolicyLazyRoute
@@ -280,7 +272,6 @@ export interface FileRoutesById {
   '/settings/models': typeof SettingsModelsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/providers': typeof SettingsProvidersRoute
-  '/settings/subscription': typeof SettingsSubscriptionRoute
   '/settings/usage': typeof SettingsUsageRoute
   '/_welcome/about': typeof WelcomeAboutLazyRoute
   '/_welcome/policy': typeof WelcomePolicyLazyRoute
@@ -307,7 +298,6 @@ export interface FileRouteTypes {
     | '/settings/models'
     | '/settings/profile'
     | '/settings/providers'
-    | '/settings/subscription'
     | '/settings/usage'
     | '/about'
     | '/policy'
@@ -331,7 +321,6 @@ export interface FileRouteTypes {
     | '/settings/models'
     | '/settings/profile'
     | '/settings/providers'
-    | '/settings/subscription'
     | '/settings/usage'
     | '/about'
     | '/policy'
@@ -359,7 +348,6 @@ export interface FileRouteTypes {
     | '/settings/models'
     | '/settings/profile'
     | '/settings/providers'
-    | '/settings/subscription'
     | '/settings/usage'
     | '/_welcome/about'
     | '/_welcome/policy'
@@ -505,13 +493,6 @@ declare module '@tanstack/react-router' {
       path: '/usage'
       fullPath: '/settings/usage'
       preLoaderRoute: typeof SettingsUsageRouteImport
-      parentRoute: typeof SettingsRouteLazyRoute
-    }
-    '/settings/subscription': {
-      id: '/settings/subscription'
-      path: '/subscription'
-      fullPath: '/settings/subscription'
-      preLoaderRoute: typeof SettingsSubscriptionRouteImport
       parentRoute: typeof SettingsRouteLazyRoute
     }
     '/settings/providers': {
@@ -714,7 +695,6 @@ interface SettingsRouteLazyRouteChildren {
   SettingsModelsRoute: typeof SettingsModelsRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
   SettingsProvidersRoute: typeof SettingsProvidersRoute
-  SettingsSubscriptionRoute: typeof SettingsSubscriptionRoute
   SettingsUsageRoute: typeof SettingsUsageRoute
 }
 
@@ -726,7 +706,6 @@ const SettingsRouteLazyRouteChildren: SettingsRouteLazyRouteChildren = {
   SettingsModelsRoute: SettingsModelsRoute,
   SettingsProfileRoute: SettingsProfileRoute,
   SettingsProvidersRoute: SettingsProvidersRoute,
-  SettingsSubscriptionRoute: SettingsSubscriptionRoute,
   SettingsUsageRoute: SettingsUsageRoute,
 }
 

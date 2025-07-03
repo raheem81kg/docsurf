@@ -19,7 +19,7 @@ type CurrentUserMetadata = {
 export type CurrentUser =
    | (Doc<"users"> &
         CurrentUserMetadata & {
-           subscription: SafeSubscription | null;
+           //   subscription: SafeSubscription | null;
            workspaces: Array<{ workspace: Doc<"workspaces">; role: string }>;
         })
    | null;

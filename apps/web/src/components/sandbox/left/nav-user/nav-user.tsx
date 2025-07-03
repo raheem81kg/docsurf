@@ -18,7 +18,7 @@ import { Skeleton } from "@docsurf/ui/components/skeleton";
 import { getInitials } from "@docsurf/utils/get-initials";
 import { clearAllDexieData } from "@/lib/persist/dexie-persist";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
-import { SparklesIcon, type SparklesIconHandle } from "@/components/assets/animated/sparkles";
+import { type SparklesIconHandle } from "@/components/assets/animated/sparkles";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
@@ -128,7 +128,7 @@ export function NavUser() {
                   )}
                </div>
                <DropdownMenuGroup>
-                  <DropdownMenuItem
+                  {/* <DropdownMenuItem
                      className="cursor-pointer group"
                      onMouseEnter={() => sparklesRef.current?.startAnimation()}
                      onMouseLeave={() => sparklesRef.current?.stopAnimation()}
@@ -140,7 +140,7 @@ export function NavUser() {
                      <span className="text-[13px] text-text-default hover:text-text-emphasis">
                         {user.data?.subscription?.isPremium ? "Manage Subscription" : "Upgrade to Pro"}
                      </span>
-                  </DropdownMenuItem>
+                  </DropdownMenuItem> */}
                </DropdownMenuGroup>
                <DropdownMenuSeparator />
                <DropdownMenuGroup>

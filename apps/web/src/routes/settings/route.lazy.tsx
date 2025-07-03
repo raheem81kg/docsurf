@@ -23,11 +23,11 @@ const settingsNavItems = [
       href: "/settings/profile",
       icon: User,
    },
-   {
-      title: "Subscription",
-      href: "/settings/subscription",
-      icon: CreditCard,
-   },
+   // {
+   //    title: "Subscription",
+   //    href: "/settings/subscription",
+   //    icon: CreditCard,
+   // },
    {
       title: "Providers",
       href: "/settings/providers",

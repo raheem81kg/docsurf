@@ -1,14 +1,14 @@
 import { type AuthFunctions, BetterAuth, convexAdapter, type PublicAuthFunctions } from "@convex-dev/better-auth";
-import { convex, crossDomain } from "@convex-dev/better-auth/plugins";
+import { convex } from "@convex-dev/better-auth/plugins";
 import { getConvexAppUrl } from "@docsurf/utils/envs";
 import { betterAuth } from "better-auth";
-import { emailOTP, magicLink, twoFactor } from "better-auth/plugins";
+import { emailOTP, twoFactor } from "better-auth/plugins";
 import { asyncMap } from "convex-helpers";
 import { api, components, internal } from "./_generated/api";
 import type { DataModel, Id, Doc } from "./_generated/dataModel";
 import { type GenericCtx, query } from "./_generated/server";
-import { sendEmailVerification, sendMagicLink, sendSignInOTP } from "./email";
-import type { SafeSubscription } from "./subscriptions";
+import { sendSignInOTP } from "./email";
+// import type { SafeSubscription } from "./subscriptions";
 import gettingStartedContent from "./getting_started.json";
 import type { CurrentUser } from "./users";
 
@@ -191,9 +191,9 @@ export const getCurrentUser = query({
       if (!user) {
          return null;
       }
-      const subscription: SafeSubscription = await ctx.runQuery(internal.subscriptions.getSubscription, {
-         userId: userMetadata.userId as Id<"users">,
-      });
+      // const subscription: SafeSubscription = await ctx.runQuery(internal.subscriptions.getSubscription, {
+      //    userId: userMetadata.userId as Id<"users">,
+      // });
 
       // Fetch all workspace memberships for this user
       const memberships = await ctx.db
@@ -213,7 +213,7 @@ export const getCurrentUser = query({
       return {
          ...userMetadataWithoutName,
          ...user,
-         subscription,
+         // subscription,
          workspaces: workspaces.filter(Boolean) as Array<{ workspace: Doc<"workspaces">; role: string }>,
       };
    },

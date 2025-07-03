@@ -6,8 +6,8 @@ import { Link } from "@tanstack/react-router";
 import { type CSSProperties, forwardRef, useMemo, useState } from "react";
 import { cn, type Icon } from "@docsurf/ui/lib/utils";
 import { AnimatedSizeContainer } from "@docsurf/ui/components/_c/animated-size-container";
-import { buttonVariants } from "@docsurf/ui/components/button";
-import ManageSubscriptionButton from "./manage-subscription-button";
+// import { buttonVariants } from "@docsurf/ui/components/button";
+// import ManageSubscriptionButton from "./manage-subscription-button";
 import { getCurrentPlan, getNextPlan, PLANS } from "@docsurf/utils/constants/pricing";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { convexQuery } from "@convex-dev/react-query";
@@ -61,7 +61,8 @@ function UsageInner() {
    const { data: usageStats, isLoading: usageLoading } = useQuery(convexQuery(api.analytics.getMyUsageStats, { timeframe: "7d" }));
 
    // Determine plan and limits
-   const planName = user?.subscription?.isPremium ? "Pro" : "Free";
+   // const planName = user?.subscription?.isPremium ? "Pro" : "Free";
+   const planName = "Free"; // Default to Free plan for now
    const plan = getCurrentPlan(planName);
    const nextPlan = getNextPlan(planName);
    const isFreePlan = planName === "Free";
@@ -80,13 +81,14 @@ function UsageInner() {
    const nextTokensLimit = nextPlan?.limits.tokens7d;
 
    // Billing reset date from subscription
-   const billingEnd = user?.subscription?.currentPeriodEnd
-      ? new Date(user.subscription.currentPeriodEnd).toLocaleDateString("en-us", {
-           month: "short",
-           day: "numeric",
-           year: "numeric",
-        })
-      : undefined;
+   // const billingEnd = user?.subscription?.currentPeriodEnd
+   //    ? new Date(user.subscription.currentPeriodEnd).toLocaleDateString("en-us", {
+   //         month: "short",
+   //         day: "numeric",
+   //         year: "numeric",
+   //      })
+   //    : undefined;
+   const billingEnd = undefined; // Commented out subscription billing
 
    // Warn if >= 90% of any limit
    const warnings = useMemo(
@@ -141,7 +143,8 @@ function UsageInner() {
                </p>
             </div>
 
-            {paymentFailedAt ? (
+            {/* Commented out subscription/payment related buttons */}
+            {/* {paymentFailedAt ? (
                <ManageSubscriptionButton
                   text="Update Payment Method"
                   variant="ghost"
@@ -158,7 +161,7 @@ function UsageInner() {
                >
                   {isFreePlan ? "Get DocSurf Pro" : "Upgrade plan"}
                </Link>
-            ) : null}
+            ) : null} */}
          </div>
       </AnimatedSizeContainer>
    );

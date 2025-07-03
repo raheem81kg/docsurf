@@ -31,7 +31,7 @@ export function ExportToast() {
       <div ref={ref} className="flex w-full flex-col space-y-3 rounded-sm border border-border darK:bg-[#121212] p-4">
          <div className="flex items-center space-x-2">
             <Loader2 className="size-5 animate-spin" />
-            <span className="font-medium text-sm">Exporting transactions</span>
+            <span className="font-medium text-sm">Exporting {progress}%</span>
          </div>
 
          <Progress value={progress} className="h-0.5 w-full" />
