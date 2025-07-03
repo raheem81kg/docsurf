@@ -19,7 +19,8 @@ import { DEFAULT_TEXT_TITLE } from "@/utils/constants";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 import { useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
-import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
+import { useBreakpoint } from "@docsurf/ui/hooks/use-breakpoint";
+import { INLINE_SUGGESTION_MOBILE_BREAKPOINT } from "@/editor/components/minimal-tiptap/extensions/custom/inline-suggestion/inline-suggestion-plugin";
 
 // Beautiful 404 component for documents
 function DocumentNotFound() {
@@ -153,7 +154,7 @@ function DocumentComponent() {
       workspaceId: user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">,
    });
 
-   const isMobile = useIsMobile();
+   const isMobileBreakPoint = useBreakpoint(INLINE_SUGGESTION_MOBILE_BREAKPOINT);
 
    // // Memoize the editor value for performance
    const editorValue = React.useMemo(() => {
@@ -219,7 +220,7 @@ function DocumentComponent() {
                console.log("[Tiptap Editor] onChange", value);
             }}
             placeholder={
-               isMobile
+               isMobileBreakPoint
                   ? `Start writing..., or type "++" to get an AI suggestion`
                   : "Start writing, or press Ctrl+Space for AI autocomplete..."
             }

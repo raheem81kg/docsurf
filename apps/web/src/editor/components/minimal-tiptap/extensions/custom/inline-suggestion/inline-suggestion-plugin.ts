@@ -5,8 +5,8 @@ import { Extension } from "@tiptap/react";
 import { addSwipeRightListener } from "./swipe";
 
 // Mobile detection utility
-const MOBILE_BREAKPOINT = 640; // Standard phone breakpoint (sm in Tailwind)
-const isMobile = () => typeof window !== "undefined" && window.innerWidth < MOBILE_BREAKPOINT;
+export const INLINE_SUGGESTION_MOBILE_BREAKPOINT = 640; // Standard phone breakpoint (sm in Tailwind)
+const isMobile = () => typeof window !== "undefined" && window.innerWidth < INLINE_SUGGESTION_MOBILE_BREAKPOINT;
 
 export interface InlineSuggestionState {
    suggestionText: string | null;
@@ -146,7 +146,7 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
 
             if (metaStart) {
                const pos = newState.selection.head;
-               return { suggestionText: null, isLoading: true, suggestionPos: pos };
+               return { ...pluginState, suggestionText: null, isLoading: true, suggestionPos: pos };
             }
 
             if (metaSet) {
@@ -161,8 +161,8 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
                if (pluginState.isLoading && pluginState.suggestionPos !== null) {
                   // Cache the suggestion when finishing loading
                   const pos = pluginState.suggestionPos;
-                  const contextBefore = newState.doc.textBetween(Math.max(0, pos - CONTEXT_LENGTH), pos, " ");
-                  const contextAfter = newState.doc.textBetween(pos, Math.min(newState.doc.content.size, pos + CONTEXT_LENGTH), " ");
+                  const contextBefore = newState.doc.textBetween(Math.max(0, pos - contextLength), pos, " ");
+                  const contextAfter = newState.doc.textBetween(pos, Math.min(newState.doc.content.size, pos + contextLength), " ");
 
                   return {
                      ...pluginState,
@@ -176,19 +176,14 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
                              docSize: newState.doc.content.size,
                              timestamp: Date.now(),
                           }
-                        : null,
+                        : pluginState.cachedSuggestion,
                   };
                }
-               return initialState;
+               return { ...pluginState, isLoading: false };
             }
 
-            if (metaClear) {
-               // Clear both current and cached suggestions when explicitly clearing
-               return initialState;
-            }
-
-            if (metaAccept) {
-               // Clear both current and cached suggestions when accepting
+            if (metaClear || metaAccept) {
+               // Clear both current and cached suggestions when explicitly clearing or accepting
                return initialState;
             }
 
@@ -220,9 +215,9 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
                }
             }
 
+            // Simplified state clearing logic - don't interfere with streaming
             if (pluginState.suggestionPos !== null && (pluginState.isLoading || pluginState.suggestionText)) {
                if (tr.docChanged || !newState.selection.empty || newState.selection.head !== pluginState.suggestionPos) {
-                  // Keep the cached suggestion when clearing current suggestion
                   return {
                      suggestionText: null,
                      suggestionPos: null,
@@ -232,17 +227,17 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
                }
             }
 
-            // Check if cursor returned to a cached suggestion position
+            // Check if cursor returned to a cached suggestion position (only when not actively streaming)
             if (!pluginState.suggestionText && !pluginState.isLoading && pluginState.cachedSuggestion) {
                const { head } = newState.selection;
                const cached = pluginState.cachedSuggestion;
 
                // Check if we're at the same position and context matches
                if (head === cached.pos && newState.selection.empty) {
-                  const currentContextBefore = newState.doc.textBetween(Math.max(0, head - CONTEXT_LENGTH), head, " ");
+                  const currentContextBefore = newState.doc.textBetween(Math.max(0, head - contextLength), head, " ");
                   const currentContextAfter = newState.doc.textBetween(
                      head,
-                     Math.min(newState.doc.content.size, head + CONTEXT_LENGTH),
+                     Math.min(newState.doc.content.size, head + contextLength),
                      " "
                   );
 
@@ -273,21 +268,7 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
                return null;
             }
 
-            // Show glowing cursor when loading
-            if (pluginState.isLoading) {
-               const loadingDecoration = Decoration.widget(
-                  pluginState.suggestionPos,
-                  () => {
-                     const cursor = document.createElement("span");
-                     cursor.className = "inline-suggestion-loading-cursor";
-                     return cursor;
-                  },
-                  { side: 1 }
-               );
-               return DecorationSet.create(state.doc, [loadingDecoration]);
-            }
-
-            // Show suggestion text when available
+            // Show suggestion text when available (prioritize over loading cursor)
             if (pluginState.suggestionText) {
                const decoration = Decoration.widget(
                   pluginState.suggestionPos,
@@ -346,6 +327,20 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
                return DecorationSet.create(state.doc, [decoration]);
             }
 
+            // Show glowing cursor when loading (and no suggestion text yet)
+            if (pluginState.isLoading) {
+               const loadingDecoration = Decoration.widget(
+                  pluginState.suggestionPos,
+                  () => {
+                     const cursor = document.createElement("span");
+                     cursor.className = "inline-suggestion-loading-cursor";
+                     return cursor;
+                  },
+                  { side: 1 }
+               );
+               return DecorationSet.create(state.doc, [loadingDecoration]);
+            }
+
             return null;
          },
          handleKeyDown(view: EditorView, event: KeyboardEvent): boolean {
@@ -371,12 +366,12 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
                view.dispatch(view.state.tr.setMeta(START_SUGGESTION_LOADING, true));
                // Get context for suggestion (before and after cursor, spanning multiple nodes)
                const { head } = selection;
-               const from = Math.max(0, head - CONTEXT_LENGTH);
+               const from = Math.max(0, head - contextLength);
                const contextBefore = doc.textBetween(from, head, " ");
                let contextAfter = "";
-               if (ENABLE_CONTEXT_AFTER_CURSOR) {
+               if (enableContextAfterCursor) {
                   const docSize = doc.content.size;
-                  contextAfter = doc.textBetween(head, Math.min(docSize, head + CONTEXT_LENGTH), " ");
+                  contextAfter = doc.textBetween(head, Math.min(docSize, head + contextLength), " ");
                }
                debouncedRequestSuggestion(view.state, contextBefore, contextAfter, forceRefresh);
                return true;
