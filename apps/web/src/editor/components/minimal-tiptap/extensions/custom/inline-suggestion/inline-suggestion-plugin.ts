@@ -5,7 +5,7 @@ import { Extension } from "@tiptap/react";
 import { addSwipeRightListener } from "./swipe";
 
 // Mobile detection utility
-const MOBILE_BREAKPOINT = 768;
+const MOBILE_BREAKPOINT = 640; // Standard phone breakpoint (sm in Tailwind)
 const isMobile = () => typeof window !== "undefined" && window.innerWidth < MOBILE_BREAKPOINT;
 
 export interface InlineSuggestionState {
