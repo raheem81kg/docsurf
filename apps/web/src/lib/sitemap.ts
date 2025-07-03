@@ -12,7 +12,7 @@ export const sitemap: Sitemap<TRoutes> = {
    defaultPriority: 0.5,
    defaultChangeFreq: "weekly",
    routes: {
-      // Welcome/Marketing pages - High priority
+      // Welcome/Marketing pages - High priority (these should be indexed)
       "/": {
          priority: 1.0,
          changeFrequency: "daily",
@@ -35,82 +35,21 @@ export const sitemap: Sitemap<TRoutes> = {
          changeFrequency: "yearly",
       },
 
-      // Auth pages - Lower priority since they're not meant to be indexed
-      "/auth": {
-         priority: 0.1,
-         changeFrequency: "never",
-      },
+      // Auth pages - Excluded from sitemap since they have noindex robots
+      // "/auth": false, // Explicitly exclude auth pages
 
-      // Main app pages - Medium priority
-      "/doc": {
-         priority: 0.7,
-         changeFrequency: "daily",
-      },
-      "/doc/library": {
-         priority: 0.6,
-         changeFrequency: "daily",
-      },
+      // Main app pages - Excluded from sitemap since they have noindex robots
+      // These are behind authentication and shouldn't be crawled
+      // "/doc": false,
+      // "/doc/library": false,
 
-      // Settings pages - Lower priority, only for authenticated users
-      "/settings/ai-options": {
-         priority: 0.2,
-         changeFrequency: "monthly",
-      },
-      "/settings/appearance": {
-         priority: 0.2,
-         changeFrequency: "monthly",
-      },
-      "/settings/attachments": {
-         priority: 0.2,
-         changeFrequency: "monthly",
-      },
-      "/settings/customization": {
-         priority: 0.2,
-         changeFrequency: "monthly",
-      },
-      "/settings/models": {
-         priority: 0.2,
-         changeFrequency: "monthly",
-      },
-      "/settings/profile": {
-         priority: 0.2,
-         changeFrequency: "monthly",
-      },
-      "/settings/providers": {
-         priority: 0.2,
-         changeFrequency: "monthly",
-      },
-      "/settings/subscription": {
-         priority: 0.2,
-         changeFrequency: "monthly",
-      },
-      "/settings/usage": {
-         priority: 0.2,
-         changeFrequency: "monthly",
-      },
+      // Settings pages - Excluded from sitemap (behind auth + noindex)
+      // All settings routes are excluded since they're private
 
-      // Dynamic routes - These would need to be populated with actual data
+      // Dynamic routes - Excluded since they're app pages with noindex
       "/doc/$documentId": async (route: string) => {
-         // TODO: Implement dynamic document route generation
-         // You would typically fetch your documents from your database here
-         // For now, returning empty array - you'll need to implement this based on your data
-
-         // Example implementation (uncomment and modify when ready):
-         /*
-      try {
-        const documents = await fetch(`${env.VITE_SITE_URL}/api/documents`).then(r => r.json());
-        return documents.map((doc: any) => ({
-          path: `/doc/${doc.id}`,
-          priority: 0.6,
-          changeFrequency: "weekly",
-          lastModified: doc.updatedAt,
-        }));
-      } catch (error) {
-        console.warn('Failed to fetch documents for sitemap:', error);
-        return [];
-      }
-      */
-
+         // Documents are private and have noindex robots directive
+         // Return empty array to exclude from sitemap
          return [];
       },
 
@@ -137,4 +76,8 @@ export const sitemap: Sitemap<TRoutes> = {
          return [];
       },
    },
+   // Note: App routes with noindex robots directive are excluded by omission:
+   // - /auth* (All auth routes)
+   // - /doc* (All document routes except dynamic ones above)
+   // - /settings* (All settings routes)
 };

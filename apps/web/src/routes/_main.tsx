@@ -10,6 +10,21 @@ import { useOfflineIndicator } from "@/hooks/use-offline-indicator";
 import { useSession } from "@/hooks/auth-hooks";
 
 export const Route = createFileRoute("/_main")({
+   head: () => ({
+      meta: [
+         {
+            title: "Docsurf - AI Document Editor",
+         },
+         {
+            name: "description",
+            content: "Create, edit, and collaborate on documents with AI assistance. Your intelligent document workspace.",
+         },
+         {
+            name: "robots",
+            content: "noindex, nofollow", // App pages shouldn't be indexed
+         },
+      ],
+   }),
    component: MainLayoutComponent,
 });
 

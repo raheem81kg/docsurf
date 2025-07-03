@@ -1,3 +1,32 @@
 # https://www.robotstxt.org/robotstxt.html
+
 User-agent: *
-Disallow:
+
+# Allow crawling of marketing/welcome pages
+Allow: /about
+Allow: /pricing
+Allow: /terms
+Allow: /policy
+Allow: /$
+
+# Disallow crawling of app pages
+Disallow: /auth*
+Disallow: /doc*
+Disallow: /settings*
+
+# Disallow crawling of API routes
+Disallow: /api/
+
+# Allow crawling of static assets
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.gif$
+Allow: /*.svg$
+Allow: /*.ico$
+Allow: /*.webp$
+
+# Sitemap location
+Sitemap: https://docsurf.ai/sitemap.xml

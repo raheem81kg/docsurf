@@ -13,6 +13,13 @@ import { useConvexQuery } from "@convex-dev/react-query";
 import { buildTree, flattenTree } from "@/components/sandbox/left/_tree_components/components/utilities";
 
 export const Route = createFileRoute("/_main/doc/")({
+   head: () => ({
+      meta: [
+         {
+            title: "Document",
+         },
+      ],
+   }),
    component: RouteComponent,
 });
 

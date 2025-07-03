@@ -52,7 +52,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
             title: "Docsurf: The AI document editor",
             description: "Docsurf is an AI document editor that allows you to create, edit, and share documents with ease.",
             image: `${PROD_APP_URL}/opengraph.jpg`,
-            // keywords: "docs, surf, webapp, ..." // Add if you want
+            keywords: "docsurf, docsurf ai, docs, document, writing, ai writing, essay, ai essay",
          }),
          // --- App & Theme Meta Tags ---
          {
