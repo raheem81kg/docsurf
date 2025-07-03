@@ -1,5 +1,5 @@
 import { TooltipProvider } from "@docsurf/ui/components/tooltip";
-import { type ThemeProviderProps, ThemeProvider as NextThemesProvider } from "next-themes";
+import type { ThemeProviderProps } from "next-themes";
 // import { CompliantCookieProvider } from "./compliant-cookie-provider";
 import { CookiesProvider } from "react-cookie";
 import { PostHogProvider } from "./posthog-provider";

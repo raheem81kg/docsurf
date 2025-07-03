@@ -42,7 +42,7 @@ export const fetchToken = createServerFn({ method: "GET" }).handler(async () => 
    return getCookie(sessionCookieName);
 });
 
-const PROD_APP_URL = env.VITE_PROD_APP_URL;
+const PROD_APP_URL = env.VITE_SITE_URL;
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
    head: () => ({

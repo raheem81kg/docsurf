@@ -4,6 +4,10 @@ import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import svgr from "vite-plugin-svgr";
 import analyzer from "vite-bundle-analyzer";
+import { generateSitemap } from "tanstack-router-sitemap";
+import { sitemap } from "./src/lib/sitemap";
+
+// process.env musst be used in the vite config, the import.meta.env is not available in the vite config
 export default defineConfig({
    server: {
       proxy: {
@@ -18,6 +22,7 @@ export default defineConfig({
       (process.env.ANALYZE && analyzer()) || null,
       tsconfigPaths(),
       tailwindcss(),
+      generateSitemap(sitemap),
       tanstackStart({
          target: "vercel",
          spa: {

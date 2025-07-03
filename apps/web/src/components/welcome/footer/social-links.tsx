@@ -1,5 +1,4 @@
-import { FaGithub, FaLinkedinIn, FaProductHunt, FaYoutube } from "react-icons/fa";
-import { FaDiscord, FaXTwitter } from "react-icons/fa6";
+import { FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
 
 export function SocialLinks() {
    return (

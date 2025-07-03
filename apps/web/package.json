@@ -173,6 +173,7 @@
       "i": "^0.3.7",
       "jsdom": "^26.0.0",
       "tailwindcss": "^4.1.10",
+      "tanstack-router-sitemap": "^1.0.12",
       "typescript": "^5.7.2",
       "vite": "^6.3.5",
       "web-vitals": "^4.2.4"
