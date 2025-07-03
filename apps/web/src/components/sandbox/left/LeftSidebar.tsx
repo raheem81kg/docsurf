@@ -189,21 +189,22 @@ export const LeftSidebar = ({
                   <NavUser />
                </div>
 
-               {!isMobile && (
-                  <div className="group ml-auto">
-                     <Button
-                        className="bg-transparent border-none opacity-0 group-hover:opacity-100 transition-all duration-200 outline-none cursor-pointer rounded-sm !p-2 text-sidebar -translate-x-[0.5px] group-hover:translate-x-0"
-                        variant="ghost"
-                        onClick={() => {
-                           if (isMobile) {
-                              set_l_sidebar_state(false);
-                           }
-                        }}
-                     >
-                        <ChevronsLeft className="size-4.5 transition-opacity text-text-default" />
-                     </Button>
-                  </div>
-               )}
+               <div className="group ml-auto">
+                  <Button
+                     className={cn(
+                        "bg-transparent border-none opacity-0 group-hover:opacity-100 transition-all duration-200 outline-none cursor-pointer rounded-sm !p-2 text-sidebar -translate-x-[0.5px] group-hover:translate-x-0",
+                        isMobile && "opacity-100 mr-1"
+                     )}
+                     variant="ghost"
+                     onClick={() => {
+                        if (isMobile) {
+                           set_l_sidebar_state(false);
+                        }
+                     }}
+                  >
+                     <ChevronsLeft className="size-4.5 transition-opacity text-text-default" />
+                  </Button>
+               </div>
 
                <CreateMenu />
             </SidebarMenu>
