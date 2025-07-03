@@ -197,9 +197,7 @@ export const LeftSidebar = ({
                      )}
                      variant="ghost"
                      onClick={() => {
-                        if (isMobile) {
-                           set_l_sidebar_state(false);
-                        }
+                        set_l_sidebar_state(false);
                      }}
                   >
                      <ChevronsLeft className="size-4.5 transition-opacity text-text-default" />

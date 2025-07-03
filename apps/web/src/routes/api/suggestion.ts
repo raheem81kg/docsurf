@@ -40,7 +40,7 @@ export const ServerRoute = createServerFileRoute("/api/suggestion").methods({
    // },
    POST: async ({ request }) => {
       const { documentId, description, selectedText, aiOptions = {}, workspaceId } = await request.json();
-      const { suggestionLength = "medium", customInstructions = undefined } = aiOptions;
+      const { customInstructions = undefined } = aiOptions;
       const { userId } = await fetchAuth();
       if (!userId) {
          return new Response(JSON.stringify({ error: { message: "Unauthorized", description: "No user session." } }), {
@@ -84,7 +84,7 @@ export const ServerRoute = createServerFileRoute("/api/suggestion").methods({
             }
          );
       }
-      return await handleSuggestionRequest(documentId, description, userId, selectedText, suggestionLength, customInstructions);
+      return await handleSuggestionRequest(documentId, description, userId, selectedText, customInstructions);
    },
 });
 
@@ -93,7 +93,6 @@ async function handleSuggestionRequest(
    description: string,
    userId: string,
    selectedText?: string,
-   suggestionLength: "short" | "medium" | "long" = "medium",
    customInstructions?: string | null | undefined
 ) {
    // No document fetching/validation, just stream suggestion
@@ -119,7 +118,6 @@ async function handleSuggestionRequest(
             documentId,
             description,
             selectedText,
-            suggestionLength,
             customInstructions,
             write: async (type, content) => {
                if (writerClosed) return;
@@ -191,20 +189,17 @@ async function streamSuggestion({
    documentId,
    description,
    selectedText,
-   suggestionLength,
    customInstructions,
    write,
 }: {
    documentId: string;
    description: string;
    selectedText?: string;
-   suggestionLength: "short" | "medium" | "long";
    customInstructions?: string | null | undefined;
    write: (type: string, content: string) => Promise<void>;
 }) {
    // Build prompt for suggestion
-   const prompt = buildSuggestionPrompt(description, selectedText, suggestionLength, customInstructions);
-   const maxTokens = { short: 100, medium: 200, long: 300 }[suggestionLength || "medium"];
+   const prompt = buildSuggestionPrompt(description, selectedText, customInstructions);
    const google = createGoogleGenerativeAI({
       apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY!,
    });
@@ -214,7 +209,6 @@ async function streamSuggestion({
       prompt,
       experimental_transform: smoothStream({ chunking: "word" }),
       temperature: 0.4,
-      maxTokens,
    });
    let suggestionContent = "";
    for await (const delta of fullStream) {
@@ -234,23 +228,12 @@ function getSuggestionSystemPrompt(): string {
       day: "2-digit",
       weekday: "short",
    });
-   return `You are an advanced AI writing assistant that generates natural, contextually relevant text suggestions. Your task is to rewrite, improve, or extend text based on user instructions.\n\nToday's date is ${today}.\n\n### Core Rules:\n1. Write naturally and maintain consistent flow, formality, formatting, and tone\n2. Complete thoughts and sentences properly\n3. Never include the [CURSOR] marker in output\n4. Adapt to the document's style and purpose \n5. Provide contextually appropriate completions\n6. Avoid unnecessary repetition of existing content\n\n### Writing Style:\n- Match the tone and style of the existing text\n- Write as naturally as possible, like a real person\n- Be flexible and adapt to different writing contexts\n- Maintain the voice and personality of the text\n- Use appropriate language for the context (formal, casual, technical, etc.)\n\n### Formatting:\n- Output only the raw suggestion text\n- No markdown, code blocks, or meta-commentary\n- Preserve the natural flow of the text`;
+   return `You are an advanced AI writing assistant that generates natural, contextually relevant text suggestions. Your task is to rewrite, improve, or extend text based on user instructions.\n\nToday's date is ${today}.\n\n### Core Guidelines:\n1. Write naturally and maintain flow that fits the context\n2. Be creative and flexible in your approach\n3. Adapt to any writing style, tone, or format requested\n4. Feel free to be comprehensive or concise as the situation demands\n5. You can expand, contract, restructure, or completely reimagine content\n6. Match the user's intent, even if it means departing from the original style\n\n### Approach:\n- Be adaptable to any request or writing context\n- Write with creativity and intelligence\n- Consider the user's specific needs and preferences\n- Don't be overly constrained by the original text if changes are requested\n- Output should be ready to use without additional editing\n\n### Output:\n- Provide only the suggested text\n- No explanations, meta-commentary, or formatting markers\n- Focus on delivering exactly what the user needs`;
 }
 
-function buildSuggestionPrompt(
-   description: string,
-   selectedText?: string,
-   suggestionLength: "short" | "medium" | "long" = "medium",
-   customInstructions?: string | null | undefined
-): string {
-   const lengthMap = {
-      short: "briefly",
-      medium: "with some context",
-      long: "in detail",
-   };
-   const lengthDirective = lengthMap[suggestionLength] || lengthMap.medium;
+function buildSuggestionPrompt(description: string, selectedText?: string, customInstructions?: string | null | undefined): string {
    let promptContext = selectedText
-      ? 'You are an expert text editor. Your task is to refine a given piece of text based on a specific instruction.\nOriginal selected text:\n"""\n' +
+      ? 'You are helping to improve some text based on a specific instruction.\n\nOriginal text:\n"""\n' +
         selectedText +
         '\n"""\n\nInstruction: "' +
         description +
@@ -261,11 +244,11 @@ function buildSuggestionPrompt(
       promptContext = `${customInstructions}\n\n${promptContext}`;
    }
 
-   promptContext += `\n\nPlease respond ${lengthDirective}. This is a guideline, not a strict requirement—be flexible if needed.`;
+   promptContext += "\n\nPlease provide your best response to fulfill this request.";
 
    if (selectedText) {
       promptContext +=
-         "\n\nPlease provide ONLY the modified version of the selected text.\nIf the instruction implies a small change, try to keep the rest of the original text intact as much as possible.\nOnly output the resulting text, with no preamble or explanation.";
+         "\n\nFocus on delivering the improved version of the text that meets the instruction. Be as creative and thorough as needed.";
    }
 
    return promptContext;

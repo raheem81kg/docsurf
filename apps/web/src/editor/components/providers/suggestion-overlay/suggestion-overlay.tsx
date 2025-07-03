@@ -481,7 +481,6 @@ export default function SuggestionOverlay({
                description: prompt.trim(),
                selectedText,
                aiOptions: {
-                  suggestionLength: "medium",
                   // customInstructions: customInstructions || null,
                },
             };
