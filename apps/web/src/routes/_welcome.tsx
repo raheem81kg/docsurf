@@ -1,6 +1,6 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@docsurf/backend/convex/_generated/api";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { Footer } from "@/components/welcome/footer/footer";
 import { FooterCTA } from "@/components/welcome/footer/footer-cta";
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_welcome")({
 });
 
 function LayoutComponent() {
-   const user = useSuspenseQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const user = useQuery(convexQuery(api.auth.getCurrentUser, {}));
 
    return (
       <div className="relative max-w-full">

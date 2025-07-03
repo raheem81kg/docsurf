@@ -175,9 +175,12 @@ function AIOptionsSettings() {
 
                <div className="grid max-w-4xl grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-2">
                   {availableSearchProviders.map((providerId) => {
-                     const provider = SEARCH_PROVIDERS.find((p) => p.id === providerId)!;
+                     const provider = SEARCH_PROVIDERS.find((p) => p.id === providerId);
                      const status = getProviderStatus(providerId, userSettings);
+                     if (!provider) return null;
 
+                     // TODO: Add Brave and Serper back in when they are supported
+                     if (provider.id === "brave" || provider.id === "serper") return null;
                      return (
                         <SearchProviderCard
                            key={providerId}

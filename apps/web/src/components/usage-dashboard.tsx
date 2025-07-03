@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@docsurf/ui/components/card";
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@docsurf/ui/components/chart";
 import { Tabs, TabsList, TabsTrigger } from "@docsurf/ui/components/tabs";
+import { Skeleton } from "@docsurf/ui/components/skeleton";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
 import { cn } from "@docsurf/ui/lib/utils";
@@ -38,6 +39,85 @@ const MODEL_COLORS = [
 
 interface UsageDashboardProps {
    className?: string;
+}
+
+function UsageDashboardSkeleton({ className }: { className?: string }) {
+   return (
+      <div className={cn("space-y-4", className)}>
+         {/* Header with timeframe selector skeleton */}
+         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Skeleton className="h-10 w-48" />
+         </div>
+
+         {/* Key Metrics Cards Skeleton */}
+         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+               <Card key={i} className="gap-3 p-4">
+                  <CardHeader className="flex flex-row items-center px-0">
+                     <Skeleton className="size-3 sm:size-4" />
+                     <Skeleton className="h-4 w-24 ml-2" />
+                  </CardHeader>
+                  <CardContent className="p-0">
+                     <Skeleton className="h-6 w-16 sm:h-8 sm:w-20 mb-2" />
+                     <Skeleton className="h-3 w-32" />
+                  </CardContent>
+               </Card>
+            ))}
+         </div>
+
+         {/* Charts Skeleton */}
+         <div className="grid gap-4">
+            {/* Model Usage Chart Skeleton */}
+            <Card className="gap-3 overflow-hidden p-4">
+               <CardHeader className="gap-0 px-0 pb-3">
+                  <Skeleton className="h-6 w-48" />
+                  <Skeleton className="h-4 w-64" />
+               </CardHeader>
+               <CardContent className="p-3 px-0">
+                  <Skeleton className="h-[250px] w-full sm:h-[300px]" />
+               </CardContent>
+            </Card>
+
+            {/* Token Type Distribution Chart Skeleton */}
+            <Card className="gap-3 overflow-hidden p-4">
+               <CardHeader className="gap-0 px-0 pb-3">
+                  <Skeleton className="h-6 w-52" />
+                  <Skeleton className="h-4 w-72" />
+               </CardHeader>
+               <CardContent className="p-3 px-0">
+                  <Skeleton className="h-[250px] w-full sm:h-[300px]" />
+               </CardContent>
+            </Card>
+         </div>
+
+         {/* Model Details Skeleton */}
+         <Card className="gap-3 p-4">
+            <CardHeader className="gap-0 px-0">
+               <Skeleton className="h-6 w-44" />
+               <Skeleton className="h-4 w-80" />
+            </CardHeader>
+            <CardContent className="p-0 pt-0">
+               <div className="space-y-1.5">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                     <div key={i} className="flex items-center justify-between rounded-lg border px-2 py-1">
+                        <div className="flex items-center gap-3">
+                           <Skeleton className="h-3 w-3 rounded-full" />
+                           <div>
+                              <Skeleton className="h-4 w-32 mb-1" />
+                              <Skeleton className="h-3 w-20" />
+                           </div>
+                        </div>
+                        <div className="text-right">
+                           <Skeleton className="h-4 w-16 mb-1" />
+                           <Skeleton className="h-3 w-24" />
+                        </div>
+                     </div>
+                  ))}
+               </div>
+            </CardContent>
+         </Card>
+      </div>
+   );
 }
 
 export function UsageDashboard({ className }: UsageDashboardProps) {
@@ -117,13 +197,9 @@ export function UsageDashboard({ className }: UsageDashboardProps) {
       );
    }
 
-   // Consolidated loading state
+   // Consolidated loading state with skeleton
    if (sessionLoading || !stats || !chartData || "error" in stats || "error" in chartData) {
-      return (
-         <div className={cn("space-y-4", className)}>
-            <div className="py-8 text-center text-muted-foreground">Loading usage analytics...</div>
-         </div>
-      );
+      return <UsageDashboardSkeleton className={className} />;
    }
 
    return (

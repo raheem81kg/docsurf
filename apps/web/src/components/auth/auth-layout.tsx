@@ -1,10 +1,13 @@
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { BlurImage } from "./blur-image";
 import { ClientOnly } from "./client-only";
 
 import DocsurfDashboardPreview from "/welcome/docsurf-dashboard-preview.png";
 import { Icons } from "../assets/icons";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { api } from "@docsurf/backend/convex/_generated/api";
 
 const logos = [
    "vercel",
@@ -26,6 +29,16 @@ interface AuthLayoutProps {
 }
 
 export const AuthLayout = ({ children }: AuthLayoutProps) => {
+   const user = useSuspenseQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const navigate = useNavigate({
+      from: "/",
+   });
+
+   useEffect(() => {
+      if (user?.data?.email) {
+         navigate({ to: "/doc", replace: true });
+      }
+   }, [user?.data?.email, navigate]);
    return (
       <div className="grid w-full grid-cols-1 md:grid-cols-5">
          <header className="w-full fixed left-0 right-0 z-50">

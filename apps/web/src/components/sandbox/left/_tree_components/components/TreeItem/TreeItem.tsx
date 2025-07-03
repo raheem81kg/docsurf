@@ -178,7 +178,7 @@ export const TreeItem = memo(
             if (isFolder && onCollapse) {
                onCollapse(value as UniqueIdentifier);
             } else if (!isFolder) {
-               if (isMobile) {
+               if (!isMobile) {
                   set_l_sidebar_state(false);
                }
                navigate({ to: `/doc/${value}` });

@@ -22,7 +22,8 @@ const SIDEBAR_WIDTH_ICON = "5rem";
 
 //* new constants for sidebar resizing
 const MIN_SIDEBAR_WIDTH = "9rem";
-const MAX_SIDEBAR_WIDTH = "25rem";
+const MAX_SIDEBAR_WIDTH = "77vw";
+const MAX_SIDEBAR_DRAG_WIDTH = "25rem";
 
 type SidebarContext = {
    state: "expanded" | "collapsed";
@@ -144,6 +145,7 @@ function SidebarProvider({
                      // * update '--sidebar-width' to use the new width state
                      "--sidebar-width": width,
                      "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
+                     "--sidebar-max-width": MAX_SIDEBAR_WIDTH,
                      ...style,
                   } as React.CSSProperties
                }
@@ -185,7 +187,10 @@ function Sidebar({
    if (collapsible === "none") {
       return (
          <div
-            className={cn("flex h-full w-(--sidebar-width) flex-col bg-sidebar text-sidebar-foreground", className)}
+            className={cn(
+               "flex h-full w-(--sidebar-width) max-w-(--sidebar-max-width) flex-col bg-sidebar text-sidebar-foreground",
+               className
+            )}
             data-slot="sidebar"
             {...props}
          >
@@ -221,10 +226,11 @@ function Sidebar({
                data-sidebar="sidebar"
                data-slot="sidebar"
                data-mobile="true"
-               className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+               className="w-(--sidebar-width) max-w-(--sidebar-max-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
                style={
                   {
                      "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
+                     "--sidebar-max-width": MAX_SIDEBAR_WIDTH,
                   } as React.CSSProperties
                }
                side={side}
@@ -248,7 +254,7 @@ function Sidebar({
          <div
             data-slot="sidebar-gap"
             className={cn(
-               "relative h-svh w-(--sidebar-width) bg-transparent transition-[width] ease-linear",
+               "relative h-svh w-(--sidebar-width) max-w-(--sidebar-max-width) bg-transparent transition-[width] ease-linear",
                isDraggingRail ? "duration-0" : "duration-200",
                "group-data-[collapsible=offcanvas]:w-0",
                "group-data-[side=right]:rotate-180",
@@ -260,7 +266,7 @@ function Sidebar({
          <div
             data-slot="sidebar-container"
             className={cn(
-               "absolute inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] ease-linear md:flex",
+               "absolute inset-y-0 z-10 hidden h-svh w-(--sidebar-width) max-w-(--sidebar-max-width) transition-[left,right,width] ease-linear md:flex",
                isDraggingRail ? "duration-0" : "duration-200",
                side === "left"
                   ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
@@ -331,7 +337,7 @@ function SidebarRail({
       currentWidth: width,
       isCollapsed: state === "collapsed",
       minResizeWidth: MIN_SIDEBAR_WIDTH,
-      maxResizeWidth: maxSidebarWidth ? `${maxSidebarWidth}rem` : MAX_SIDEBAR_WIDTH,
+      maxResizeWidth: maxSidebarWidth ? `${maxSidebarWidth}rem` : MAX_SIDEBAR_DRAG_WIDTH,
       setIsDraggingRail,
       side: sideForDrag || "left",
    });

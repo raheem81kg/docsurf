@@ -3,8 +3,6 @@ import { skipToken, useMutation, useQuery, useQueryClient, type AnyUseQueryOptio
 import type { BetterFetchOption, BetterFetchResponse } from "better-auth/react";
 import { useCallback } from "react";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
-import { useRouteContext } from "@tanstack/react-router";
-import { Route as RootRoute } from "../routes/__root";
 
 // Types
 type AuthClient = typeof authClient;
@@ -112,8 +110,8 @@ export function useVerifyToken(token: string | null | undefined, message = "Auth
  * Returns the current router context token. This token is ephemeral and must be used immediately (e.g., directly in a Bearer header).
  * Do NOT store or cache this value for later use.
  */
-export function useEphemeralToken() {
-   const context = useRouteContext({ from: RootRoute.id });
-   const token = context?.token ?? null;
-   return { token };
-}
+// export function useEphemeralToken() {
+//    const context = useRouteContext({ from: RootRoute.id });
+//    const token = context?.token ?? null;
+//    return { token };
+// }

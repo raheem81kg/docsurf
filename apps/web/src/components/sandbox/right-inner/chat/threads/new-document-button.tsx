@@ -51,6 +51,8 @@ export function NewDocumentButton({ onClick }: { onClick?: () => void }) {
             });
             if (docType === "text/plain") {
                navigate({ to: "/doc/$documentId", params: { documentId: doc.id } });
+               // Close sidebar when navigating to the new document
+               onClick?.();
             }
             toast.success(`${docType === "text/plain" ? "Document" : "Folder"} created successfully`);
             setDocName("");
@@ -69,7 +71,6 @@ export function NewDocumentButton({ onClick }: { onClick?: () => void }) {
             variant={"ghost"}
             onClick={() => {
                setShowDialog(true);
-               onClick?.();
             }}
             className="size-6 text-muted-foreground"
          >

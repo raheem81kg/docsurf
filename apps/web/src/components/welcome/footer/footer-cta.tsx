@@ -1,8 +1,12 @@
 import { Button } from "@docsurf/ui/components/button";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
+import { convexQuery } from "@convex-dev/react-query";
+import { api } from "@docsurf/backend/convex/_generated/api";
+import { useQuery } from "@tanstack/react-query";
 
 export function FooterCTA() {
+   const user = useQuery(convexQuery(api.auth.getCurrentUser, {}));
    return (
       <div className="mt-24 mb-32 flex flex-col items-center border border-border bg-[#F2F1EF] px-10 py-14 text-center md:container md:mx-auto md:px-24 md:py-20 dark:bg-[#121212]">
          <span className="font-medium text-4xl  md:text-6xl text-text-default md:text-8xl dark:text-white">
@@ -21,7 +25,7 @@ export function FooterCTA() {
                   </Button>
                </Link> */}
 
-               <Link to="/auth" title="Start Writing For Free">
+               <Link to={user?.data?.email ? "/doc" : "/auth"} title="Start Writing For Free">
                   <Button className="flex h-12 items-center gap-2 px-5">
                      <span className="text-default">Start Writing For Free</span>
                      <ArrowRight className="size-5 text-default" />

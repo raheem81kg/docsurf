@@ -194,7 +194,11 @@ export const LeftSidebar = ({
                      <Button
                         className="bg-transparent border-none opacity-0 group-hover:opacity-100 transition-all duration-200 outline-none cursor-pointer rounded-sm !p-2 text-sidebar -translate-x-[0.5px] group-hover:translate-x-0"
                         variant="ghost"
-                        onClick={() => set_l_sidebar_state(false)}
+                        onClick={() => {
+                           if (isMobile) {
+                              set_l_sidebar_state(false);
+                           }
+                        }}
                      >
                         <ChevronsLeft className="size-4.5 transition-opacity text-text-default" />
                      </Button>
@@ -223,6 +227,11 @@ export const LeftSidebar = ({
             <div className="">
                <Link
                   to="/doc/library"
+                  onClick={() => {
+                     if (isMobile) {
+                        set_l_sidebar_state(false);
+                     }
+                  }}
                   className={cn(buttonVariants({ variant: "ghost" }), "h-8 w-full justify-start md:text-sm text-base")}
                >
                   <ImageIcon className="size-5 md:size-4" />
@@ -253,10 +262,25 @@ export const LeftSidebar = ({
                </SidebarGroup> */}
                <SidebarGroup className="h-full">
                   <SidebarGroupLabel className="pr-0 font-medium md:text-sm text-base">
-                     <Link to="/doc">Documents</Link>
+                     <Link
+                        to="/doc"
+                        onClick={() => {
+                           if (isMobile) {
+                              set_l_sidebar_state(false);
+                           }
+                        }}
+                     >
+                        Documents
+                     </Link>
 
                      <div className="flex-grow" />
-                     <NewDocumentButton onClick={() => setOpenMobile(false)} />
+                     <NewDocumentButton
+                        onClick={() => {
+                           if (isMobile) {
+                              set_l_sidebar_state(false);
+                           }
+                        }}
+                     />
                   </SidebarGroupLabel>
                   <SidebarGroupContent className="h-full">
                      <SidebarMenu className=" h-full mt-1">

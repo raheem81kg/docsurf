@@ -3,8 +3,7 @@ import { InnerRightSidebar } from "@/components/sandbox/right-inner/inner-right-
 import { LeftSidebar } from "@/components/sandbox/left/LeftSidebar";
 import Header from "@/components/sandbox/header";
 import { useSandStateStore } from "@/store/sandstate";
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { INNER_RIGHT_SIDEBAR_COOKIE_NAME, LEFT_SIDEBAR_COOKIE_NAME, RIGHT_SIDEBAR_COOKIE_NAME } from "@/utils/constants";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { OnboardingProvider } from "@/components/onboarding/onboarding-provider";
 import { SuggestionOverlayProvider } from "@/editor/components/providers/suggestion-overlay/suggestion-overlay-provider";
 import { useOfflineIndicator } from "@/hooks/use-offline-indicator";
@@ -12,11 +11,6 @@ import { useSession } from "@/hooks/auth-hooks";
 
 export const Route = createFileRoute("/_main")({
    component: MainLayoutComponent,
-   beforeLoad: ({ context }) => {
-      // if (!context.userId) {
-      //    throw redirect({ to: "/auth", statusCode: 302 });
-      // }
-   },
 });
 
 function MainLayoutComponent() {

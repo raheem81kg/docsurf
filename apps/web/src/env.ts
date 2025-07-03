@@ -11,5 +11,6 @@ export const env = createEnv({
       VITE_COMPANY_NAME: z.string(),
       VITE_POSTHOG_KEY: z.string(),
    },
+   server: {},
    runtimeEnv: import.meta.env,
 });

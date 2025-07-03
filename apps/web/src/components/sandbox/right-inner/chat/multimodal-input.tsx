@@ -167,9 +167,6 @@ export function MultimodalInput({
    const { uploadedFiles, addUploadedFile, removeUploadedFile, uploading, setUploading } = useChatStore();
    const { chatWidthState } = useChatWidthStore();
 
-   const performSubmitAction = useAuthTokenStore.getState().refetchToken;
-   const performUploadAction = useAuthTokenStore.getState().refetchToken;
-
    const isLoading = status === "streaming";
    const uploadInputRef = useRef<HTMLInputElement>(null);
    const promptInputRef = useRef<PromptInputRef>(null);

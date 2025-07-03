@@ -145,21 +145,6 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
          // { rel: "manifest", href: "/site.webmanifest", color: "#ffffff" },
       ],
    }),
-   // beforeLoad: async (ctx) => {
-   //    const auth = await fetchAuth();
-   //    const { userId, token } = auth;
-
-   //    // During SSR only (the only time serverHttpClient exists),
-   //    // set the auth token to make HTTP queries with.
-   //    if (token) {
-   //       ctx.context.convexQueryClient.serverHttpClient?.setAuth(token);
-   //    }
-
-   //    return {
-   //       userId,
-   //       token,
-   //    };
-   // },
    component: RootComponent,
 });
 

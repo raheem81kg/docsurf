@@ -252,7 +252,7 @@ export default function Navigation({ profile }: { profile: Profile }) {
                                  // className="block w-full rounded-lg bg-foreground py-3 text-center font-medium text-background transition-all duration-200 hover:bg-foreground/90"
                                  onClick={() => setIsMobileMenuOpen(false)}
                               >
-                                 Get Started
+                                 {profile.email ? "Go to app" : "Get Started"}
                               </Link>
                            </motion.div>
                         </div>

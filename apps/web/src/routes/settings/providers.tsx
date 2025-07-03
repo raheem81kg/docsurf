@@ -588,7 +588,8 @@ function ProvidersSettings() {
                         </div>
                         <div>
                            <h4 className="font-semibold text-sm">Web Search</h4>
-                           <p className="mt-0.5 text-muted-foreground text-xs">4 search providers available from server</p>
+                           {/* TODO: Add Brave and Serper back in when they are supported */}
+                           <p className="mt-0.5 text-muted-foreground text-xs">2 search providers available from server</p>
                         </div>
                      </div>
                      <div className="flex items-center gap-2">
