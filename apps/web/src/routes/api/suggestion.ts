@@ -206,6 +206,7 @@ async function streamSuggestion({
    const { fullStream } = streamText({
       model: google.languageModel("gemini-2.0-flash"),
       system: getSuggestionSystemPrompt(),
+      maxTokens: 600,
       prompt,
       experimental_transform: smoothStream({ chunking: "word" }),
       temperature: 0.4,

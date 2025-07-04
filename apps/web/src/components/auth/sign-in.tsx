@@ -24,7 +24,7 @@ export const SignIn = ({ inviteCode }: { inviteCode?: string }) => {
 
    if (!mounted) return null;
 
-   const preferredSignInProvider = cookies[COOKIES.PreferredSignInProvider] as PreferredSignInProvider | "google";
+   const preferredSignInProvider = (cookies[COOKIES.PreferredSignInProvider] as PreferredSignInProvider) || "google";
    let preferredSignInOption: React.ReactNode;
 
    const handleGoogleSignIn = async () => {
@@ -60,10 +60,16 @@ export const SignIn = ({ inviteCode }: { inviteCode?: string }) => {
          );
          break;
       case "otp":
-      default:
          preferredSignInOption = (
             <div className="flex flex-col space-y-2">
                <OTPSignIn />
+            </div>
+         );
+         break;
+      default:
+         preferredSignInOption = (
+            <div className="flex flex-col space-y-2">
+               <GoogleSignIn onClick={handleGoogleSignIn} disabled={authLoading} />
             </div>
          );
    }
