@@ -52,8 +52,8 @@ export const createAuth = (ctx: GenericCtx) =>
       },
       socialProviders: {
          google: {
-            clientId: process.env.VITE_GOOGLE_CLIENT_ID as string,
-            clientSecret: process.env.VITE_GOOGLE_CLIENT_SECRET as string,
+            clientId: process.env.GOOGLE_CLIENT_ID as string,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
          },
       },
       user: {

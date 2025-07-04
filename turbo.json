@@ -10,14 +10,18 @@
          "env": [
             "VITE_CONVEX_URL",
             "VITE_SITE_URL",
+            "FRONTEND_URL",
             "VITE_CONVEX_SITE_URL",
             "VITE_DOCSURF_VERSION",
             "VITE_COMPANY_NAME",
-            "VITE_POSTHOG_HOST",
+            "POSTHOG_HOST",
             "VITE_POSTHOG_KEY",
-            "VITE_VERCEL_ENV",
-            "VITE_NODE_ENV",
-            "VITE_VERCEL_URL"
+            "GOOGLE_GENERATIVE_AI_API_KEY",
+            "UPSTASH_REDIS_REST_TOKEN",
+            "UPSTASH_REDIS_REST_URL",
+            "BETTER_AUTH_SECRET",
+            "GOOGLE_CLIENT_ID",
+            "GOOGLE_CLIENT_SECRET"
          ]
       },
       "lint": {
