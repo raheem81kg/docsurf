@@ -26,9 +26,9 @@ export default defineConfig({
       tanstackStart({
          target: "vercel",
          // SPA mode enabled for Vercel static deployment
-         spa: {
-            enabled: true,
-         },
+         // spa: {
+         //    enabled: true,
+         // },
          react: {
             babel: {
                plugins: [

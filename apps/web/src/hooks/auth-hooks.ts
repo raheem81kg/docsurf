@@ -96,13 +96,14 @@ export const useRevokeOtherSessions = () => {
 
 export function useVerifyToken(message = "Authentication required. Please sign in to continue.") {
    return useCallback(
-      (action: () => void | Promise<void>) => {
+      (action?: () => void | Promise<void>) => {
          const token = useAuthTokenStore.getState().token;
          if (!token) {
             showToast(message, "error");
-            return;
+            return false;
          }
-         action();
+         if (action) action();
+         return true;
       },
       [message]
    );

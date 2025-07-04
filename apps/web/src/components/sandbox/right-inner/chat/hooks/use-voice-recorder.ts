@@ -352,38 +352,37 @@ export const useVoiceRecorder = ({ onTranscript }: UseVoiceRecorderOptions) => {
             const token = useAuthTokenStore.getState().token;
 
             // Verify token before making the API call
-            await verifyToken(async () => {
-               if (audioBlob.size === 0) {
-                  throw new Error("No audio data recorded. Please try speaking closer to the microphone.");
-               }
+            if (!verifyToken()) return;
+            if (audioBlob.size === 0) {
+               throw new Error("No audio data recorded. Please try speaking closer to the microphone.");
+            }
 
-               console.log("Transcribing audio blob:", audioBlob.size, "bytes", "type:", audioBlob.type);
+            console.log("Transcribing audio blob:", audioBlob.size, "bytes", "type:", audioBlob.type);
 
-               const formData = new FormData();
-               formData.append("audio", audioBlob);
+            const formData = new FormData();
+            formData.append("audio", audioBlob);
 
-               const response = await fetch(`${env.VITE_CONVEX_SITE_URL}/transcribe`, {
-                  method: "POST",
-                  headers: {
-                     Authorization: `Bearer ${token}`,
-                  },
-                  body: formData,
-               });
-
-               if (!response.ok) {
-                  const errorData = await response.json();
-                  throw new Error(errorData.error || "Transcription failed");
-               }
-
-               const { text } = await response.json();
-
-               if (text?.trim()) {
-                  console.log("Transcription successful:", text);
-                  onTranscript(text.trim());
-               } else {
-                  showToast("No speech detected. Please try again and speak clearly.", "error");
-               }
+            const response = await fetch(`${env.VITE_CONVEX_SITE_URL}/transcribe`, {
+               method: "POST",
+               headers: {
+                  Authorization: `Bearer ${token}`,
+               },
+               body: formData,
             });
+
+            if (!response.ok) {
+               const errorData = await response.json();
+               throw new Error(errorData.error || "Transcription failed");
+            }
+
+            const { text } = await response.json();
+
+            if (text?.trim()) {
+               console.log("Transcription successful:", text);
+               onTranscript(text.trim());
+            } else {
+               showToast("No speech detected. Please try again and speak clearly.", "error");
+            }
          } catch (error) {
             console.error("Transcription error:", error);
             showToast(error instanceof Error ? error.message : "Failed to transcribe audio", "error");

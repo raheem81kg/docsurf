@@ -11,7 +11,7 @@ import { type Message, useChat } from "@ai-sdk/react";
 import { useQuery as useConvexQuery } from "convex-helpers/react/cache";
 import type { Infer } from "convex/values";
 import { nanoid } from "nanoid";
-import { useCallback, useMemo, useRef, useEffect } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { useAuthTokenStore } from "@/hooks/use-auth-store";
 
 export function useChatIntegration<IsShared extends boolean>({
@@ -71,39 +71,38 @@ export function useChatIntegration<IsShared extends boolean>({
       experimental_throttle: 50,
       experimental_prepareRequestBody(body) {
          let requestBody = null;
-         verifyToken(() => {
-            // Skip request preparation for shared threads since they're read-only
-            if (isShared) return;
+         if (!verifyToken()) return undefined; // Prevent request if not logged in
+         // Skip request preparation for shared threads since they're read-only
+         if (isShared) return;
 
-            if (threadId) {
-               useChatStore.getState().setPendingStream(threadId, true);
-            }
-            const proposedNewAssistantId = nanoid();
-            seededNextId.current = proposedNewAssistantId;
+         if (threadId) {
+            useChatStore.getState().setPendingStream(threadId, true);
+         }
+         const proposedNewAssistantId = nanoid();
+         seededNextId.current = proposedNewAssistantId;
 
-            const messages = body.messages as Message[];
-            const message = messages[messages.length - 1];
+         const messages = body.messages as Message[];
+         const message = messages[messages.length - 1];
 
-            // Get effective MCP overrides (includes defaults for new chats)
-            const mcpOverrides = getEffectiveMcpOverrides(threadId);
+         // Get effective MCP overrides (includes defaults for new chats)
+         const mcpOverrides = getEffectiveMcpOverrides(threadId);
 
-            requestBody = {
-               ...body.requestBody,
-               id: threadId,
-               proposedNewAssistantId,
-               model: selectedModel,
-               message: {
-                  parts: message?.parts,
-                  role: message?.role,
-                  messageId: message?.id,
-               },
-               enabledTools,
-               imageSize: selectedImageSize,
-               folderId,
-               reasoningEffort,
-               mcpOverrides,
-            };
-         });
+         requestBody = {
+            ...body.requestBody,
+            id: threadId,
+            proposedNewAssistantId,
+            model: selectedModel,
+            message: {
+               parts: message?.parts,
+               role: message?.role,
+               messageId: message?.id,
+            },
+            enabledTools,
+            imageSize: selectedImageSize,
+            folderId,
+            reasoningEffort,
+            mcpOverrides,
+         };
          return requestBody;
       },
       initialMessages,
