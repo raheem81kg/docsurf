@@ -24,6 +24,9 @@ export const ServerRoute = createServerFileRoute("/api/inline-suggestion").metho
 
       // Get userId from fetchAuth
       const { userId } = await fetchAuth();
+      console.log("_____________________");
+      console.log("userId", userId);
+      console.log("_____________________");
       if (!userId) {
          return new Response(JSON.stringify({ error: { message: "Unauthorized", description: "No user session." } }), {
             status: 401,

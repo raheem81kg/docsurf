@@ -33,6 +33,7 @@ import { Route as MainDocLibraryRouteImport } from './routes/_main/doc.library'
 import { Route as MainDocDocumentIdRouteImport } from './routes/_main/doc.$documentId'
 import { ServerRoute as ApiSuggestionServerRouteImport } from './routes/api/suggestion'
 import { ServerRoute as ApiInlineSuggestionServerRouteImport } from './routes/api/inline-suggestion'
+import { ServerRoute as ApiFetchTokenServerRouteImport } from './routes/api/fetchToken'
 import { ServerRoute as ApiPhrSplatServerRouteImport } from './routes/api/phr/$'
 import { ServerRoute as ApiCheckoutSuccessServerRouteImport } from './routes/api/checkout/success'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
@@ -192,6 +193,11 @@ const ApiInlineSuggestionServerRoute =
     path: '/api/inline-suggestion',
     getParentRoute: () => rootServerRouteImport,
   } as any)
+const ApiFetchTokenServerRoute = ApiFetchTokenServerRouteImport.update({
+  id: '/api/fetchToken',
+  path: '/api/fetchToken',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
 const ApiPhrSplatServerRoute = ApiPhrSplatServerRouteImport.update({
   id: '/api/phr/$',
   path: '/api/phr/$',
@@ -370,6 +376,7 @@ export interface RootRouteChildren {
   AuthedServerRoute: typeof AuthedServerRoute
 }
 export interface FileServerRoutesByFullPath {
+  '/api/fetchToken': typeof ApiFetchTokenServerRoute
   '/api/inline-suggestion': typeof ApiInlineSuggestionServerRoute
   '/api/suggestion': typeof ApiSuggestionServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
@@ -377,6 +384,7 @@ export interface FileServerRoutesByFullPath {
   '/api/phr/$': typeof ApiPhrSplatServerRoute
 }
 export interface FileServerRoutesByTo {
+  '/api/fetchToken': typeof ApiFetchTokenServerRoute
   '/api/inline-suggestion': typeof ApiInlineSuggestionServerRoute
   '/api/suggestion': typeof ApiSuggestionServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
@@ -385,6 +393,7 @@ export interface FileServerRoutesByTo {
 }
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
+  '/api/fetchToken': typeof ApiFetchTokenServerRoute
   '/api/inline-suggestion': typeof ApiInlineSuggestionServerRoute
   '/api/suggestion': typeof ApiSuggestionServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
@@ -394,6 +403,7 @@ export interface FileServerRoutesById {
 export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
   fullPaths:
+    | '/api/fetchToken'
     | '/api/inline-suggestion'
     | '/api/suggestion'
     | '/api/auth/$'
@@ -401,6 +411,7 @@ export interface FileServerRouteTypes {
     | '/api/phr/$'
   fileServerRoutesByTo: FileServerRoutesByTo
   to:
+    | '/api/fetchToken'
     | '/api/inline-suggestion'
     | '/api/suggestion'
     | '/api/auth/$'
@@ -408,6 +419,7 @@ export interface FileServerRouteTypes {
     | '/api/phr/$'
   id:
     | '__root__'
+    | '/api/fetchToken'
     | '/api/inline-suggestion'
     | '/api/suggestion'
     | '/api/auth/$'
@@ -416,6 +428,7 @@ export interface FileServerRouteTypes {
   fileServerRoutesById: FileServerRoutesById
 }
 export interface RootServerRouteChildren {
+  ApiFetchTokenServerRoute: typeof ApiFetchTokenServerRoute
   ApiInlineSuggestionServerRoute: typeof ApiInlineSuggestionServerRoute
   ApiSuggestionServerRoute: typeof ApiSuggestionServerRoute
   ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
@@ -618,6 +631,13 @@ declare module '@tanstack/react-start/server' {
       preLoaderRoute: typeof ApiInlineSuggestionServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
+    '/api/fetchToken': {
+      id: '/api/fetchToken'
+      path: '/api/fetchToken'
+      fullPath: '/api/fetchToken'
+      preLoaderRoute: typeof ApiFetchTokenServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
     '/api/phr/$': {
       id: '/api/phr/$'
       path: '/api/phr/$'
@@ -735,6 +755,7 @@ export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 const rootServerRouteChildren: RootServerRouteChildren = {
+  ApiFetchTokenServerRoute: ApiFetchTokenServerRoute,
   ApiInlineSuggestionServerRoute: ApiInlineSuggestionServerRoute,
   ApiSuggestionServerRoute: ApiSuggestionServerRoute,
   ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,

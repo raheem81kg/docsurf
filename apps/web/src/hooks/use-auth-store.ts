@@ -1,6 +1,5 @@
 // Zustand store for managing the authentication token
 import { create } from "zustand";
-import { fetchToken } from "@/routes/__root";
 
 interface AuthTokenState {
    token: string | null;
@@ -12,7 +11,17 @@ export const useAuthTokenStore = create<AuthTokenState>((set) => ({
    token: null,
    setToken: (token) => set({ token }),
    refetchToken: async () => {
-      const token = await fetchToken();
-      set({ token: token ?? null });
+      try {
+         const response = await fetch("/api/fetchToken", { method: "GET" });
+         if (!response.ok) {
+            set({ token: null });
+            return;
+         }
+         const data = await response.json();
+         set({ token: data.token ?? null });
+      } catch (error) {
+         console.error("Error fetching token", error);
+         set({ token: null });
+      }
    },
 }));
