@@ -40,7 +40,14 @@ export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps =
    const { data: session, isPending } = useSession();
    const commandRef = useRef<HTMLDivElement>(null);
    const set_ir_sidebar_state = useSandStateStore((s) => s.set_ir_sidebar_state);
-   const user = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+
+   // Only allow queries when session is loaded and user is authenticated
+   const isAuthenticated = !isPending && !!session?.user;
+
+   const user = useQuery({
+      ...convexQuery(api.auth.getCurrentUser, {}),
+      enabled: isAuthenticated,
+   });
    const navigate = useNavigate();
    const createDocument = useMutation(api.documents.createDocument);
    const queryClient = useQueryClient();
@@ -64,7 +71,10 @@ export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps =
       return () => clearTimeout(timer);
    }, [query]);
 
-   const searchResults = useConvexQuery(api.documents.searchDocuments, workspaceId ? { workspaceId, query: debouncedQuery } : "skip");
+   const searchResults = useConvexQuery(
+      api.documents.searchDocuments,
+      workspaceId && isAuthenticated ? { workspaceId, query: debouncedQuery } : "skip"
+   );
 
    useEffect(() => {
       const down = (e: KeyboardEvent) => {

@@ -38,10 +38,14 @@ const HeaderContent = () => {
    const toggle_l_sidebar = useSandStateStore((s) => s.toggle_l_sidebar);
    const toggle_ir_sidebar = useSandStateStore((s) => s.toggle_ir_sidebar);
    const { data: session, isPending } = useSession();
-   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const { data: user } = useQuery({
+      ...convexQuery(api.auth.getCurrentUser, {}),
+      enabled: !!session?.user,
+   });
    const { doc } = useCurrentDocument(user);
    const { isLoading: isTreeLoading } = useConvexTree({
-      workspaceId: user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">,
+      workspaceId:
+         session?.user && user?.workspaces?.[0]?.workspace?._id ? (user.workspaces[0].workspace._id as Id<"workspaces">) : undefined,
    });
    const pathname = useLocation().pathname;
    const documentId = useParams({ strict: false }).documentId;

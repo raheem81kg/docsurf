@@ -25,10 +25,14 @@ export const InnerRightSidebar = ({
    const { setOpen, setOpenMobile, open, openMobile, isMobile } = useSidebar();
    const set_ir_sidebar_state = useSandStateStore((s) => s.set_ir_sidebar_state);
    const { data: session, isPending } = useSession();
-   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const { data: user } = useQuery({
+      ...convexQuery(api.auth.getCurrentUser, {}),
+      enabled: !!session?.user,
+   });
    const { doc } = useCurrentDocument(user);
    const { isLoading: isTreeLoading } = useConvexTree({
-      workspaceId: user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">,
+      workspaceId:
+         session?.user && user?.workspaces?.[0]?.workspace?._id ? (user.workspaces[0].workspace._id as Id<"workspaces">) : undefined,
    });
 
    // Get the current threadId from the chat store

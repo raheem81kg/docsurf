@@ -11,6 +11,7 @@ import { useSession } from "@/hooks/auth-hooks";
 import { SignupMessagePrompt } from "@/components/sandbox/right-inner/chat/signup-message-prompt";
 import { useConvexQuery } from "@convex-dev/react-query";
 import { buildTree, flattenTree } from "@/components/sandbox/left/_tree_components/components/utilities";
+import { useSandStateStore } from "@/store/sandstate";
 
 export const Route = createFileRoute("/_main/doc/")({
    head: () => ({
@@ -27,12 +28,16 @@ function RouteComponent() {
    const [showMessage, setShowMessage] = useState(false);
    const [error, setError] = useState<string | null>(null);
    const navigate = useNavigate();
+   const set_ir_sidebar_state = useSandStateStore((s) => s.set_ir_sidebar_state);
 
    // Session hook (same as chat.tsx)
    const { data: session, isPending } = useSession();
 
+   // Only allow queries when session is loaded and user is authenticated
+   const isAuthenticated = !isPending && !!session?.user;
+
    // Convex hooks
-   const user = useConvexQuery(api.auth.getCurrentUser, session?.user?.id ? {} : "skip");
+   const user = useConvexQuery(api.auth.getCurrentUser, isAuthenticated ? {} : "skip");
    const createWorkspace = useMutation(api.workspaces.createWorkspace);
    const createDocument = useMutation(api.documents.createDocument);
 
@@ -42,7 +47,7 @@ function RouteComponent() {
    // Fetch all documents to find the first text document in tree order
    const docsResult = useConvexQuery(
       api.documents.fetchDocumentTree,
-      workspaceId && user?._id
+      workspaceId && isAuthenticated && user?._id
          ? {
               workspaceId,
            }
@@ -144,9 +149,10 @@ function RouteComponent() {
 
    // Same authentication pattern as chat.tsx
    if (!session?.user && !isPending) {
+      set_ir_sidebar_state(false);
       return (
          <div className="relative flex h-[calc(100dvh-64px)] items-center justify-center">
-            <SignupMessagePrompt />
+            <SignupMessagePrompt key="signup-prompt" />
          </div>
       );
    }

@@ -23,13 +23,18 @@ import { api } from "@docsurf/backend/convex/_generated/api";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { useSession } from "@/hooks/auth-hooks";
 
 /**
  * NavUser component for displaying the user's avatar, name, and dropdown menu in the sidebar.
  * Uses useUserStore directly. Shows skeletons for name/email/avatar if loading, and handles error states gracefully.
  */
 export function NavUser() {
-   const user = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const { data: session } = useSession();
+   const user = useQuery({
+      ...convexQuery(api.auth.getCurrentUser, {}),
+      enabled: !!session?.user,
+   });
    const [isClearing, setIsClearing] = useState(false);
    const [showEmail, setShowEmail] = useState(false);
    const sparklesRef = useRef<SparklesIconHandle>(null);

@@ -12,6 +12,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { DEFAULT_TEXT_TITLE, DEFAULT_FOLDER_TITLE } from "@/utils/constants";
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 import { RadioGroup, RadioGroupItem } from "@docsurf/ui/components/radio-group";
+import { useSession } from "@/hooks/auth-hooks";
 
 export function NewDocumentButton({ onClick }: { onClick?: () => void }) {
    const [showDialog, setShowDialog] = useState(false);
@@ -19,10 +20,11 @@ export function NewDocumentButton({ onClick }: { onClick?: () => void }) {
    const [docType, setDocType] = useState<"text/plain" | "folder">("text/plain");
    const [isCreating, startTransition] = useTransition();
    const createDocument = useMutation(api.documents.createDocument);
-   const user = useQuery(api.auth.getCurrentUser, {});
+   const { data: session } = useSession();
+   const user = useQuery(api.auth.getCurrentUser, session?.user?.id ? {} : "skip");
    const workspaceId = user?.workspaces?.[0]?.workspace?._id as Id<"workspaces"> | undefined;
    const navigate = useNavigate();
-   const topLevelDocs = useQuery(api.documents.fetchDocumentTree, workspaceId ? { workspaceId } : "skip");
+   const topLevelDocs = useQuery(api.documents.fetchDocumentTree, workspaceId && session?.user ? { workspaceId } : "skip");
 
    const handleCreate = () => {
       const trimmedName = docName.trim();

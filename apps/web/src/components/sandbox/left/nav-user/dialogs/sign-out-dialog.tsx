@@ -36,6 +36,7 @@ interface SignOutDialogProps extends React.ComponentPropsWithoutRef<typeof Dialo
 
 export function SignOutDialog({ showTrigger = true, children, scope = "local", onSuccess, ...props }: SignOutDialogProps) {
    const [isSignOutPending, startSignOutTransition] = React.useTransition();
+   const [isOpen, setIsOpen] = React.useState(false);
    const isMobile = useIsMobile();
    const isDesktop = !isMobile;
    const navigate = useNavigate();
@@ -54,10 +55,13 @@ export function SignOutDialog({ showTrigger = true, children, scope = "local", o
 
    function onSignOut() {
       startSignOutTransition(async () => {
-         await queryClient.resetQueries({ queryKey: ["session"] });
-         await queryClient.resetQueries({ queryKey: ["token"] });
+         // Clear queries first to prevent any race conditions
+         await queryClient.clear();
+
+         // Then sign out
          await authClient.signOut();
-         void navigate({ to: "/auth" });
+
+         // Clear localStorage
          const keys = Object.keys(localStorage);
          for (const key of keys) {
             if (key.includes("_CACHE")) {
@@ -65,6 +69,7 @@ export function SignOutDialog({ showTrigger = true, children, scope = "local", o
             }
          }
 
+         setIsOpen(false);
          props.onOpenChange?.(false);
          onSuccess?.();
       });
@@ -72,7 +77,7 @@ export function SignOutDialog({ showTrigger = true, children, scope = "local", o
 
    if (isDesktop) {
       return (
-         <Dialog {...props}>
+         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             {showTrigger ? <DialogTrigger asChild>{children}</DialogTrigger> : null}
             <DialogContent>
                <DialogHeader>
@@ -102,7 +107,7 @@ export function SignOutDialog({ showTrigger = true, children, scope = "local", o
    }
 
    return (
-      <Drawer {...props}>
+      <Drawer open={isOpen} onOpenChange={setIsOpen}>
          {showTrigger ? <DrawerTrigger asChild>{children}</DrawerTrigger> : null}
          <DrawerContent>
             <DrawerHeader>

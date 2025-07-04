@@ -4,10 +4,15 @@ import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { PostHogProvider as PostHog, usePostHog } from "posthog-js/react";
 import { type PropsWithChildren, useEffect } from "react";
+import { useSession } from "@/hooks/auth-hooks";
 
 function PostHogUserIdentifier() {
    const posthog = usePostHog();
-   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const { data: session } = useSession();
+   const { data: user } = useQuery({
+      ...convexQuery(api.auth.getCurrentUser, {}),
+      enabled: !!session?.user,
+   });
 
    useEffect(() => {
       if (user?.email) {

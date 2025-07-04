@@ -207,7 +207,6 @@ async function streamInlineSuggestion({
       const { type } = delta;
       if (type === "text-delta") {
          const { textDelta } = delta;
-         console.log("Gemini textDelta:", textDelta);
          suggestionContent += textDelta;
          await write("suggestion-delta", textDelta);
       }

@@ -7,6 +7,7 @@ import { buildTree, flattenTree } from "./components/utilities";
 import type { TreeItem, TreeItems } from "./components/types";
 import { DEFAULT_TEXT_TITLE } from "@/utils/constants";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
+import { useSession } from "@/hooks/auth-hooks";
 
 // Types for the Convex-based tree hook
 interface UseConvexTreeOptions {
@@ -68,16 +69,19 @@ const buildTreeFromDocuments = (documents: Doc<"documents">[] | undefined): Tree
 };
 
 export const useConvexTree = ({ workspaceId }: UseConvexTreeOptions): TreeState & TreeActions => {
+   // Check if user is authenticated
+   const { data: session, isPending } = useSession();
+
+   // Only allow queries when session is loaded and user is authenticated
+   const isAuthenticated = !isPending && !!session?.user;
+
    // Always call these hooks, even if workspaceId is undefined
-   const documents = useQuery(
-      api.documents.fetchDocumentTree,
-      typeof workspaceId === "string" && workspaceId.length > 0 ? { workspaceId } : "skip"
-   );
+   const documents = useQuery(api.documents.fetchDocumentTree, workspaceId && isAuthenticated ? { workspaceId } : "skip");
    const createDoc = useMutation(api.documents.createDocument);
    const updateDoc = useMutation(api.documents.updateDocument);
    const deleteDoc = useMutation(api.documents.moveDocumentToTrash);
    const batchUpsert = useMutation(api.documents.batchUpsertDocuments).withOptimisticUpdate((localStore, args) => {
-      if (!workspaceId) return;
+      if (!workspaceId || !isAuthenticated) return;
       const current = localStore.getQuery(api.documents.fetchDocumentTree, { workspaceId });
       if (!current || !Array.isArray(current.data)) return;
       // Build a map of updates by id
@@ -104,6 +108,7 @@ export const useConvexTree = ({ workspaceId }: UseConvexTreeOptions): TreeState 
    const toggleCollapseMutation = useMutation(api.documents.toggleCollapse).withOptimisticUpdate((localStore, args) => {
       // Optimistically update the isCollapsed field for the toggled folder
       const { workspaceId, id } = args;
+      if (!isAuthenticated) return;
       const current = localStore.getQuery(api.documents.fetchDocumentTree, { workspaceId });
       if (!current || !Array.isArray(current.data)) return;
       const newDocs = current.data.map((doc) => {

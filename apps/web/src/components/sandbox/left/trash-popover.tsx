@@ -12,6 +12,7 @@ import { useQuery } from "convex/react";
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 import { useConvex, useMutation } from "convex/react";
 import throttle from "lodash/throttle";
+import { useSession } from "@/hooks/auth-hooks";
 
 // Document type based on backend schema
 
@@ -28,7 +29,8 @@ interface Document {
 }
 
 export function TrashPopover({ children }: TrashPopoverProps) {
-   const user = useQuery(api.auth.getCurrentUser, {});
+   const { data: session } = useSession();
+   const user = useQuery(api.auth.getCurrentUser, session?.user?.id ? {} : "skip");
    const workspaceId = user?.workspaces?.[0]?.workspace?._id;
    const restoreDocument = useMutation(api.documents.restoreDocument);
    const deleteDocumentPermanently = useMutation(api.documents.deleteDocumentPermanently);
@@ -71,6 +73,7 @@ export function TrashPopover({ children }: TrashPopoverProps) {
                   setActionLoadingId={setActionLoadingId}
                   restoreDocument={restoreDocument}
                   deleteDocumentPermanently={deleteDocumentPermanently}
+                  session={session}
                />
             </Command>
          </PopoverContent>
@@ -87,6 +90,7 @@ interface TrashedDocumentsListProps {
    setActionLoadingId: React.Dispatch<React.SetStateAction<Id<"documents"> | null>>;
    restoreDocument: ReturnType<typeof useMutation<typeof api.documents.restoreDocument>>;
    deleteDocumentPermanently: ReturnType<typeof useMutation<typeof api.documents.deleteDocumentPermanently>>;
+   session: { user: any } | undefined;
 }
 
 function TrashedDocumentsList({
@@ -98,10 +102,11 @@ function TrashedDocumentsList({
    setActionLoadingId,
    restoreDocument,
    deleteDocumentPermanently,
+   session,
 }: TrashedDocumentsListProps) {
    const trashedDocs = useQuery(
       api.documents.fetchTrashedDocuments,
-      workspaceId
+      workspaceId && session?.user
          ? {
               workspaceId,
               query: debouncedQuery,

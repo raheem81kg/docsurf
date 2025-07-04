@@ -101,7 +101,7 @@ const ChatContent = ({ threadId: routeThreadId, folderId }: ChatProps) => {
    if (!session?.user && !isPending) {
       return (
          <div className="relative flex h-[calc(100dvh-64px)] items-center justify-center">
-            <SignupMessagePrompt />
+            <SignupMessagePrompt key="signup-prompt" />
          </div>
       );
    }

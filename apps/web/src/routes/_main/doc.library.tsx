@@ -3,7 +3,7 @@ import { Button } from "@docsurf/ui/components/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@docsurf/ui/components/select";
 import { Skeleton } from "@docsurf/ui/components/skeleton";
 import { api } from "@docsurf/backend/convex/_generated/api";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { Download, Image as ImageIcon, ImageOff } from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
@@ -133,9 +133,14 @@ const MasonryGrid = memo(({ assets }: { assets: GeneratedAsset[] }) => {
 MasonryGrid.displayName = "MasonryGrid";
 
 function LibraryPage() {
+   const navigate = useNavigate();
    const session = useSession();
    const filesResult = useQuery(api.attachments.listFiles, session.user?.id ? {} : "skip");
    const [sortBy, setSortBy] = useState<"newest" | "oldest" | "size">("newest");
+
+   const handleGetStarted = () => {
+      navigate({ to: "/auth", replace: true });
+   };
 
    // Filter for generated images only
    const generatedAssets = useMemo(() => {
@@ -186,7 +191,12 @@ function LibraryPage() {
                <p className="text-muted-foreground">Your collection of AI-generated images</p>
             </div>
             <Alert>
-               <AlertDescription>Sign in to view your AI-generated image library.</AlertDescription>
+               <AlertDescription className="flex items-center justify-between">
+                  <span>Sign in to view your AI-generated image library.</span>
+                  <Button onClick={handleGetStarted} size="sm" className="ml-4 font-medium">
+                     Get Started
+                  </Button>
+               </AlertDescription>
             </Alert>
          </div>
       );

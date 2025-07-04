@@ -210,8 +210,8 @@ const HTMLRenderer = memo(({ code }: { code: string }) => {
    const enhancedCode = code.includes("<head>")
       ? code.replace("<head>", `<head>${themeCSS}`)
       : code.includes("<html>")
-        ? code.replace("<html>", `<html><head>${themeCSS}</head>`)
-        : `<html><head>${themeCSS}</head><body>${code}</body></html>`;
+      ? code.replace("<html>", `<html><head>${themeCSS}</head>`)
+      : `<html><head>${themeCSS}</head><body>${code}</body></html>`;
 
    return (
       <iframe srcDoc={enhancedCode} className="h-96 w-full border-0" sandbox="allow-scripts allow-same-origin" title="HTML Preview" />

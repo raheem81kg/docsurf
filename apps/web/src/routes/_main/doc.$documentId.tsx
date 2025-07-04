@@ -28,7 +28,11 @@ function DocumentNotFound() {
    const [isCreating, setIsCreating] = React.useState(false);
 
    // Get workspaceId from current user
-   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const { data: session } = useSession();
+   const { data: user } = useQuery({
+      ...convexQuery(api.auth.getCurrentUser, {}),
+      enabled: !!session?.user,
+   });
    const workspaceId = user?.workspaces?.[0]?.workspace?._id as Id<"workspaces"> | undefined;
    const createDocument = useMutation(api.documents.createDocument);
 
@@ -148,10 +152,14 @@ export const Route = createFileRoute("/_main/doc/$documentId")({
 
 function DocumentComponent() {
    const { data: session, isPending } = useSession();
-   const { data: user, isLoading: isUserLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const { data: user, isLoading: isUserLoading } = useQuery({
+      ...convexQuery(api.auth.getCurrentUser, {}),
+      enabled: !!session?.user,
+   });
    const { doc, docLoading: isDocLoading } = useCurrentDocument(user);
    const { isLoading: isTreeLoading } = useConvexTree({
-      workspaceId: user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">,
+      workspaceId:
+         session?.user && user?.workspaces?.[0]?.workspace?._id ? (user.workspaces[0].workspace._id as Id<"workspaces">) : undefined,
    });
 
    const isMobileBreakPoint = useBreakpoint(INLINE_SUGGESTION_MOBILE_BREAKPOINT);
@@ -180,7 +188,7 @@ function DocumentComponent() {
    if (!session?.user && !isPending) {
       return (
          <div className="relative flex h-[calc(100dvh-64px)] items-center justify-center">
-            <SignupMessagePrompt />
+            <SignupMessagePrompt key="signup-prompt" />
          </div>
       );
    }

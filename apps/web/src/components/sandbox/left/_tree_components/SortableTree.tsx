@@ -50,6 +50,7 @@ import { useConvexTree } from "./use-convex-tree";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { CurrentUser } from "@docsurf/backend/convex/users";
+import { useSession } from "@/hooks/auth-hooks";
 
 const measuring = {
    droppable: {
@@ -145,17 +146,20 @@ export function useCurrentDocument(user: CurrentUser | undefined) {
 
    // Always call the hook, but only enable it when you have the data
    const enabled = !!documentId && !!workspaceId && !!user;
-   const { data: doc, isLoading: docLoading } = useQuery(
-      convexQuery(
-         api.documents.fetchDocumentById,
-         enabled
-            ? {
-                 id: documentId as Id<"documents">,
-                 workspaceId: workspaceId as Id<"workspaces">,
-              }
-            : "skip"
-      )
-   );
+
+   // Only construct query args when all required values are present
+   const queryArgs =
+      enabled && documentId && workspaceId
+         ? {
+              id: documentId as Id<"documents">,
+              workspaceId: workspaceId as Id<"workspaces">,
+           }
+         : "skip";
+
+   const { data: doc, isLoading: docLoading } = useQuery({
+      ...convexQuery(api.documents.fetchDocumentById, queryArgs),
+      enabled,
+   });
 
    // If there's no documentId in the route, we're not loading and have no doc
    if (!documentId) {
@@ -182,7 +186,11 @@ export function useCurrentDocument(user: CurrentUser | undefined) {
 
 export function SortableTree({ collapsible, indicator = false, indentationWidth = 28, removable }: Props) {
    // Get workspace ID from user
-   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const { data: session, isPending: sessionLoading } = useSession();
+   const { data: user } = useQuery({
+      ...convexQuery(api.auth.getCurrentUser, {}),
+      enabled: !!session?.user,
+   });
    const workspaceId = user?.workspaces?.[0]?.workspace?._id;
 
    const currentDocument = useCurrentDocument(user);
@@ -197,7 +205,9 @@ export function SortableTree({ collapsible, indicator = false, indentationWidth 
       isCollapsed: isCollapsedFn,
       isFolder,
       getDocumentTitle,
-   } = useConvexTree({ workspaceId: workspaceId as Id<"workspaces"> });
+   } = useConvexTree({
+      workspaceId: session?.user && workspaceId ? (workspaceId as Id<"workspaces">) : undefined,
+   });
 
    const navigate = useNavigate();
 
@@ -342,8 +352,14 @@ export function SortableTree({ collapsible, indicator = false, indentationWidth 
       );
    };
 
-   if (isLoading) {
+   // Show loading only if session is loading or if we have a user but tree data is loading
+   if (sessionLoading || (session?.user && isLoading)) {
       return <TreeSkeleton />;
+   }
+
+   // If no user session, show empty state
+   if (!session?.user) {
+      return <NoItems />;
    }
 
    if (!isLoading && (!Array.isArray(flattenedItems) || flattenedItems.length === 0)) {

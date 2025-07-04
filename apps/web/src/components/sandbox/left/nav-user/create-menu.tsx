@@ -23,6 +23,7 @@ import throttle from "lodash/throttle";
 import { useNavigate } from "@tanstack/react-router";
 import { useRateLimit } from "@convex-dev/rate-limiter/react";
 import { DOCUMENT_CREATION_RATE_LIMIT } from "@docsurf/utils/constants/constants";
+import { useSession } from "@/hooks/auth-hooks";
 
 interface CreateMenuProps {
    parentId?: string | null;
@@ -35,7 +36,8 @@ export function CreateMenu({ parentId = null }: CreateMenuProps) {
    const navigate = useNavigate();
 
    // Get workspaceId from current user
-   const user = useQuery(api.auth.getCurrentUser, {});
+   const { data: session } = useSession();
+   const user = useQuery(api.auth.getCurrentUser, session?.user?.id ? {} : "skip");
    const workspaceId = user?.workspaces?.[0]?.workspace?._id as Id<"workspaces"> | undefined;
    const createDocument = useMutation(api.documents.createDocument);
 

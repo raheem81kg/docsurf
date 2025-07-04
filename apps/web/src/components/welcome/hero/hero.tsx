@@ -34,7 +34,7 @@ export function Hero() {
 
             <div className="mt-8 md:mt-10">
                <div className="flex max-w-[540px] items-center gap-4">
-                  <Link to="/auth" title="Sign in with Google">
+                  <Link to="/auth" search={{ provider: "google" }} title="Sign in with Google">
                      <Button size="lg" className="flex w-full space-x-2 rounded-[3px] font-medium active:scale-[0.98]">
                         {/* Google Icon */}
                         <span className="flex items-center space-x-2">
@@ -43,7 +43,7 @@ export function Hero() {
                         </span>
                      </Button>
                   </Link>
-                  <Link to="/auth" title="Sign in with email">
+                  <Link to="/auth" search={{ provider: "otp" }} title="Sign in with email">
                      <Button
                         size="lg"
                         variant="secondary"

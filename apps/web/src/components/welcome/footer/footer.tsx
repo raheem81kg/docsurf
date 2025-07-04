@@ -11,12 +11,14 @@ export function Footer() {
       <footer className="overflow-hidden border-border border-t-[1px] bg-[#fff] px-4 pt-10 md:max-h-[820px] md:px-6 md:pt-16 dark:bg-[#0C0C0C]">
          <div className="container mx-auto">
             <div className="mb-12 flex items-center justify-between border-border border-b-[1px] pb-10 md:pb-16">
-               <Link to="/" className="-ml-[52px] scale-0 md:ml-0 md:scale-100" title="Home">
+               <Link
+                  to="/"
+                  className="-ml-[52px] scale-0 md:ml-0 md:scale-100 flex text-[#0B100F] dark:text-foreground items-center gap-2.5"
+                  title="Home"
+               >
                   {/* <LogoLarge /> */}
-                  <Link to="/" className="flex text-[#0B100F] dark:text-foreground items-center gap-2.5">
-                     <img src={logo} alt="DocSurf" className="rounded-lg dark:invert" width={52} height={52} />
-                     {/* <p className="text-3xl font-medium">Docsurf</p> */}
-                  </Link>
+                  <img src={logo} alt="DocSurf" className="rounded-lg dark:invert" width={52} height={52} />
+                  {/* <p className="text-3xl font-medium">Docsurf</p> */}
                   <span className="sr-only">Docsurf</span>
                </Link>
 

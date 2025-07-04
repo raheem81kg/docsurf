@@ -5,16 +5,36 @@ import { ConvexError } from "convex/values";
 import { MutationCtx, QueryCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
 import { requireUserId } from "../users";
+import { LRUCache } from "lru-cache";
 
-type Identity<T extends boolean> = T extends false
-   ? UserIdentity & { isAnonymous: false; id: string }
-   : UserIdentity & { isAnonymous: boolean; id: string };
+// In-memory cache to check if a user has access to a workspace
+const cache = new LRUCache<string, boolean>({
+   max: 5_000, // up to 5k entries (adjust based on memory)
+   ttl: 1000 * 60 * 30, // 30 minutes in milliseconds
+});
+
+// Better Auth identity type
+type BetterAuthIdentity = {
+   image?: string | undefined;
+   twoFactorEnabled?: boolean | undefined;
+   name: string;
+   email: string;
+   emailVerified: boolean;
+   userId: string;
+   createdAt: number;
+   updatedAt: number;
+};
+
+type Identity<T extends boolean> = BetterAuthIdentity & {
+   isAnonymous: T extends false ? false : boolean;
+   id: string;
+};
 
 export const getUserIdentity = async <T extends boolean>(
    ctx: GenericQueryCtx<any> | GenericActionCtx<any>,
    { allowAnons }: { allowAnons: T }
 ): Promise<{ error: string } | Identity<T>> => {
-   const identity = await betterAuthComponent.getAuthUser(ctx);
+   const identity: BetterAuthIdentity | null = await betterAuthComponent.getAuthUser(ctx);
 
    if (!identity) {
       return { error: "Unauthorized" };
@@ -28,7 +48,8 @@ export const getUserIdentity = async <T extends boolean>(
    // }
 
    return {
-      ...(identity as any), // NOTE: This needs to be checked for compatibility with UserIdentity
+      ...identity,
+      isAnonymous: false,
       id: identity.userId,
    } as Identity<T>;
 };
@@ -63,9 +84,7 @@ export function withWorkspacePermissionWrapper<Args extends { workspaceId: strin
       args: Args & { userId: string; workspaceRole: "owner" | "admin" | "member" | null }
    ) => Promise<ReturnType>
 ) {
-   // Per-invocation cache for permission checks (not shared across function calls)
    return async (ctx: QueryCtx | MutationCtx, args: Args): Promise<ReturnType> => {
-      const cache = new Map<string, boolean>();
       // Get userId from session/auth (Convex: requireUserId)
       const userId = await requireUserId(ctx);
       // Fetch user by _id (no index needed)

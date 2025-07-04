@@ -5,7 +5,7 @@ import { OTPSignIn } from "./otp-sign-in";
 import { COOKIES } from "@/utils/constants";
 import { authClient } from "@/lib/auth-client";
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useCookies } from "react-cookie";
 
 type PreferredSignInProvider = "google" | "otp";
@@ -17,6 +17,7 @@ export const SignIn = ({ inviteCode }: { inviteCode?: string }) => {
    const [cookies, setCookie] = useCookies();
    const [mounted, setMounted] = useState(false);
    const [authLoading, setAuthLoading] = useState(false);
+   const searchParams = useSearch({ from: "/_auth/auth" });
 
    useEffect(() => {
       setMounted(true);
@@ -24,7 +25,9 @@ export const SignIn = ({ inviteCode }: { inviteCode?: string }) => {
 
    if (!mounted) return null;
 
-   const preferredSignInProvider = (cookies[COOKIES.PreferredSignInProvider] as PreferredSignInProvider) || "google";
+   // Priority: URL search params > cookie preference > default to "google"
+   const preferredSignInProvider =
+      searchParams.provider || (cookies[COOKIES.PreferredSignInProvider] as PreferredSignInProvider) || "google";
    let preferredSignInOption: React.ReactNode;
 
    const handleGoogleSignIn = async () => {
