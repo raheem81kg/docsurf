@@ -1,5 +1,5 @@
 import { type AuthFunctions, BetterAuth, convexAdapter, type PublicAuthFunctions } from "@convex-dev/better-auth";
-import { convex, crossDomain } from "@convex-dev/better-auth/plugins";
+import { convex } from "@convex-dev/better-auth/plugins";
 import { getConvexAppUrl } from "@docsurf/utils/envs";
 import { betterAuth } from "better-auth";
 import { emailOTP, twoFactor } from "better-auth/plugins";
@@ -93,9 +93,6 @@ export const createAuth = (ctx: GenericCtx) =>
          }),
          twoFactor(),
          convex(),
-         crossDomain({
-            siteUrl: process.env.VITE_CONVEX_SITE_URL as string,
-         }),
       ],
    });
 

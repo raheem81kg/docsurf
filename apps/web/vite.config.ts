@@ -25,6 +25,7 @@ export default defineConfig({
       generateSitemap(sitemap),
       tanstackStart({
          target: "vercel",
+         // SPA mode enabled for Vercel static deployment
          spa: {
             enabled: true,
          },

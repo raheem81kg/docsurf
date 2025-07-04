@@ -124,7 +124,7 @@ export function ContentMenu(props: ContentMenuProps) {
                </Tooltip> */}
                <Popover open={menuOpen} onOpenChange={setMenuOpen}>
                   <div className="relative flex flex-col">
-                     <Tooltip>
+                     <Tooltip disableHoverableContent={true}>
                         <TooltipTrigger asChild>
                            <BaseButton
                               variant="ghost"
@@ -140,8 +140,17 @@ export function ContentMenu(props: ContentMenuProps) {
                               <GripVertical className="size-3.5 shrink-0" />
                            </BaseButton>
                         </TooltipTrigger>
-                        <TooltipContent sideOffset={8} className="text-xs">
-                           Block options
+                        <TooltipContent side="bottom" sideOffset={8} className="text-[11px] px-2 py-1 bg-neutral-900 rounded shadow">
+                           <div className="flex flex-col gap-0">
+                              <span>
+                                 <span className="font-bold text-white">Drag</span>
+                                 <span className="text-neutral-400 font-normal"> to move</span>
+                              </span>
+                              <span>
+                                 <span className="font-bold text-white">Click</span>
+                                 <span className="text-neutral-400 font-normal"> to open menu</span>
+                              </span>
+                           </div>
                         </TooltipContent>
                      </Tooltip>
                      <PopoverTrigger className="absolute left-0 top-0 z-0 h-5 w-5" />

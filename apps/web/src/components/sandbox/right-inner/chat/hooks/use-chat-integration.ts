@@ -124,13 +124,6 @@ export function useChatIntegration<IsShared extends boolean>({
       },
    });
 
-   // Cleanup: stop any in-flight streaming when threadId changes or component unmounts
-   useEffect(() => {
-      return () => {
-         chatHelpers.stop?.();
-      };
-   }, [threadId]);
-
    const customResume = useCallback(() => {
       console.log("[UCI:custom_resume]", {
          threadId: threadId?.slice(0, 8),

@@ -171,5 +171,8 @@ const ChatContent = ({ threadId: routeThreadId, folderId }: ChatProps) => {
 };
 
 export const Chat = ({ threadId, folderId }: ChatProps) => {
-   return <ChatContent key={threadId || "new"} threadId={threadId} folderId={folderId} />;
+   // DO NOT PASS A KEY HERE UNDER ANY CIRCUMSTANCES
+   // It will cause the chat to reset when the threadId changes
+   // AND THIS WHILE MAKE THE FIRST MESSAGE IN CHAT BE STUCK IN LOADING
+   return <ChatContent threadId={threadId} folderId={folderId} />;
 };
