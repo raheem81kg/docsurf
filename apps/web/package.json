@@ -34,6 +34,7 @@
       "@phosphor-icons/react": "^2.1.10",
       "@polar-sh/tanstack-start": "^0.1.1",
       "@radix-ui/react-icons": "^1.3.2",
+      "@radix-ui/react-slot": "^1.2.0",
       "@radix-ui/react-visually-hidden": "^1.2.0",
       "@react-email/components": "^0.1.0",
       "@react-email/render": "^1.1.3",
@@ -144,6 +145,7 @@
       "supermemory": "3.0.0-alpha.18",
       "tailwind-merge": "^2.6.0",
       "throttle-debounce": "^5.0.2",
+      "tippy.js": "^6.3.7",
       "tw-animate-css": "^1.2.5",
       "ua-parser-js": "^2.0.3",
       "unpdf": "^1.0.6",
@@ -154,6 +156,7 @@
       "vite-bundle-analyzer": "^1.0.0",
       "vite-plugin-svgr": "^4.3.0",
       "vite-tsconfig-paths": "^5.1.4",
+      "y-prosemirror": "^1.3.7",
       "zod": "^3.24.2",
       "zustand": "^5.0.5"
    },

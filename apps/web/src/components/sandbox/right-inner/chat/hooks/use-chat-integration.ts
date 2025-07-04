@@ -29,7 +29,7 @@ export function useChatIntegration<IsShared extends boolean>({
    const { rerenderTrigger, shouldUpdateQuery, setShouldUpdateQuery, triggerRerender } = useChatStore();
    const seededNextId = useRef<string | null>(null);
    const token = useAuthTokenStore.getState().token;
-   const verifyToken = useVerifyToken(token);
+   const verifyToken = useVerifyToken("You must be logged in to use the chat.");
 
    // For regular threads, use getThreadMessages
    const threadMessages = useConvexQuery(

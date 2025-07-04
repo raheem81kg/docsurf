@@ -3,6 +3,7 @@ import { skipToken, useMutation, useQuery, useQueryClient, type AnyUseQueryOptio
 import type { BetterFetchOption, BetterFetchResponse } from "better-auth/react";
 import { useCallback } from "react";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
+import { useAuthTokenStore } from "@/hooks/use-auth-store";
 
 // Types
 type AuthClient = typeof authClient;
@@ -93,16 +94,17 @@ export const useRevokeOtherSessions = () => {
    });
 };
 
-export function useVerifyToken(token: string | null | undefined, message = "Authentication required. Please sign in to continue.") {
+export function useVerifyToken(message = "Authentication required. Please sign in to continue.") {
    return useCallback(
       (action: () => void | Promise<void>) => {
+         const token = useAuthTokenStore.getState().token;
          if (!token) {
             showToast(message, "error");
             return;
          }
          action();
       },
-      [token, message]
+      [message]
    );
 }
 

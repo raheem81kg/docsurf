@@ -17,6 +17,7 @@ import { MAX_CHARACTERS } from "../minimal-tiptap/tiptap-util";
 import { SectionZero } from "../minimal-tiptap/components/section/zero";
 import { TableBubbleMenu } from "../minimal-tiptap/components/bubble-menu/table-bubble-menu";
 import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
+import { useBreakpoint } from "@docsurf/ui/hooks/use-breakpoint";
 import { ScrollArea, ScrollBar } from "@docsurf/ui/components/scroll-area";
 import Locked from "./ui/locked";
 import Deleted from "./ui/deleted";
@@ -31,6 +32,7 @@ import { AnimatePresence } from "motion/react";
 import { useMutation } from "convex/react";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 import { useSession } from "@/hooks/auth-hooks";
+import { ContentMenu } from "./content-menu";
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "onUpdate"> {
    value?: Content;
@@ -39,6 +41,7 @@ export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "o
    editorContentClassName?: string;
    characterLimit?: number;
    isMainEditor: boolean;
+   hideContextMenu?: boolean;
 }
 
 const MobileTopToolbar = ({ editor, isDocLocked }: { editor: Editor; isDocLocked?: boolean }) => (
@@ -131,10 +134,14 @@ const BottomToolbar = ({
 // Simple sync logic - just update editor when value prop changes and differs from current content
 
 export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps>(
-   ({ value, onChange, className, editorContentClassName, characterLimit = MAX_CHARACTERS, ...props }, ref) => {
+   (
+      { value, onChange, className, editorContentClassName, characterLimit = MAX_CHARACTERS, hideContextMenu = false, ...props },
+      ref
+   ) => {
       const { data: session, isPending } = useSession();
       const isUserNotSignedIn = !session?.user && !isPending;
       const isMobile = useIsMobile();
+      const isBelowMobile = useBreakpoint(640);
       // Get user and workspaceId
       const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
       const { doc } = useCurrentDocument(user);
@@ -310,6 +317,7 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
 
             {/* Wrap BubbleMenus in a div to avoid unmount errors (see https://github.com/ueberdosis/tiptap/issues/2658) */}
             <div>
+               {!hideContextMenu && <ContentMenu editor={editor} className={isBelowMobile ? "hidden" : ""} />}
                <LinkBubbleMenu editor={editor} />
                <TableBubbleMenu editor={editor} />
             </div>
