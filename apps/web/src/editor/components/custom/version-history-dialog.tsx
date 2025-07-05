@@ -344,7 +344,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
       ],
       output: "json",
       editable: false,
-      editorClassName: "border-none shadow-none bg-transparent focus:outline-none px-6 py-3",
+      editorClassName: "border-none shadow-none bg-transparent focus:outline-none px-1 py-2.5",
       registerInStore: false,
    });
 
@@ -800,14 +800,14 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
                         </Button>
                      </div>
                      <div className="flex-1 overflow-y-auto p-1.5" style={{ maxHeight: "60vh" }}>
-                        <div className=" border rounded shadow-sm p-2">
+                        <div className=" border rounded shadow-sm px-1 py-3">
                            <EditorContent
                               editor={drawerTiptapEditor}
                               style={{
                                  scrollbarWidth: "thin",
                                  scrollbarColor: "var(--border) transparent",
                               }}
-                              className="focus:outline-none px-4 py-2"
+                              className="focus:outline-none px-4 py-0"
                            />
                         </div>
                      </div>

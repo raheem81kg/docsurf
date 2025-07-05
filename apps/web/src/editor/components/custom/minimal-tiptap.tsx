@@ -33,6 +33,8 @@ import { useMutation } from "convex/react";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 import { useSession } from "@/hooks/auth-hooks";
 import { ContentMenu } from "./content-menu";
+import { EditorMenuBar } from "./editor-menu-bar";
+import { TextBubbleMenu } from "./text-bubble-menu";
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "onUpdate"> {
    value?: Content;
@@ -42,6 +44,7 @@ export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "o
    characterLimit?: number;
    isMainEditor: boolean;
    hideContextMenu?: boolean;
+   hasMenuBar?: boolean;
 }
 
 const MobileTopToolbar = ({ editor, isDocLocked }: { editor: Editor; isDocLocked?: boolean }) => (
@@ -114,18 +117,23 @@ const TopToolbar = ({ editor, isDocLocked }: { editor: Editor; isDocLocked?: boo
    );
 };
 
-const BottomToolbar = ({
-   editor,
-   characterLimit = MAX_CHARACTERS,
-   isDocLocked,
-   toggleLock,
-}: {
+interface BottomToolbarProps {
    editor: Editor;
    characterLimit?: number;
    isDocLocked: boolean;
    toggleLock?: () => void;
-}) => (
-   <ScrollArea className="shrink-0 overflow-x-auto border-t border-border p-2">
+   isBelowMobile?: boolean;
+}
+
+const BottomToolbar = ({ editor, characterLimit = MAX_CHARACTERS, isDocLocked, toggleLock, isBelowMobile }: BottomToolbarProps) => (
+   <ScrollArea
+      className={
+         isBelowMobile
+            ? "shrink-0 overflow-x-auto border-t border-border p-2 min-h-12"
+            : "shrink-0 overflow-x-auto border-t border-border p-2"
+      }
+      style={isBelowMobile ? { paddingBottom: "env(safe-area-inset-bottom)" } : undefined}
+   >
       <SectionSix editor={editor} characterLimit={characterLimit} isDocLocked={isDocLocked} toggleLock={toggleLock} />
       <ScrollBar orientation="horizontal" />
    </ScrollArea>
@@ -135,13 +143,24 @@ const BottomToolbar = ({
 
 export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps>(
    (
-      { value, onChange, className, editorContentClassName, characterLimit = MAX_CHARACTERS, hideContextMenu = false, ...props },
+      {
+         value,
+         onChange,
+         className,
+         editorContentClassName,
+         characterLimit = MAX_CHARACTERS,
+         hideContextMenu = false,
+         hasMenuBar = false,
+         ...props
+      },
       ref
    ) => {
       const { data: session, isPending } = useSession();
       const isUserNotSignedIn = !session?.user && !isPending;
       const isMobile = useIsMobile();
       const isBelowMobile = useBreakpoint(640);
+      const { l_sidebar_state, ir_sidebar_state } = useSandStateStore();
+      const isMobileSidebarOpen = isBelowMobile && (l_sidebar_state || ir_sidebar_state);
       // Get user and workspaceId
       const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
       const { doc } = useCurrentDocument(user);
@@ -315,18 +334,26 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
                />
             </div>
 
+            {hasMenuBar && <EditorMenuBar editor={editor} />}
+
             {/* Wrap BubbleMenus in a div to avoid unmount errors (see https://github.com/ueberdosis/tiptap/issues/2658) */}
             <div>
+               <TextBubbleMenu
+                  editor={editor}
+                  appendTo={ref as React.RefObject<any>}
+                  className={isMobileSidebarOpen ? "hidden" : ""}
+               />
                {!hideContextMenu && <ContentMenu editor={editor} className={isBelowMobile ? "hidden" : ""} />}
                <LinkBubbleMenu editor={editor} />
                <TableBubbleMenu editor={editor} />
             </div>
-            <div className="z-10 sticky bottom-0">
+            <div className="z-10 sticky bottom-0" style={isBelowMobile ? { paddingBottom: "env(safe-area-inset-bottom)" } : undefined}>
                <BottomToolbar
                   editor={editor}
                   characterLimit={characterLimit}
                   isDocLocked={doc?.isLocked ?? false}
                   toggleLock={handleToggleLock}
+                  isBelowMobile={isBelowMobile}
                />
             </div>
          </div>

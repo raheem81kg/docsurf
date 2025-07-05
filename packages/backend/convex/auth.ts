@@ -92,7 +92,7 @@ export const createAuth = (ctx: GenericCtx) =>
             },
          }),
          twoFactor(),
-         convex(),
+         convex({ jwtExpirationSeconds: 60 * 60 * 24 * 7 }), // 7 days
       ],
    });
 

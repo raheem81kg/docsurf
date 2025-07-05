@@ -65,7 +65,7 @@ const WrapperLeftSidebar = () => {
          name="left-sidebar"
          defaultWidth="15.8rem"
          defaultOpen={l_sidebar_state}
-         className="w-fit overflow-hidden max-h-dvh"
+         className="max-h-dvh w-fit overflow-hidden"
       >
          <LeftSidebar l_sidebar_state={l_sidebar_state} toggle_l_sidebar={toggle_l_sidebar} />
       </SidebarProvider>
@@ -81,7 +81,7 @@ const WrapperInnerRightSidebar = () => {
          defaultWidth="26rem"
          name="inner-right-sidebar"
          defaultOpen={ir_sidebar_state}
-         className="w-fit overflow-hidden max-h-dvh min-h-[calc(100svh-95px)]"
+         className="max-h-dvh min-h-[calc(100dvh-95px)] w-fit overflow-hidden"
       >
          <InnerRightSidebar ir_sidebar_state={ir_sidebar_state} toggle_ir_sidebar={toggle_ir_sidebar} />
       </SidebarProvider>

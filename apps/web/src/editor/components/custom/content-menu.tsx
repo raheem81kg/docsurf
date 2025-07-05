@@ -160,7 +160,7 @@ export function ContentMenu(props: ContentMenuProps) {
                      <BaseButton
                         variant="ghost"
                         onClick={duplicateNode}
-                        className="h-auto justify-start gap-2 !rounded px-2 py-1 text-sm font-normal hover:bg-accent/50 hover:text-primary"
+                        className="h-auto w-full justify-start gap-2 !rounded px-2 py-1 text-sm font-normal hover:bg-accent/50 hover:text-primary"
                      >
                         <Copy className="size-[15px] shrink-0" />
                         Duplicate
@@ -169,7 +169,7 @@ export function ContentMenu(props: ContentMenuProps) {
                      <BaseButton
                         variant="ghost"
                         onClick={deleteCurrentNode}
-                        className="h-auto justify-start gap-2 !rounded px-2 py-1 text-sm font-normal hover:bg-red-50 hover:text-red-600"
+                        className="h-auto w-full justify-start gap-2 !rounded px-2 py-1 text-sm font-normal hover:bg-red-50 hover:text-red-600"
                      >
                         <Trash2 className="size-[15px] shrink-0" />
                         Delete

@@ -599,6 +599,25 @@ export default function SuggestionOverlay({
       [onAcceptSuggestion, setSuggestionIsLoading, from, to, selectedText]
    );
 
+   // Prevent background scroll on mobile when overlay is open
+   useEffect(() => {
+      const overlay = overlayRef.current;
+      if (!isOpen || !overlay) return;
+
+      const handleTouchMove = (e: TouchEvent) => {
+         if (!isDragging) {
+            e.preventDefault();
+            e.stopPropagation();
+         }
+         // If dragging, allow event for drag logic
+      };
+
+      overlay.addEventListener("touchmove", handleTouchMove, { passive: false });
+      return () => {
+         overlay.removeEventListener("touchmove", handleTouchMove);
+      };
+   }, [isOpen, isDragging]);
+
    if (!isOpen || typeof from !== "number" || typeof to !== "number" || !selectedText) return null;
 
    return (
