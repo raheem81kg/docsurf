@@ -27,7 +27,7 @@ import { DEFAULT_TEXT_TITLE } from "@/utils/constants";
 import throttle from "lodash/throttle";
 import { useNavigate } from "@tanstack/react-router";
 import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
-
+import { isMac } from "@docsurf/ui/lib/utils";
 interface CommandKProps {
    open?: boolean;
    onOpenChange?: (open: boolean) => void;
@@ -381,7 +381,9 @@ export function CommandK({ open: controlledOpen, onOpenChange }: CommandKProps =
       >
          <Command ref={commandRef} shouldFilter={false} disablePointerSelection value={"-"}>
             <CommandInput
-               placeholder={isMobile ? "Search documents" : "Search documents or press Enter to start a new document"}
+               placeholder={
+                  isMobile ? "Search documents" : `Search documents or press ${isMac ? "⌘" : "Ctrl"} + Enter to start a new document`
+               }
                value={query}
                onValueChange={setQuery}
                onKeyDown={handleKeyDown}

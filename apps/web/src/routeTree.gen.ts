@@ -24,11 +24,8 @@ import { Route as SettingsCustomizationRouteImport } from './routes/settings/cus
 import { Route as SettingsAttachmentsRouteImport } from './routes/settings/attachments'
 import { Route as SettingsAppearanceRouteImport } from './routes/settings/appearance'
 import { Route as SettingsAiOptionsRouteImport } from './routes/settings/ai-options'
-import { Route as AuthedServerRouteImport } from './routes/_authed/server'
-import { Route as AuthedClientOnlyRouteImport } from './routes/_authed/client-only'
 import { Route as AuthAuthRouteImport } from './routes/_auth/auth'
 import { Route as MainDocIndexRouteImport } from './routes/_main/doc.index'
-import { Route as AuthedClientOnlyIndexRouteImport } from './routes/_authed/client-only.index'
 import { Route as MainDocLibraryRouteImport } from './routes/_main/doc.library'
 import { Route as MainDocDocumentIdRouteImport } from './routes/_main/doc.$documentId'
 import { ServerRoute as ApiSuggestionServerRouteImport } from './routes/api/suggestion'
@@ -140,16 +137,6 @@ const SettingsAiOptionsRoute = SettingsAiOptionsRouteImport.update({
   path: '/ai-options',
   getParentRoute: () => SettingsRouteLazyRoute,
 } as any)
-const AuthedServerRoute = AuthedServerRouteImport.update({
-  id: '/_authed/server',
-  path: '/server',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthedClientOnlyRoute = AuthedClientOnlyRouteImport.update({
-  id: '/_authed/client-only',
-  path: '/client-only',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthAuthRoute = AuthAuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -159,11 +146,6 @@ const MainDocIndexRoute = MainDocIndexRouteImport.update({
   id: '/doc/',
   path: '/doc/',
   getParentRoute: () => MainRoute,
-} as any)
-const AuthedClientOnlyIndexRoute = AuthedClientOnlyIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthedClientOnlyRoute,
 } as any)
 const MainSSharedThreadIdLazyRoute = MainSSharedThreadIdLazyRouteImport.update({
   id: '/s/$sharedThreadId',
@@ -218,8 +200,6 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRouteLazyRouteWithChildren
   '/auth': typeof AuthAuthRoute
-  '/client-only': typeof AuthedClientOnlyRouteWithChildren
-  '/server': typeof AuthedServerRoute
   '/settings/ai-options': typeof SettingsAiOptionsRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/attachments': typeof SettingsAttachmentsRoute
@@ -236,13 +216,11 @@ export interface FileRoutesByFullPath {
   '/doc/$documentId': typeof MainDocDocumentIdRoute
   '/doc/library': typeof MainDocLibraryRoute
   '/s/$sharedThreadId': typeof MainSSharedThreadIdLazyRoute
-  '/client-only/': typeof AuthedClientOnlyIndexRoute
   '/doc': typeof MainDocIndexRoute
 }
 export interface FileRoutesByTo {
   '/settings': typeof SettingsRouteLazyRouteWithChildren
   '/auth': typeof AuthAuthRoute
-  '/server': typeof AuthedServerRoute
   '/settings/ai-options': typeof SettingsAiOptionsRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/attachments': typeof SettingsAttachmentsRoute
@@ -259,7 +237,6 @@ export interface FileRoutesByTo {
   '/doc/$documentId': typeof MainDocDocumentIdRoute
   '/doc/library': typeof MainDocLibraryRoute
   '/s/$sharedThreadId': typeof MainSSharedThreadIdLazyRoute
-  '/client-only': typeof AuthedClientOnlyIndexRoute
   '/doc': typeof MainDocIndexRoute
 }
 export interface FileRoutesById {
@@ -269,8 +246,6 @@ export interface FileRoutesById {
   '/_welcome': typeof WelcomeRouteWithChildren
   '/settings': typeof SettingsRouteLazyRouteWithChildren
   '/_auth/auth': typeof AuthAuthRoute
-  '/_authed/client-only': typeof AuthedClientOnlyRouteWithChildren
-  '/_authed/server': typeof AuthedServerRoute
   '/settings/ai-options': typeof SettingsAiOptionsRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/attachments': typeof SettingsAttachmentsRoute
@@ -287,7 +262,6 @@ export interface FileRoutesById {
   '/_main/doc/$documentId': typeof MainDocDocumentIdRoute
   '/_main/doc/library': typeof MainDocLibraryRoute
   '/_main/s/$sharedThreadId': typeof MainSSharedThreadIdLazyRoute
-  '/_authed/client-only/': typeof AuthedClientOnlyIndexRoute
   '/_main/doc/': typeof MainDocIndexRoute
 }
 export interface FileRouteTypes {
@@ -295,8 +269,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/settings'
     | '/auth'
-    | '/client-only'
-    | '/server'
     | '/settings/ai-options'
     | '/settings/appearance'
     | '/settings/attachments'
@@ -313,13 +285,11 @@ export interface FileRouteTypes {
     | '/doc/$documentId'
     | '/doc/library'
     | '/s/$sharedThreadId'
-    | '/client-only/'
     | '/doc'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/settings'
     | '/auth'
-    | '/server'
     | '/settings/ai-options'
     | '/settings/appearance'
     | '/settings/attachments'
@@ -336,7 +306,6 @@ export interface FileRouteTypes {
     | '/doc/$documentId'
     | '/doc/library'
     | '/s/$sharedThreadId'
-    | '/client-only'
     | '/doc'
   id:
     | '__root__'
@@ -345,8 +314,6 @@ export interface FileRouteTypes {
     | '/_welcome'
     | '/settings'
     | '/_auth/auth'
-    | '/_authed/client-only'
-    | '/_authed/server'
     | '/settings/ai-options'
     | '/settings/appearance'
     | '/settings/attachments'
@@ -363,7 +330,6 @@ export interface FileRouteTypes {
     | '/_main/doc/$documentId'
     | '/_main/doc/library'
     | '/_main/s/$sharedThreadId'
-    | '/_authed/client-only/'
     | '/_main/doc/'
   fileRoutesById: FileRoutesById
 }
@@ -372,8 +338,6 @@ export interface RootRouteChildren {
   MainRoute: typeof MainRouteWithChildren
   WelcomeRoute: typeof WelcomeRouteWithChildren
   SettingsRouteLazyRoute: typeof SettingsRouteLazyRouteWithChildren
-  AuthedClientOnlyRoute: typeof AuthedClientOnlyRouteWithChildren
-  AuthedServerRoute: typeof AuthedServerRoute
 }
 export interface FileServerRoutesByFullPath {
   '/api/fetchToken': typeof ApiFetchTokenServerRoute
@@ -557,20 +521,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsAiOptionsRouteImport
       parentRoute: typeof SettingsRouteLazyRoute
     }
-    '/_authed/server': {
-      id: '/_authed/server'
-      path: '/server'
-      fullPath: '/server'
-      preLoaderRoute: typeof AuthedServerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authed/client-only': {
-      id: '/_authed/client-only'
-      path: '/client-only'
-      fullPath: '/client-only'
-      preLoaderRoute: typeof AuthedClientOnlyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_auth/auth': {
       id: '/_auth/auth'
       path: '/auth'
@@ -584,13 +534,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/doc'
       preLoaderRoute: typeof MainDocIndexRouteImport
       parentRoute: typeof MainRoute
-    }
-    '/_authed/client-only/': {
-      id: '/_authed/client-only/'
-      path: '/'
-      fullPath: '/client-only/'
-      preLoaderRoute: typeof AuthedClientOnlyIndexRouteImport
-      parentRoute: typeof AuthedClientOnlyRoute
     }
     '/_main/s/$sharedThreadId': {
       id: '/_main/s/$sharedThreadId'
@@ -732,24 +675,11 @@ const SettingsRouteLazyRouteChildren: SettingsRouteLazyRouteChildren = {
 const SettingsRouteLazyRouteWithChildren =
   SettingsRouteLazyRoute._addFileChildren(SettingsRouteLazyRouteChildren)
 
-interface AuthedClientOnlyRouteChildren {
-  AuthedClientOnlyIndexRoute: typeof AuthedClientOnlyIndexRoute
-}
-
-const AuthedClientOnlyRouteChildren: AuthedClientOnlyRouteChildren = {
-  AuthedClientOnlyIndexRoute: AuthedClientOnlyIndexRoute,
-}
-
-const AuthedClientOnlyRouteWithChildren =
-  AuthedClientOnlyRoute._addFileChildren(AuthedClientOnlyRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   MainRoute: MainRouteWithChildren,
   WelcomeRoute: WelcomeRouteWithChildren,
   SettingsRouteLazyRoute: SettingsRouteLazyRouteWithChildren,
-  AuthedClientOnlyRoute: AuthedClientOnlyRouteWithChildren,
-  AuthedServerRoute: AuthedServerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

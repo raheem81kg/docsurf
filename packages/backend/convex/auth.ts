@@ -7,10 +7,11 @@ import { asyncMap } from "convex-helpers";
 import { api, components, internal } from "./_generated/api";
 import type { DataModel, Id, Doc } from "./_generated/dataModel";
 import { type GenericCtx, query } from "./_generated/server";
-import { sendSignInOTP } from "./email";
+import { sendSignInOTP, sendWelcomeEmail } from "./email";
 // import type { SafeSubscription } from "./subscriptions";
 import gettingStartedContent from "./getting_started.json";
 import type { CurrentUser } from "./users";
+import { Resend } from "resend";
 
 const authFunctions: AuthFunctions = internal.auth;
 const publicAuthFunctions: PublicAuthFunctions = api.auth;
@@ -146,10 +147,21 @@ export const { createUser, deleteUser, updateUser, createSession, isAuthenticate
             isLocked: false,
          });
 
+         // Schedule welcome email task (5 seconds after signup)
+         await ctx.scheduler.runAfter(5 * 1000, internal.schedules.users.onboarding.sendWelcomeEmailTask, { userId });
+
+         // Schedule get started email task (3 days after signup)
+         await ctx.scheduler.runAfter(3 * 24 * 60 * 60 * 1000, internal.schedules.users.onboarding.sendGetStartedEmailTask, {
+            userId,
+         });
+
          // This function must return the user id.
          return userId;
       },
       onDeleteUser: async (ctx, userId) => {
+         // Get user data before deletion to access email for Resend removal
+         const user = await ctx.db.get(userId as Id<"users">);
+
          // Delete the user's data if the user is being deleted
          const todos = await ctx.db
             .query("todos")
@@ -158,6 +170,21 @@ export const { createUser, deleteUser, updateUser, createSession, isAuthenticate
          await asyncMap(todos, async (todo) => {
             await ctx.db.delete(todo._id);
          });
+
+         // Remove user from Resend audience before deleting from database
+         if (user?.email && process.env.RESEND_API_KEY && process.env.RESEND_AUDIENCE_ID) {
+            try {
+               const resend = new Resend(process.env.RESEND_API_KEY);
+               await resend.contacts.remove({
+                  email: user.email,
+                  audienceId: process.env.RESEND_AUDIENCE_ID,
+               });
+            } catch (error) {
+               console.error("Failed to remove user from Resend audience:", error);
+               // Don't throw - continue with user deletion even if Resend removal fails
+            }
+         }
+
          await ctx.db.delete(userId as Id<"users">);
 
          // need to cancel the subscription even if not currently active

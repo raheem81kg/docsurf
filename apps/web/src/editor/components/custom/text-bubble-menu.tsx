@@ -107,8 +107,10 @@ export function TextBubbleMenu(props: EditorBubbleMenuProps) {
             //    to={undefined}
             // />
             <button
-               className="focus-visible:ring-ring inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:select-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs border-border/50 gap-1.5 rounded-r-none border-r"
+               className="inline-flex h-8 items-center justify-center gap-1.5 whitespace-nowrap rounded-md rounded-r-none border-border/50 border-r px-3 font-medium text-xs transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:select-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
                data-state="closed"
+               aria-label="Transform with AI"
+               title="Transform with AI"
                onClick={handleAiButtonClick}
                type="button"
             >

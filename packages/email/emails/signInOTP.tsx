@@ -1,6 +1,5 @@
 import { Heading, Text } from "@react-email/components";
-import React from "react";
-import { BaseEmail, styles } from "./components/BaseEmail";
+import { BaseEmail, styles } from "../components/BaseEmail";
 
 interface SignInOTPProps {
    code: string;

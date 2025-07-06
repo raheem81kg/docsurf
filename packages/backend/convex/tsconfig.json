@@ -22,7 +22,9 @@
       "paths": {
          "@docsurf/backend/*": ["../../packages/backend/src/*"],
          "@docsurf/utils/*": ["../../packages/utils/src/*"],
-         "@docsurf/r2/*": ["../../packages/r2/src/*"]
+         "@docsurf/r2/*": ["../../packages/r2/src/*"],
+         "@docsurf/email/*": ["../../packages/email/emails/*"],
+         "@docsurf/email/components/*": ["../../packages/email/components/*"]
       }
    },
 

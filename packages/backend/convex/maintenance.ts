@@ -1,6 +1,5 @@
 import { internalMutation } from "./_generated/server";
 import { r2 } from "./attachments";
-import { v } from "convex/values";
 
 /**
  * Batch delete all trashed documents older than 20 days and their associated files.

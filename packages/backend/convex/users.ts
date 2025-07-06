@@ -1,7 +1,8 @@
-import { internalMutation, type ActionCtx, QueryCtx } from "./_generated/server";
+import { type ActionCtx, type QueryCtx, query, internalQuery } from "./_generated/server";
 import { ConvexError } from "convex/values";
-import { Doc, Id } from "./_generated/dataModel";
-import { SafeSubscription } from "./subscriptions";
+import type { Doc, Id } from "./_generated/dataModel";
+// import { SafeSubscription } from "./subscriptions";
+import { v } from "convex/values";
 
 type CurrentUserMetadata = {
    image?: string | undefined;
@@ -69,3 +70,17 @@ export const requireUserId = async (ctx: QueryCtx | ActionCtx) => {
    }
    return userId;
 };
+
+export const getUser = query({
+   args: { userId: v.id("users") },
+   handler: async (ctx, { userId }) => {
+      return await ctx.db.get(userId);
+   },
+});
+
+export const getUserInternal = internalQuery({
+   args: { userId: v.id("users") },
+   handler: async (ctx, { userId }) => {
+      return await ctx.db.get(userId);
+   },
+});

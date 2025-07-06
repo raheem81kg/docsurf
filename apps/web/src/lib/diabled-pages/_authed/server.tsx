@@ -47,7 +47,13 @@ function Header() {
 
    return (
       <AppHeader>
-         <UserProfile user={user.data} />
+         <UserProfile
+            user={{
+               name: user.data?.name ?? "",
+               email: user.data?.email ?? "",
+               image: user.data?.image ?? "",
+            }}
+         />
          <AppNav>
             <SettingsButton>
                {/*

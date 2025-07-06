@@ -30,7 +30,7 @@ import {
 import Credits from "./credits";
 import { Button, buttonVariants } from "@docsurf/ui/components/button";
 import { LEFT_SIDEBAR_COOKIE_NAME } from "@/utils/constants";
-import { cn } from "@docsurf/ui/lib/utils";
+import { cn, isMac } from "@docsurf/ui/lib/utils";
 import { CommandK } from "../right-inner/chat/commandkdocs";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { useDiskCachedQuery } from "../right-inner/chat/lib/convex-cached-query";
@@ -40,6 +40,7 @@ import { TrashPopover } from "./trash-popover";
 import { SortableTree } from "./_tree_components/SortableTree";
 import { Usage } from "./usage";
 import { NewDocumentButton } from "../right-inner/chat/threads/new-document-button";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@docsurf/ui/components/tooltip";
 
 const data = {
    navMain: [
@@ -89,7 +90,6 @@ export const LeftSidebar = ({
    const [infoCardDismissed, setInfoCardDismissed] = useState(false);
    const mounted = useMounted();
    const user = useQuery(convexQuery(api.auth.getCurrentUser, {}));
-
    // SCROLL GRADIENT LOGIC (copied from threads-sidebar)
    const [showGradient, setShowGradient] = useState(false);
    const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -190,18 +190,30 @@ export const LeftSidebar = ({
                </div>
 
                <div className="group ml-auto">
-                  <Button
-                     className={cn(
-                        "bg-transparent border-none opacity-0 group-hover:opacity-100 transition-all duration-200 outline-none cursor-pointer rounded-sm !p-2 text-sidebar -translate-x-[0.5px] group-hover:translate-x-0",
-                        isMobile && "opacity-100 mr-1"
+                  <Tooltip delayDuration={0} disableHoverableContent={!isMobile}>
+                     <TooltipTrigger asChild>
+                        <Button
+                           className={cn(
+                              "bg-transparent border-none opacity-0 group-hover:opacity-100 transition-all duration-200 outline-none cursor-pointer rounded-sm !p-2 text-sidebar -translate-x-[0.5px] group-hover:translate-x-0",
+                              isMobile && "opacity-100 mr-1"
+                           )}
+                           variant="ghost"
+                           onClick={() => {
+                              set_l_sidebar_state(false);
+                           }}
+                        >
+                           <ChevronsLeft className="size-4.5 transition-opacity text-text-default" />
+                        </Button>
+                     </TooltipTrigger>
+                     {!isMobile && (
+                        <TooltipContent sideOffset={7} side="right" className=" flex-row items-center hidden md:flex">
+                           <kbd className="pointer-events-none select-none items-center gap-1 rounded font-mono text-[10px] font-medium opacity-100 flex">
+                              <span className={cn(isMac ? "block" : "hidden")}>⌘</span>
+                              <span className={cn(!isMac ? "block" : "hidden")}>Ctrl</span>B
+                           </kbd>
+                        </TooltipContent>
                      )}
-                     variant="ghost"
-                     onClick={() => {
-                        set_l_sidebar_state(false);
-                     }}
-                  >
-                     <ChevronsLeft className="size-4.5 transition-opacity text-text-default" />
-                  </Button>
+                  </Tooltip>
                </div>
 
                <CreateMenu />

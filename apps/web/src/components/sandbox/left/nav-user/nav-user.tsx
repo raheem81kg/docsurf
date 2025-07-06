@@ -175,6 +175,10 @@ export function NavUser() {
                </DropdownMenuGroup>
                <DropdownMenuSeparator />
                <div className="text-muted-foreground/60 flex items-center justify-center gap-1 px-2 py-1 text-[10px]">
+                  <Link to="/" className="hover:underline">
+                     Home
+                  </Link>
+                  <span>·</span>
                   <Link to="/policy" className="hover:underline">
                      Privacy
                   </Link>

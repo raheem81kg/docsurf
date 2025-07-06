@@ -144,7 +144,7 @@ export const MCPServersCard = memo(({ userSettings, onSave, loading }: MCPServer
                                  url: e.target.value,
                               })
                            }
-                           placeholder="http://localhost:3000/mcp"
+                           placeholder="http://localhost:3001/mcp"
                            className="mt-1"
                         />
                      </div>
