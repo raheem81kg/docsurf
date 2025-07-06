@@ -42,9 +42,9 @@ export function getAppUrl() {
 }
 
 export function getEmailUrl() {
-   if (process.env.NODE_ENV === "development") {
-      return "http://localhost:3001";
-   }
+   // if (process.env.NODE_ENV === "development") {
+   //    return "http://localhost:3001";
+   // }
 
    return "https://docsurf.ai";
 }

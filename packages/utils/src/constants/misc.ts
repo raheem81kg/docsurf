@@ -1,32 +1,32 @@
 export const DEFAULT_LINK_PROPS: any = {
-  key: "",
-  url: "",
-  domain: "",
-  archived: false,
-  tags: [], // note: removing this breaks the link builder
-  webhookIds: [], // note: removing this breaks the link builder
+   key: "",
+   url: "",
+   domain: "",
+   archived: false,
+   tags: [], // note: removing this breaks the link builder
+   webhookIds: [], // note: removing this breaks the link builder
 
-  title: null,
-  description: null,
-  image: null,
-  video: null,
-  trackConversion: false,
-  proxy: false,
-  rewrite: false,
-  expiresAt: null,
-  password: null,
-  ios: null,
-  android: null,
-  doIndex: false,
+   title: null,
+   description: null,
+   image: null,
+   video: null,
+   trackConversion: false,
+   proxy: false,
+   rewrite: false,
+   expiresAt: null,
+   password: null,
+   ios: null,
+   android: null,
+   doIndex: false,
 
-  clicks: 0,
-  userId: "",
+   clicks: 0,
+   userId: "",
 };
 
-export const GOOGLE_FAVICON_URL =
-  "https://www.google.com/s2/favicons?sz=64&domain_url=";
+// export const GOOGLE_FAVICON_URL =
+//   "https://www.google.com/s2/favicons?sz=64&domain_url=";
 
-export const OG_AVATAR_URL = "https://api.dub.co/og/avatar?seed=";
+// export const OG_AVATAR_URL = "https://api.dub.co/og/avatar?seed=";
 
 export const PAGINATION_LIMIT = 100;
 

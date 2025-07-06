@@ -51,42 +51,42 @@ export const PLANS = [
             text: "Advanced link features",
             tooltip: "ADVANCED_LINK_FEATURES",
          },
-         {
-            id: "ai",
-            text: "Unlimited AI credits",
-            tooltip: {
-               title: "Subject to fair use policy – you will be notified if you exceed the limit, which are high enough for frequent usage.",
-               cta: "Learn more.",
-               href: "https://dub.co/blog/introducing-dub-ai",
-            },
-         },
-         {
-            id: "dotlink",
-            text: "Free .link domain",
-            tooltip: {
-               title: "All our paid plans come with a free .link custom domain, which helps improve click-through rates.",
-               cta: "Learn more.",
-               href: "https://dub.co/help/article/free-dot-link-domain",
-            },
-         },
-         {
-            id: "folders",
-            text: "Link folders",
-            tooltip: {
-               title: "Organize and manage access to your links on Dub using folders.",
-               cta: "Learn more.",
-               href: "https://dub.co/help/article/link-folders",
-            },
-         },
-         {
-            id: "deeplinks",
-            text: "Deep links",
-            tooltip: {
-               title: "Redirect users to a specific page within your mobile application using deep links.",
-               cta: "Learn more.",
-               href: "https://dub.co//help/article/custom-domain-deep-links",
-            },
-         },
+         // {
+         //    id: "ai",
+         //    text: "Unlimited AI credits",
+         //    tooltip: {
+         //       title: "Subject to fair use policy – you will be notified if you exceed the limit, which are high enough for frequent usage.",
+         //       cta: "Learn more.",
+         //       href: "https://dub.co/blog/introducing-dub-ai",
+         //    },
+         // },
+         // {
+         //    id: "dotlink",
+         //    text: "Free .link domain",
+         //    tooltip: {
+         //       title: "All our paid plans come with a free .link custom domain, which helps improve click-through rates.",
+         //       cta: "Learn more.",
+         //       href: "https://dub.co/help/article/free-dot-link-domain",
+         //    },
+         // },
+         // {
+         //    id: "folders",
+         //    text: "Link folders",
+         //    tooltip: {
+         //       title: "Organize and manage access to your links on Dub using folders.",
+         //       cta: "Learn more.",
+         //       href: "https://dub.co/help/article/link-folders",
+         //    },
+         // },
+         // {
+         //    id: "deeplinks",
+         //    text: "Deep links",
+         //    tooltip: {
+         //       title: "Redirect users to a specific page within your mobile application using deep links.",
+         //       cta: "Learn more.",
+         //       href: "https://dub.co//help/article/custom-domain-deep-links",
+         //    },
+         // },
       ] as PlanFeature[],
    },
 ];
