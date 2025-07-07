@@ -5,12 +5,11 @@ import { toast } from "sonner";
 
 export function useOfflineIndicator() {
    useEffect(() => {
-      let offlineToastId: string | number | null = null;
+      let offlineToastId: string | number | null = "offline-toast";
       return onlineManager.subscribe(() => {
          if (onlineManager.isOnline()) {
             if (offlineToastId !== null) {
                toast.dismiss(offlineToastId);
-               offlineToastId = null;
             }
             showToast("Back online!", "success", {
                duration: 2000,

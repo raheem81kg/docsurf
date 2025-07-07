@@ -13,6 +13,7 @@ import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/_welcome'
+import { Route as PRouteImport } from './routes/_p'
 import { Route as MainRouteImport } from './routes/_main'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as WelcomeIndexRouteImport } from './routes/_welcome/index'
@@ -26,6 +27,7 @@ import { Route as SettingsAppearanceRouteImport } from './routes/settings/appear
 import { Route as SettingsAiOptionsRouteImport } from './routes/settings/ai-options'
 import { Route as AuthAuthRouteImport } from './routes/_auth/auth'
 import { Route as MainDocIndexRouteImport } from './routes/_main/doc.index'
+import { Route as PPDocumentIdRouteImport } from './routes/_p/p.$documentId'
 import { Route as MainDocLibraryRouteImport } from './routes/_main/doc.library'
 import { Route as MainDocDocumentIdRouteImport } from './routes/_main/doc.$documentId'
 import { ServerRoute as ApiSuggestionServerRouteImport } from './routes/api/suggestion'
@@ -54,6 +56,10 @@ const SettingsRouteLazyRoute = SettingsRouteLazyRouteImport.update({
 )
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/_welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PRoute = PRouteImport.update({
+  id: '/_p',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MainRoute = MainRouteImport.update({
@@ -154,6 +160,11 @@ const MainSSharedThreadIdLazyRoute = MainSSharedThreadIdLazyRouteImport.update({
 } as any).lazy(() =>
   import('./routes/_main/s.$sharedThreadId.lazy').then((d) => d.Route),
 )
+const PPDocumentIdRoute = PPDocumentIdRouteImport.update({
+  id: '/p/$documentId',
+  path: '/p/$documentId',
+  getParentRoute: () => PRoute,
+} as any)
 const MainDocLibraryRoute = MainDocLibraryRouteImport.update({
   id: '/doc/library',
   path: '/doc/library',
@@ -215,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/': typeof WelcomeIndexRoute
   '/doc/$documentId': typeof MainDocDocumentIdRoute
   '/doc/library': typeof MainDocLibraryRoute
+  '/p/$documentId': typeof PPDocumentIdRoute
   '/s/$sharedThreadId': typeof MainSSharedThreadIdLazyRoute
   '/doc': typeof MainDocIndexRoute
 }
@@ -236,6 +248,7 @@ export interface FileRoutesByTo {
   '/': typeof WelcomeIndexRoute
   '/doc/$documentId': typeof MainDocDocumentIdRoute
   '/doc/library': typeof MainDocLibraryRoute
+  '/p/$documentId': typeof PPDocumentIdRoute
   '/s/$sharedThreadId': typeof MainSSharedThreadIdLazyRoute
   '/doc': typeof MainDocIndexRoute
 }
@@ -243,6 +256,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_auth': typeof AuthRouteWithChildren
   '/_main': typeof MainRouteWithChildren
+  '/_p': typeof PRouteWithChildren
   '/_welcome': typeof WelcomeRouteWithChildren
   '/settings': typeof SettingsRouteLazyRouteWithChildren
   '/_auth/auth': typeof AuthAuthRoute
@@ -261,6 +275,7 @@ export interface FileRoutesById {
   '/_welcome/': typeof WelcomeIndexRoute
   '/_main/doc/$documentId': typeof MainDocDocumentIdRoute
   '/_main/doc/library': typeof MainDocLibraryRoute
+  '/_p/p/$documentId': typeof PPDocumentIdRoute
   '/_main/s/$sharedThreadId': typeof MainSSharedThreadIdLazyRoute
   '/_main/doc/': typeof MainDocIndexRoute
 }
@@ -284,6 +299,7 @@ export interface FileRouteTypes {
     | '/'
     | '/doc/$documentId'
     | '/doc/library'
+    | '/p/$documentId'
     | '/s/$sharedThreadId'
     | '/doc'
   fileRoutesByTo: FileRoutesByTo
@@ -305,12 +321,14 @@ export interface FileRouteTypes {
     | '/'
     | '/doc/$documentId'
     | '/doc/library'
+    | '/p/$documentId'
     | '/s/$sharedThreadId'
     | '/doc'
   id:
     | '__root__'
     | '/_auth'
     | '/_main'
+    | '/_p'
     | '/_welcome'
     | '/settings'
     | '/_auth/auth'
@@ -329,6 +347,7 @@ export interface FileRouteTypes {
     | '/_welcome/'
     | '/_main/doc/$documentId'
     | '/_main/doc/library'
+    | '/_p/p/$documentId'
     | '/_main/s/$sharedThreadId'
     | '/_main/doc/'
   fileRoutesById: FileRoutesById
@@ -336,6 +355,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   MainRoute: typeof MainRouteWithChildren
+  PRoute: typeof PRouteWithChildren
   WelcomeRoute: typeof WelcomeRouteWithChildren
   SettingsRouteLazyRoute: typeof SettingsRouteLazyRouteWithChildren
 }
@@ -414,6 +434,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_p': {
+      id: '/_p'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof PRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_main': {
@@ -542,6 +569,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainSSharedThreadIdLazyRouteImport
       parentRoute: typeof MainRoute
     }
+    '/_p/p/$documentId': {
+      id: '/_p/p/$documentId'
+      path: '/p/$documentId'
+      fullPath: '/p/$documentId'
+      preLoaderRoute: typeof PPDocumentIdRouteImport
+      parentRoute: typeof PRoute
+    }
     '/_main/doc/library': {
       id: '/_main/doc/library'
       path: '/doc/library'
@@ -631,6 +665,16 @@ const MainRouteChildren: MainRouteChildren = {
 
 const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
 
+interface PRouteChildren {
+  PPDocumentIdRoute: typeof PPDocumentIdRoute
+}
+
+const PRouteChildren: PRouteChildren = {
+  PPDocumentIdRoute: PPDocumentIdRoute,
+}
+
+const PRouteWithChildren = PRoute._addFileChildren(PRouteChildren)
+
 interface WelcomeRouteChildren {
   WelcomeAboutLazyRoute: typeof WelcomeAboutLazyRoute
   WelcomePolicyLazyRoute: typeof WelcomePolicyLazyRoute
@@ -678,6 +722,7 @@ const SettingsRouteLazyRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   MainRoute: MainRouteWithChildren,
+  PRoute: PRouteWithChildren,
   WelcomeRoute: WelcomeRouteWithChildren,
   SettingsRouteLazyRoute: SettingsRouteLazyRouteWithChildren,
 }

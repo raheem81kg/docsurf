@@ -19,6 +19,7 @@ import { LRUCache } from "lru-cache";
 // import { RATE_LIMIT_REACHED } from "@/lib/api";
 // import { useUsageStore } from "@/store/use-usage-store";
 import { useEditorRefStore } from "@/store/use-editor-ref-store";
+import { Analytics } from "@/components/providers/posthog";
 
 // --- Types ---
 interface InlineSuggestionApiResponse {
@@ -38,7 +39,8 @@ export function createRequestInlineSuggestionCallback(
    userId: string | undefined,
    docId: string | undefined,
    workspaceId: string | undefined,
-   abortControllerRef: React.RefObject<AbortController | null>
+   abortControllerRef: React.RefObject<AbortController | null>,
+   userEmail: string | undefined
 ) {
    /**
     * Requests an inline suggestion using the provided context.
@@ -85,6 +87,12 @@ export function createRequestInlineSuggestionCallback(
             currentContent: contextBefore,
             contextAfter,
             workspaceId: workspaceId ?? "",
+         });
+         Analytics.track("inline_suggestion_requested", {
+            documentId: docId,
+            workspaceId: workspaceId ?? "",
+            userEmail: userEmail,
+            userId: userId,
          });
          const response = await fetch(`/api/inline-suggestion?${params.toString()}`, {
             method: "GET",

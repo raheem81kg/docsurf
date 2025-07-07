@@ -119,13 +119,21 @@ const TopToolbar = ({ editor, isDocLocked }: { editor: Editor; isDocLocked?: boo
 
 interface BottomToolbarProps {
    editor: Editor;
+   docId: string;
    characterLimit?: number;
    isDocLocked: boolean;
    toggleLock?: () => void;
    isBelowMobile?: boolean;
 }
 
-const BottomToolbar = ({ editor, characterLimit = MAX_CHARACTERS, isDocLocked, toggleLock, isBelowMobile }: BottomToolbarProps) => (
+const BottomToolbar = ({
+   editor,
+   docId,
+   characterLimit = MAX_CHARACTERS,
+   isDocLocked,
+   toggleLock,
+   isBelowMobile,
+}: BottomToolbarProps) => (
    <ScrollArea
       className={
          isBelowMobile
@@ -134,7 +142,7 @@ const BottomToolbar = ({ editor, characterLimit = MAX_CHARACTERS, isDocLocked, t
       }
       style={isBelowMobile ? { paddingBottom: "env(safe-area-inset-bottom)" } : undefined}
    >
-      <SectionSix editor={editor} characterLimit={characterLimit} isDocLocked={isDocLocked} toggleLock={toggleLock} />
+      <SectionSix editor={editor} docId={docId} characterLimit={characterLimit} isDocLocked={isDocLocked} toggleLock={toggleLock} />
       <ScrollBar orientation="horizontal" />
    </ScrollArea>
 );
@@ -350,6 +358,7 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
             <div className="z-10 sticky bottom-0" style={isBelowMobile ? { paddingBottom: "env(safe-area-inset-bottom)" } : undefined}>
                <BottomToolbar
                   editor={editor}
+                  docId={doc?._id ?? ""}
                   characterLimit={characterLimit}
                   isDocLocked={doc?.isLocked ?? false}
                   toggleLock={handleToggleLock}

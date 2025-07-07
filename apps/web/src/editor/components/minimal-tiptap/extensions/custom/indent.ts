@@ -1,4 +1,4 @@
-import { Extension } from "@tiptap/react";
+import { Extension } from "@tiptap/core";
 
 const TAB_CHAR = "\u0009";
 

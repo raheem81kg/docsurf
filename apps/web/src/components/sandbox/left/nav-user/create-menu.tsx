@@ -21,7 +21,7 @@ import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 import throttle from "lodash/throttle";
 import { useNavigate } from "@tanstack/react-router";
-import { useRateLimit } from "@convex-dev/rate-limiter/react";
+// import { useRateLimit } from "@convex-dev/rate-limiter/react";
 import { DOCUMENT_CREATION_RATE_LIMIT } from "@docsurf/utils/constants/constants";
 import { useSession } from "@/hooks/auth-hooks";
 
@@ -42,23 +42,23 @@ export function CreateMenu({ parentId = null }: CreateMenuProps) {
    const createDocument = useMutation(api.documents.createDocument);
 
    // Rate limit for document creation
-   const { status } = useRateLimit(api.documents.getCreateDocumentRateLimit, {
-      getServerTimeMutation: api.documents.getCreateDocumentServerTime,
-   });
+   // const { status } = useRateLimit(api.documents.getCreateDocumentRateLimit, {
+   //    getServerTimeMutation: api.documents.getCreateDocumentServerTime,
+   // });
 
    const topLevelDocs = useQuery(api.documents.fetchDocumentTree, workspaceId ? { workspaceId } : "skip");
 
    const throttledCreate = throttle(
       (type: "text/plain" | "folder") => {
          if (!workspaceId) return;
-         if (status && !status.ok) {
-            showToast(
-               (status as any).reason ||
-                  `Document creation rate limit reached (${DOCUMENT_CREATION_RATE_LIMIT} per day). Try again tomorrow.`,
-               "error"
-            );
-            return;
-         }
+         // if (status && !status.ok) {
+         //    showToast(
+         //       (status as any).reason ||
+         //          `Document creation rate limit reached (${DOCUMENT_CREATION_RATE_LIMIT} per day). Try again tomorrow.`,
+         //       "error"
+         //    );
+         //    return;
+         // }
          // Find min orderPosition among top-level docs
          let minOrder = 0;
          if (topLevelDocs && Array.isArray(topLevelDocs.data) && topLevelDocs.data.length > 0) {

@@ -15,6 +15,7 @@
 // import { useAction } from "convex/react";
 // import { convexQuery } from "@convex-dev/react-query";
 // import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+// import { Analytics } from "@/components/providers/posthog";
 
 // const productsQuery = convexQuery(api.polar.listAllProducts, {});
 
@@ -147,6 +148,9 @@
 //                            variant="outline"
 //                            onClick={() =>
 //                               generateCustomerPortalUrl().then(({ url }) => {
+//                                  Analytics.track("subscription_management_accessed", {
+//                                     userId: user?._id,
+//                                  });
 //                                  window.location.href = url;
 //                               })
 //                            }

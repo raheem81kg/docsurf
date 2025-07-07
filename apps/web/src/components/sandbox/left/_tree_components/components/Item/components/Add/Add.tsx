@@ -2,8 +2,8 @@ import React from "react";
 import { PlusIcon } from "lucide-react";
 import { Tooltip, TooltipContent } from "@docsurf/ui/components/tooltip";
 import { cn } from "@docsurf/ui/lib/utils";
-import { useRateLimit } from "@convex-dev/rate-limiter/react";
-import { api } from "@docsurf/backend/convex/_generated/api";
+// import { useRateLimit } from "@convex-dev/rate-limiter/react";
+// import { api } from "@docsurf/backend/convex/_generated/api";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 import { DOCUMENT_CREATION_RATE_LIMIT } from "@docsurf/utils/constants/constants";
 
@@ -12,10 +12,10 @@ interface AddChildButtonProps {
 }
 
 export const Add = ({ onAddChild }: AddChildButtonProps) => {
-   const { status } = useRateLimit(api.documents.getCreateDocumentRateLimit, {
-      getServerTimeMutation: api.documents.getCreateDocumentServerTime,
-   });
-   const isNotAuthenticated = status && (status as any).key === "NOT_AUTHENTICATED";
+   // const { status } = useRateLimit(api.documents.getCreateDocumentRateLimit, {
+   //    getServerTimeMutation: api.documents.getCreateDocumentServerTime,
+   // });
+   // const isNotAuthenticated = status && (status as any).key === "NOT_AUTHENTICATED";
    return (
       <Tooltip delayDuration={100} disableHoverableContent>
          {/* <TooltipTrigger asChild> */}
@@ -24,18 +24,18 @@ export const Add = ({ onAddChild }: AddChildButtonProps) => {
             onClick={async (e) => {
                e.preventDefault();
                e.stopPropagation();
-               if (isNotAuthenticated) {
-                  showToast("Please log in to create documents.", "error");
-                  return;
-               }
-               if (status && !status.ok) {
-                  showToast(
-                     (status as any).reason ||
-                        `Document creation rate limit reached (${DOCUMENT_CREATION_RATE_LIMIT} per day). Try again tomorrow.`,
-                     "error"
-                  );
-                  return;
-               }
+               // if (isNotAuthenticated) {
+               //    showToast("Please log in to create documents.", "error");
+               //    return;
+               // }
+               // if (status && !status.ok) {
+               //    showToast(
+               //       (status as any).reason ||
+               //          `Document creation rate limit reached (${DOCUMENT_CREATION_RATE_LIMIT} per day). Try again tomorrow.`,
+               //       "error"
+               //    );
+               //    return;
+               // }
                let loadingToastId: string | number | null = null;
                let timer: NodeJS.Timeout | null = null;
                let finished = false;

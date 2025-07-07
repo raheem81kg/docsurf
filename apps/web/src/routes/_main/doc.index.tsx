@@ -109,13 +109,13 @@ function RouteComponent() {
                // Find the first text document in the flattened (properly ordered) list
                const firstTextDoc = flattenedItems.find((item) => item.documentType === "text/plain");
                if (firstTextDoc) {
-                  navigate({ to: "/doc/$documentId", params: { documentId: firstTextDoc.id as string } });
+                  navigate({ to: "/doc/$documentId", params: { documentId: firstTextDoc.id as string }, replace: true });
                   return;
                }
 
                // Fallback: if no text documents exist, go to first document overall
                if (flattenedItems.length > 0) {
-                  navigate({ to: "/doc/$documentId", params: { documentId: flattenedItems[0].id as string } });
+                  navigate({ to: "/doc/$documentId", params: { documentId: flattenedItems[0].id as string }, replace: true });
                   return;
                }
             }
@@ -129,7 +129,7 @@ function RouteComponent() {
             });
             creatingRef.current = false;
             if (!cancelled && newDoc?.id) {
-               navigate({ to: "/doc/$documentId", params: { documentId: newDoc.id } });
+               navigate({ to: "/doc/$documentId", params: { documentId: newDoc.id }, replace: true });
             }
          } catch (err) {
             creatingRef.current = false;

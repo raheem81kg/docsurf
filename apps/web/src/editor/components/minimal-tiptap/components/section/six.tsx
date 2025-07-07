@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { cn } from "@docsurf/ui/lib/utils";
 import { ClockRewind } from "@/editor/components/custom/ui/diffview/lib/icons";
 import VersionHistoryDialog from "@/editor/components/custom/version-history-dialog";
+import { ShareDocButton } from "@/editor/components/custom/share-doc-button";
 
 /**
  * SectionSix displays character/word count and formatting actions in the bottom toolbar.
@@ -19,6 +20,7 @@ import VersionHistoryDialog from "@/editor/components/custom/version-history-dia
 
 export interface SectionSixProps {
    editor: Editor;
+   docId: string;
    characterLimit?: number;
    isDocLocked?: boolean;
    loadingDoc?: boolean;
@@ -27,6 +29,7 @@ export interface SectionSixProps {
 
 export const SectionSix: React.FC<SectionSixProps> = ({
    editor,
+   docId,
    characterLimit = MAX_CHARACTERS,
    isDocLocked,
    loadingDoc,
@@ -138,6 +141,7 @@ export const SectionSix: React.FC<SectionSixProps> = ({
          </span>
          {/* Right: Import/Export Word and Lock/Unlock */}
          <div className="flex flex-shrink-0 items-center gap-2">
+            <ShareDocButton />
             {/* Export Word */}
             <ActionButton
                icon={<DownloadIcon className="size-4" />}

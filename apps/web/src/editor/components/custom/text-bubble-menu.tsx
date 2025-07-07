@@ -89,7 +89,7 @@ export function TextBubbleMenu(props: EditorBubbleMenuProps) {
    return (
       <BubbleMenu
          {...bubbleMenuProps}
-         className={cn("bg-background flex gap-0 rounded-lg border shadow-md overflow-hidden", className)}
+         className={cn("flex gap-0 overflow-hidden rounded-lg border bg-background shadow-md", className)}
       >
          {isSuggestionOverlayOpen && doc?._id && workspaceId ? (
             <></>

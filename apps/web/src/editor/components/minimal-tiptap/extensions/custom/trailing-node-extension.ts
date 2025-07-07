@@ -1,4 +1,4 @@
-import { Extension } from "@tiptap/react";
+import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import type { Node, NodeType } from "@tiptap/pm/model";
 

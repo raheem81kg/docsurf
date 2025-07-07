@@ -5,7 +5,7 @@
  * - Use commands to activate/deactivate the context and set loading state.
  * - Exposes plugin key and transaction meta constants for integration.
  */
-import { Extension } from "@tiptap/react";
+import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey, EditorState, Transaction } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 

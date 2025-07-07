@@ -366,8 +366,8 @@ importers:
         specifier: ^1.255.1
         version: 1.256.0
       prosemirror-docx:
-        specifier: ^0.5.0
-        version: 0.5.0(docx@9.5.1)
+        specifier: ^0.6.1
+        version: 0.6.1(docx@9.5.1)
       radix-ui:
         specifier: ^1.4.2
         version: 1.4.2(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -4691,8 +4691,8 @@ packages:
     resolution: {integrity: sha512-kCQFhugKGPIvnhPLCAOfnThNQUxNHCM7PUZM4nflYxTacVEQUDfDjJuP487D67g8MXiZ30B3wtCjTWWxYjZCFw==}
     engines: {node: '>=18.0.0'}
 
-  '@triplit/db@1.1.5':
-    resolution: {integrity: sha512-6eEUK3f7JBRwr2Fjkat37Nz9aMJrBnXfA7HNdVB28bFUVI5bYPGa4UBeyYFJWz9B3cVvIiakvRF+2F2n7PaDdA==}
+  '@triplit/db@1.1.7':
+    resolution: {integrity: sha512-FdmCB9ftqR9tZag1yT8X2FrWkuE/pDcYooZNMYjUUYiGI7G1tWw+xCcJG/z0QxAjqml5SdZgjZGdn/rZ7Ih85Q==}
     peerDependencies:
       better-sqlite3: '*'
       expo-sqlite: '*'
@@ -8422,8 +8422,8 @@ packages:
   prosemirror-commands@1.7.1:
     resolution: {integrity: sha512-rT7qZnQtx5c0/y/KlYaGvtG411S97UaL6gdp6RIZ23DLHanMYLyfGBV5DtSnZdthQql7W+lEVbpSfwtO8T+L2w==}
 
-  prosemirror-docx@0.5.0:
-    resolution: {integrity: sha512-jh3ey6+taS0gdOTldyjxp1QHXZYPRgK04tFvNDN2PkNqekCoglW9Msn0K1gk7ga5eoZj36zb9fdwulN8dfNA6w==}
+  prosemirror-docx@0.6.1:
+    resolution: {integrity: sha512-SjXdOPkwrb7PeqIN/NVlLI0m5aFasJvxaaA8kE6LbPY3U4kWa2lCHRyUKxS5rxgaVU4umPgEcw4v1RFRdKpdnQ==}
     peerDependencies:
       docx: ^8.5.0 || ^9.0.0
 
@@ -14692,7 +14692,7 @@ snapshots:
 
   '@triplit/client@1.0.44(typescript@5.8.3)':
     dependencies:
-      '@triplit/db': 1.1.5(typescript@5.8.3)
+      '@triplit/db': 1.1.7(typescript@5.8.3)
       '@triplit/logger': 0.0.3(typescript@5.8.3)
       comlink: 4.4.2
       superjson: 2.2.2
@@ -14703,7 +14703,7 @@ snapshots:
       - typescript
       - uuidv7
 
-  '@triplit/db@1.1.5(typescript@5.8.3)':
+  '@triplit/db@1.1.7(typescript@5.8.3)':
     dependencies:
       '@triplit/logger': 0.0.3(typescript@5.8.3)
       core-js: 3.43.0
@@ -19033,7 +19033,7 @@ snapshots:
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.10.4
 
-  prosemirror-docx@0.5.0(docx@9.5.1):
+  prosemirror-docx@0.6.1(docx@9.5.1):
     dependencies:
       docx: 9.5.1
       image-dimensions: 2.3.0

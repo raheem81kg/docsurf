@@ -1,4 +1,4 @@
-import { Extension } from "@tiptap/react";
+import { Extension } from "@tiptap/core";
 import type { default as Mammoth } from "mammoth";
 
 export interface ImportWordOptions {

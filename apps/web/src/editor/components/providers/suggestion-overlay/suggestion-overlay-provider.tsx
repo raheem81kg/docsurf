@@ -215,6 +215,7 @@ export function SuggestionOverlayProvider({ children }: { children: ReactNode })
                editor={editor}
                from={selectionRange?.from}
                to={selectionRange?.to}
+               userId={user?._id}
             />
          )}
       </SuggestionOverlayContext.Provider>

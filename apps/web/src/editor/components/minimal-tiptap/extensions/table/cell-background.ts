@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import type { Command } from "@tiptap/react";
-import { Extension } from "@tiptap/react";
+import { Extension } from "@tiptap/core";
 import type { Transaction } from "@tiptap/pm/state";
 import { CellSelection } from "@tiptap/pm/tables";
 

@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
 import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
 import { motion, useAnimation } from "motion/react";
 import type { Variants } from "motion/react";

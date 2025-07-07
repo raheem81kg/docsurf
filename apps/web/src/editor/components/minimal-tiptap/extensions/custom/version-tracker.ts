@@ -3,7 +3,7 @@
  * Tracks document versions based on time intervals, content changes, and user activity.
  * Provides automatic versioning with configurable thresholds and intervals.
  */
-import { Extension } from "@tiptap/react";
+import { Extension } from "@tiptap/core";
 import type { Editor, JSONContent } from "@tiptap/react";
 import { createDocVersion, getLastNDocVersions, hashContent } from "@/lib/persist/queries";
 import { getComparableContent } from "../../tiptap-util";

@@ -120,7 +120,7 @@
       "orderedmap": "^2.1.1",
       "p-retry": "^6.2.1",
       "posthog-js": "^1.255.1",
-      "prosemirror-docx": "^0.5.0",
+      "prosemirror-docx": "^0.6.1",
       "radix-ui": "^1.4.2",
       "react": "19.0.0",
       "react-cookie": "^8.0.1",

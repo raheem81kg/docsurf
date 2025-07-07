@@ -8,7 +8,7 @@
  *     }
  *   })
  */
-import { Extension } from "@tiptap/react";
+import { Extension } from "@tiptap/core";
 import type { Editor } from "@tiptap/react";
 import { Plugin } from "@tiptap/pm/state";
 

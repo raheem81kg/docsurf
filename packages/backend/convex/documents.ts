@@ -632,3 +632,90 @@ export const { getRateLimit: getCreateDocumentRateLimit, getServerTime: getCreat
       },
    }
 );
+
+// Add these new functions to your existing documents.ts file
+
+/**
+ * Fetch a public document by its ID (no authentication required)
+ */
+export const fetchPublicDocument = query({
+   args: {
+      documentId: v.id("documents"),
+   },
+   handler: async (ctx, { documentId }) => {
+      const doc = await ctx.db.get(documentId);
+      if (!doc || !doc.isPublic || doc.isDeleted) return null;
+      return doc;
+   },
+});
+
+/**
+ * Toggle document public status
+ */
+export const toggleDocumentPublic = mutation({
+   args: {
+      workspaceId: v.id("workspaces"),
+      id: v.id("documents"),
+   },
+   handler: async (ctx, { workspaceId, id }) => {
+      const { userId } = await requireWorkspacePermission(ctx, workspaceId);
+      const doc = await ctx.db
+         .query("documents")
+         .withIndex("byUser", (q) => q.eq("authorId", userId))
+         .filter((q) => q.and(q.eq(q.field("_id"), id), q.eq(q.field("workspaceId"), workspaceId)))
+         .first();
+      if (!doc) return { error: "Document not found" };
+
+      const newPublic = !doc.isPublic;
+      await ctx.db.patch(doc._id, { isPublic: newPublic, updatedAt: Date.now() });
+      return { success: true, isPublic: newPublic, id: doc._id };
+   },
+});
+
+/**
+ * Fork a public document into the current user's workspace
+ */
+export const forkPublicDocument = mutation({
+   args: {
+      documentId: v.id("documents"),
+   },
+   handler: async (ctx, { documentId }) => {
+      // Get the public document
+      const doc = await ctx.db.get(documentId);
+      if (!doc || !doc.isPublic || doc.isDeleted) {
+         return { error: "Document not found or not public" };
+      }
+      // Get the current user
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) {
+         return { error: "Not authenticated" };
+      }
+      // Find the user's first workspace membership
+      const memberships = await ctx.db
+         .query("usersOnWorkspace")
+         .withIndex("by_user", (q) => q.eq("userId", identity.subject as Id<"users">))
+         .collect();
+      if (!memberships || memberships.length === 0) {
+         return { error: "No workspace found for user" };
+      }
+      const workspaceId = memberships[0].workspaceId;
+      // Create a new document in the user's workspace
+      const newDocId = await ctx.db.insert("documents", {
+         authorId: memberships[0].userId,
+         workspaceId,
+         parentId: undefined,
+         title: doc.title,
+         documentType: doc.documentType,
+         fileUrl: undefined,
+         content: doc.content,
+         orderPosition: Date.now(),
+         updatedAt: Date.now(),
+         isDeleted: false,
+         depth: 0,
+         isPublic: false,
+         isLocked: false,
+         isCollapsed: undefined,
+      });
+      return { id: newDocId };
+   },
+});

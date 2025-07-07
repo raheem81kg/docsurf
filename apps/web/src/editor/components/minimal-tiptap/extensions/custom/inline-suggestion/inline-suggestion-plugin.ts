@@ -1,7 +1,7 @@
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { EditorState, Transaction } from "@tiptap/pm/state";
 import { Decoration, DecorationSet, EditorView } from "@tiptap/pm/view";
-import { Extension } from "@tiptap/react";
+import { Extension } from "@tiptap/core";
 import { addSwipeRightListener } from "./swipe";
 
 // Mobile detection utility

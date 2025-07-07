@@ -119,6 +119,7 @@ const createExtensions = (
    characterLimit: number,
    getEditor: () => Editor | null,
    userId: string | undefined,
+   userEmail: string | undefined,
    docId: string | undefined,
    workspaceId: string | undefined,
    abortControllerRef: React.RefObject<AbortController | null>,
@@ -245,7 +246,7 @@ const createExtensions = (
       TextStyle,
       Selection,
       InlineSuggestionExtension.configure({
-         requestSuggestion: createRequestInlineSuggestionCallback(userId, docId, workspaceId, abortControllerRef),
+         requestSuggestion: createRequestInlineSuggestionCallback(userId, docId, workspaceId, abortControllerRef, userEmail),
          debounceMs: 500,
          contextLength: 300,
       }),
@@ -369,6 +370,7 @@ export const useMinimalTiptapEditor = ({
    const { doc } = useCurrentDocument(user);
    const docId = doc?._id;
    const userId = user?._id;
+   const userEmail = user?.email;
    const workspaceId = doc?.workspaceId;
    // Convex mutation for saving document content
    const updateDocument = useMutation(api.documents.updateDocument);
@@ -423,6 +425,7 @@ export const useMinimalTiptapEditor = ({
             characterLimit,
             getEditor,
             userId,
+            userEmail,
             docId,
             workspaceId,
             abortControllerRef,
@@ -430,7 +433,18 @@ export const useMinimalTiptapEditor = ({
             enableVersionTracking,
             versionTrackingOptions
          ),
-      [placeholder, characterLimit, excludeExtensions, enableVersionTracking, versionTrackingOptions, getEditor, docId, userId]
+      [
+         placeholder,
+         characterLimit,
+         excludeExtensions,
+         enableVersionTracking,
+         versionTrackingOptions,
+         getEditor,
+         docId,
+         userId,
+         userEmail,
+         workspaceId,
+      ]
    );
 
    // Register editor and view in the store

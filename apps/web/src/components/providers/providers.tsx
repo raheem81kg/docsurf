@@ -2,7 +2,7 @@ import { TooltipProvider } from "@docsurf/ui/components/tooltip";
 import type { ThemeProviderProps } from "next-themes";
 // import { CompliantCookieProvider } from "./compliant-cookie-provider";
 import { CookiesProvider } from "react-cookie";
-import { PostHogProvider } from "./posthog-provider";
+import { PostHogProvider } from "./posthog/posthog-provider";
 import { ThemeProvider } from "./theme-provider";
 import { ClientOnly } from "@tanstack/react-router";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache";

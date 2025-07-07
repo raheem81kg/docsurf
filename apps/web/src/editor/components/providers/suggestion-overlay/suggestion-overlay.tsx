@@ -14,6 +14,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@docsu
 
 import type { Editor } from "@tiptap/react";
 import { DiffView } from "../../custom/ui/diffview/diffview";
+import { Analytics } from "@/components/providers/posthog";
 
 // Add FrameService class for smooth animations
 class FrameService {
@@ -67,6 +68,7 @@ interface SuggestionOverlayProps {
    editor?: Editor | null;
    from?: number;
    to?: number;
+   userId?: string;
 }
 
 export default function SuggestionOverlay({
@@ -80,6 +82,7 @@ export default function SuggestionOverlay({
    editor,
    from,
    to,
+   userId,
 }: SuggestionOverlayProps) {
    const [currentPosition, setCurrentPosition] = useState(position);
    const [isDragging, setIsDragging] = useState(false);
@@ -487,6 +490,19 @@ export default function SuggestionOverlay({
 
             console.log("[SuggestionOverlay] Requesting suggestion with options:", {
                // customInstructions: customInstructions ? "(custom)" : "(none)",
+            });
+
+            if (!userId) {
+               console.warn("[SuggestionOverlay] No user ID found");
+               return;
+            }
+
+            Analytics.track("suggestion_requested", {
+               documentId,
+               description: prompt.trim(),
+               selectedText,
+               userId: userId,
+               workspaceId: workspaceId,
             });
 
             // Make POST request

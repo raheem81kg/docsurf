@@ -18,7 +18,7 @@ import { Skeleton } from "@docsurf/ui/components/skeleton";
 import { getInitials } from "@docsurf/utils/get-initials";
 import { clearAllDexieData } from "@/lib/persist/dexie-persist";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
-import { type SparklesIconHandle } from "@/components/assets/animated/sparkles";
+import type { SparklesIconHandle } from "@/components/assets/animated/sparkles";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
