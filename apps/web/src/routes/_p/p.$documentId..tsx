@@ -17,7 +17,7 @@ import { api as convexApi } from "@docsurf/backend/convex/_generated/api";
 import { useMutation } from "convex/react";
 import React from "react";
 
-export const Route = createFileRoute("/_p/p/$documentId")({
+export const Route = createFileRoute("/_p/p/$documentId/")({
    head: () => ({
       meta: [
          {

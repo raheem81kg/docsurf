@@ -5,7 +5,7 @@ import { createAuth } from "@docsurf/backend/convex/auth";
 import { Toaster } from "@docsurf/ui/components/sonner";
 import appCss from "@docsurf/ui/globals.css?url";
 import type { QueryClient } from "@tanstack/react-query";
-import { createRootRouteWithContext, HeadContent, Outlet, Scripts, useRouteContext } from "@tanstack/react-router";
+import { createRootRouteWithContext, HeadContent, Outlet, Scripts, useRouteContext, useRouter } from "@tanstack/react-router";
 // import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
 import { getCookie, getWebRequest } from "@tanstack/react-start/server";
@@ -16,8 +16,8 @@ import { authClient } from "@/lib/auth-client";
 import { seo } from "@/utils/seo";
 import { ThemeScript } from "@/components/providers/theme-script";
 import { Analytics } from "@vercel/analytics/react";
-import { getClientAppUrl } from "@/utils/envs";
 import { env } from "@/env";
+import Loader from "@/components/loader";
 
 export interface RouterAppContext {
    queryClient: QueryClient;
@@ -150,6 +150,11 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 
 function RootComponent() {
    const context = useRouteContext({ from: Route.id });
+   const router = useRouter();
+   // Render only the Loader when prerendering the shell (SPA mode)
+   if (router.isShell) {
+      return <Loader />;
+   }
    return (
       <ConvexBetterAuthProvider client={context.convexClient} authClient={authClient}>
          <RootDocument>

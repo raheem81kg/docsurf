@@ -1,4 +1,4 @@
-import { redirect, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { SignIn } from "@/components/auth/sign-in";
 import { z } from "zod";
 

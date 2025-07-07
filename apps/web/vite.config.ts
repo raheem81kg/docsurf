@@ -28,6 +28,14 @@ export default defineConfig({
          // SPA mode enabled for Vercel static deployment
          spa: {
             enabled: true,
+            // Explicitly set the shell mask path (default is '/')
+            maskPath: "/",
+            // Prerender options for the shell
+            prerender: {
+               outputPath: "/_shell.html", // default
+               crawlLinks: true, // default
+               retryCount: 3, // default
+            },
          },
          react: {
             babel: {

@@ -1,11 +1,5 @@
-import { SidebarInset, SidebarProvider } from "@docsurf/ui/components/sidebar";
-import { InnerRightSidebar } from "@/components/sandbox/right-inner/inner-right-sidebar";
-import { LeftSidebar } from "@/components/sandbox/left/LeftSidebar";
-import Header from "@/components/sandbox/header";
-import { useSandStateStore } from "@/store/sandstate";
+import { SidebarInset } from "@docsurf/ui/components/sidebar";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { OnboardingProvider } from "@/components/onboarding/onboarding-provider";
-import { SuggestionOverlayProvider } from "@/editor/components/providers/suggestion-overlay/suggestion-overlay-provider";
 import { useOfflineIndicator } from "@/hooks/use-offline-indicator";
 import { useSession } from "@/hooks/auth-hooks";
 import SharedDocHeader from "@/components/sandbox/shared-doc-header";

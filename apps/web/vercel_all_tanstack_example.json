@@ -1,0 +1,16 @@
+{
+   "rewrites": [
+      {
+         "source": "/_serverFn/(.*)",
+         "destination": "/_serverFn/$1"
+      },
+      {
+         "source": "/api/(.*)",
+         "destination": "/api/$1"
+      },
+      {
+         "source": "/(.*)",
+         "destination": "/_shell.html"
+      }
+   ]
+}
