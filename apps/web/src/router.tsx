@@ -37,7 +37,7 @@ export function createRouter() {
          defaultPreload: "intent",
          defaultErrorComponent: DefaultCatchBoundary,
          defaultNotFoundComponent: () => <NotFound />,
-         defaultPendingComponent: () => <Loader />,
+         // defaultPendingComponent: () => <Loader />,
          scrollRestoration: true,
          context: { queryClient, convexClient: convex, convexQueryClient },
          Wrap: ({ children }) => <ConvexProvider client={convexQueryClient.convexClient}>{children}</ConvexProvider>,

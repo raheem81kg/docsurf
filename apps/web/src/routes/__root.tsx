@@ -151,10 +151,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 function RootComponent() {
    const context = useRouteContext({ from: Route.id });
    const router = useRouter();
-   // Render only the Loader when prerendering the shell (SPA mode)
-   if (router.isShell) {
-      return <Loader />;
-   }
+   // Removed SPA shell Loader conditional
    return (
       <ConvexBetterAuthProvider client={context.convexClient} authClient={authClient}>
          <RootDocument>
