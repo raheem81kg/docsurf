@@ -8,6 +8,7 @@ import "@docsurf/ui/globals.css";
 import { DefaultCatchBoundary } from "./components/default-catch-boundary";
 import { NotFound } from "./components/not-found";
 import { env } from "./env";
+import Loader from "./components/loader";
 
 export function createRouter() {
    const CONVEX_URL = env.VITE_CONVEX_URL;
@@ -36,6 +37,7 @@ export function createRouter() {
          defaultPreload: "intent",
          defaultErrorComponent: DefaultCatchBoundary,
          defaultNotFoundComponent: () => <NotFound />,
+         defaultPendingComponent: () => <Loader />,
          scrollRestoration: true,
          context: { queryClient, convexClient: convex, convexQueryClient },
          Wrap: ({ children }) => <ConvexProvider client={convexQueryClient.convexClient}>{children}</ConvexProvider>,
