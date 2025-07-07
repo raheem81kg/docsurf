@@ -1,8 +1,8 @@
 {
    "rewrites": [
-      {
-         "source": "/(.*)",
-         "destination": "/_shell.html"
-      }
+      { "source": "/api/(.*)", "destination": "/api/$1" },
+      { "source": "/_serverFn/(.*)", "destination": "/_serverFn/$1" },
+      { "source": "/_shell.html", "destination": "/_shell.html" },
+      { "source": "/(.*)", "destination": "/_shell.html" }
    ]
 }
