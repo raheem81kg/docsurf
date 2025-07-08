@@ -246,14 +246,14 @@ export function ModelSelector({
                               providerKey === "Built-in"
                                  ? "Built-in Models"
                                  : providerKey === "openai"
-                                   ? "OpenAI"
-                                   : providerKey === "anthropic"
-                                     ? "Anthropic"
-                                     : providerKey === "google"
-                                       ? "Google"
-                                       : providerKey === "fal"
-                                         ? "Fal.AI"
-                                         : providerKey
+                                 ? "OpenAI"
+                                 : providerKey === "anthropic"
+                                 ? "Anthropic"
+                                 : providerKey === "google"
+                                 ? "Google"
+                                 : providerKey === "fal"
+                                 ? "Fal.AI"
+                                 : providerKey
                            }
                         >
                            {providerModels.map((model) => (

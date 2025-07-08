@@ -5,6 +5,7 @@ import type { UIMessage } from "ai";
 import { nanoid } from "nanoid";
 import { useCallback } from "react";
 import { useChatIntegration } from "./use-chat-integration";
+import { useAuthTokenStore } from "@/hooks/use-auth-store";
 
 export function useChatActions({ threadId, folderId }: { threadId: string | undefined; folderId?: Id<"projects"> }) {
    const { uploadedFiles, setUploadedFiles, setTargetFromMessageId, setTargetMode } = useChatStore();
@@ -58,7 +59,9 @@ export function useChatActions({ threadId, folderId }: { threadId: string | unde
    );
 
    const handleRetry = useCallback(
-      (message: UIMessage) => {
+      async (message: UIMessage) => {
+         // Refetch token before retrying
+         await useAuthTokenStore.getState().refetchToken();
          // If there is no threadId, treat retry as a new message send
          if (!threadId) {
             // If the message has text parts, extract the text and call handleInputSubmit
@@ -132,7 +135,7 @@ export function useChatActions({ threadId, folderId }: { threadId: string | unde
 
    return {
       handleInputSubmit,
-      handleRetry,
+      handleRetry: handleRetry as unknown as (message: UIMessage) => Promise<void>,
       handleEditAndRetry,
    };
 }

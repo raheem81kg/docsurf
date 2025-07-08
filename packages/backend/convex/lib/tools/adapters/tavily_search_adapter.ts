@@ -69,6 +69,9 @@ export class TavilySearchAdapter implements SearchAdapter {
             include_image_descriptions: false,
          };
 
+         // Log the Tavily request body for debugging
+         console.log("Tavily request body:", JSON.stringify(requestBody, null, 2));
+
          const response = await fetch(`${this.config.baseUrl}/search`, {
             method: "POST",
             headers: {
@@ -83,6 +86,9 @@ export class TavilySearchAdapter implements SearchAdapter {
          }
 
          const data: TavilySearchResponse = await response.json();
+
+         // Log the full Tavily API response for debugging
+         console.log("Tavily API response:", JSON.stringify(data, null, 2));
 
          if (!data.results || data.results.length === 0) {
             return [];
