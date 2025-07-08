@@ -147,8 +147,8 @@ const createExtensions = (
       TaskList,
       TaskItem.configure({ nested: true }),
       Underline,
-      // Mathematics,
-      // ImagePlaceholder,
+      Mathematics,
+      ImagePlaceholder,
       Image.configure({
          allowedMimeTypes: ["image/*"],
          maxFileSize: MAX_FILE_SIZE,
