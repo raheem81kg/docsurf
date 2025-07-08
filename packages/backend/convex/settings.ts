@@ -11,7 +11,7 @@ import { NonSensitiveUserSettings } from "./schema/settings";
 export const DefaultSettings = (userId: string) =>
    ({
       userId,
-      searchProvider: "firecrawl",
+      searchProvider: "tavily",
       searchIncludeSourcesByDefault: false,
       coreAIProviders: {},
       customAIProviders: {},
@@ -28,7 +28,7 @@ export const DefaultSettings = (userId: string) =>
       },
       customization: undefined,
       onboardingCompleted: false,
-   }) satisfies Infer<typeof UserSettings>;
+   } satisfies Infer<typeof UserSettings>);
 
 const getSettings = async (ctx: QueryCtx, userId: string): Promise<Infer<typeof UserSettings> & { _id?: Id<"settings"> }> => {
    const settings = await ctx.db
