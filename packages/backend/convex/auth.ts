@@ -33,7 +33,7 @@ export const betterAuthComponent = new BetterAuth(components.betterAuth, {
 
 export const createAuth = (ctx: GenericCtx) =>
    betterAuth({
-      baseURL: "https://docsurf.vercel.app",
+      baseURL: getConvexAppUrl(),
       database: convexAdapter(ctx, betterAuthComponent),
       account: {
          accountLinking: {

@@ -6,6 +6,10 @@ export function getConvexAppUrl(): string {
       return process.env.FRONTEND_URL;
    }
 
+   if (process.env.FRONTEND_PREVIEW_URL) {
+      return process.env.FRONTEND_PREVIEW_URL;
+   }
+
    // Fallback to localhost if no frontend URL is available
    return "http://localhost:3001";
 }
