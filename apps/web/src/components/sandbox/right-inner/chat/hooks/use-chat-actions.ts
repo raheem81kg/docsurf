@@ -135,7 +135,7 @@ export function useChatActions({ threadId, folderId }: { threadId: string | unde
 
    return {
       handleInputSubmit,
-      handleRetry: handleRetry as unknown as (message: UIMessage) => Promise<void>,
+      handleRetry,
       handleEditAndRetry,
    };
 }

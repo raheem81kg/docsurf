@@ -11,7 +11,7 @@ import { NonSensitiveUserSettings } from "./schema/settings";
 export const DefaultSettings = (userId: string) =>
    ({
       userId,
-      searchProvider: "tavily",
+      searchProvider: "firecrawl",
       searchIncludeSourcesByDefault: false,
       coreAIProviders: {},
       customAIProviders: {},
