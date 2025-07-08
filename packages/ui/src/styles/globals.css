@@ -28,9 +28,9 @@ body {
    @apply bg-background text-foreground;
    /* text-text-default */
 
-   /* @media (prefers-color-scheme: dark) {
+   @media (prefers-color-scheme: dark) {
       color-scheme: dark;
-   } */
+   }
 }
 
 /* Base styles */
