@@ -25,12 +25,12 @@
 
 html,
 body {
-   @apply bg-red-500 text-foreground;
+   @apply bg-background text-foreground;
    /* text-text-default */
 
-   @media (prefers-color-scheme: dark) {
+   /* @media (prefers-color-scheme: dark) {
       color-scheme: dark;
-   }
+   } */
 }
 
 /* Base styles */
