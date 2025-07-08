@@ -1,6 +1,6 @@
 // Note: NODE_ENV is not available automatically in Convex
 
-export function getConvexAppUrl() {
+export function getConvexAppUrl(): string {
    // Only use the frontend URL if it's available
    if (process.env.FRONTEND_URL) {
       return process.env.FRONTEND_URL;
@@ -15,15 +15,14 @@ export function getConvexAppUrls(): string[] {
 
    if (process.env.FRONTEND_URL) {
       urls.push(process.env.FRONTEND_URL);
+      return urls;
    }
+
+   // If no frontend URL, add both localhost and preview URL
+   urls.push("http://localhost:3001");
 
    if (process.env.FRONTEND_PREVIEW_URL) {
       urls.push(process.env.FRONTEND_PREVIEW_URL);
-   }
-
-   // Only include localhost if no frontend URLs are available
-   if (urls.length === 0) {
-      urls.push("http://localhost:3001");
    }
 
    return urls;
