@@ -7,6 +7,7 @@ import { FooterCTA } from "@/components/welcome/footer/footer-cta";
 import Navigation from "@/components/welcome/navigation";
 
 export const Route = createFileRoute("/_welcome")({
+   ssr: true,
    head: () => ({
       meta: [
          {

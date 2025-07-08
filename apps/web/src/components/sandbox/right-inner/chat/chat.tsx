@@ -1,6 +1,4 @@
 import { Messages } from "./messages";
-import { api } from "@docsurf/backend/convex/_generated/api";
-import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 import { MODELS_SHARED } from "@docsurf/backend/convex/lib/models";
 import { useChatActions } from "./hooks/use-chat-actions";
 import { useChatDataProcessor } from "./hooks/use-chat-data-processor";
@@ -8,26 +6,23 @@ import { useChatIntegration } from "./hooks/use-chat-integration";
 import { useDynamicTitle } from "./hooks/use-dynamic-title";
 import { useThreadSync } from "./hooks/use-thread-sync";
 import { type UploadedFile, useChatStore } from "./lib/chat-store";
-import { useDiskCachedQuery } from "./lib/convex-cached-query";
 import { useModelStore } from "./lib/model-store";
 import { useThemeStore } from "./lib/theme-store";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo } from "react";
 import { useStickToBottom } from "use-stick-to-bottom";
-import { Logo } from "./logo";
 import { MultimodalInput } from "./multimodal-input";
 import { SignupMessagePrompt } from "./signup-message-prompt";
 import { StickToBottomButton } from "./stick-to-bottom-button";
 import { useSession } from "@/hooks/auth-hooks";
 import { ChatHeader } from "./chat-header";
-import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 
 interface ChatProps {
    threadId: string | undefined;
-   folderId?: Id<"projects">;
+   // folderId?: Id<"projects">;
 }
 
-const ChatContent = ({ threadId: routeThreadId, folderId }: ChatProps) => {
+const ChatContent = ({ threadId: routeThreadId }: ChatProps) => {
    const { selectedModel, setSelectedModel } = useModelStore();
    const { threadId } = useThreadSync({ routeThreadId });
    const { scrollToBottom, isAtBottom, contentRef, scrollRef } = useStickToBottom({
@@ -45,24 +40,24 @@ const ChatContent = ({ threadId: routeThreadId, folderId }: ChatProps) => {
       }
    }, [selectedModel, setSelectedModel]);
 
-   const projects = useDiskCachedQuery(
-      api.folders.getUserProjects,
-      {
-         key: "projects",
-         default: [],
-      },
-      session?.user?.id ? {} : "skip"
-   );
-   const project = "error" in projects ? null : projects?.find((project) => project._id === folderId);
+   // const projects = useDiskCachedQuery(
+   //    api.folders.getUserProjects,
+   //    {
+   //       key: "projects",
+   //       default: [],
+   //    },
+   //    session?.user?.id ? {} : "skip"
+   // );
+   // const project = "error" in projects ? null : projects?.find((project) => project._id === folderId);
 
    const { status, data, messages, ...chatHelpers } = useChatIntegration({
       threadId,
-      folderId,
+      // folderId,
    });
 
    const { handleInputSubmit, handleRetry, handleEditAndRetry } = useChatActions({
       threadId,
-      folderId,
+      // folderId,
    });
 
    useChatDataProcessor({ data, messages });
@@ -170,9 +165,9 @@ const ChatContent = ({ threadId: routeThreadId, folderId }: ChatProps) => {
    );
 };
 
-export const Chat = ({ threadId, folderId }: ChatProps) => {
+export const Chat = ({ threadId }: ChatProps) => {
    // DO NOT PASS A KEY HERE UNDER ANY CIRCUMSTANCES
    // It will cause the chat to reset when the threadId changes
    // AND THIS WHILE MAKE THE FIRST MESSAGE IN CHAT BE STUCK IN LOADING
-   return <ChatContent threadId={threadId} folderId={folderId} />;
+   return <ChatContent threadId={threadId} />;
 };

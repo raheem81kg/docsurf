@@ -45,6 +45,7 @@ type ThemeCardProps = {
 };
 
 export const Route = createFileRoute("/settings/appearance")({
+   ssr: false,
    component: AppearanceSettings,
 });
 

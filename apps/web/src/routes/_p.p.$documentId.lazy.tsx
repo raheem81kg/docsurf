@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
@@ -17,18 +17,7 @@ import { api as convexApi } from "@docsurf/backend/convex/_generated/api";
 import { useMutation } from "convex/react";
 import React from "react";
 
-export const Route = createFileRoute("/_p/p/$documentId/")({
-   head: () => ({
-      meta: [
-         {
-            title: "Public Document - Docsurf",
-         },
-         {
-            name: "robots",
-            content: "index, follow", // Allow indexing of public documents
-         },
-      ],
-   }),
+export const Route = createLazyFileRoute("/_p/p/$documentId")({
    component: PublicDocumentComponent,
 });
 
@@ -190,8 +179,9 @@ function PublicDocumentComponent() {
                <Suspense fallback={<Skeleton className="mb-4 h-8 w-full animate-pulse" />}>
                   <MinimalTiptapReadonly
                      value={content}
-                     editorContentClassName="minimal-tiptap-editor min-h-full border-none shadow-none bg-transparent focus:outline-none px-12 py-8"
+                     editorContentClassName=""
                      className="flex-1 min-h-0 flex flex-col h-full"
+                     editorClassName="focus:outline-none md:px-14 px-4 pb-8 pt-6 min-h-full"
                   />
                </Suspense>
             </div>

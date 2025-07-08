@@ -10,6 +10,7 @@ import { useOfflineIndicator } from "@/hooks/use-offline-indicator";
 import { useSession } from "@/hooks/auth-hooks";
 
 export const Route = createFileRoute("/_main")({
+   ssr: false,
    head: () => ({
       meta: [
          {

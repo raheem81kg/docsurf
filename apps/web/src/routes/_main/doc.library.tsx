@@ -11,6 +11,7 @@ import { env } from "@/env";
 import { useSession } from "@/hooks/auth-hooks";
 
 export const Route = createFileRoute("/_main/doc/library")({
+   ssr: false,
    component: LibraryPage,
 });
 

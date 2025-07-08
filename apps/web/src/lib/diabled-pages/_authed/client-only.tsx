@@ -1,70 +1,70 @@
-import { convexQuery } from "@convex-dev/react-query";
-import { api } from "@docsurf/backend/convex/_generated/api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
-import { useTransition } from "react";
-import { SignOutButton } from "@/components/client";
-import { ModeToggle } from "@/components/mode-toggle";
-import { AppContainer, AppHeader, AppNav, SettingsButton, UserProfile } from "@/components/server";
-import { authClient } from "@/lib/auth-client";
+// import { convexQuery } from "@convex-dev/react-query";
+// import { api } from "@docsurf/backend/convex/_generated/api";
+// import { useQuery, useQueryClient } from "@tanstack/react-query";
+// import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+// import { useTransition } from "react";
+// import { SignOutButton } from "@/components/client";
+// import { ModeToggle } from "@/components/mode-toggle";
+// import { AppContainer, AppHeader, AppNav, SettingsButton, UserProfile } from "@/components/server";
+// import { authClient } from "@/lib/auth-client";
 
-export const Route = createFileRoute("/_authed/client-only")({
-   component: ClientOnlyComponent,
-});
+// export const Route = createFileRoute("/_authed/client-only")({
+//    component: ClientOnlyComponent,
+// });
 
-function ClientOnlyComponent() {
-   const navigate = useNavigate();
-   const [isPending, startTransition] = useTransition();
-   return (
-      <AppContainer>
-         <ModeToggle
-            isServer={false}
-            onSwitch={() => {
-               startTransition(() => {
-                  void navigate({
-                     to: "/server",
-                  });
-               });
-            }}
-            isPending={isPending}
-         />
-         <Header />
-         <Outlet />
-      </AppContainer>
-   );
-}
+// function ClientOnlyComponent() {
+//    const navigate = useNavigate();
+//    const [isPending, startTransition] = useTransition();
+//    return (
+//       <AppContainer>
+//          <ModeToggle
+//             isServer={false}
+//             onSwitch={() => {
+//                startTransition(() => {
+//                   void navigate({
+//                      to: "/server",
+//                   });
+//                });
+//             }}
+//             isPending={isPending}
+//          />
+//          <Header />
+//          <Outlet />
+//       </AppContainer>
+//    );
+// }
 
-function Header() {
-   const user = useQuery(convexQuery(api.auth.getCurrentUser, {}));
-   const navigate = useNavigate();
-   const queryClient = useQueryClient();
+// function Header() {
+//    const user = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+//    const navigate = useNavigate();
+//    const queryClient = useQueryClient();
 
-   const handleSignOut = async () => {
-      await queryClient.resetQueries({ queryKey: ["session"] });
-      await queryClient.resetQueries({ queryKey: ["token"] });
-      await authClient.signOut();
-      void navigate({ to: "/auth" });
-      const keys = Object.keys(localStorage);
-      for (const key of keys) {
-         if (key.includes("_CACHE")) {
-            localStorage.removeItem(key);
-         }
-      }
-   };
+//    const handleSignOut = async () => {
+//       await queryClient.resetQueries({ queryKey: ["session"] });
+//       await queryClient.resetQueries({ queryKey: ["token"] });
+//       await authClient.signOut();
+//       void navigate({ to: "/auth" });
+//       const keys = Object.keys(localStorage);
+//       for (const key of keys) {
+//          if (key.includes("_CACHE")) {
+//             localStorage.removeItem(key);
+//          }
+//       }
+//    };
 
-   return (
-      <AppHeader>
-         <UserProfile user={user.data} />
-         <AppNav>
-            <SettingsButton>
-               {/*
-          <Link to="/settings">
-            <SettingsButtonContent />
-          </Link>
-          */}
-            </SettingsButton>
-            <SignOutButton onClick={handleSignOut} />
-         </AppNav>
-      </AppHeader>
-   );
-}
+//    return (
+//       <AppHeader>
+//          <UserProfile user={user.data} />
+//          <AppNav>
+//             <SettingsButton>
+//                {/*
+//           <Link to="/settings">
+//             <SettingsButtonContent />
+//           </Link>
+//           */}
+//             </SettingsButton>
+//             <SignOutButton onClick={handleSignOut} />
+//          </AppNav>
+//       </AppHeader>
+//    );
+// }

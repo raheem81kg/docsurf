@@ -21,6 +21,7 @@ import { ShareDocButton } from "@/editor/components/custom/share-doc-button";
 export interface SectionSixProps {
    editor: Editor;
    docId: string;
+   docTitle?: string;
    characterLimit?: number;
    isDocLocked?: boolean;
    loadingDoc?: boolean;
@@ -30,6 +31,7 @@ export interface SectionSixProps {
 export const SectionSix: React.FC<SectionSixProps> = ({
    editor,
    docId,
+   docTitle = "",
    characterLimit = MAX_CHARACTERS,
    isDocLocked,
    loadingDoc,
@@ -63,6 +65,17 @@ export const SectionSix: React.FC<SectionSixProps> = ({
    }, [editor, isDocLocked]);
 
    // Export Word handler
+   function sanitizeFilename(name: string) {
+      // Remove invalid filename characters and trim
+      return (
+         name
+            .replace(/[^a-zA-Z0-9-_\s]/g, "")
+            .replace(/\s+/g, "-")
+            .replace(/-+/g, "-")
+            .replace(/^[-\s]+|[-\s]+$/g, "")
+            .substring(0, 64) || "export-document"
+      );
+   }
    function handleExport() {
       if (!editor) return;
       let progress = 0;
@@ -73,7 +86,8 @@ export const SectionSix: React.FC<SectionSixProps> = ({
          }
       }, 100);
       try {
-         editor.commands.exportToWord();
+         const filename = sanitizeFilename(docTitle) + ".docx";
+         editor.commands.exportToWord(filename);
          clearInterval(progressInterval);
          hideProgressToast();
          showToast("Word document exported!", "success");

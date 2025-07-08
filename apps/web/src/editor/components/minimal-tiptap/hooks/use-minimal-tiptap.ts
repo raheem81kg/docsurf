@@ -147,13 +147,13 @@ const createExtensions = (
       TaskList,
       TaskItem.configure({ nested: true }),
       Underline,
-      Mathematics,
-      ImagePlaceholder,
+      // Mathematics,
+      // ImagePlaceholder,
       Image.configure({
          allowedMimeTypes: ["image/*"],
          maxFileSize: MAX_FILE_SIZE,
          allowBase64: false,
-         uploadFn: async (file) => {
+         uploadFn: async (file: File) => {
             return { id: randomId(), src: "" };
          },
          onToggle(editor, files, pos) {

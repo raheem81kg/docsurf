@@ -25,6 +25,7 @@ import { env } from "@/env";
 import { useSession } from "@/hooks/auth-hooks";
 
 export const Route = createFileRoute("/settings/attachments")({
+   ssr: false,
    component: AttachmentsPage,
 });
 

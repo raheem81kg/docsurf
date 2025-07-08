@@ -1,7 +1,22 @@
 import { AuthLayout } from "@/components/auth/auth-layout";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { SignIn } from "@/components/auth/sign-in";
+import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
 
-export const Route = createFileRoute("/_auth")({
+const authSearchSchema = z.object({
+   provider: z
+      .string()
+      .optional()
+      .transform((val) => {
+         if (val === "google" || val === "otp") {
+            return val;
+         }
+         return undefined;
+      }),
+});
+
+export const Route = createFileRoute("/auth")({
+   ssr: false,
    head: () => ({
       meta: [
          {
@@ -17,14 +32,16 @@ export const Route = createFileRoute("/_auth")({
          },
       ],
    }),
+   validateSearch: authSearchSchema,
    component: LayoutComponent,
 });
 
 function LayoutComponent() {
+   const search = Route.useSearch();
    return (
       <AuthLayout>
          <div className="w-full max-w-md overflow-hidden">
-            <Outlet />
+            <SignIn provider={search.provider} />
          </div>
       </AuthLayout>
    );

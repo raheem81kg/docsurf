@@ -10,14 +10,14 @@ import { useCookies } from "react-cookie";
 
 type PreferredSignInProvider = "google" | "otp";
 
-export const SignIn = ({ inviteCode }: { inviteCode?: string }) => {
+export const SignIn = ({ inviteCode, provider }: { inviteCode?: string; provider?: "google" | "otp" }) => {
    const navigate = useNavigate({
       from: "/",
    });
    const [cookies, setCookie] = useCookies();
    const [mounted, setMounted] = useState(false);
    const [authLoading, setAuthLoading] = useState(false);
-   const searchParams = useSearch({ from: "/_auth/auth" });
+   const searchParams = useSearch({ from: "/auth" });
 
    useEffect(() => {
       setMounted(true);
@@ -25,9 +25,9 @@ export const SignIn = ({ inviteCode }: { inviteCode?: string }) => {
 
    if (!mounted) return null;
 
-   // Priority: URL search params > cookie preference > default to "google"
+   // Priority: prop > URL search params > cookie preference > default to "google"
    const preferredSignInProvider =
-      searchParams.provider || (cookies[COOKIES.PreferredSignInProvider] as PreferredSignInProvider) || "google";
+      provider || searchParams.provider || (cookies[COOKIES.PreferredSignInProvider] as PreferredSignInProvider) || "google";
    let preferredSignInOption: React.ReactNode;
 
    const handleGoogleSignIn = async () => {

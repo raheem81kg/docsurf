@@ -134,13 +134,14 @@ function UsageInner() {
             </div>
 
             <div className="mt-3">
-               <p className={cn("text-xs text-muted-foreground opacity-50", paymentFailedAt && "text-red-600")}>
+               <p className="text-xs text-muted-foreground opacity-50">7-day usage</p>
+               {/* <p className={cn("text-xs text-muted-foreground opacity-50", paymentFailedAt && "text-red-600")}>
                   {paymentFailedAt
                      ? "Your last payment failed. Please update your payment method to continue using DocSurf."
                      : billingEnd
                      ? `Usage will reset ${billingEnd}`
                      : ""}
-               </p>
+               </p> */}
             </div>
 
             {/* Commented out subscription/payment related buttons */}

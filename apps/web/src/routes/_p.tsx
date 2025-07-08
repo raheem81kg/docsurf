@@ -1,22 +1,19 @@
 import { SidebarInset } from "@docsurf/ui/components/sidebar";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useOfflineIndicator } from "@/hooks/use-offline-indicator";
-import { useSession } from "@/hooks/auth-hooks";
+// import { useSession } from "@/hooks/auth-hooks";
 import SharedDocHeader from "@/components/sandbox/shared-doc-header";
 
 export const Route = createFileRoute("/_p")({
+   ssr: false,
    head: () => ({
       meta: [
          {
-            title: "Docsurf - AI Document Editor",
-         },
-         {
-            name: "description",
-            content: "Create, edit, and collaborate on documents with AI assistance. Your intelligent document workspace.",
+            title: "Public Document - Docsurf",
          },
          {
             name: "robots",
-            content: "noindex, nofollow", // App pages shouldn't be indexed
+            content: "index, follow",
          },
       ],
    }),
@@ -24,9 +21,9 @@ export const Route = createFileRoute("/_p")({
 });
 
 function MainLayoutComponent() {
-   const { data: session, isPending } = useSession();
+   // const { data: session, isPending } = useSession();
    useOfflineIndicator();
-   const isUserNotSignedIn = !session?.user && !isPending;
+   // const isUserNotSignedIn = !session?.user && !isPending;
    return (
       <div className="flex overflow-hidden max-h-dvh">
          {/* sidebar 1 */}

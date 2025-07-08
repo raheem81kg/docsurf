@@ -49,17 +49,17 @@ const SharedDocHeader = () => {
    const isEvenLargerTitle = doc?.title?.length && doc?.title?.length > 18;
 
    return (
-      <header className="sticky top-0 flex h-[46px] shrink-0 items-center gap-2 border-b px-3">
+      <header className="sticky top-0 flex h-[46px] shrink-0 items-center gap-2 px-3">
          <div className="flex-1 min-w-0 flex items-center gap-2">
             <Breadcrumb>
                <BreadcrumbList>
                   {/* Always show Documents on /doc, no separator */}
-                  <Link to="/doc">
+                  {/* <Link to="/doc">
                      <BreadcrumbItem>
                         <BreadcrumbPage className="line-clamp-1 truncate text-[13px]">Documents</BreadcrumbPage>
                      </BreadcrumbItem>
                   </Link>
-                  <BreadcrumbSeparator />
+                  <BreadcrumbSeparator /> */}
                   {/* Doc title breadcrumb (only on detail page) */}
                   <BreadcrumbItem>
                      <button
@@ -95,7 +95,7 @@ const SharedDocHeader = () => {
          </div>
 
          <div className="flex items-center md:gap-[0.1875rem] gap-[0.725rem] ml-auto">
-            <Button data-sidebar="trigger" data-slot="sidebar-trigger" onClick={() => navigate({ to: "/doc" })}>
+            <Button size="sm" data-sidebar="trigger" data-slot="sidebar-trigger" onClick={() => navigate({ to: "/doc" })}>
                {session?.user ? "Go to App" : "Sign in"}
             </Button>
          </div>

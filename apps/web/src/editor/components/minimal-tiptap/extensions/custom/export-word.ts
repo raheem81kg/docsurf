@@ -3,29 +3,32 @@ import { Extension } from "@tiptap/core";
 import { Packer, WidthType, type Document } from "docx";
 import { DocxSerializer, defaultMarks, defaultNodes } from "prosemirror-docx";
 import { ActionButton } from "../image/components/image-actions";
-import { downloadFromBlob, isEmptyNode } from "../../tiptap-util";
+import { downloadFromBlob } from "../../tiptap-util";
 
 declare module "@tiptap/react" {
    interface Commands<ReturnType> {
       exportWord: {
-         exportToWord: () => ReturnType;
+         exportToWord: (filename?: string) => ReturnType;
       };
    }
 }
 // export interface ExportWordOptions {}
 
-const fallbackNodeSerializer = () => {};
 const nodeSerializer = {
    ...defaultNodes,
-   hardBreak: defaultNodes.hard_break ?? fallbackNodeSerializer,
-   codeBlock: defaultNodes.code_block ?? fallbackNodeSerializer,
-   orderedList: defaultNodes.ordered_list ?? fallbackNodeSerializer,
-   listItem: defaultNodes.list_item ?? fallbackNodeSerializer,
-   bulletList: defaultNodes.bullet_list ?? fallbackNodeSerializer,
-   horizontalRule: defaultNodes.horizontal_rule ?? fallbackNodeSerializer,
-   // Requirement Buffer on browser
+   hardBreak: defaultNodes.hard_break,
+   codeBlock: defaultNodes.code_block,
+   orderedList: defaultNodes.ordered_list,
+   listItem: defaultNodes.list_item,
+   bulletList: defaultNodes.bullet_list,
+   horizontalRule: defaultNodes.horizontal_rule,
+   mathematic: defaultNodes.math,
+   subscript: defaultNodes.sub,
+   superscript: defaultNodes.sup,
+   code: defaultNodes.code,
+   codeHighlight: defaultNodes.code_highlight,
+   codeInline: defaultNodes.code_inline,
    image(state: any, node: any) {
-      // No image
       state.renderInline(node);
       state.closeBlock(node);
    },
@@ -39,25 +42,13 @@ const nodeSerializer = {
          },
       });
    },
-   // Custom node: confirmBlockChange
-   confirmBlockChange(state: any, node: any) {
-      // Export as a blockquote with the new content, or as a placeholder
-      state.openNode("blockquote");
-      state.writeText("[Change Block]");
-      if (node.attrs && node.attrs.newContent) {
-         state.writeText(node.attrs.newContent);
-      } else {
-         state.renderContent(node);
-      }
-      state.closeNode();
-   },
-   // Custom node: image-placeholder
-   "image-placeholder": (state: any, node: any) => {
-      // Export as a placeholder for image
-      state.writeText("[Image Placeholder]");
+   // Fallback for unknown nodes
+   fallback(state: any, node: any) {
+      // eslint-disable-next-line no-console
+      console.warn("Unserialized node:", node.type?.name, node);
+      state.renderContent(node);
       state.closeBlock(node);
    },
-   // Add more custom nodes here as needed
 };
 const docxSerializer = /* @__PURE__ */ new DocxSerializer(nodeSerializer, defaultMarks);
 
@@ -84,7 +75,7 @@ export const ExportWord = /* @__PURE__ */ Extension.create({
    addCommands() {
       return {
          exportToWord:
-            () =>
+            (filename?: string) =>
             async ({ editor }) => {
                const opts: any = {
                   getImageBuffer: async (src: string) => {
@@ -94,17 +85,20 @@ export const ExportWord = /* @__PURE__ */ Extension.create({
                   },
                };
 
-               // Check if the ProseMirror document is empty before exporting
-               if (isEmptyNode(editor.state.doc)) {
-                  if (typeof window !== "undefined") {
-                     alert("Document is empty. Nothing to export.");
-                  }
-                  return true;
-               }
-
+               // Log the document and serialization output for debugging
+               // eslint-disable-next-line no-console
+               console.log("editor.state.doc", editor.state.doc);
                const wordDocument = docxSerializer.serialize(editor.state.doc as any, opts);
-               Packer.toBlob(wordDocument).then((blob) => downloadFromBlob(blob, "export-document.docx"));
-               // Packer.toBlob(wordDocument).then((blob) => downloadFromBlob(new Blob([blob]), "export-document.docx"));
+               // eslint-disable-next-line no-console
+               console.log("wordDocument", wordDocument);
+               // Additional logging for body and body.root
+               // @ts-ignore
+               console.log("wordDocument.body", wordDocument.body);
+               // @ts-ignore
+               console.log("wordDocument.body.root", wordDocument.body?.root);
+
+               const safeFilename = filename && typeof filename === "string" && filename.trim() ? filename : "export-document.docx";
+               Packer.toBlob(wordDocument).then((blob) => downloadFromBlob(blob, safeFilename));
                return true;
             },
       };

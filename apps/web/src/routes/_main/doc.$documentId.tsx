@@ -143,6 +143,7 @@ function DocumentNotFound() {
 }
 
 export const Route = createFileRoute("/_main/doc/$documentId")({
+   ssr: false,
    errorComponent: DocumentErrorComponent,
    component: DocumentComponent,
    notFoundComponent: () => {

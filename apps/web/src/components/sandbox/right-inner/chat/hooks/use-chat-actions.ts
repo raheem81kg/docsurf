@@ -59,6 +59,21 @@ export function useChatActions({ threadId, folderId }: { threadId: string | unde
 
    const handleRetry = useCallback(
       (message: UIMessage) => {
+         // If there is no threadId, treat retry as a new message send
+         if (!threadId) {
+            // If the message has text parts, extract the text and call handleInputSubmit
+            const textPart = message.parts?.find((part) => part.type === "text");
+            if (textPart && typeof textPart.text === "string") {
+               handleInputSubmit(textPart.text);
+            } else {
+               // fallback: just call handleInputSubmit with no args
+               handleInputSubmit();
+            }
+            setTargetFromMessageId(undefined);
+            setTargetMode("normal");
+            return;
+         }
+
          const messageIndex = messages.findIndex((m) => m.id === message.id);
          if (messageIndex === -1) return;
 
@@ -80,7 +95,7 @@ export function useChatActions({ threadId, folderId }: { threadId: string | unde
             },
          });
       },
-      [messages, setMessages, reload, threadId]
+      [messages, setMessages, reload, threadId, handleInputSubmit, setTargetFromMessageId, setTargetMode]
    );
 
    const handleEditAndRetry = useCallback(

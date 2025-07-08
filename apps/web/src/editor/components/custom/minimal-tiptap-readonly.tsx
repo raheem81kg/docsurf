@@ -4,23 +4,28 @@
 import * as React from "react";
 import type { Content } from "@tiptap/react";
 import { EditorContent } from "@tiptap/react";
-import { useMinimalTiptapEditor } from "../minimal-tiptap/hooks/use-minimal-tiptap";
+import { useReadonlyTiptapEditor } from "../minimal-tiptap/hooks/use-readonly-tiptap";
+import { cn } from "@docsurf/ui/lib/utils";
 
 export interface MinimalTiptapReadonlyProps {
    value?: Content;
    className?: string;
    editorContentClassName?: string;
+   editorClassName?: string;
 }
 
-export const MinimalTiptapReadonly: React.FC<MinimalTiptapReadonlyProps> = ({ value, className, editorContentClassName }) => {
-   const editor = useMinimalTiptapEditor({
+export const MinimalTiptapReadonly: React.FC<MinimalTiptapReadonlyProps> = ({
+   value,
+   className,
+   editorContentClassName,
+   editorClassName,
+}) => {
+   const editor = useReadonlyTiptapEditor({
       value,
       editable: false,
-      enableVersionTracking: false,
-      shouldRerenderOnTransaction: false,
       immediatelyRender: true,
-      registerInStore: false,
-      isMainEditor: false,
+      shouldRerenderOnTransaction: false,
+      editorClassName,
    });
 
    // Sync editor content if value changes (for public doc live updates), but only if different
@@ -37,7 +42,7 @@ export const MinimalTiptapReadonly: React.FC<MinimalTiptapReadonlyProps> = ({ va
 
    return (
       <div className={className}>
-         <EditorContent editor={editor} className={editorContentClassName} />
+         <EditorContent editor={editor} className={cn("minimal-tiptap-editor min-h-full", editorContentClassName)} />
       </div>
    );
 };

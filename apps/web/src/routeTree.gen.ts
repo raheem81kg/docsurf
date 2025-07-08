@@ -12,10 +12,10 @@ import { createFileRoute } from '@tanstack/react-router'
 import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as WelcomeRouteImport } from './routes/_welcome'
 import { Route as PRouteImport } from './routes/_p'
 import { Route as MainRouteImport } from './routes/_main'
-import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as WelcomeIndexRouteImport } from './routes/_welcome/index'
 import { Route as SettingsUsageRouteImport } from './routes/settings/usage'
 import { Route as SettingsProvidersRouteImport } from './routes/settings/providers'
@@ -25,11 +25,9 @@ import { Route as SettingsCustomizationRouteImport } from './routes/settings/cus
 import { Route as SettingsAttachmentsRouteImport } from './routes/settings/attachments'
 import { Route as SettingsAppearanceRouteImport } from './routes/settings/appearance'
 import { Route as SettingsAiOptionsRouteImport } from './routes/settings/ai-options'
-import { Route as AuthAuthRouteImport } from './routes/_auth/auth'
 import { Route as MainDocIndexRouteImport } from './routes/_main/doc.index'
 import { Route as MainDocLibraryRouteImport } from './routes/_main/doc.library'
 import { Route as MainDocDocumentIdRouteImport } from './routes/_main/doc.$documentId'
-import { Route as PPDocumentIdRouteImport } from './routes/_p/p.$documentId.'
 import { ServerRoute as ApiSuggestionServerRouteImport } from './routes/api/suggestion'
 import { ServerRoute as ApiInlineSuggestionServerRouteImport } from './routes/api/inline-suggestion'
 import { ServerRoute as ApiFetchTokenServerRouteImport } from './routes/api/fetchToken'
@@ -42,9 +40,7 @@ const WelcomeTermsLazyRouteImport = createFileRoute('/_welcome/terms')()
 const WelcomePricingLazyRouteImport = createFileRoute('/_welcome/pricing')()
 const WelcomePolicyLazyRouteImport = createFileRoute('/_welcome/policy')()
 const WelcomeAboutLazyRouteImport = createFileRoute('/_welcome/about')()
-const MainSSharedThreadIdLazyRouteImport = createFileRoute(
-  '/_main/s/$sharedThreadId',
-)()
+const PPDocumentIdLazyRouteImport = createFileRoute('/_p/p/$documentId')()
 const rootServerRouteImport = createServerRootRoute()
 
 const SettingsRouteLazyRoute = SettingsRouteLazyRouteImport.update({
@@ -54,6 +50,11 @@ const SettingsRouteLazyRoute = SettingsRouteLazyRouteImport.update({
 } as any).lazy(() =>
   import('./routes/settings/route.lazy').then((d) => d.Route),
 )
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/_welcome',
   getParentRoute: () => rootRouteImport,
@@ -64,10 +65,6 @@ const PRoute = PRouteImport.update({
 } as any)
 const MainRoute = MainRouteImport.update({
   id: '/_main',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WelcomeIndexRoute = WelcomeIndexRouteImport.update({
@@ -143,22 +140,17 @@ const SettingsAiOptionsRoute = SettingsAiOptionsRouteImport.update({
   path: '/ai-options',
   getParentRoute: () => SettingsRouteLazyRoute,
 } as any)
-const AuthAuthRoute = AuthAuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => AuthRoute,
-} as any)
 const MainDocIndexRoute = MainDocIndexRouteImport.update({
   id: '/doc/',
   path: '/doc/',
   getParentRoute: () => MainRoute,
 } as any)
-const MainSSharedThreadIdLazyRoute = MainSSharedThreadIdLazyRouteImport.update({
-  id: '/s/$sharedThreadId',
-  path: '/s/$sharedThreadId',
-  getParentRoute: () => MainRoute,
+const PPDocumentIdLazyRoute = PPDocumentIdLazyRouteImport.update({
+  id: '/p/$documentId',
+  path: '/p/$documentId',
+  getParentRoute: () => PRoute,
 } as any).lazy(() =>
-  import('./routes/_main/s.$sharedThreadId.lazy').then((d) => d.Route),
+  import('./routes/_p.p.$documentId.lazy').then((d) => d.Route),
 )
 const MainDocLibraryRoute = MainDocLibraryRouteImport.update({
   id: '/doc/library',
@@ -169,11 +161,6 @@ const MainDocDocumentIdRoute = MainDocDocumentIdRouteImport.update({
   id: '/doc/$documentId',
   path: '/doc/$documentId',
   getParentRoute: () => MainRoute,
-} as any)
-const PPDocumentIdRoute = PPDocumentIdRouteImport.update({
-  id: '/p/$documentId/',
-  path: '/p/$documentId/',
-  getParentRoute: () => PRoute,
 } as any)
 const ApiSuggestionServerRoute = ApiSuggestionServerRouteImport.update({
   id: '/api/suggestion',
@@ -209,8 +196,8 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/auth': typeof AuthRoute
   '/settings': typeof SettingsRouteLazyRouteWithChildren
-  '/auth': typeof AuthAuthRoute
   '/settings/ai-options': typeof SettingsAiOptionsRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/attachments': typeof SettingsAttachmentsRoute
@@ -226,13 +213,12 @@ export interface FileRoutesByFullPath {
   '/': typeof WelcomeIndexRoute
   '/doc/$documentId': typeof MainDocDocumentIdRoute
   '/doc/library': typeof MainDocLibraryRoute
-  '/s/$sharedThreadId': typeof MainSSharedThreadIdLazyRoute
+  '/p/$documentId': typeof PPDocumentIdLazyRoute
   '/doc': typeof MainDocIndexRoute
-  '/p/$documentId': typeof PPDocumentIdRoute
 }
 export interface FileRoutesByTo {
+  '/auth': typeof AuthRoute
   '/settings': typeof SettingsRouteLazyRouteWithChildren
-  '/auth': typeof AuthAuthRoute
   '/settings/ai-options': typeof SettingsAiOptionsRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/attachments': typeof SettingsAttachmentsRoute
@@ -248,18 +234,16 @@ export interface FileRoutesByTo {
   '/': typeof WelcomeIndexRoute
   '/doc/$documentId': typeof MainDocDocumentIdRoute
   '/doc/library': typeof MainDocLibraryRoute
-  '/s/$sharedThreadId': typeof MainSSharedThreadIdLazyRoute
+  '/p/$documentId': typeof PPDocumentIdLazyRoute
   '/doc': typeof MainDocIndexRoute
-  '/p/$documentId': typeof PPDocumentIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_auth': typeof AuthRouteWithChildren
   '/_main': typeof MainRouteWithChildren
   '/_p': typeof PRouteWithChildren
   '/_welcome': typeof WelcomeRouteWithChildren
+  '/auth': typeof AuthRoute
   '/settings': typeof SettingsRouteLazyRouteWithChildren
-  '/_auth/auth': typeof AuthAuthRoute
   '/settings/ai-options': typeof SettingsAiOptionsRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/attachments': typeof SettingsAttachmentsRoute
@@ -275,15 +259,14 @@ export interface FileRoutesById {
   '/_welcome/': typeof WelcomeIndexRoute
   '/_main/doc/$documentId': typeof MainDocDocumentIdRoute
   '/_main/doc/library': typeof MainDocLibraryRoute
-  '/_main/s/$sharedThreadId': typeof MainSSharedThreadIdLazyRoute
+  '/_p/p/$documentId': typeof PPDocumentIdLazyRoute
   '/_main/doc/': typeof MainDocIndexRoute
-  '/_p/p/$documentId/': typeof PPDocumentIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/settings'
     | '/auth'
+    | '/settings'
     | '/settings/ai-options'
     | '/settings/appearance'
     | '/settings/attachments'
@@ -299,13 +282,12 @@ export interface FileRouteTypes {
     | '/'
     | '/doc/$documentId'
     | '/doc/library'
-    | '/s/$sharedThreadId'
-    | '/doc'
     | '/p/$documentId'
+    | '/doc'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/settings'
     | '/auth'
+    | '/settings'
     | '/settings/ai-options'
     | '/settings/appearance'
     | '/settings/attachments'
@@ -321,17 +303,15 @@ export interface FileRouteTypes {
     | '/'
     | '/doc/$documentId'
     | '/doc/library'
-    | '/s/$sharedThreadId'
-    | '/doc'
     | '/p/$documentId'
+    | '/doc'
   id:
     | '__root__'
-    | '/_auth'
     | '/_main'
     | '/_p'
     | '/_welcome'
+    | '/auth'
     | '/settings'
-    | '/_auth/auth'
     | '/settings/ai-options'
     | '/settings/appearance'
     | '/settings/attachments'
@@ -347,16 +327,15 @@ export interface FileRouteTypes {
     | '/_welcome/'
     | '/_main/doc/$documentId'
     | '/_main/doc/library'
-    | '/_main/s/$sharedThreadId'
+    | '/_p/p/$documentId'
     | '/_main/doc/'
-    | '/_p/p/$documentId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  AuthRoute: typeof AuthRouteWithChildren
   MainRoute: typeof MainRouteWithChildren
   PRoute: typeof PRouteWithChildren
   WelcomeRoute: typeof WelcomeRouteWithChildren
+  AuthRoute: typeof AuthRoute
   SettingsRouteLazyRoute: typeof SettingsRouteLazyRouteWithChildren
 }
 export interface FileServerRoutesByFullPath {
@@ -429,6 +408,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_welcome': {
       id: '/_welcome'
       path: ''
@@ -448,13 +434,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof MainRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_auth': {
-      id: '/_auth'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_welcome/': {
@@ -548,13 +527,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsAiOptionsRouteImport
       parentRoute: typeof SettingsRouteLazyRoute
     }
-    '/_auth/auth': {
-      id: '/_auth/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthAuthRouteImport
-      parentRoute: typeof AuthRoute
-    }
     '/_main/doc/': {
       id: '/_main/doc/'
       path: '/doc'
@@ -562,12 +534,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainDocIndexRouteImport
       parentRoute: typeof MainRoute
     }
-    '/_main/s/$sharedThreadId': {
-      id: '/_main/s/$sharedThreadId'
-      path: '/s/$sharedThreadId'
-      fullPath: '/s/$sharedThreadId'
-      preLoaderRoute: typeof MainSSharedThreadIdLazyRouteImport
-      parentRoute: typeof MainRoute
+    '/_p/p/$documentId': {
+      id: '/_p/p/$documentId'
+      path: '/p/$documentId'
+      fullPath: '/p/$documentId'
+      preLoaderRoute: typeof PPDocumentIdLazyRouteImport
+      parentRoute: typeof PRoute
     }
     '/_main/doc/library': {
       id: '/_main/doc/library'
@@ -582,13 +554,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/doc/$documentId'
       preLoaderRoute: typeof MainDocDocumentIdRouteImport
       parentRoute: typeof MainRoute
-    }
-    '/_p/p/$documentId/': {
-      id: '/_p/p/$documentId/'
-      path: '/p/$documentId'
-      fullPath: '/p/$documentId'
-      preLoaderRoute: typeof PPDocumentIdRouteImport
-      parentRoute: typeof PRoute
     }
   }
 }
@@ -639,38 +604,26 @@ declare module '@tanstack/react-start/server' {
   }
 }
 
-interface AuthRouteChildren {
-  AuthAuthRoute: typeof AuthAuthRoute
-}
-
-const AuthRouteChildren: AuthRouteChildren = {
-  AuthAuthRoute: AuthAuthRoute,
-}
-
-const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
-
 interface MainRouteChildren {
   MainDocDocumentIdRoute: typeof MainDocDocumentIdRoute
   MainDocLibraryRoute: typeof MainDocLibraryRoute
-  MainSSharedThreadIdLazyRoute: typeof MainSSharedThreadIdLazyRoute
   MainDocIndexRoute: typeof MainDocIndexRoute
 }
 
 const MainRouteChildren: MainRouteChildren = {
   MainDocDocumentIdRoute: MainDocDocumentIdRoute,
   MainDocLibraryRoute: MainDocLibraryRoute,
-  MainSSharedThreadIdLazyRoute: MainSSharedThreadIdLazyRoute,
   MainDocIndexRoute: MainDocIndexRoute,
 }
 
 const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
 
 interface PRouteChildren {
-  PPDocumentIdRoute: typeof PPDocumentIdRoute
+  PPDocumentIdLazyRoute: typeof PPDocumentIdLazyRoute
 }
 
 const PRouteChildren: PRouteChildren = {
-  PPDocumentIdRoute: PPDocumentIdRoute,
+  PPDocumentIdLazyRoute: PPDocumentIdLazyRoute,
 }
 
 const PRouteWithChildren = PRoute._addFileChildren(PRouteChildren)
@@ -720,10 +673,10 @@ const SettingsRouteLazyRouteWithChildren =
   SettingsRouteLazyRoute._addFileChildren(SettingsRouteLazyRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  AuthRoute: AuthRouteWithChildren,
   MainRoute: MainRouteWithChildren,
   PRoute: PRouteWithChildren,
   WelcomeRoute: WelcomeRouteWithChildren,
+  AuthRoute: AuthRoute,
   SettingsRouteLazyRoute: SettingsRouteLazyRouteWithChildren,
 }
 export const routeTree = rootRouteImport

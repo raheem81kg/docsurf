@@ -18,6 +18,13 @@ export default defineConfig({
          },
       },
    },
+   // TODO: remove this once we have a better way to handle prosemirror-docx
+   // optimizeDeps: {
+   //    include: ["prosemirror-docx"],
+   // },
+   // ssr: {
+   //    noExternal: ["prosemirror-docx"],
+   // },
    plugins: [
       (process.env.ANALYZE && analyzer()) || null,
       tsconfigPaths(),

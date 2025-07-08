@@ -26,7 +26,7 @@ import { useEditorRefStore } from "@/store/use-editor-ref-store";
 import type { DocVersion } from "@/lib/persist/dexie-persist";
 import type { Editor } from "@tiptap/react";
 import { DEFAULT_TEXT_TITLE } from "@/utils/constants";
-import useMinimalTiptapEditor from "../minimal-tiptap/hooks/use-minimal-tiptap";
+import { useReadonlyTiptapEditor } from "../minimal-tiptap/hooks/use-readonly-tiptap";
 import { useCurrentDocument } from "@/components/sandbox/left/_tree_components/SortableTree";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
@@ -322,56 +322,16 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
    // Update selected version content parsing
    const selectedVersionContent = selectedVersion?.content ? parseVersionContent(selectedVersion.content) : EMPTY_TIPTAP_CONTENT;
 
-   const drawerTiptapEditor = useMinimalTiptapEditor({
-      isMainEditor: false,
+   const drawerTiptapEditor = useReadonlyTiptapEditor({
       value: drawerVersionContent,
-      excludeExtensions: [
-         "confirmblockchange",
-         "windoweventlistener",
-         "indenthandler",
-         "trailingnode",
-         "filehandler",
-         "saveextension",
-         "selection",
-         "resetmarksonenter",
-         "placeholder",
-         "importword",
-         "exportword",
-         "charactercount",
-         "filehandler",
-         "inlinesuggestion",
-         "selectioncontext",
-      ],
-      output: "json",
       editable: false,
       editorClassName: "border-none shadow-none bg-transparent focus:outline-none px-1 py-2.5",
-      registerInStore: false,
    });
 
-   const selectedTiptapEditor = useMinimalTiptapEditor({
-      isMainEditor: false,
+   const selectedTiptapEditor = useReadonlyTiptapEditor({
       value: selectedVersionContent,
-      output: "json",
-      excludeExtensions: [
-         "confirmblockchange",
-         "windoweventlistener",
-         "indenthandler",
-         "trailingnode",
-         "filehandler",
-         "saveextension",
-         "selection",
-         "resetmarksonenter",
-         "placeholder",
-         "importword",
-         "exportword",
-         "charactercount",
-         "filehandler",
-         "inlinesuggestion",
-         "selectioncontext",
-      ],
       editable: false,
       editorClassName: "border-none shadow-none bg-transparent  focus:outline-none px-8 py-4",
-      registerInStore: false,
    });
 
    useEffect(() => {

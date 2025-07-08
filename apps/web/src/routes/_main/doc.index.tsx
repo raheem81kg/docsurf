@@ -14,6 +14,7 @@ import { buildTree, flattenTree } from "@/components/sandbox/left/_tree_componen
 import { useSandStateStore } from "@/store/sandstate";
 
 export const Route = createFileRoute("/_main/doc/")({
+   ssr: false,
    head: () => ({
       meta: [
          {
