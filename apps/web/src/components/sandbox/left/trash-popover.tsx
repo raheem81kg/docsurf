@@ -43,6 +43,7 @@ function TrashContent({
    restoreDocument,
    deleteDocumentPermanently,
    session,
+   isMobile,
 }: {
    query: string;
    setQuery: (query: string) => void;
@@ -55,10 +56,16 @@ function TrashContent({
    restoreDocument: ReturnType<typeof useMutation<typeof api.documents.restoreDocument>>;
    deleteDocumentPermanently: ReturnType<typeof useMutation<typeof api.documents.deleteDocumentPermanently>>;
    session: { user: any } | undefined;
+   isMobile: boolean;
 }) {
    return (
       <Command shouldFilter={false} value={"-"}>
-         <CommandInput placeholder="Search trashed documents..." value={query} onValueChange={setQuery} />
+         <CommandInput
+            placeholder="Search trashed documents..."
+            value={query}
+            onValueChange={setQuery}
+            className={isMobile ? "text-base md:text-sm" : undefined}
+         />
          <TrashedDocumentsList
             workspaceId={workspaceId}
             debouncedQuery={debouncedQuery}
@@ -120,6 +127,7 @@ export function TrashPopover({ children }: TrashPopoverProps) {
       restoreDocument,
       deleteDocumentPermanently,
       session,
+      isMobile,
    };
 
    if (isMobile) {
@@ -186,10 +194,10 @@ function TrashedDocumentsList({
    return (
       <CommandList className="min-h-[200px]">
          {isLoading && results.length === 0 ? (
-            <div className="flex items-center justify-center py-8">Loading...</div>
+            <div className="flex items-center justify-center py-8 text-base md:text-sm">Loading...</div>
          ) : (
             <>
-               <CommandEmpty>No deleted documents found.</CommandEmpty>
+               <CommandEmpty className="text-base p-4 md:p-0 md:text-sm">No deleted documents found.</CommandEmpty>
                {results.length > 0 && (
                   <CommandGroup heading="Trashed Documents">
                      {results.map((doc: Document) => {
@@ -200,12 +208,18 @@ function TrashedDocumentsList({
                               key={doc._id}
                               value={doc._id}
                               className={[
-                                 "h-9 hover:bg-accent/80 flex items-center justify-between gap-4",
+                                 "h-10 md:h-9 hover:bg-accent/80 flex items-center justify-between gap-4",
                                  isConfirming ? "bg-destructive/10 border border-destructive/20" : "",
                               ].join(" ")}
                               disabled={false}
                            >
-                              <span className={isConfirming ? "text-foreground/70" : "truncate font-medium"}>
+                              <span
+                                 className={
+                                    isConfirming
+                                       ? "text-foreground/70 text-base md:text-sm"
+                                       : "truncate font-medium text-base md:text-sm"
+                                 }
+                              >
                                  {isConfirming ? `Delete "${doc.title || "Untitled Document"}"?` : doc.title || "Untitled Document"}
                               </span>
                               <div className="flex items-center gap-2 shrink-0">
@@ -214,7 +228,7 @@ function TrashedDocumentsList({
                                     <Button
                                        variant="ghost"
                                        size="icon"
-                                       className="transition-colors hover:text-green-600 h-7 w-7"
+                                       className="transition-colors hover:text-green-600 h-8 w-8 md:h-7 md:w-7"
                                        aria-label="Restore"
                                        disabled={isActionLoading || !workspaceId}
                                        onClick={async (e) => {
@@ -234,7 +248,7 @@ function TrashedDocumentsList({
                                        <Button
                                           variant="ghost"
                                           size="icon"
-                                          className="h-7 w-7 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                          className="h-8 w-8 md:h-7 md:w-7 text-destructive hover:bg-destructive/10 hover:text-destructive"
                                           aria-label="Confirm delete"
                                           disabled={isActionLoading || !workspaceId}
                                           onClick={async (e) => {
@@ -254,7 +268,7 @@ function TrashedDocumentsList({
                                        <Button
                                           variant="ghost"
                                           size="icon"
-                                          className="h-7 w-7 text-muted-foreground"
+                                          className="h-8 w-8 md:h-7 md:w-7 text-muted-foreground"
                                           aria-label="Cancel delete"
                                           disabled={isActionLoading}
                                           onClick={(e) => {
@@ -269,7 +283,7 @@ function TrashedDocumentsList({
                                     <Button
                                        variant="ghost"
                                        size="icon"
-                                       className="transition-colors hover:text-destructive h-7 w-7"
+                                       className="transition-colors hover:text-destructive h-8 w-8 md:h-7 md:w-7"
                                        aria-label="Delete permanently"
                                        disabled={isActionLoading}
                                        onClick={(e) => {

@@ -97,23 +97,18 @@ const HeaderContent = () => {
          );
       }
    });
-   React.useEffect(() => {
-      if (editing && inputRef.current) {
-         // Use setTimeout to ensure focus happens after render
-         setTimeout(() => {
-            if (inputRef.current) {
-               inputRef.current.focus();
-               inputRef.current.select();
-            }
-         }, 0);
-      }
-   }, [editing]);
+
    React.useEffect(() => {
       setTitle(doc?.title || DEFAULT_TEXT_TITLE);
    }, [doc?.title]);
    const handleEditClick = (e: React.MouseEvent) => {
       e.stopPropagation();
       setEditing(true);
+      // Focus immediately during user gesture for mobile keyboard
+      if (inputRef.current) {
+         inputRef.current.focus();
+         inputRef.current.select();
+      }
    };
    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setTitle(e.target.value);
@@ -214,8 +209,8 @@ const HeaderContent = () => {
                                  inputMode="text"
                                  autoComplete="off"
                                  autoCorrect="off"
-                                 autoCapitalize="off"
-                                 spellCheck="false"
+                                 autoCapitalize="sentences"
+                                 spellCheck="true"
                                  value={title}
                                  readOnly={!editing}
                                  onChange={editing ? handleInputChange : undefined}
