@@ -144,6 +144,9 @@ function UsageInner() {
                </p> */}
             </div>
 
+            <Link className="text-muted-foreground text-xs underline opacity-70 transition hover:opacity-100" to="/settings/usage">
+               DocSurf is free during Beta
+            </Link>
             {/* Commented out subscription/payment related buttons */}
             {/* {paymentFailedAt ? (
                <ManageSubscriptionButton
