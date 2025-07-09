@@ -10,6 +10,7 @@ import { api } from "@docsurf/backend/convex/_generated/api";
 import { Button } from "@docsurf/ui/components/button";
 import { Trash, RotateCcw, Check, X } from "lucide-react";
 import { useQuery } from "convex/react";
+import { DotsLoader } from "@docsurf/ui/components/loader";
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 import { useConvex, useMutation } from "convex/react";
 import throttle from "lodash/throttle";
@@ -194,7 +195,9 @@ function TrashedDocumentsList({
    return (
       <CommandList className="min-h-[200px]">
          {isLoading && results.length === 0 ? (
-            <div className="flex items-center justify-center py-8 text-base md:text-sm">Loading...</div>
+            <div className="flex items-center justify-center py-8">
+               <DotsLoader size="md" />
+            </div>
          ) : (
             <>
                <CommandEmpty className="text-base p-4 md:p-0 md:text-sm">No deleted documents found.</CommandEmpty>

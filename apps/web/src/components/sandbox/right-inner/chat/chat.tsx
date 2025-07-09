@@ -1,5 +1,6 @@
 import { Messages } from "./messages";
 import { MODELS_SHARED } from "@docsurf/backend/convex/lib/models";
+import { DefaultSettings } from "@docsurf/backend/convex/settings";
 import { useChatActions } from "./hooks/use-chat-actions";
 import { useChatDataProcessor } from "./hooks/use-chat-data-processor";
 import { useChatIntegration } from "./hooks/use-chat-integration";
@@ -8,6 +9,8 @@ import { useThreadSync } from "./hooks/use-thread-sync";
 import { type UploadedFile, useChatStore } from "./lib/chat-store";
 import { useModelStore } from "./lib/model-store";
 import { useThemeStore } from "./lib/theme-store";
+import { useAvailableModels } from "./lib/models-providers-shared";
+import { useDiskCachedQuery } from "./lib/convex-cached-query";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo } from "react";
 import { useStickToBottom } from "use-stick-to-bottom";
@@ -16,6 +19,8 @@ import { SignupMessagePrompt } from "./signup-message-prompt";
 import { StickToBottomButton } from "./stick-to-bottom-button";
 import { useSession } from "@/hooks/auth-hooks";
 import { ChatHeader } from "./chat-header";
+import { useConvexAuth } from "convex/react";
+import { api } from "@docsurf/backend/convex/_generated/api";
 
 interface ChatProps {
    threadId: string | undefined;
@@ -32,13 +37,29 @@ const ChatContent = ({ threadId: routeThreadId }: ChatProps) => {
    const { themeState } = useThemeStore();
    const mode = themeState.currentMode;
    const { data: session, isPending } = useSession();
+   const auth = useConvexAuth();
    useDynamicTitle({ threadId });
 
+   // Get user settings for available models
+   const userSettings = useDiskCachedQuery(
+      api.settings.getUserSettings,
+      {
+         key: "user-settings",
+         default: DefaultSettings(session?.user?.id ?? "CACHE"),
+         forceCache: true,
+      },
+      session?.user?.id && !auth.isLoading ? {} : "skip"
+   );
+
+   // Get available models based on user's API keys
+   const { availableModels } = useAvailableModels("error" in userSettings ? DefaultSettings(session?.user?.id ?? "") : userSettings);
+
+   // Set default model to first available model (not first in MODELS_SHARED)
    useMemo(() => {
-      if (!selectedModel && MODELS_SHARED.length > 0) {
-         setSelectedModel(MODELS_SHARED[0].id);
+      if (!selectedModel && availableModels.length > 0) {
+         setSelectedModel(availableModels[0].id);
       }
-   }, [selectedModel, setSelectedModel]);
+   }, [selectedModel, setSelectedModel, availableModels]);
 
    // const projects = useDiskCachedQuery(
    //    api.folders.getUserProjects,

@@ -34,13 +34,14 @@ export type SharedModel<Abilities extends ModelAbility[] = ModelAbility[]> = {
 
 // unncomment models when I can afford the cost
 export const MODELS_SHARED: SharedModel[] = [
-   //   {
-   //      id: "gpt-4o",
-   //      name: "GPT 4o",
-   //      shortName: "4o",
-   //      adapters: ["openai:gpt-4o", "openrouter:openai/gpt-4o"],
-   //      abilities: ["vision", "function_calling", "pdf"],
-   //   },
+   // api key only
+   {
+      id: "gpt-4o",
+      name: "GPT 4o",
+      shortName: "4o",
+      adapters: ["openai:gpt-4o", "openrouter:openai/gpt-4o"],
+      abilities: ["vision", "function_calling", "pdf"],
+   },
    {
       id: "gpt-4o-mini",
       name: "GPT 4o mini",
@@ -48,36 +49,41 @@ export const MODELS_SHARED: SharedModel[] = [
       adapters: ["i3-openai:gpt-4o-mini", "openai:gpt-4o-mini", "openrouter:openai/gpt-4o-mini"],
       abilities: ["vision", "function_calling", "pdf"],
    },
-   // {
-   //    id: "o3-mini",
-   //    name: "o3 mini",
-   //    adapters: ["openai:o3-mini", "openrouter:openai/o3-mini"],
-   //    abilities: ["reasoning", "function_calling", "effort_control"],
-   // },
-   // {
-   //    id: "o4-mini",
-   //    name: "o4 mini",
-   //    adapters: ["openai:o4-mini", "openrouter:openai/o4-mini"],
-   //    abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
-   // },
-   // {
-   //    id: "o3",
-   //    name: "o3",
-   //    adapters: ["openai:o3", "openrouter:openai/o3"],
-   //    abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
-   // },
-   // {
-   //    id: "o3-pro",
-   //    name: "o3 pro",
-   //    adapters: ["openai:o3-pro", "openrouter:openai/o3-pro"],
-   //    abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
-   // },
-   // {
-   //    id: "gpt-4.1",
-   //    name: "GPT 4.1",
-   //    adapters: ["openai:gpt-4.1", "openrouter:openai/gpt-4.1"],
-   //    abilities: ["vision", "function_calling", "pdf"],
-   // },
+   // api key only
+   {
+      id: "o3-mini",
+      name: "o3 mini",
+      adapters: ["openai:o3-mini", "openrouter:openai/o3-mini"],
+      abilities: ["reasoning", "function_calling", "effort_control"],
+   },
+   // api key only
+   {
+      id: "o4-mini",
+      name: "o4 mini",
+      adapters: ["openai:o4-mini", "openrouter:openai/o4-mini"],
+      abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
+   },
+   // api key only
+   {
+      id: "o3",
+      name: "o3",
+      adapters: ["openai:o3", "openrouter:openai/o3"],
+      abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
+   },
+   // api key only
+   {
+      id: "o3-pro",
+      name: "o3 pro",
+      adapters: ["openai:o3-pro", "openrouter:openai/o3-pro"],
+      abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
+   },
+   // api key only
+   {
+      id: "gpt-4.1",
+      name: "GPT 4.1",
+      adapters: ["openai:gpt-4.1", "openrouter:openai/gpt-4.1"],
+      abilities: ["vision", "function_calling", "pdf"],
+   },
    {
       id: "gpt-4.1-mini",
       name: "GPT 4.1 mini",
@@ -92,37 +98,41 @@ export const MODELS_SHARED: SharedModel[] = [
       adapters: ["i3-openai:gpt-4.1-nano", "openai:gpt-4.1-nano", "openrouter:openai/gpt-4.1-nano"],
       abilities: ["vision", "function_calling", "pdf"],
    },
-   // {
-   //    id: "claude-opus-4",
-   //    name: "Claude Opus 4",
-   //    shortName: "Opus 4",
-   //    adapters: ["anthropic:claude-opus-4-0", "openrouter:anthropic/claude-opus-4"],
-   //    abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
-   //    supportsDisablingReasoning: true,
-   // },
-   // {
-   //    id: "claude-sonnet-4",
-   //    name: "Claude Sonnet 4",
-   //    shortName: "Sonnet 4",
-   //    adapters: ["anthropic:claude-sonnet-4-0", "openrouter:anthropic/claude-sonnet-4"],
-   //    abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
-   //    supportsDisablingReasoning: true,
-   // },
-   // {
-   //    id: "claude-3-7-sonnet",
-   //    name: "Claude Sonnet 3.7",
-   //    shortName: "Sonnet 3.7",
-   //    adapters: ["anthropic:claude-3-7-sonnet", "openrouter:anthropic/claude-3.7-sonnet"],
-   //    abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
-   //    supportsDisablingReasoning: true,
-   // },
-   // {
-   //    id: "claude-3-5-sonnet",
-   //    name: "Claude Sonnet 3.5",
-   //    shortName: "Sonnet 3.5",
-   //    adapters: ["anthropic:claude-3-5-sonnet", "openrouter:anthropic/claude-3.5-sonnet"],
-   //    abilities: ["vision", "function_calling", "pdf"],
-   // },
+   // api key only
+   {
+      id: "claude-opus-4",
+      name: "Claude Opus 4",
+      shortName: "Opus 4",
+      adapters: ["anthropic:claude-opus-4-0", "openrouter:anthropic/claude-opus-4"],
+      abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
+      supportsDisablingReasoning: true,
+   },
+   // api key only
+   {
+      id: "claude-sonnet-4",
+      name: "Claude Sonnet 4",
+      shortName: "Sonnet 4",
+      adapters: ["anthropic:claude-sonnet-4-0", "openrouter:anthropic/claude-sonnet-4"],
+      abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
+      supportsDisablingReasoning: true,
+   },
+   // api key only
+   {
+      id: "claude-3-7-sonnet",
+      name: "Claude Sonnet 3.7",
+      shortName: "Sonnet 3.7",
+      adapters: ["anthropic:claude-3-7-sonnet", "openrouter:anthropic/claude-3.7-sonnet"],
+      abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
+      supportsDisablingReasoning: true,
+   },
+   // api key only
+   {
+      id: "claude-3-5-sonnet",
+      name: "Claude Sonnet 3.5",
+      shortName: "Sonnet 3.5",
+      adapters: ["anthropic:claude-3-5-sonnet", "openrouter:anthropic/claude-3.5-sonnet"],
+      abilities: ["vision", "function_calling", "pdf"],
+   },
    {
       id: "gemini-2.0-flash-lite",
       name: "Gemini 2.0 Flash Lite",
@@ -164,23 +174,25 @@ export const MODELS_SHARED: SharedModel[] = [
       adapters: ["i3-google:gemini-2.0-flash", "google:gemini-2.0-flash", "openrouter:google/gemini-2.0-flash-001"],
       abilities: ["vision", "function_calling", "pdf"],
    },
-   // {
-   //    id: "gemini-2.5-pro",
-   //    name: "Gemini 2.5 Pro",
-   //    shortName: "2.5 Pro",
-   //    adapters: ["google:gemini-2.5-pro", "openrouter:google/gemini-2.5-pro"],
-   //    abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
-   //    supportsDisablingReasoning: true,
-   // },
+   // api key only
+   {
+      id: "gemini-2.5-pro",
+      name: "Gemini 2.5 Pro",
+      shortName: "2.5 Pro",
+      adapters: ["google:gemini-2.5-pro", "openrouter:google/gemini-2.5-pro"],
+      abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
+      supportsDisablingReasoning: true,
+   },
+   // api key only
    // // Image Generation Models
-   // {
-   //    id: "gpt-image-1",
-   //    name: "GPT Image 1",
-   //    adapters: ["openai:gpt-image-1"],
-   //    abilities: [],
-   //    mode: "image",
-   //    supportedImageSizes: ["1024x1024", "1536x1024", "1024x1536"],
-   // },
+   {
+      id: "gpt-image-1",
+      name: "GPT Image 1",
+      adapters: ["openai:gpt-image-1"],
+      abilities: [],
+      mode: "image",
+      supportedImageSizes: ["1024x1024", "1536x1024", "1024x1536"],
+   },
    {
       id: "sdxl-lightning",
       name: "SDXL Lightning",
@@ -201,46 +213,50 @@ export const MODELS_SHARED: SharedModel[] = [
       customIcon: "bflabs",
       supportedImageSizes: ["1:1", "1:1-hd", "3:4", "4:3", "9:16", "16:9"],
    },
-   // {
-   //    id: "flux-dev",
-   //    name: "FLUX.1 [dev]",
-   //    shortName: "flux.dev",
-   //    adapters: ["fal:fal-ai/flux/dev"],
-   //    abilities: [],
-   //    mode: "image",
-   //    customIcon: "bflabs",
-   //    supportedImageSizes: ["1:1", "1:1-hd", "3:4", "4:3", "9:16", "16:9"],
-   // },
-   // {
-   //    id: "google-imagen-3-fast",
-   //    name: "Google Imagen 3 (Fast)",
-   //    shortName: "Imagen 3 (Fast)",
-   //    adapters: ["fal:fal-ai/imagen3/fast"],
-   //    abilities: [],
-   //    mode: "image",
-   //    customIcon: "google",
-   //    supportedImageSizes: ["1:1-hd", "16:9-hd", "9:16-hd", "3:4-hd", "4:3-hd"],
-   // },
-   // {
-   //    id: "google-imagen-3",
-   //    name: "Google Imagen 3",
-   //    shortName: "Imagen 3",
-   //    adapters: ["fal:fal-ai/imagen3"],
-   //    abilities: [],
-   //    mode: "image",
-   //    customIcon: "google",
-   //    supportedImageSizes: ["1:1-hd", "16:9-hd", "9:16-hd", "3:4-hd", "4:3-hd"],
-   // },
-   // {
-   //    id: "google-imagen-4",
-   //    name: "Google Imagen 4",
-   //    shortName: "Imagen 4",
-   //    adapters: ["fal:fal-ai/imagen4/preview"],
-   //    abilities: [],
-   //    mode: "image",
-   //    customIcon: "google",
-   //    supportedImageSizes: ["1:1-hd", "16:9-hd", "9:16-hd", "3:4-hd", "4:3-hd"],
-   // },
+   // api key only
+   {
+      id: "flux-dev",
+      name: "FLUX.1 [dev]",
+      shortName: "flux.dev",
+      adapters: ["fal:fal-ai/flux/dev"],
+      abilities: [],
+      mode: "image",
+      customIcon: "bflabs",
+      supportedImageSizes: ["1:1", "1:1-hd", "3:4", "4:3", "9:16", "16:9"],
+   },
+   // api key only
+   {
+      id: "google-imagen-3-fast",
+      name: "Google Imagen 3 (Fast)",
+      shortName: "Imagen 3 (Fast)",
+      adapters: ["fal:fal-ai/imagen3/fast"],
+      abilities: [],
+      mode: "image",
+      customIcon: "google",
+      supportedImageSizes: ["1:1-hd", "16:9-hd", "9:16-hd", "3:4-hd", "4:3-hd"],
+   },
+   // api key only
+   {
+      id: "google-imagen-3",
+      name: "Google Imagen 3",
+      shortName: "Imagen 3",
+      adapters: ["fal:fal-ai/imagen3"],
+      abilities: [],
+      mode: "image",
+      customIcon: "google",
+      supportedImageSizes: ["1:1-hd", "16:9-hd", "9:16-hd", "3:4-hd", "4:3-hd"],
+   },
+   // api key only
+   {
+      id: "google-imagen-4",
+      name: "Google Imagen 4",
+      shortName: "Imagen 4",
+      adapters: ["fal:fal-ai/imagen4/preview"],
+      abilities: [],
+      mode: "image",
+      customIcon: "google",
+      supportedImageSizes: ["1:1-hd", "16:9-hd", "9:16-hd", "3:4-hd", "4:3-hd"],
+   },
    {
       id: "llama-4-scout-17b-16e-instruct",
       name: "Llama 4 Scout 17B 16E",
@@ -249,14 +265,15 @@ export const MODELS_SHARED: SharedModel[] = [
       abilities: ["vision"],
       customIcon: "meta",
    },
-   // {
-   //    id: "llama-4-maverick-17b-128e-instruct",
-   //    name: "Llama 4 Maverick 17B 128E Instruct",
-   //    shortName: "Llama 4 Maverick 17B",
-   //    adapters: ["groq:meta-llama/llama-4-maverick-17b-128e-instruct"],
-   //    abilities: ["vision"],
-   //    customIcon: "meta",
-   // },
+   // api key only
+   {
+      id: "llama-4-maverick-17b-128e-instruct",
+      name: "Llama 4 Maverick 17B 128E Instruct",
+      shortName: "Llama 4 Maverick 17B",
+      adapters: ["groq:meta-llama/llama-4-maverick-17b-128e-instruct"],
+      abilities: ["vision"],
+      customIcon: "meta",
+   },
    {
       id: "llama-3-1-8b-instant",
       name: "Llama 3.1 8B Instant",
@@ -265,13 +282,14 @@ export const MODELS_SHARED: SharedModel[] = [
       abilities: [],
       customIcon: "meta",
    },
-   // {
-   //    id: "whisper-large-v3-turbo",
-   //    name: "Whisper Large v3 Turbo",
-   //    adapters: ["groq:whisper-large-v3-turbo"],
-   //    abilities: [],
-   //    mode: "speech-to-text",
-   // },
+   // api key only
+   {
+      id: "whisper-large-v3-turbo",
+      name: "Whisper Large v3 Turbo",
+      adapters: ["groq:whisper-large-v3-turbo"],
+      abilities: [],
+      mode: "speech-to-text",
+   },
 ] as const;
 
 export const createProvider = (

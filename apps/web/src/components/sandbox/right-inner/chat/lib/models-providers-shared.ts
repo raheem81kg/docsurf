@@ -94,13 +94,13 @@ export const SEARCH_PROVIDERS: SearchProviderInfo[] = [
       placeholder: "fc-...",
       icon: "🔥",
    },
-   {
-      id: "brave",
-      name: "Brave Search",
-      description: "Fast, privacy-focused search results from Brave's independent index",
-      placeholder: "BSA...",
-      icon: BraveIcon,
-   },
+   // {
+   //    id: "brave",
+   //    name: "Brave Search",
+   //    description: "Fast, privacy-focused search results from Brave's independent index",
+   //    placeholder: "BSA...",
+   //    icon: BraveIcon,
+   // },
    {
       id: "tavily",
       name: "Tavily",
@@ -108,13 +108,13 @@ export const SEARCH_PROVIDERS: SearchProviderInfo[] = [
       placeholder: "tvly-...",
       icon: TavilyIcon,
    },
-   {
-      id: "serper",
-      name: "Serper",
-      description: "Google-powered search with smart content scraping and context management",
-      placeholder: "...",
-      icon: SerperDevIcon,
-   },
+   // {
+   //    id: "serper",
+   //    name: "Serper",
+   //    description: "Google-powered search with smart content scraping and context management",
+   //    placeholder: "...",
+   //    icon: SerperDevIcon,
+   // },
 ];
 
 export function useAvailableModels(userSettings: Infer<typeof UserSettings> | undefined) {
