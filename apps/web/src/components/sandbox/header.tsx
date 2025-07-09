@@ -98,8 +98,13 @@ const HeaderContent = () => {
    });
    React.useEffect(() => {
       if (editing && inputRef.current) {
-         inputRef.current.focus();
-         inputRef.current.select();
+         // Use setTimeout to ensure focus happens after render
+         setTimeout(() => {
+            if (inputRef.current) {
+               inputRef.current.focus();
+               inputRef.current.select();
+            }
+         }, 0);
       }
    }, [editing]);
    React.useEffect(() => {
@@ -108,6 +113,16 @@ const HeaderContent = () => {
    const handleEditClick = (e: React.MouseEvent) => {
       e.stopPropagation();
       setEditing(true);
+
+      // For mobile: immediately focus the input
+      if (isMobile && inputRef.current) {
+         setTimeout(() => {
+            if (inputRef.current) {
+               inputRef.current.focus();
+               inputRef.current.click(); // Trigger mobile keyboard
+            }
+         }, 10);
+      }
    };
    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setTitle(e.target.value);
@@ -210,9 +225,9 @@ const HeaderContent = () => {
                               editing ? "bg-muted/50 border-primary" : "border-transparent",
                               doc ? "cursor-pointer" : "cursor-default"
                            )}
-                           onClick={() => {
+                           onClick={(e) => {
                               if (!editing && !isTreeLoading) {
-                                 setEditing(true);
+                                 handleEditClick(e);
                               }
                            }}
                            aria-label={editing ? "Editing document title" : "Document title. Click to edit."}
@@ -225,6 +240,11 @@ const HeaderContent = () => {
                               <>
                                  <input
                                     type="text"
+                                    inputMode="text"
+                                    autoComplete="off"
+                                    autoCorrect="off"
+                                    autoCapitalize="off"
+                                    spellCheck="false"
                                     value={title}
                                     readOnly={!editing}
                                     onChange={editing ? handleInputChange : undefined}

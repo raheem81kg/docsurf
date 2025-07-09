@@ -21,6 +21,7 @@ import { Route as SettingsUsageRouteImport } from './routes/settings/usage'
 import { Route as SettingsProvidersRouteImport } from './routes/settings/providers'
 import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
 import { Route as SettingsModelsRouteImport } from './routes/settings/models'
+import { Route as SettingsInlineSuggestionsRouteImport } from './routes/settings/inline-suggestions'
 import { Route as SettingsCustomizationRouteImport } from './routes/settings/customization'
 import { Route as SettingsAttachmentsRouteImport } from './routes/settings/attachments'
 import { Route as SettingsAppearanceRouteImport } from './routes/settings/appearance'
@@ -28,6 +29,7 @@ import { Route as SettingsAiOptionsRouteImport } from './routes/settings/ai-opti
 import { Route as MainDocIndexRouteImport } from './routes/_main/doc.index'
 import { Route as MainDocLibraryRouteImport } from './routes/_main/doc.library'
 import { Route as MainDocDocumentIdRouteImport } from './routes/_main/doc.$documentId'
+import { ServerRoute as ApiUserStyleServerRouteImport } from './routes/api/user-style'
 import { ServerRoute as ApiSuggestionServerRouteImport } from './routes/api/suggestion'
 import { ServerRoute as ApiInlineSuggestionServerRouteImport } from './routes/api/inline-suggestion'
 import { ServerRoute as ApiFetchTokenServerRouteImport } from './routes/api/fetchToken'
@@ -120,6 +122,12 @@ const SettingsModelsRoute = SettingsModelsRouteImport.update({
   path: '/models',
   getParentRoute: () => SettingsRouteLazyRoute,
 } as any)
+const SettingsInlineSuggestionsRoute =
+  SettingsInlineSuggestionsRouteImport.update({
+    id: '/inline-suggestions',
+    path: '/inline-suggestions',
+    getParentRoute: () => SettingsRouteLazyRoute,
+  } as any)
 const SettingsCustomizationRoute = SettingsCustomizationRouteImport.update({
   id: '/customization',
   path: '/customization',
@@ -162,6 +170,11 @@ const MainDocDocumentIdRoute = MainDocDocumentIdRouteImport.update({
   path: '/doc/$documentId',
   getParentRoute: () => MainRoute,
 } as any)
+const ApiUserStyleServerRoute = ApiUserStyleServerRouteImport.update({
+  id: '/api/user-style',
+  path: '/api/user-style',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
 const ApiSuggestionServerRoute = ApiSuggestionServerRouteImport.update({
   id: '/api/suggestion',
   path: '/api/suggestion',
@@ -202,6 +215,7 @@ export interface FileRoutesByFullPath {
   '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/attachments': typeof SettingsAttachmentsRoute
   '/settings/customization': typeof SettingsCustomizationRoute
+  '/settings/inline-suggestions': typeof SettingsInlineSuggestionsRoute
   '/settings/models': typeof SettingsModelsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/providers': typeof SettingsProvidersRoute
@@ -223,6 +237,7 @@ export interface FileRoutesByTo {
   '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/attachments': typeof SettingsAttachmentsRoute
   '/settings/customization': typeof SettingsCustomizationRoute
+  '/settings/inline-suggestions': typeof SettingsInlineSuggestionsRoute
   '/settings/models': typeof SettingsModelsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/providers': typeof SettingsProvidersRoute
@@ -248,6 +263,7 @@ export interface FileRoutesById {
   '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/attachments': typeof SettingsAttachmentsRoute
   '/settings/customization': typeof SettingsCustomizationRoute
+  '/settings/inline-suggestions': typeof SettingsInlineSuggestionsRoute
   '/settings/models': typeof SettingsModelsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/providers': typeof SettingsProvidersRoute
@@ -271,6 +287,7 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/attachments'
     | '/settings/customization'
+    | '/settings/inline-suggestions'
     | '/settings/models'
     | '/settings/profile'
     | '/settings/providers'
@@ -292,6 +309,7 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/attachments'
     | '/settings/customization'
+    | '/settings/inline-suggestions'
     | '/settings/models'
     | '/settings/profile'
     | '/settings/providers'
@@ -316,6 +334,7 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/attachments'
     | '/settings/customization'
+    | '/settings/inline-suggestions'
     | '/settings/models'
     | '/settings/profile'
     | '/settings/providers'
@@ -342,6 +361,7 @@ export interface FileServerRoutesByFullPath {
   '/api/fetchToken': typeof ApiFetchTokenServerRoute
   '/api/inline-suggestion': typeof ApiInlineSuggestionServerRoute
   '/api/suggestion': typeof ApiSuggestionServerRoute
+  '/api/user-style': typeof ApiUserStyleServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
   '/api/checkout/success': typeof ApiCheckoutSuccessServerRoute
   '/api/phr/$': typeof ApiPhrSplatServerRoute
@@ -350,6 +370,7 @@ export interface FileServerRoutesByTo {
   '/api/fetchToken': typeof ApiFetchTokenServerRoute
   '/api/inline-suggestion': typeof ApiInlineSuggestionServerRoute
   '/api/suggestion': typeof ApiSuggestionServerRoute
+  '/api/user-style': typeof ApiUserStyleServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
   '/api/checkout/success': typeof ApiCheckoutSuccessServerRoute
   '/api/phr/$': typeof ApiPhrSplatServerRoute
@@ -359,6 +380,7 @@ export interface FileServerRoutesById {
   '/api/fetchToken': typeof ApiFetchTokenServerRoute
   '/api/inline-suggestion': typeof ApiInlineSuggestionServerRoute
   '/api/suggestion': typeof ApiSuggestionServerRoute
+  '/api/user-style': typeof ApiUserStyleServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
   '/api/checkout/success': typeof ApiCheckoutSuccessServerRoute
   '/api/phr/$': typeof ApiPhrSplatServerRoute
@@ -369,6 +391,7 @@ export interface FileServerRouteTypes {
     | '/api/fetchToken'
     | '/api/inline-suggestion'
     | '/api/suggestion'
+    | '/api/user-style'
     | '/api/auth/$'
     | '/api/checkout/success'
     | '/api/phr/$'
@@ -377,6 +400,7 @@ export interface FileServerRouteTypes {
     | '/api/fetchToken'
     | '/api/inline-suggestion'
     | '/api/suggestion'
+    | '/api/user-style'
     | '/api/auth/$'
     | '/api/checkout/success'
     | '/api/phr/$'
@@ -385,6 +409,7 @@ export interface FileServerRouteTypes {
     | '/api/fetchToken'
     | '/api/inline-suggestion'
     | '/api/suggestion'
+    | '/api/user-style'
     | '/api/auth/$'
     | '/api/checkout/success'
     | '/api/phr/$'
@@ -394,6 +419,7 @@ export interface RootServerRouteChildren {
   ApiFetchTokenServerRoute: typeof ApiFetchTokenServerRoute
   ApiInlineSuggestionServerRoute: typeof ApiInlineSuggestionServerRoute
   ApiSuggestionServerRoute: typeof ApiSuggestionServerRoute
+  ApiUserStyleServerRoute: typeof ApiUserStyleServerRoute
   ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
   ApiCheckoutSuccessServerRoute: typeof ApiCheckoutSuccessServerRoute
   ApiPhrSplatServerRoute: typeof ApiPhrSplatServerRoute
@@ -499,6 +525,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsModelsRouteImport
       parentRoute: typeof SettingsRouteLazyRoute
     }
+    '/settings/inline-suggestions': {
+      id: '/settings/inline-suggestions'
+      path: '/inline-suggestions'
+      fullPath: '/settings/inline-suggestions'
+      preLoaderRoute: typeof SettingsInlineSuggestionsRouteImport
+      parentRoute: typeof SettingsRouteLazyRoute
+    }
     '/settings/customization': {
       id: '/settings/customization'
       path: '/customization'
@@ -559,6 +592,13 @@ declare module '@tanstack/react-router' {
 }
 declare module '@tanstack/react-start/server' {
   interface ServerFileRoutesByPath {
+    '/api/user-style': {
+      id: '/api/user-style'
+      path: '/api/user-style'
+      fullPath: '/api/user-style'
+      preLoaderRoute: typeof ApiUserStyleServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
     '/api/suggestion': {
       id: '/api/suggestion'
       path: '/api/suggestion'
@@ -652,6 +692,7 @@ interface SettingsRouteLazyRouteChildren {
   SettingsAppearanceRoute: typeof SettingsAppearanceRoute
   SettingsAttachmentsRoute: typeof SettingsAttachmentsRoute
   SettingsCustomizationRoute: typeof SettingsCustomizationRoute
+  SettingsInlineSuggestionsRoute: typeof SettingsInlineSuggestionsRoute
   SettingsModelsRoute: typeof SettingsModelsRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
   SettingsProvidersRoute: typeof SettingsProvidersRoute
@@ -663,6 +704,7 @@ const SettingsRouteLazyRouteChildren: SettingsRouteLazyRouteChildren = {
   SettingsAppearanceRoute: SettingsAppearanceRoute,
   SettingsAttachmentsRoute: SettingsAttachmentsRoute,
   SettingsCustomizationRoute: SettingsCustomizationRoute,
+  SettingsInlineSuggestionsRoute: SettingsInlineSuggestionsRoute,
   SettingsModelsRoute: SettingsModelsRoute,
   SettingsProfileRoute: SettingsProfileRoute,
   SettingsProvidersRoute: SettingsProvidersRoute,
@@ -686,6 +728,7 @@ const rootServerRouteChildren: RootServerRouteChildren = {
   ApiFetchTokenServerRoute: ApiFetchTokenServerRoute,
   ApiInlineSuggestionServerRoute: ApiInlineSuggestionServerRoute,
   ApiSuggestionServerRoute: ApiSuggestionServerRoute,
+  ApiUserStyleServerRoute: ApiUserStyleServerRoute,
   ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
   ApiCheckoutSuccessServerRoute: ApiCheckoutSuccessServerRoute,
   ApiPhrSplatServerRoute: ApiPhrSplatServerRoute,

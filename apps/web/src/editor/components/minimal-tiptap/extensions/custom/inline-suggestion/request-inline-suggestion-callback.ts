@@ -13,7 +13,7 @@ import { EditorState } from "@tiptap/pm/state";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 import { SET_SUGGESTION, CLEAR_SUGGESTION, FINISH_SUGGESTION_LOADING } from "./inline-suggestion-plugin";
 import type { Editor } from "@tiptap/react";
-// import { getAiOptions } from "@/store/use-ai-options-store";
+import { useInlineSuggestionAiOptions } from "@/store/inline-suggestion-ai-options-store";
 import pRetry, { AbortError } from "p-retry";
 import { LRUCache } from "lru-cache";
 // import { RATE_LIMIT_REACHED } from "@/lib/api";
@@ -60,8 +60,13 @@ export function createRequestInlineSuggestionCallback(
 
       // Accessibility: TODO - Ensure suggestion UI uses ARIA roles and is keyboard accessible.
 
-      // Memoization key: contextBefore + contextAfter + docId + userId
-      const cacheKey = `${docId}::${workspaceId ?? ""}::${userId ?? ""}::${contextBefore}::${contextAfter}`;
+      // Get AI options from store
+      const { suggestionLength, customInstructions, writingStyleSummary, applyStyle } = useInlineSuggestionAiOptions.getState();
+
+      // Memoization key: include AI options for proper caching
+      const cacheKey = `${docId}::${workspaceId ?? ""}::${userId ?? ""}::${contextBefore}::${contextAfter}::${
+         suggestionLength ?? "auto"
+      }::${customInstructions}::${writingStyleSummary}::${applyStyle}`;
       if (!forceRefresh && suggestionCache.has(cacheKey)) {
          const cachedSuggestion = suggestionCache.get(cacheKey) || "";
          editor.view?.dispatch(editor.state.tr.setMeta(SET_SUGGESTION, { text: cachedSuggestion }));
@@ -74,11 +79,9 @@ export function createRequestInlineSuggestionCallback(
       abortControllerRef.current = controller;
 
       try {
-         const fullContent = state.doc.textContent;
+         // const fullContent = state.doc.textContent;
 
          console.log("[Editor Component] Requesting inline suggestion via plugin callback...");
-
-         // const { suggestionLength, customInstructions } = getAiOptions();
 
          // --- Real fetch to /api/inline-suggestion, streaming chunks ---
          const params = new URLSearchParams({
@@ -88,6 +91,18 @@ export function createRequestInlineSuggestionCallback(
             contextAfter,
             workspaceId: workspaceId ?? "",
          });
+
+         // Add AI options to the request
+         if (suggestionLength) {
+            params.set("suggestionLength", suggestionLength);
+         }
+         if (customInstructions) {
+            params.set("customInstructions", customInstructions);
+         }
+         if (writingStyleSummary && applyStyle) {
+            params.set("writingStyleSummary", writingStyleSummary);
+         }
+         params.set("applyStyle", applyStyle.toString());
          Analytics.track("inline_suggestion_requested", {
             documentId: docId,
             workspaceId: workspaceId ?? "",

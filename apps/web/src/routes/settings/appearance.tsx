@@ -15,7 +15,6 @@ import { Card } from "@docsurf/ui/components/card";
 import { Input } from "@docsurf/ui/components/input";
 import { Label } from "@docsurf/ui/components/label";
 import { useThemeManagement } from "@/components/sandbox/right-inner/chat/hooks/use-theme-management";
-import { useChatWidthStore } from "@/components/sandbox/right-inner/chat/lib/chat-width-store";
 import { type FetchedTheme, extractThemeColors } from "@/components/sandbox/right-inner/chat/lib/theme-utils";
 import { cn } from "@docsurf/ui/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
@@ -132,7 +131,7 @@ const ThemeCard = memo(({ theme, isSelected, onSelect, onDelete, currentMode }: 
 
 function AppearanceSettings() {
    const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
-   const { chatWidthState, setChatWidth } = useChatWidthStore();
+   // const { chatWidthState, setChatWidth } = useChatWidthStore();
 
    const {
       session,
@@ -228,7 +227,7 @@ function AppearanceSettings() {
             </div>
 
             {/* Chat Width Section */}
-            <div className="space-y-4">
+            {/* <div className="space-y-4">
                <div>
                   <h3 className="font-semibold text-foreground">Chat Width</h3>
                   <p className="mt-1 text-muted-foreground text-sm">Choose the width of your chat messages</p>
@@ -287,7 +286,7 @@ function AppearanceSettings() {
                      </div>
                   </Card>
                </div>
-            </div>
+            </div> */}
 
             {/* Themes Section */}
             <div className="space-y-4">

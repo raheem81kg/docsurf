@@ -18,9 +18,11 @@ export const ServerRoute = createServerFileRoute("/api/inline-suggestion").metho
       const currentContent = url.searchParams.get("currentContent") ?? "";
       const contextAfter = url.searchParams.get("contextAfter") ?? "";
       const workspaceId = url.searchParams.get("workspaceId") ?? undefined;
-      // Optionally: suggestionLength, customInstructions
-      // const suggestionLength = url.searchParams.get("suggestionLength") as "short" | "medium" | "long" | undefined;
-      // const customInstructions = url.searchParams.get("customInstructions") ?? undefined;
+      const suggestionLength = url.searchParams.get("suggestionLength") as "short" | "medium" | "long" | undefined;
+      // Truncate to prevent exceeding LLM context window
+      const customInstructions = url.searchParams.get("customInstructions")?.slice(0, 1000) ?? undefined;
+      const writingStyleSummary = url.searchParams.get("writingStyleSummary")?.slice(0, 2000) ?? undefined;
+      const applyStyle = url.searchParams.get("applyStyle") === "true";
 
       // Get userId from fetchAuth
       const { userId } = await fetchAuth();
@@ -75,11 +77,13 @@ export const ServerRoute = createServerFileRoute("/api/inline-suggestion").metho
 
       // Call the real AI handler (no document validation)
       return await handleInlineSuggestionRequest(
-         documentId!,
+         documentId,
          currentContent,
-         userId
-         // suggestionLength ?? "medium",
-         // customInstructions
+         userId,
+         suggestionLength ?? undefined,
+         customInstructions,
+         writingStyleSummary,
+         applyStyle
       );
    },
 });
@@ -88,8 +92,10 @@ async function handleInlineSuggestionRequest(
    documentId: string,
    currentContent: string,
    userId: string,
-   suggestionLength: "short" | "medium" | "long" = "long",
-   customInstructions?: string | null | undefined
+   suggestionLength?: "short" | "medium" | "long" | undefined,
+   customInstructions?: string | null | undefined,
+   writingStyleSummary?: string | null | undefined,
+   applyStyle = true
 ) {
    // No document fetching/validation
    const stream = new TransformStream();
@@ -107,6 +113,8 @@ async function handleInlineSuggestionRequest(
             currentContent,
             suggestionLength,
             customInstructions,
+            writingStyleSummary,
+            applyStyle,
             write: async (type, content) => {
                if (writerClosed) return;
                try {
@@ -178,17 +186,21 @@ async function streamInlineSuggestion({
    suggestionLength,
    customInstructions,
    write,
+   writingStyleSummary,
+   applyStyle,
 }: {
    documentId: string;
    currentContent: string;
-   suggestionLength: "short" | "medium" | "long";
+   suggestionLength?: "short" | "medium" | "long" | undefined;
    customInstructions?: string | null | undefined;
    write: (type: string, content: string) => Promise<void>;
+   writingStyleSummary?: string | null;
+   applyStyle: boolean;
 }) {
-   const prompt = buildPrompt(currentContent, suggestionLength, customInstructions);
+   const prompt = buildPrompt(currentContent, suggestionLength, customInstructions, writingStyleSummary, applyStyle);
    console.log("Prompt sent to Gemini:", prompt);
    // Increase maxTokens for debugging
-   const maxTokens = { short: 100, medium: 200, long: 300 }[suggestionLength || "long"];
+   const maxTokens = suggestionLength ? { short: 100, medium: 200, long: 300 }[suggestionLength] : 250;
 
    // Use Gemini 2.5 Flash Lite model for faster response
    const google = createGoogleGenerativeAI({
@@ -228,13 +240,20 @@ function getSystemPrompt(): string {
 
 function buildPrompt(
    currentContent: string,
-   suggestionLength: "short" | "medium" | "long" = "long",
-   customInstructions?: string | null
+   suggestionLength?: "short" | "medium" | "long" | undefined,
+   customInstructions?: string | null,
+   writingStyleSummary?: string | null,
+   applyStyle = true
 ): string {
    const contextWindow = 200;
    const relevantContent = currentContent.slice(-contextWindow);
-   const lengthMap = { short: "at least 8 words", medium: "at least 12 words", long: "at least 20 words" };
-   const lengthInstruction = lengthMap[suggestionLength] || lengthMap.medium;
+   // Use "about" to make the LLM less strict, and match the UI descriptions
+   const lengthMap = {
+      short: "about 1-8 words",
+      medium: "about 8-12 words",
+      long: "at least 12 words",
+   };
+   const lengthInstruction = suggestionLength ? lengthMap[suggestionLength] : "an appropriate length";
 
    // Check if there's meaningful context (more than just whitespace)
    const meaningfulContent = relevantContent.trim();
@@ -263,6 +282,11 @@ Make it engaging and useful for someone who wants to start writing but needs ins
       promptContent = `${getSystemPrompt()}\n\n${promptContent}`;
    }
    promptContent += " This is a guideline, not a strict requirement—be flexible if needed.";
+
+   if (applyStyle && writingStyleSummary) {
+      const styleBlock = `PERSONAL STYLE GUIDE\n• Emulate the author\'s tone, rhythm, sentence structure, vocabulary choice, and punctuation habits.\n• Do NOT copy phrases or introduce topics from the reference text.\n• Only transform wording; keep meaning intact.\nStyle description: ${writingStyleSummary}`;
+      promptContent = `${styleBlock}\n\n${promptContent}`;
+   }
    return promptContent;
 }
 

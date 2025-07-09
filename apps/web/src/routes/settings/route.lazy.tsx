@@ -8,7 +8,7 @@ import { cn } from "@docsurf/ui/lib/utils";
 import { useConvexQuery } from "@convex-dev/react-query";
 import { Outlet, createLazyFileRoute, useLocation, useNavigate } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, BarChart3, Bot, Box, Key, PaintBucket, Paperclip, User, CreditCard } from "lucide-react";
+import { ArrowLeft, BarChart3, Bot, Box, Key, PaintBucket, Paperclip, User, Edit3 } from "lucide-react";
 import { type ReactNode, useEffect } from "react";
 
 interface SettingsLayoutProps {
@@ -42,6 +42,11 @@ const settingsNavItems = [
       title: "AI Options",
       href: "/settings/ai-options",
       icon: Bot,
+   },
+   {
+      title: "Inline Suggestions",
+      href: "/settings/inline-suggestions",
+      icon: Edit3,
    },
    {
       title: "Chat Customization",
