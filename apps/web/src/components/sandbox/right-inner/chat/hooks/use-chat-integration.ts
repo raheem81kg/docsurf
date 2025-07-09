@@ -29,7 +29,7 @@ export function useChatIntegration<IsShared extends boolean>({
    const { rerenderTrigger, shouldUpdateQuery, setShouldUpdateQuery, triggerRerender } = useChatStore();
    const seededNextId = useRef<string | null>(null);
    const token = useAuthTokenStore.getState().token;
-   // const verifyToken = useVerifyToken("You must be logged in to use the chat.");
+   const verifyToken = useVerifyToken("You must be logged in to use the chat.");
 
    // For regular threads, use getThreadMessages
    const threadMessages = useConvexQuery(
@@ -71,6 +71,8 @@ export function useChatIntegration<IsShared extends boolean>({
       experimental_throttle: 50,
       experimental_prepareRequestBody(body) {
          let requestBody = null;
+
+         if (!verifyToken()) return undefined; // Prevent request if not logged in
          // Skip request preparation for shared threads since they're read-only
          if (isShared) return;
 

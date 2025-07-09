@@ -8,6 +8,8 @@ import { OnboardingProvider } from "@/components/onboarding/onboarding-provider"
 import { SuggestionOverlayProvider } from "@/editor/components/providers/suggestion-overlay/suggestion-overlay-provider";
 import { useOfflineIndicator } from "@/hooks/use-offline-indicator";
 import { useSession } from "@/hooks/auth-hooks";
+import { useAuthTokenStore } from "@/hooks/use-auth-store";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/_main")({
    ssr: false,
@@ -33,6 +35,13 @@ function MainLayoutComponent() {
    const { data: session, isPending } = useSession();
    useOfflineIndicator();
    const isUserNotSignedIn = !session?.user && !isPending;
+
+   // Initialize auth token store on app load and session changes
+   useEffect(() => {
+      if (!isPending) {
+         useAuthTokenStore.getState().refetchToken();
+      }
+   }, [isPending, session?.user?.id]);
    return (
       <SuggestionOverlayProvider>
          <OnboardingProvider>
