@@ -13,6 +13,37 @@ function filterHeaders(headers: Headers): Record<string, string> {
    return filtered;
 }
 
+function createProxyResponse(response: Response, originalRequest: Request, body?: ArrayBuffer) {
+   // Filter out headers that might be incorrect after decompression
+   const responseHeaders = Object.fromEntries(
+      Array.from(response.headers.entries()).filter(
+         ([key]) => key.toLowerCase() !== "content-length" && key.toLowerCase() !== "content-encoding"
+      )
+   );
+
+   const headers = {
+      ...responseHeaders,
+      // Ensure CORS headers are preserved
+      "Access-Control-Allow-Origin": originalRequest.headers.get("origin") || "*",
+      "Access-Control-Allow-Credentials": "true",
+   };
+
+   // For 204 No Content responses, don't include a body
+   if (response.status === 204) {
+      return new Response(null, {
+         status: response.status,
+         statusText: response.statusText,
+         headers,
+      });
+   }
+
+   return new Response(body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+   });
+}
+
 export const ServerRoute = createServerFileRoute("/api/phr/$").methods({
    GET: async ({ params, request }) => {
       const url = new URL(request.url);
@@ -26,23 +57,7 @@ export const ServerRoute = createServerFileRoute("/api/phr/$").methods({
       // Read the response body as ArrayBuffer to properly handle binary/compressed data
       const body = await response.arrayBuffer();
 
-      // Filter out headers that might be incorrect after decompression
-      const responseHeaders = Object.fromEntries(
-         Array.from(response.headers.entries()).filter(
-            ([key]) => key.toLowerCase() !== "content-length" && key.toLowerCase() !== "content-encoding"
-         )
-      );
-
-      return new Response(body, {
-         status: response.status,
-         statusText: response.statusText,
-         headers: {
-            ...responseHeaders,
-            // Ensure CORS headers are preserved
-            "Access-Control-Allow-Origin": request.headers.get("origin") || "*",
-            "Access-Control-Allow-Credentials": "true",
-         },
-      });
+      return createProxyResponse(response, request, body);
    },
    POST: async ({ params, request }) => {
       const url = new URL(request.url);
@@ -61,23 +76,7 @@ export const ServerRoute = createServerFileRoute("/api/phr/$").methods({
       // Read the response body to handle potential compression
       const responseBody = await response.arrayBuffer();
 
-      // Filter out headers that might be incorrect after decompression
-      const responseHeaders = Object.fromEntries(
-         Array.from(response.headers.entries()).filter(
-            ([key]) => key.toLowerCase() !== "content-length" && key.toLowerCase() !== "content-encoding"
-         )
-      );
-
-      return new Response(responseBody, {
-         status: response.status,
-         statusText: response.statusText,
-         headers: {
-            ...responseHeaders,
-            // Ensure CORS headers are preserved
-            "Access-Control-Allow-Origin": request.headers.get("origin") || "*",
-            "Access-Control-Allow-Credentials": "true",
-         },
-      });
+      return createProxyResponse(response, request, responseBody);
    },
    OPTIONS: async ({ params, request }) => {
       const url = new URL(request.url);
@@ -90,24 +89,35 @@ export const ServerRoute = createServerFileRoute("/api/phr/$").methods({
 
       const responseBody = await response.arrayBuffer();
 
-      // Filter out headers that might be incorrect
+      // For OPTIONS requests, we need to add additional CORS headers
       const responseHeaders = Object.fromEntries(
          Array.from(response.headers.entries()).filter(
             ([key]) => key.toLowerCase() !== "content-length" && key.toLowerCase() !== "content-encoding"
          )
       );
 
+      const headers = {
+         ...responseHeaders,
+         // Ensure CORS headers are preserved
+         "Access-Control-Allow-Origin": request.headers.get("origin") || "*",
+         "Access-Control-Allow-Credentials": "true",
+         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+         "Access-Control-Allow-Headers": "Content-Type, Authorization, Accept, Accept-Language, Content-Encoding",
+      };
+
+      // For 204 No Content responses, don't include a body
+      if (response.status === 204) {
+         return new Response(null, {
+            status: response.status,
+            statusText: response.statusText,
+            headers,
+         });
+      }
+
       return new Response(responseBody, {
          status: response.status,
          statusText: response.statusText,
-         headers: {
-            ...responseHeaders,
-            // Ensure CORS headers are preserved
-            "Access-Control-Allow-Origin": request.headers.get("origin") || "*",
-            "Access-Control-Allow-Credentials": "true",
-            "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-            "Access-Control-Allow-Headers": "Content-Type, Authorization, Accept, Accept-Language, Content-Encoding",
-         },
+         headers,
       });
    },
 });
