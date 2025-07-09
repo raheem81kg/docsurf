@@ -55,7 +55,8 @@ export class TavilySearchAdapter implements SearchAdapter {
       try {
          // Use advanced search with chunks when scraping content, otherwise basic
          const searchDepth = scrapeContent ? "advanced" : "basic";
-         const chunksPerSource = scrapeContent ? 8 : 3; // 5-10 chunks per source as requested
+         // Tavily only allows 1 <= chunks_per_source <= 3
+         const chunksPerSource = scrapeContent ? 3 : 1;
 
          const requestBody: TavilySearchRequest = {
             query,

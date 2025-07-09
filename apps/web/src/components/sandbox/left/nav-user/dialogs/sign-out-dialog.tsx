@@ -68,7 +68,7 @@ export function SignOutDialog({ showTrigger = true, children, scope = "local", o
                localStorage.removeItem(key);
             }
          }
-
+         window.location.reload();
          setIsOpen(false);
          props.onOpenChange?.(false);
          onSuccess?.();
