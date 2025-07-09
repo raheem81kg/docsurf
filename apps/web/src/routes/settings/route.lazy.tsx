@@ -44,12 +44,12 @@ const settingsNavItems = [
       icon: Bot,
    },
    {
-      title: "Customization",
+      title: "Chat Customization",
       href: "/settings/customization",
       icon: PaintBucket,
    },
    {
-      title: "Usage Analytics",
+      title: "Chat Usage Analytics",
       href: "/settings/usage",
       icon: BarChart3,
    },

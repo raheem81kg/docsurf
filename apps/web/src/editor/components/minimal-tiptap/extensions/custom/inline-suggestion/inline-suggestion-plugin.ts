@@ -63,13 +63,25 @@ declare global {
    }
 }
 
+// Update options interface to support debounceMs and contextLength
+export interface InlineSuggestionOptions {
+   /**
+    * Called to request a suggestion. Receives state, contextBefore, contextAfter, and forceRefresh.
+    */
+   requestSuggestion: (state: EditorState, contextBefore: string, contextAfter: string, forceRefresh?: boolean) => void;
+   debounceMs?: number;
+   contextLength?: number;
+   enableContextAfterCursor?: boolean;
+   typingThreshold?: number;
+}
+
 /**
  * ProseMirror/Tiptap plugin for inline suggestions with context windowing.
  * Extracts context before and optionally after the cursor for AI suggestions.
  *
  * Trigger methods:
  * - Ctrl+Space: Manual trigger for suggestions
- * - "++": Type two plus signs to automatically trigger suggestions (removes the "++" after detection)
+ * - "++": Type two plus signs to automatically trigger suggestions (reliable cross-browser detection)
  *
  * Accept methods:
  * - Ctrl+Space: Accept current suggestion (when suggestion is visible)
@@ -89,18 +101,6 @@ declare global {
  * - Time-based cache expiration: Cached suggestions expire after 20 seconds
  * - Adaptive cache clearing: Cache is cleared when user types extensively, indicating active writing
  */
-
-// Update options interface to support debounceMs and contextLength
-export interface InlineSuggestionOptions {
-   /**
-    * Called to request a suggestion. Receives state, contextBefore, contextAfter, and forceRefresh.
-    */
-   requestSuggestion: (state: EditorState, contextBefore: string, contextAfter: string, forceRefresh?: boolean) => void;
-   debounceMs?: number;
-   contextLength?: number;
-   enableContextAfterCursor?: boolean;
-   typingThreshold?: number;
-}
 
 export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin<InlineSuggestionState> {
    const debounceMs = options.debounceMs ?? 500;
@@ -126,6 +126,7 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
       },
       debounceMs
    );
+
    return new Plugin<InlineSuggestionState>({
       key: inlineSuggestionPluginKey,
       state: {
@@ -344,7 +345,6 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
             return null;
          },
          handleKeyDown(view: EditorView, event: KeyboardEvent): boolean {
-            // console.log("[InlineSuggestionPlugin] Keydown event", event.key, event.ctrlKey, event.shiftKey, event);
             const pluginState = inlineSuggestionPluginKey.getState(view.state);
             if (!pluginState) return false;
 
@@ -376,32 +376,6 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
                debouncedRequestSuggestion(view.state, contextBefore, contextAfter, forceRefresh);
                return true;
             };
-
-            // Detect "++" trigger - check if user just typed the second "+"
-            if (event.key === "+" && !event.ctrlKey && !event.altKey && !event.metaKey) {
-               const { doc, selection } = view.state;
-               const { head } = selection;
-
-               // Check if the previous character is also "+"
-               if (head > 0) {
-                  const prevChar = doc.textBetween(head - 1, head);
-                  if (prevChar === "+") {
-                     // We have "++" - prevent the default insertion and trigger suggestion
-                     event.preventDefault();
-
-                     // Remove the first "+" and don't insert the second one
-                     let tr = view.state.tr.delete(head - 1, head);
-                     view.dispatch(tr);
-
-                     // Trigger suggestion after the deletion
-                     setTimeout(() => {
-                        triggerSuggestion();
-                     }, 10);
-
-                     return true;
-                  }
-               }
-            }
 
             // Trigger suggestion on Ctrl+Space (robust key check)
             if ((event.key === " " || event.key === "Spacebar" || event.key === "Space") && event.ctrlKey) {
@@ -456,6 +430,53 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
 
             return false;
          },
+         handleTextInput(view: EditorView, from: number, to: number, text: string): boolean {
+            // This is the key fix: use handleTextInput instead of keydown for "++" detection
+            // handleTextInput is called after the text is actually inserted, making it more reliable
+
+            if (text === "+") {
+               const { doc } = view.state;
+               // Check if we now have "++" (the just-inserted "+" plus the previous character)
+               if (from > 0) {
+                  const prevChar = doc.textBetween(from - 1, from);
+                  if (prevChar === "+") {
+                     // We have "++" - remove both plus signs and trigger suggestion
+                     const tr = view.state.tr.delete(from - 1, to);
+                     view.dispatch(tr);
+
+                     // Trigger suggestion after a small delay to ensure the deletion is processed
+                     setTimeout(() => {
+                        const { doc: newDoc, selection } = view.state;
+                        const { head } = selection;
+
+                        // Block node awareness: don't trigger suggestion if at a block node
+                        const node = newDoc.nodeAt(head);
+                        if (node && node.isBlock) {
+                           return;
+                        }
+
+                        // Start loading suggestion
+                        view.dispatch(view.state.tr.setMeta(START_SUGGESTION_LOADING, true));
+
+                        // Get context for suggestion
+                        const contextBefore = newDoc.textBetween(Math.max(0, head - contextLength), head, " ");
+                        let contextAfter = "";
+                        if (enableContextAfterCursor) {
+                           const docSize = newDoc.content.size;
+                           contextAfter = newDoc.textBetween(head, Math.min(docSize, head + contextLength), " ");
+                        }
+
+                        // Request suggestion
+                        debouncedRequestSuggestion(view.state, contextBefore, contextAfter, false);
+                     }, 10);
+
+                     return true; // Prevent default text insertion
+                  }
+               }
+            }
+
+            return false;
+         },
       },
       view(editorView) {
          // Helper function to accept suggestion
@@ -504,11 +525,12 @@ export function inlineSuggestionPlugin(options: InlineSuggestionOptions): Plugin
 }
 
 /**
- * Tiptap extension for inline suggestions, wrapping the ProseMirror plugin.
- * Accepts the same options as inlineSuggestionPlugin.
+ * Tiptap extension for inline suggestions with reliable "++" trigger detection.
+ * Uses ProseMirror's handleTextInput for cross-browser compatibility.
  */
 export const InlineSuggestionExtension = Extension.create<InlineSuggestionOptions>({
    name: "inlineSuggestion",
+
    addProseMirrorPlugins() {
       return [inlineSuggestionPlugin(this.options)];
    },

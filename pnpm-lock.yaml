@@ -245,6 +245,9 @@ importers:
       '@tiptap/starter-kit':
         specifier: ^2.22.3
         version: 2.23.1
+      '@tiptap/suggestion':
+        specifier: ^2.25.0
+        version: 2.25.0(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))(@tiptap/pm@2.23.1)
       '@types/ua-parser-js':
         specifier: ^0.7.39
         version: 0.7.39
@@ -4676,6 +4679,12 @@ packages:
 
   '@tiptap/starter-kit@2.23.1':
     resolution: {integrity: sha512-rrImwzJbKSHoFa+WdNU4I0evXcMiQ4yRm737sxvNJwYItT6fXIxrbRT7nJDmtYu2TflcfT1KklEnSrzz1hhYRw==}
+
+  '@tiptap/suggestion@2.25.0':
+    resolution: {integrity: sha512-ykMwdyaHzqIg+jMI/zZ4TOjVxYkwVG7H6BD3gV9gV5tyRpedsKbvppm3aUlnMWC/OmDqQhlSD8iT8Vo3UWX2oQ==}
+    peerDependencies:
+      '@tiptap/core': ^2.7.0
+      '@tiptap/pm': ^2.7.0
 
   '@tokenizer/inflate@0.2.7':
     resolution: {integrity: sha512-MADQgmZT1eKjp06jpI2yozxaU9uVs4GzzgSL+uEq7bVcJ9V1ZXQkeGNql1fsSI0gMy1vhvNTNbUqrx+pZfJVmg==}
@@ -14676,6 +14685,11 @@ snapshots:
       '@tiptap/extension-strike': 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))
       '@tiptap/extension-text': 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))
       '@tiptap/extension-text-style': 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))
+      '@tiptap/pm': 2.23.1
+
+  '@tiptap/suggestion@2.25.0(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))(@tiptap/pm@2.23.1)':
+    dependencies:
+      '@tiptap/core': 2.23.1(@tiptap/pm@2.23.1)
       '@tiptap/pm': 2.23.1
 
   '@tokenizer/inflate@0.2.7':

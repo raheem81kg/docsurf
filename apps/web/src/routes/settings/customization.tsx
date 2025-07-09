@@ -51,7 +51,7 @@ function CustomizationSettings() {
    // Consolidated loading state
    if (!userSettings || "error" in userSettings) {
       return (
-         <SettingsLayout title="Customization" description="Personalize how the AI interacts with you">
+         <SettingsLayout title="Chat Customization" description="Personalize how the AI interacts with you">
             <div className="flex items-center justify-center p-8">
                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
@@ -61,18 +61,18 @@ function CustomizationSettings() {
 
    if (!session?.user?.id) {
       return (
-         <SettingsLayout title="Customization" description="Personalize how the AI interacts with you">
+         <SettingsLayout title="Chat Customization" description="Personalize how the AI interacts with you">
             <p className="text-muted-foreground text-sm">Sign in to customize your AI experience.</p>
          </SettingsLayout>
       );
    }
 
    return (
-      <SettingsLayout title="Customization" description="Personalize how the AI interacts with you">
+      <SettingsLayout title="Chat Customization" description="Personalize how the AI interacts with you">
          <div className="space-y-8">
             <div className="space-y-4">
                <div>
-                  <h3 className="font-semibold text-foreground">AI Personalization</h3>
+                  <h3 className="font-semibold text-foreground">AI Personalization for the Chat</h3>
                   <p className="mt-1 text-muted-foreground text-sm">Customize how the AI addresses you and behaves in conversations</p>
                </div>
 
