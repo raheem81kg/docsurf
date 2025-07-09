@@ -52,12 +52,12 @@ export const VoiceRecorder = memo(({ state, onStop, className }: VoiceRecorderPr
    return (
       <div
          className={cn(
-            "relative flex items-center justify-between gap-4 rounded-t-lg border-2 border-input bg-background/80 p-4 shadow-lg backdrop-blur-lg md:rounded-lg",
+            "relative flex flex-wrap items-center justify-between gap-4 rounded-t-lg border-2 border-input bg-background/80 p-4 shadow-lg backdrop-blur-lg md:rounded-lg",
             className
          )}
       >
          {/* Left side - Recording indicator and waveform */}
-         <div className="flex flex-1 items-center gap-4">
+         <div className="flex flex-1 flex-wrap items-center gap-4">
             {isRecording && (
                <div className="flex items-center gap-2">
                   <div className="size-3 animate-pulse rounded-full bg-red-500" />
