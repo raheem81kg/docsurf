@@ -5,6 +5,7 @@ import { cn, isMac } from "@docsurf/ui/lib/utils";
 import React, { Suspense } from "react";
 import { Skeleton } from "@docsurf/ui/components/skeleton";
 import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
+import { buttonVariants } from "@docsurf/ui/components/button";
 import { VscLayoutSidebarLeft, VscLayoutSidebarRight, VscSettingsGear } from "react-icons/vsc";
 import { useSandStateStore } from "@/store/sandstate";
 import { useCurrentDocument } from "./left/_tree_components/SortableTree";
@@ -113,16 +114,6 @@ const HeaderContent = () => {
    const handleEditClick = (e: React.MouseEvent) => {
       e.stopPropagation();
       setEditing(true);
-
-      // For mobile: immediately focus the input
-      if (isMobile && inputRef.current) {
-         setTimeout(() => {
-            if (inputRef.current) {
-               inputRef.current.focus();
-               inputRef.current.click(); // Trigger mobile keyboard
-            }
-         }, 10);
-      }
    };
    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setTitle(e.target.value);
@@ -214,58 +205,54 @@ const HeaderContent = () => {
                   {/* Doc title breadcrumb (only on detail page) */}
                   {isDocDetailPage && (
                      <BreadcrumbItem>
-                        <button
-                           type="button"
-                           className={cn(
-                              "relative max-w-[250px] -ml-1 flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden h-7 hover:bg-accent/80 justify-between gap-4 border",
-                              isEvenLargerTitle && "w-[250px]",
-                              isLargeTitle && !isEvenLargerTitle && "w-[180px]",
-                              isShortTitle && "w-[90px]",
-                              !isEvenLargerTitle && !isLargeTitle && !isShortTitle && "w-[120px]",
-                              editing ? "bg-muted/50 border-primary" : "border-transparent",
-                              doc ? "cursor-pointer" : "cursor-default"
-                           )}
-                           onClick={(e) => {
-                              if (!editing && !isTreeLoading) {
-                                 handleEditClick(e);
-                              }
-                           }}
-                           aria-label={editing ? "Editing document title" : "Document title. Click to edit."}
-                           aria-live={editing ? undefined : "polite"}
-                           disabled={isTreeLoading}
-                        >
-                           {isTreeLoading ? (
-                              <Skeleton className="h-5 w-[100px] md:w-[120px] lg:w-[180px] rounded-sm" />
-                           ) : doc ? (
-                              <>
-                                 <input
-                                    type="text"
-                                    inputMode="text"
-                                    autoComplete="off"
-                                    autoCorrect="off"
-                                    autoCapitalize="off"
-                                    spellCheck="false"
-                                    value={title}
-                                    readOnly={!editing}
-                                    onChange={editing ? handleInputChange : undefined}
-                                    onKeyDown={editing ? handleInputKeyDown : undefined}
-                                    ref={inputRef}
-                                    onBlur={editing ? handleInputBlur : undefined}
-                                    className={cn(
-                                       "w-full bg-transparent outline-none text-[13px] truncate",
-                                       editing
-                                          ? "border-none"
-                                          : "cursor-pointer select-none border-none shadow-none p-0 m-0 bg-transparent"
-                                    )}
-                                    placeholder="Enter title..."
-                                    maxLength={100}
-                                    aria-label={editing ? "Editing document title" : "Document title. Click to edit."}
-                                    aria-live={editing ? "polite" : undefined}
-                                 />
-                                 {editing && <VisuallyHidden>Editing document title</VisuallyHidden>}
-                              </>
-                           ) : null}
-                        </button>
+                        {isTreeLoading ? (
+                           <Skeleton className="h-5 w-[100px] md:w-[120px] lg:w-[180px] rounded-sm" />
+                        ) : doc ? (
+                           <>
+                              <input
+                                 type="text"
+                                 inputMode="text"
+                                 autoComplete="off"
+                                 autoCorrect="off"
+                                 autoCapitalize="off"
+                                 spellCheck="false"
+                                 value={title}
+                                 readOnly={!editing}
+                                 onChange={editing ? handleInputChange : undefined}
+                                 onKeyDown={editing ? handleInputKeyDown : undefined}
+                                 ref={inputRef}
+                                 onBlur={editing ? handleInputBlur : undefined}
+                                 onClick={(e) => {
+                                    if (!editing && !isTreeLoading) {
+                                       handleEditClick(e);
+                                    }
+                                 }}
+                                 className={cn(
+                                    // Base button styling when not editing
+                                    !editing && buttonVariants({ variant: "ghost", size: "sm" }),
+                                    // Override button styling with custom styles
+                                    "relative max-w-[250px] -ml-1 text-[13px] truncate h-7 justify-start",
+                                    // Responsive widths
+                                    isEvenLargerTitle && "w-[250px]",
+                                    isLargeTitle && !isEvenLargerTitle && "w-[180px]",
+                                    isShortTitle && "w-[90px]",
+                                    !isEvenLargerTitle && !isLargeTitle && !isShortTitle && "w-[120px]",
+                                    // Editing state styling
+                                    editing ? "bg-muted/50 border-primary border rounded-sm px-2 py-1.5" : "border-transparent",
+                                    // Cursor and interactivity
+                                    doc ? "cursor-pointer" : "cursor-default",
+                                    // Remove default input styling when not editing
+                                    !editing && "appearance-none bg-transparent border-0 outline-none shadow-none ring-0"
+                                 )}
+                                 placeholder="Enter title..."
+                                 maxLength={100}
+                                 aria-label={editing ? "Editing document title" : "Document title. Click to edit."}
+                                 aria-live={editing ? "polite" : undefined}
+                                 disabled={isTreeLoading}
+                              />
+                              {editing && <VisuallyHidden>Editing document title</VisuallyHidden>}
+                           </>
+                        ) : null}
                      </BreadcrumbItem>
                   )}
                </BreadcrumbList>

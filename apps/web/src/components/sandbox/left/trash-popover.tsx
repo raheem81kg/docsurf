@@ -5,6 +5,7 @@
 import * as React from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "@docsurf/ui/components/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@docsurf/ui/components/command";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose } from "@docsurf/ui/components/drawer";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { Button } from "@docsurf/ui/components/button";
 import { Trash, RotateCcw, Check, X } from "lucide-react";
@@ -13,6 +14,7 @@ import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 import { useConvex, useMutation } from "convex/react";
 import throttle from "lodash/throttle";
 import { useSession } from "@/hooks/auth-hooks";
+import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
 
 // Document type based on backend schema
 
@@ -28,6 +30,50 @@ interface Document {
    // ...other fields as needed
 }
 
+// Shared content component for both Popover and Drawer
+function TrashContent({
+   query,
+   setQuery,
+   workspaceId,
+   debouncedQuery,
+   confirmDeleteId,
+   setConfirmDeleteId,
+   actionLoadingId,
+   setActionLoadingId,
+   restoreDocument,
+   deleteDocumentPermanently,
+   session,
+}: {
+   query: string;
+   setQuery: (query: string) => void;
+   workspaceId: Id<"workspaces"> | undefined;
+   debouncedQuery: string;
+   confirmDeleteId: Id<"documents"> | null;
+   setConfirmDeleteId: React.Dispatch<React.SetStateAction<Id<"documents"> | null>>;
+   actionLoadingId: Id<"documents"> | null;
+   setActionLoadingId: React.Dispatch<React.SetStateAction<Id<"documents"> | null>>;
+   restoreDocument: ReturnType<typeof useMutation<typeof api.documents.restoreDocument>>;
+   deleteDocumentPermanently: ReturnType<typeof useMutation<typeof api.documents.deleteDocumentPermanently>>;
+   session: { user: any } | undefined;
+}) {
+   return (
+      <Command shouldFilter={false} value={"-"}>
+         <CommandInput placeholder="Search trashed documents..." value={query} onValueChange={setQuery} />
+         <TrashedDocumentsList
+            workspaceId={workspaceId}
+            debouncedQuery={debouncedQuery}
+            confirmDeleteId={confirmDeleteId}
+            setConfirmDeleteId={setConfirmDeleteId}
+            actionLoadingId={actionLoadingId}
+            setActionLoadingId={setActionLoadingId}
+            restoreDocument={restoreDocument}
+            deleteDocumentPermanently={deleteDocumentPermanently}
+            session={session}
+         />
+      </Command>
+   );
+}
+
 export function TrashPopover({ children }: TrashPopoverProps) {
    const { data: session } = useSession();
    const user = useQuery(api.auth.getCurrentUser, session?.user?.id ? {} : "skip");
@@ -37,15 +83,19 @@ export function TrashPopover({ children }: TrashPopoverProps) {
    const [confirmDeleteId, setConfirmDeleteId] = React.useState<Id<"documents"> | null>(null);
    const [actionLoadingId, setActionLoadingId] = React.useState<Id<"documents"> | null>(null);
    const [open, setOpen] = React.useState(false);
+   const isMobile = useIsMobile();
+
    // Search state
    const [query, setQuery] = React.useState("");
    const [debouncedQuery, setDebouncedQuery] = React.useState("");
+
    React.useEffect(() => {
       const timer = setTimeout(() => {
          setDebouncedQuery(query);
       }, 320);
       return () => clearTimeout(timer);
    }, [query]);
+
    React.useEffect(() => {
       if (!open) {
          setQuery("");
@@ -58,24 +108,41 @@ export function TrashPopover({ children }: TrashPopoverProps) {
    // Throttle the open/close action to once every 1 second (1000ms)
    const throttledSetOpen = React.useMemo(() => throttle((value: boolean) => setOpen(value), 1000, { trailing: false }), []);
 
+   const contentProps = {
+      query,
+      setQuery,
+      workspaceId,
+      debouncedQuery,
+      confirmDeleteId,
+      setConfirmDeleteId,
+      actionLoadingId,
+      setActionLoadingId,
+      restoreDocument,
+      deleteDocumentPermanently,
+      session,
+   };
+
+   if (isMobile) {
+      return (
+         <Drawer open={open} onOpenChange={throttledSetOpen}>
+            <DrawerTrigger asChild>{children}</DrawerTrigger>
+            <DrawerContent className="max-h-[85vh]">
+               <DrawerHeader className="text-left">
+                  <DrawerTitle>Trash</DrawerTitle>
+               </DrawerHeader>
+               <div className="px-4 pb-4 flex-1 min-h-0">
+                  <TrashContent {...contentProps} />
+               </div>
+            </DrawerContent>
+         </Drawer>
+      );
+   }
+
    return (
       <Popover open={open} onOpenChange={throttledSetOpen}>
          <PopoverTrigger asChild>{children}</PopoverTrigger>
          <PopoverContent side="right" align="start" alignOffset={-190} className="w-80 p-0">
-            <Command shouldFilter={false} value={"-"}>
-               <CommandInput placeholder="Search trashed documents..." value={query} onValueChange={setQuery} />
-               <TrashedDocumentsList
-                  workspaceId={workspaceId}
-                  debouncedQuery={debouncedQuery}
-                  confirmDeleteId={confirmDeleteId}
-                  setConfirmDeleteId={setConfirmDeleteId}
-                  actionLoadingId={actionLoadingId}
-                  setActionLoadingId={setActionLoadingId}
-                  restoreDocument={restoreDocument}
-                  deleteDocumentPermanently={deleteDocumentPermanently}
-                  session={session}
-               />
-            </Command>
+            <TrashContent {...contentProps} />
          </PopoverContent>
       </Popover>
    );
