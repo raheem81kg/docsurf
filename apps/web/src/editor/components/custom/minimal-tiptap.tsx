@@ -13,7 +13,7 @@ import { SectionFive } from "../minimal-tiptap/components/section/five";
 import { LinkBubbleMenu } from "../minimal-tiptap/components/bubble-menu/link-bubble-menu";
 import { useMinimalTiptapEditor } from "../minimal-tiptap/hooks/use-minimal-tiptap";
 import { SectionSix } from "../minimal-tiptap/components/section/six";
-import { MAX_CHARACTERS } from "../minimal-tiptap/tiptap-util";
+import { MAX_CHARACTERS, getComparableContent } from "../minimal-tiptap/tiptap-util";
 import { SectionZero } from "../minimal-tiptap/components/section/zero";
 import { TableBubbleMenu } from "../minimal-tiptap/components/bubble-menu/table-bubble-menu";
 import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
@@ -35,6 +35,7 @@ import { useSession } from "@/hooks/auth-hooks";
 import { ContentMenu } from "./content-menu";
 import { EditorMenuBar } from "./editor-menu-bar";
 import { TextBubbleMenu } from "./text-bubble-menu";
+import { isEqual } from "lodash-es";
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "onUpdate"> {
    value?: Content;
@@ -240,8 +241,16 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
          const currentContent = editor.getJSON();
          const incomingContent = value;
 
-         // Only update if content actually differs
-         if (JSON.stringify(currentContent) !== JSON.stringify(incomingContent)) {
+         // Use robust content comparison instead of JSON.stringify
+         const currentComparable = getComparableContent(currentContent);
+         const incomingComparable = getComparableContent(incomingContent);
+         const contentsDiffer = !isEqual(currentComparable, incomingComparable);
+
+         // Check if editor has pending changes (actively saving)
+         const hasPendingChanges = (editor as any).hasPendingChanges?.current;
+
+         // Only update if content actually differs and we're not in the middle of saving
+         if (contentsDiffer && !hasPendingChanges) {
             // Clear any pending sync
             if (syncTimeoutRef.current) {
                clearTimeout(syncTimeoutRef.current);
@@ -250,6 +259,10 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
             const performSync = () => {
                if (!editor) return;
 
+               // Double-check we're not saving before syncing
+               const currentPendingChanges = (editor as any).hasPendingChanges?.current;
+               if (currentPendingChanges) return;
+
                // Preserve cursor position and selection
                const { selection } = editor.state;
                const { from, to } = selection;
@@ -257,6 +270,7 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
 
                // Update content
                editor.commands.setContent(incomingContent || "", false);
+               console.log("synced");
 
                // Restore cursor position if possible and editor was focused
                if (wasFocused) {
