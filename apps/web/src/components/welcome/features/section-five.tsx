@@ -15,15 +15,15 @@ export function SectionFive() {
             />
 
             <div className="relative flex h-full basis-1/2 flex-col">
-               <h4 className="mb-4 font-medium text-xl md:text-2xl">Smart Document Management</h4>
+               <h4 className="mb-4 font-medium text-xl md:text-2xl">Document Management</h4>
 
                <p className="mb-4 text-[#878787] text-sm">
-                  Organize and manage your documents with intelligent version control and auto-save features.
+                  Organize and manage your documents with version control and auto-save features.
                </p>
 
                <p className="text-[#878787] text-sm">
-                  Access your documents instantly from anywhere. Our smart system helps you organize and search your content with
-                  powerful AI-driven features.
+                  Access your documents from anywhere. Keep your content organized with simple folder structure and search
+                  functionality.
                </p>
 
                <div className="flex h-full flex-col space-y-2">
@@ -31,7 +31,7 @@ export function SectionFive() {
                      <svg xmlns="http://www.w3.org/2000/svg" width={18} height={13} fill="none">
                         <path fill="currentColor" d="M6.55 13 .85 7.3l1.425-1.425L6.55 10.15 15.725.975 17.15 2.4 6.55 13Z" />
                      </svg>
-                     <span className="text-primary">AI-powered document organization</span>
+                     <span className="text-primary">Document organization</span>
                   </div>
                   <div className="flex items-center space-x-2 text-sm">
                      <svg xmlns="http://www.w3.org/2000/svg" width={18} height={13} fill="none">
