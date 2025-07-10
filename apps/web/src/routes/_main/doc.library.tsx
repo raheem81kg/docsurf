@@ -275,7 +275,7 @@ const AttachmentAsset = memo(({ asset, onDelete }: { asset: GeneratedAsset; onDe
             return (
                <div className="h-full w-full flex items-center justify-center">
                   <div className="text-center">
-                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2" />
                      <p className="text-muted-foreground">Loading...</p>
                   </div>
                </div>
@@ -431,15 +431,14 @@ const MasonryGrid = memo(
                   ))}
                </div>
             );
-         } else {
-            return (
-               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {assets.map((asset) => (
-                     <AttachmentAsset key={asset.key} asset={asset} onDelete={onDelete} />
-                  ))}
-               </div>
-            );
          }
+         return (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+               {assets.map((asset) => (
+                  <AttachmentAsset key={asset.key} asset={asset} onDelete={onDelete} />
+               ))}
+            </div>
+         );
       }
 
       return (
@@ -502,10 +501,9 @@ function LibraryPage() {
          if (fileType === "generated") {
             // Generated images (keys starting with "generations")
             return file.key.startsWith("generations/");
-         } else {
-            // All attachments (keys starting with "attachments")
-            return file.key.startsWith("attachments/");
          }
+         // All attachments (keys starting with "attachments")
+         return file.key.startsWith("attachments/");
       });
 
       // Apply sorting

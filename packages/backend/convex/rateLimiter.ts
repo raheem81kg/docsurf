@@ -28,7 +28,7 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
    uploadFile: {
       kind: "token bucket",
       rate: 6, // 6 upload per hour
-      period: 60 * 60 * 1000, // 1 hour in milliseconds
+      period: 4 * 60 * 60 * 1000, // 4 hour in milliseconds
       capacity: 6, // Allow burst of 6 uploads
    },
 });
