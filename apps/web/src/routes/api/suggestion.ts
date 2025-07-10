@@ -9,6 +9,22 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { client as redisClient } from "@docsurf/kv/index";
 // ... other imports as in the provided code (leave out missing imports)
 
+// Multi-layer rate limiting to prevent spam and ensure fair usage
+const ratelimits = {
+   suggestion: {
+      minute: new Ratelimit({
+         redis: redisClient,
+         prefix: "ratelimit:suggestion:minute",
+         limiter: Ratelimit.slidingWindow(10, "1 m"), // Conservative for manual suggestions
+      }),
+      hour: new Ratelimit({
+         redis: redisClient,
+         prefix: "ratelimit:suggestion:hour",
+         limiter: Ratelimit.slidingWindow(50, "1 h"), // Allow normal hourly usage
+      }),
+   },
+};
+
 export const ServerRoute = createServerFileRoute("/api/suggestion").methods({
    // GET: async ({ request }) => {
    //    // Parse query parameters
@@ -48,20 +64,30 @@ export const ServerRoute = createServerFileRoute("/api/suggestion").methods({
             headers: { "Content-Type": "application/json" },
          });
       }
-      // --- Upstash Rate Limiting by userId ---
-      const ratelimit = new Ratelimit({
-         limiter: Ratelimit.fixedWindow(100, "1 d"),
-         redis: redisClient,
-         prefix: "ai-suggestion",
-      });
-      const { success, remaining, limit, reset } = await ratelimit.limit(userId);
-      if (!success) {
-         return new Response("You have reached your request limit for the day.", {
+
+      // --- Multi-layer Rate Limiting by userId ---
+      // Check minute limit first (faster to reset if hit)
+      const minuteCheck = await ratelimits.suggestion.minute.limit(userId);
+      if (!minuteCheck.success) {
+         return new Response("Too many requests per minute. Please slow down.", {
             status: 429,
             headers: {
-               "X-RateLimit-Limit": limit.toString(),
-               "X-RateLimit-Remaining": remaining.toString(),
-               "X-RateLimit-Reset": reset.toString(),
+               "X-RateLimit-Limit": minuteCheck.limit.toString(),
+               "X-RateLimit-Remaining": minuteCheck.remaining.toString(),
+               "X-RateLimit-Reset": minuteCheck.reset.toString(),
+            },
+         });
+      }
+
+      // Check hourly limit
+      const hourCheck = await ratelimits.suggestion.hour.limit(userId);
+      if (!hourCheck.success) {
+         return new Response("You have reached your hourly request limit.", {
+            status: 429,
+            headers: {
+               "X-RateLimit-Limit": hourCheck.limit.toString(),
+               "X-RateLimit-Remaining": hourCheck.remaining.toString(),
+               "X-RateLimit-Reset": hourCheck.reset.toString(),
             },
          });
       }
