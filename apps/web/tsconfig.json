@@ -1,5 +1,5 @@
 {
-   "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
+   "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "../../packages/utils/src/pdf_estimate.ts"],
    "compilerOptions": {
       "target": "ES2022",
       "jsx": "react-jsx",

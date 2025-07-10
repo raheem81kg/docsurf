@@ -2,6 +2,8 @@
 import { R2 } from "@docsurf/r2/client/index";
 import {
    MAX_FILE_SIZE,
+   MAX_PDF_PAGES,
+   MAX_PDF_TOKENS,
    MAX_TOKENS_PER_FILE,
    estimateTokenCount,
    getCorrectMimeType,
@@ -12,8 +14,11 @@ import { v } from "convex/values";
 import { components } from "./_generated/api";
 import { httpAction, mutation, query } from "./_generated/server";
 import { getUserIdentity } from "./lib/identity";
+import { internal } from "./_generated/api";
+import { rateLimiter } from "./rateLimiter";
 
 export const r2 = new R2(components.r2);
+
 // Direct file upload HTTP action for files under 5MB
 export const uploadFile = httpAction(async (ctx, request) => {
    try {
@@ -23,6 +28,24 @@ export const uploadFile = httpAction(async (ctx, request) => {
             status: 401,
             headers: { "Content-Type": "application/json" },
          });
+      }
+
+      // Rate limiting for file uploads
+      const rateLimitResult = await rateLimiter.limit(ctx, "uploadFile", { key: user.id, throws: false });
+      if (!rateLimitResult.ok) {
+         return new Response(
+            JSON.stringify({
+               error: "Upload rate limit exceeded. Please try again later.",
+               retryAfter: Math.ceil(rateLimitResult.retryAfter / 1000), // Convert to seconds
+            }),
+            {
+               status: 429,
+               headers: {
+                  "Content-Type": "application/json",
+                  "Retry-After": Math.ceil(rateLimitResult.retryAfter / 1000).toString(),
+               },
+            }
+         );
       }
       const formData = await request.formData();
       const file = formData.get("file") as Blob;
@@ -100,46 +123,48 @@ export const uploadFile = httpAction(async (ctx, request) => {
          }
       } else if (fileTypeInfo.isPdf) {
          // Some issue with the convex runtime. Might come back to this later but...
-         // try {
-         //     // Check page count
-         //     console.log("Estimating PDF...")
-         //     const { pageCount, tokenCount } = await estimatePdf(fileBuffer)
-         //     console.log("PDF estimated", pageCount, tokenCount)
-         //     if (pageCount > MAX_PDF_PAGES) {
-         //         return new Response(
-         //             JSON.stringify({
-         //                 error: `PDF "${fileName}" exceeds ${MAX_PDF_PAGES} page limit (current: ${pageCount} pages)`
-         //             }),
-         //             {
-         //                 status: 400,
-         //                 headers: { "Content-Type": "application/json" }
-         //             }
-         //         )
-         //     }
-         //     // Check token count
-         //     if (tokenCount > MAX_PDF_TOKENS) {
-         //         return new Response(
-         //             JSON.stringify({
-         //                 error: `PDF "${fileName}" exceeds ${MAX_PDF_TOKENS.toLocaleString()} token limit (estimated: ${tokenCount.toLocaleString()} tokens)`
-         //             }),
-         //             {
-         //                 status: 400,
-         //                 headers: { "Content-Type": "application/json" }
-         //             }
-         //         )
-         //     }
-         // } catch (error) {
-         //     console.error("Error validating PDF file:", error)
-         //     return new Response(
-         //         JSON.stringify({
-         //             error: `Error validating PDF content: ${fileName}`
-         //         }),
-         //         {
-         //             status: 400,
-         //             headers: { "Content-Type": "application/json" }
-         //         }
-         //     )
-         // }
+         try {
+            // Check page count
+            console.log("Estimating PDF...");
+            const { pageCount, tokenCount } = await ctx.runAction(internal.lib.pdf_processor.processPdf, {
+               pdfBuffer: fileBuffer,
+            });
+            console.log("PDF estimated", pageCount, tokenCount);
+            if (pageCount > MAX_PDF_PAGES) {
+               return new Response(
+                  JSON.stringify({
+                     error: `PDF "${fileName}" exceeds ${MAX_PDF_PAGES} page limit (current: ${pageCount} pages)`,
+                  }),
+                  {
+                     status: 400,
+                     headers: { "Content-Type": "application/json" },
+                  }
+               );
+            }
+            // Check token count
+            if (tokenCount > MAX_PDF_TOKENS) {
+               return new Response(
+                  JSON.stringify({
+                     error: `PDF "${fileName}" exceeds ${MAX_PDF_TOKENS.toLocaleString()} token limit (estimated: ${tokenCount.toLocaleString()} tokens)`,
+                  }),
+                  {
+                     status: 400,
+                     headers: { "Content-Type": "application/json" },
+                  }
+               );
+            }
+         } catch (error) {
+            console.error("Error validating PDF file:", error);
+            return new Response(
+               JSON.stringify({
+                  error: `Error validating PDF content: ${fileName}`,
+               }),
+               {
+                  status: 400,
+                  headers: { "Content-Type": "application/json" },
+               }
+            );
+         }
       }
 
       // Generate unique key for the file
@@ -267,4 +292,15 @@ export const getFile = httpAction(async (ctx, req) => {
    if (!key) return new Response(null, { status: 400 });
    const file = await r2.getUrl(key);
    return Response.redirect(file);
+});
+
+// Hook API for file upload rate limit
+export const { getRateLimit: getUploadFileRateLimit, getServerTime: getUploadFileServerTime } = rateLimiter.hookAPI("uploadFile", {
+   key: async (ctx) => {
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) {
+         return "NOT_AUTHENTICATED";
+      }
+      return identity.subject;
+   },
 });

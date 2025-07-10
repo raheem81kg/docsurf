@@ -12,7 +12,7 @@ import {
    useSidebar,
 } from "@docsurf/ui/components/sidebar";
 import { useSandStateStore } from "@/store/sandstate";
-import { ExternalLink, Home, Settings, ChevronsLeft, ImageIcon, Search, Trash2 } from "lucide-react";
+import { ExternalLink, Home, Settings, ChevronsLeft, Search, Trash2, Files } from "lucide-react";
 import { NavUser } from "./nav-user/nav-user";
 import { CreateMenu } from "./nav-user/create-menu";
 import { Link } from "@tanstack/react-router";
@@ -245,7 +245,7 @@ export const LeftSidebar = ({
                   }}
                   className={cn(buttonVariants({ variant: "ghost" }), "h-8 w-full justify-start md:text-sm text-base")}
                >
-                  <ImageIcon className="size-5 md:size-4" />
+                  <Files className="size-5 md:size-4" />
                   Library
                </Link>
             </div>

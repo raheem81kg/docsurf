@@ -22,4 +22,13 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
       period: DAY, // The period is one day (24 hours)
       capacity: DOCUMENT_CREATION_RATE_LIMIT, // Max burst = daily limit
    },
+
+   // Limit file uploads to prevent abuse while still being user-friendly
+   // 100 uploads per hour should be generous for normal usage
+   uploadFile: {
+      kind: "token bucket",
+      rate: 6, // 6 upload per hour
+      period: 60 * 60 * 1000, // 1 hour in milliseconds
+      capacity: 6, // Allow burst of 6 uploads
+   },
 });

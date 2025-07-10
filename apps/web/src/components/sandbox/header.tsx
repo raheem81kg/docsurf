@@ -291,7 +291,7 @@ const HeaderContent = () => {
                data-slot="sidebar-trigger"
                variant="ghost"
                size="icon"
-               disabled={isUserNotSignedIn || !doc || doc?.isLocked || doc?.isDeleted || !isDocDetailPage}
+               disabled={isUserNotSignedIn} //  !doc || doc?.isLocked || doc?.isDeleted || !isDocDetailPage (for now)
                className={cn("size-7 text-primary cursor-pointer")}
                onClick={() => {
                   toggle_ir_sidebar();

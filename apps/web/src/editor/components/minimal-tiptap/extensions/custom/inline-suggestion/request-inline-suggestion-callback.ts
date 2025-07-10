@@ -129,7 +129,9 @@ export function createRequestInlineSuggestionCallback(
                   try {
                      const data = JSON.parse(line.slice(6)) as InlineSuggestionApiResponse;
                      if (data.type === "suggestion-delta") {
-                        accumulatedSuggestion += data.content;
+                        // Clean the content to remove any null characters that might cause issues
+                        const cleanedContent = data.content.replaceAll("\u0000", "");
+                        accumulatedSuggestion += cleanedContent;
                         // Remove leading and trailing whitespace for display
                         const displaySuggestion = accumulatedSuggestion.trim();
                         editor.view?.dispatch(editor.state.tr.setMeta(SET_SUGGESTION, { text: displaySuggestion }));

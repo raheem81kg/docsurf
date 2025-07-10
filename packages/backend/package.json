@@ -31,8 +31,8 @@
       "@docsurf/r2": "workspace:*",
       "@docsurf/utils": "workspace:*",
       "@modelcontextprotocol/sdk": "^1.13.0",
-      "@react-email/components": "^0.1.0",
       "@openrouter/ai-sdk-provider": "^0.7.2",
+      "@react-email/components": "^0.1.0",
       "@t3-oss/env-core": "^0.13.8",
       "@upstash/redis": "^1.35.0",
       "ai": "^4.3.16",
@@ -48,6 +48,7 @@
       "resumable-stream": "^2.2.0",
       "supermemory": "3.0.0-alpha.18",
       "ts-dedent": "^2.2.0",
+      "unpdf": "^1.0.6",
       "zod": "^3.24.2"
    },
    "exports": {

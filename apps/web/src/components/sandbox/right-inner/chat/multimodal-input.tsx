@@ -42,6 +42,7 @@ import { ModelSelector } from "./model-selector";
 import { useSession } from "@/hooks/auth-hooks";
 import { useAuthTokenStore } from "@/hooks/use-auth-store";
 import { Analytics } from "@/components/providers/posthog";
+import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 
 interface ExtendedUploadedFile extends UploadedFile {
    file?: File;
@@ -177,6 +178,7 @@ export function MultimodalInput({
       content: string;
       fileName: string;
       fileType: string;
+      fileKey?: string;
    } | null>(null);
    const [dialogOpen, setDialogOpen] = useState(false);
    const [extendedFiles, setExtendedFiles] = useState<ExtendedUploadedFile[]>([]);
@@ -213,14 +215,15 @@ export function MultimodalInput({
    });
 
    // Check if current model supports vision and is image model
-   const [modelSupportsVision, modelSupportsFunctionCalling, _modelSupportsReasoning, isImageModel] = useMemo(() => {
-      if (!selectedModel) return [false, false, false, false];
+   const [modelSupportsVision, modelSupportsFunctionCalling, _modelSupportsReasoning, isImageModel, modelSupportsPdf] = useMemo(() => {
+      if (!selectedModel) return [false, false, false, false, false];
       const model = MODELS_SHARED.find((m) => m.id === selectedModel);
       return [
          model?.abilities.includes("vision") ?? false,
          model?.abilities.includes("function_calling") ?? false,
          model?.abilities.includes("reasoning") ?? false,
          model?.mode === "image",
+         model?.abilities.includes("pdf") ?? false,
       ];
    }, [selectedModel]);
 
@@ -368,6 +371,12 @@ export function MultimodalInput({
                continue;
             }
 
+            // If file is a PDF but model doesn't support PDF, reject it
+            if (fileTypeInfo.isPdf && !modelSupportsPdf) {
+               errors.push(`${file.name}: Current model doesn't support PDF files`);
+               continue;
+            }
+
             // For text files, check token count
             if (fileTypeInfo.isText && !fileTypeInfo.isImage) {
                try {
@@ -408,17 +417,17 @@ export function MultimodalInput({
                   }));
                }
             }
-
+         } catch (error) {
+            showToast(error instanceof Error ? error.message : "Upload failed", "error");
+         } finally {
+            // Always reset the file input, regardless of success or failure
             if (uploadInputRef.current) {
                uploadInputRef.current.value = "";
             }
-         } catch (error) {
-            toast.error(error instanceof Error ? error.message : "Upload failed");
-         } finally {
             setUploading(false);
          }
       },
-      [uploadFile, addUploadedFile, setUploading, readFileContent, modelSupportsVision]
+      [uploadFile, addUploadedFile, setUploading, readFileContent, modelSupportsVision, modelSupportsPdf]
    );
 
    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -518,7 +527,7 @@ export function MultimodalInput({
       const { isImage, isText } = getFileType(uploadedFile);
 
       return (
-         <div key={uploadedFile.key} className="group relative">
+         <div key={uploadedFile.key} className="group relative flex-shrink-0">
             <button
                type="button"
                onClick={() => {
@@ -526,21 +535,24 @@ export function MultimodalInput({
                      content,
                      fileName: uploadedFile.fileName,
                      fileType: uploadedFile.fileType,
+                     fileKey: uploadedFile.key,
                   });
                   setDialogOpen(true);
                }}
                className={cn(
                   "relative flex h-12 items-center justify-center overflow-hidden rounded-lg border-2 border-border bg-secondary/50 transition-colors hover:bg-secondary/80",
-                  isImage && "w-12"
+                  isImage ? "w-12" : "max-w-[200px]"
                )}
             >
                {content && isImage ? (
                   <img src={content} alt="" className="h-full w-full rounded-md object-cover" />
                ) : (
-                  <div className="flex items-center justify-center gap-2 px-2 font-medium text-sm">
+                  <div className="flex items-center justify-center gap-2 px-2 font-medium text-sm min-w-0">
                      {getFileIcon(uploadedFile)}
-                     <div className="flex flex-col items-start">
-                        <span className="truncate text-ellipsis">{uploadedFile.fileName}</span>
+                     <div className="flex flex-col items-start min-w-0">
+                        <span className="truncate text-ellipsis max-w-[140px]" title={uploadedFile.fileName}>
+                           {uploadedFile.fileName}
+                        </span>
                         <span className="text-muted-foreground text-xs">{formatFileSize(uploadedFile.fileSize)}</span>
                      </div>
                   </div>
@@ -569,15 +581,28 @@ export function MultimodalInput({
       const fileTypeInfo = getFileTypeInfo(dialogFile.fileName, dialogFile.fileType);
       const isImage = fileTypeInfo.isImage;
       const isText = fileTypeInfo.isText;
+      const isPdf = fileTypeInfo.isPdf;
 
       return (
-         <div className="max-h-[70dvh] w-full overflow-auto">
+         <>
             {isImage ? (
-               <img src={dialogFile.content} alt={dialogFile.fileName} className="h-auto w-full rounded object-contain" />
+               <div className="h-full w-full flex items-center justify-center p-4 overflow-auto">
+                  <img src={dialogFile.content} alt={dialogFile.fileName} className="max-h-full max-w-full object-contain" />
+               </div>
             ) : isText ? (
-               <pre className="overflow-x-auto whitespace-pre-wrap break-words rounded bg-muted p-4 text-sm">{dialogFile.content}</pre>
+               <div className="h-full w-full overflow-auto p-4">
+                  <pre className="overflow-x-auto whitespace-pre-wrap break-words rounded bg-muted p-4 text-sm">
+                     {dialogFile.content}
+                  </pre>
+               </div>
+            ) : isPdf && dialogFile.fileKey ? (
+               <iframe
+                  src={`${env.VITE_CONVEX_SITE_URL}/r2?key=${encodeURIComponent(dialogFile.fileKey)}`}
+                  className="h-full w-full border-0"
+                  title={dialogFile.fileName}
+               />
             ) : (
-               <div className="flex items-center justify-center p-8 text-muted-foreground">
+               <div className="h-full w-full flex items-center justify-center p-8 text-muted-foreground">
                   <div className="text-center">
                      <FileType className="mx-auto mb-2 size-12" />
                      <p>Binary file: {dialogFile.fileName}</p>
@@ -585,7 +610,7 @@ export function MultimodalInput({
                   </div>
                </div>
             )}
-         </div>
+         </>
       );
    };
 
@@ -645,7 +670,11 @@ export function MultimodalInput({
                   dragActive && "rounded-lg ring-2 ring-primary ring-offset-2"
                )}
             >
-               {extendedFiles.length > 0 && <div className="flex flex-wrap gap-2 pb-3">{extendedFiles.map(renderFilePreview)}</div>}
+               {extendedFiles.length > 0 && (
+                  <div className="flex gap-2 pb-3 pt-2 overflow-x-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+                     {extendedFiles.map(renderFilePreview)}
+                  </div>
+               )}
                <PromptInputTextarea
                   autoFocus
                   className="max-h-[300px]"
@@ -742,10 +771,10 @@ export function MultimodalInput({
                }
             }}
          >
-            <DialogContent className="md:!max-w-[min(90vw,60rem)] max-h-[70dvh] max-w-full">
+            <DialogContent className="md:!max-w-[min(90vw,60rem)] h-[80dvh] max-h-[80dvh] flex flex-col p-0">
                {dialogFile && (
                   <>
-                     <DialogHeader>
+                     <DialogHeader className="flex-shrink-0 px-6 py-4 border-b">
                         <DialogTitle className="flex items-center gap-2">
                            {getFileIcon({
                               fileName: dialogFile.fileName,
@@ -754,7 +783,7 @@ export function MultimodalInput({
                            {dialogFile.fileName}
                         </DialogTitle>
                      </DialogHeader>
-                     {renderDialogContent()}
+                     <div className="flex-1 overflow-hidden">{renderDialogContent()}</div>
                   </>
                )}
             </DialogContent>

@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { aggregrateThreadsByFolder } from "./aggregates";
 import { getUserIdentity } from "./lib/identity";
-import { Id } from "./_generated/dataModel";
+import type { Id } from "./_generated/dataModel";
 
 // Create a new project
 export const createProject = mutation({

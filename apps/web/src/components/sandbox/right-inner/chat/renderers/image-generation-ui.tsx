@@ -122,7 +122,7 @@ const ImageWithErrorHandler = memo(
       return (
          <div className="not-prose relative w-full max-w-md overflow-hidden" style={{ aspectRatio: cssAspectRatio }}>
             <img
-               src={`${env.VITE_CONVEX_SITE_URL}/r2?key=${asset.imageUrl}`}
+               src={`${env.VITE_CONVEX_SITE_URL}/r2?key=${encodeURIComponent(asset.imageUrl)}`}
                alt={prompt || "Generated image"}
                className="w-full max-w-md rounded-xl border bg-background object-cover"
                style={{ aspectRatio: cssAspectRatio }}

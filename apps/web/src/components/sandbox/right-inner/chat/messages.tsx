@@ -77,7 +77,7 @@ const FileAttachment = memo(
 
          return (
             <img
-               src={`${env.VITE_CONVEX_SITE_URL}/r2?key=${part.data}`}
+               src={`${env.VITE_CONVEX_SITE_URL}/r2?key=${encodeURIComponent(part.data)}`}
                alt={fileName}
                className="w-full max-w-md cursor-pointer rounded-lg object-contain transition-opacity hover:opacity-90"
                onClick={handleInteraction}
@@ -276,29 +276,31 @@ export function Messages({
       const { isImage, isText, isPdf } = getFileTypeInfo(fileName, previewFile.mimeType);
 
       return (
-         <div className="max-h-full overflow-auto">
+         <>
             {isImage && (
-               <img
-                  src={`${env.VITE_CONVEX_SITE_URL}/r2?key=${previewFile.data}`}
-                  alt={fileName}
-                  className="h-auto w-full rounded object-contain"
-                  onError={(e) => {
-                     const target = e.target as HTMLImageElement;
-                     target.style.display = "none";
-                     const errorDiv = target.nextElementSibling as HTMLElement;
-                     if (errorDiv) errorDiv.style.display = "flex";
-                  }}
-               />
+               <div className="h-full w-full flex items-center justify-center p-4 overflow-auto">
+                  <img
+                     src={`${env.VITE_CONVEX_SITE_URL}/r2?key=${encodeURIComponent(previewFile.data)}`}
+                     alt={fileName}
+                     className="max-h-full max-w-full object-contain"
+                     onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = "none";
+                        const errorDiv = target.nextElementSibling as HTMLElement;
+                        if (errorDiv) errorDiv.style.display = "flex";
+                     }}
+                  />
+               </div>
             )}
 
             {(isText || isPdf) && (
                <iframe
-                  src={`${env.VITE_CONVEX_SITE_URL}/r2?key=${previewFile.data}`}
-                  className="h-[69dvh] w-full rounded border-0"
+                  src={`${env.VITE_CONVEX_SITE_URL}/r2?key=${encodeURIComponent(previewFile.data)}`}
+                  className="h-full w-full border-0"
                   title={fileName}
                />
             )}
-         </div>
+         </>
       );
    };
 
@@ -419,19 +421,19 @@ export function Messages({
                }
             }}
          >
-            <DialogContent className="md:!max-w-[min(90vw,60rem)] max-h-[70dvh]">
+            <DialogContent className="md:!max-w-[min(90vw,60rem)] h-[80dvh] max-h-[80dvh] flex flex-col p-0">
                {previewFile && (
                   <>
                      <VisuallyHidden>
                         <DialogDescription>Preview file</DialogDescription>
                      </VisuallyHidden>
-                     <DialogHeader>
+                     <DialogHeader className="flex-shrink-0 px-6 py-4 border-b">
                         <DialogTitle className="flex items-center gap-2">
                            {getFileIcon(previewFile)}
                            {fileName || "Unknown file"}
                         </DialogTitle>
                      </DialogHeader>
-                     {renderFilePreview()}
+                     <div className="flex-1 overflow-hidden">{renderFilePreview()}</div>
                   </>
                )}
             </DialogContent>

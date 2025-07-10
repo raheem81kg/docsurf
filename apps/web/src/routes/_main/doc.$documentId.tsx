@@ -234,7 +234,7 @@ function DocumentComponent() {
                   : "Start writing, or press Ctrl+Space for AI autocomplete..."
             }
             editable={!isUserLoading && !!user}
-            editorClassName="focus:outline-none md:px-14 px-8 py-4 min-h-full"
+            editorClassName="focus:outline-none md:px-12 px-8 py-4 min-h-full"
          />
       </div>
       // </div>

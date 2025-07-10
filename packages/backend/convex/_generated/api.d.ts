@@ -31,6 +31,7 @@ import type * as lib_encryption from "../lib/encryption.js";
 import type * as lib_file_constants from "../lib/file_constants.js";
 import type * as lib_identity from "../lib/identity.js";
 import type * as lib_models from "../lib/models.js";
+import type * as lib_pdf_processor from "../lib/pdf_processor.js";
 import type * as lib_resumable_stream_context from "../lib/resumable_stream_context.js";
 import type * as lib_toolkit from "../lib/toolkit.js";
 import type * as lib_tools_adapters_brave_search_adapter from "../lib/tools/adapters/brave_search_adapter.js";
@@ -105,6 +106,7 @@ declare const fullApi: ApiFromModules<{
   "lib/file_constants": typeof lib_file_constants;
   "lib/identity": typeof lib_identity;
   "lib/models": typeof lib_models;
+  "lib/pdf_processor": typeof lib_pdf_processor;
   "lib/resumable_stream_context": typeof lib_resumable_stream_context;
   "lib/toolkit": typeof lib_toolkit;
   "lib/tools/adapters/brave_search_adapter": typeof lib_tools_adapters_brave_search_adapter;

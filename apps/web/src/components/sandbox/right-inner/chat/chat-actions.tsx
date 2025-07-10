@@ -72,11 +72,11 @@ export const ChatActions = memo(
 
       const handleDownload = async () => {
          if (imageGenerationAssets.length === 1) {
-            const url = `${env.VITE_CONVEX_SITE_URL}/r2?key=${imageGenerationAssets[0]}`;
+            const url = `${env.VITE_CONVEX_SITE_URL}/r2?key=${encodeURIComponent(imageGenerationAssets[0])}`;
             window.open(url, "_blank");
          } else {
             imageGenerationAssets.forEach((asset, index) => {
-               const url = `${env.VITE_CONVEX_SITE_URL}/r2?key=${asset}`;
+               const url = `${env.VITE_CONVEX_SITE_URL}/r2?key=${encodeURIComponent(asset)}`;
                setTimeout(() => window.open(url, "_blank"), index * 200);
             });
          }

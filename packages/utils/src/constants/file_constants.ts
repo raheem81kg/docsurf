@@ -1,191 +1,208 @@
 // Supported image file extensions
-export const SUPPORTED_IMAGE_EXTENSIONS = [
-    ".png",
-    ".jpg",
-    ".jpeg",
-    ".gif",
-    ".svg",
-    ".webp",
-    ".bmp",
-    ".ico"
-] as const
+export const SUPPORTED_IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".bmp", ".ico"] as const;
 
 // Supported code file extensions
 export const SUPPORTED_CODE_EXTENSIONS = [
-    ".js",
-    ".jsx",
-    ".ts",
-    ".tsx",
-    ".py",
-    ".java",
-    ".c",
-    ".cpp",
-    ".go",
-    ".rs",
-    ".php",
-    ".rb",
-    ".swift",
-    ".kt",
-    ".dart",
-    ".vue",
-    ".svelte",
-    ".css",
-    ".scss",
-    ".html",
-    ".xml",
-    ".json",
-    ".yaml",
-    ".yml"
-] as const
+   ".js",
+   ".jsx",
+   ".ts",
+   ".tsx",
+   ".py",
+   ".java",
+   ".c",
+   ".cpp",
+   ".go",
+   ".rs",
+   ".php",
+   ".rb",
+   ".swift",
+   ".kt",
+   ".dart",
+   ".vue",
+   ".svelte",
+   ".css",
+   ".scss",
+   ".html",
+   ".xml",
+   ".json",
+   ".yaml",
+   ".yml",
+] as const;
 
 // Supported plain text file extensions
-export const SUPPORTED_PLAIN_TEXT_EXTENSIONS = [".md", ".mdx", ".txt"] as const
+export const SUPPORTED_PLAIN_TEXT_EXTENSIONS = [".md", ".mdx", ".txt"] as const;
 
 // Combined text extensions (code + plain text)
-export const SUPPORTED_TEXT_EXTENSIONS = [
-    ...SUPPORTED_PLAIN_TEXT_EXTENSIONS,
-    ...SUPPORTED_CODE_EXTENSIONS
-] as const
+export const SUPPORTED_TEXT_EXTENSIONS = [...SUPPORTED_PLAIN_TEXT_EXTENSIONS, ...SUPPORTED_CODE_EXTENSIONS] as const;
 
 // Supported MIME types for images
 export const SUPPORTED_IMAGE_MIME_TYPES = [
-    "image/png",
-    "image/jpeg",
-    "image/gif",
-    "image/svg+xml",
-    "image/webp",
-    "image/bmp",
-    "image/x-icon"
-] as const
+   "image/png",
+   "image/jpeg",
+   "image/gif",
+   "image/svg+xml",
+   "image/webp",
+   "image/bmp",
+   "image/x-icon",
+] as const;
 
 // Supported MIME types for text files
 export const SUPPORTED_TEXT_MIME_TYPES = [
-    "text/plain",
-    "text/markdown",
-    "text/html",
-    "text/css",
-    "text/javascript",
-    "text/xml",
-    "text/yaml",
-    "application/json",
-    "application/javascript",
-    "application/typescript"
-] as const
+   "text/plain",
+   "text/markdown",
+   "text/html",
+   "text/css",
+   "text/javascript",
+   "text/xml",
+   "text/yaml",
+   "application/json",
+   "application/javascript",
+   "application/typescript",
+] as const;
 
 // All supported extensions combined
-export const ALL_SUPPORTED_EXTENSIONS = [
-    ...SUPPORTED_IMAGE_EXTENSIONS,
-    ...SUPPORTED_TEXT_EXTENSIONS,
-    ".pdf"
-] as const
+export const ALL_SUPPORTED_EXTENSIONS = [...SUPPORTED_IMAGE_EXTENSIONS, ...SUPPORTED_TEXT_EXTENSIONS, ".pdf"] as const;
 
 // File size limits
-export const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
-export const MAX_TOKENS_PER_FILE = 32000 // 32k tokens
+export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+export const MAX_TOKENS_PER_FILE = 32000; // 32k tokens
 
 // PDF-specific limits
-export const MAX_PDF_PAGES = 100
-export const MAX_PDF_TOKENS = 32000 // 32k tokens
+export const MAX_PDF_PAGES = 100;
+export const MAX_PDF_TOKENS = 32000; // 32k tokens
 
 // File type validation functions
 export const isImageExtension = (filename: string) => {
-    const ext = filename.toLowerCase().match(/\.[^.]+$/)?.[0]
-    return ext ? (SUPPORTED_IMAGE_EXTENSIONS as readonly string[]).includes(ext) : false
-}
+   const ext = filename.toLowerCase().match(/\.[^.]+$/)?.[0];
+   return ext ? (SUPPORTED_IMAGE_EXTENSIONS as readonly string[]).includes(ext) : false;
+};
 
 export const isTextExtension = (filename: string) => {
-    const ext = filename.toLowerCase().match(/\.[^.]+$/)?.[0]
-    return ext ? (SUPPORTED_TEXT_EXTENSIONS as readonly string[]).includes(ext) : false
-}
+   const ext = filename.toLowerCase().match(/\.[^.]+$/)?.[0];
+   return ext ? (SUPPORTED_TEXT_EXTENSIONS as readonly string[]).includes(ext) : false;
+};
 
 export const isImageMimeType = (mimeType: string) => {
-    return (
-        mimeType.startsWith("image/") ||
-        (SUPPORTED_IMAGE_MIME_TYPES as readonly string[]).includes(mimeType)
-    )
-}
+   return mimeType.startsWith("image/") || (SUPPORTED_IMAGE_MIME_TYPES as readonly string[]).includes(mimeType);
+};
 
 export const isTextMimeType = (mimeType: string) => {
-    return (
-        mimeType.startsWith("text/") ||
-        (SUPPORTED_TEXT_MIME_TYPES as readonly string[]).includes(mimeType)
-    )
-}
+   return mimeType.startsWith("text/") || (SUPPORTED_TEXT_MIME_TYPES as readonly string[]).includes(mimeType);
+};
 
 export const isSupportedFile = (filename: string, mimeType?: string) => {
-    // For text files, prioritize extension over MIME type since browsers often return
-    // application/octet-stream for code files like .c, .rs, etc.
-    const isText = isTextExtension(filename)
-    const isImage = isImageExtension(filename) || (mimeType ? isImageMimeType(mimeType) : false)
-    const isPdf =
-        filename.toLowerCase().endsWith(".pdf") ||
-        mimeType === "application/pdf" ||
-        mimeType === "application/x-pdf"
-    return isImage || isText || isPdf
-}
+   // For text files, prioritize extension over MIME type since browsers often return
+   // application/octet-stream for code files like .c, .rs, etc.
+   const isText = isTextExtension(filename);
+   const isImage = isImageExtension(filename) || (mimeType ? isImageMimeType(mimeType) : false);
+   const isPdf = filename.toLowerCase().endsWith(".pdf") || mimeType === "application/pdf" || mimeType === "application/x-pdf";
+   return isImage || isText || isPdf;
+};
 
 // Get file accept attribute for input element
 export const getFileAcceptAttribute = (includeImages = true) => {
-    const textExtensions = SUPPORTED_TEXT_EXTENSIONS.join(",")
-    if (includeImages) {
-        return `image/*,${textExtensions}`
-    }
-    return textExtensions
-}
+   const textExtensions = SUPPORTED_TEXT_EXTENSIONS.join(",");
+   const pdfExtension = ".pdf";
+
+   if (includeImages) {
+      return `image/*,${textExtensions},${pdfExtension}`;
+   }
+   return `${textExtensions},${pdfExtension}`;
+};
 
 // Simple token estimation (rough approximation: 1 token ≈ 4 characters)
 export const estimateTokenCount = (text: string) => {
-    return Math.ceil(text.length / 4)
-}
+   return Math.ceil(text.length / 4);
+};
 
 // File type detection result
 export interface FileTypeInfo {
-    isImage: boolean
-    isCode: boolean
-    isText: boolean
-    extension?: string
-    isPdf?: boolean
+   isImage: boolean;
+   isCode: boolean;
+   isText: boolean;
+   extension?: string;
+   isPdf?: boolean;
 }
 
 export const getFileTypeInfo = (filename: string, mimeType?: string) => {
-    const fileName = filename.toLowerCase()
-    const extension = fileName.match(/\.[^.]+$/)?.[0]
+   const fileName = filename.toLowerCase();
+   const extension = fileName.match(/\.[^.]+$/)?.[0];
 
-    // Check by extension first (more reliable than MIME type)
-    const isImage = isImageExtension(fileName)
-    const isCode = extension
-        ? (SUPPORTED_CODE_EXTENSIONS as readonly string[]).includes(extension)
-        : false
-    const isPlainText = extension
-        ? (SUPPORTED_PLAIN_TEXT_EXTENSIONS as readonly string[]).includes(extension)
-        : false
+   // Check by extension first (more reliable than MIME type)
+   const isImage = isImageExtension(fileName);
+   const isCode = extension ? (SUPPORTED_CODE_EXTENSIONS as readonly string[]).includes(extension) : false;
+   const isPlainText = extension ? (SUPPORTED_PLAIN_TEXT_EXTENSIONS as readonly string[]).includes(extension) : false;
 
-    // For text files, extension is more reliable than MIME type
-    // (browsers often return application/octet-stream for code files)
-    const isText = isCode || isPlainText || isTextExtension(fileName)
+   // For text files, extension is more reliable than MIME type
+   // (browsers often return application/octet-stream for code files)
+   const isText = isCode || isPlainText || isTextExtension(fileName);
 
-    // If not detected by extension, fall back to MIME type for images
-    const finalIsImage = isImage || (mimeType ? isImageMimeType(mimeType) : false)
-    const isPdf =
-        extension === ".pdf" || mimeType === "application/pdf" || mimeType === "application/x-pdf"
+   // If not detected by extension, fall back to MIME type for images
+   const finalIsImage = isImage || (mimeType ? isImageMimeType(mimeType) : false);
+   const isPdf = extension === ".pdf" || mimeType === "application/pdf" || mimeType === "application/x-pdf";
 
-    return { isImage: finalIsImage, isCode, isText, extension, isPdf } satisfies FileTypeInfo
-}
+   return { isImage: finalIsImage, isCode, isText, extension, isPdf } satisfies FileTypeInfo;
+};
 
 // Get correct MIME type for a file based on its extension
 export const getCorrectMimeType = (filename: string, browserMimeType?: string): string => {
-    const fileInfo = getFileTypeInfo(filename, browserMimeType)
+   const fileInfo = getFileTypeInfo(filename, browserMimeType);
 
-    // If it's an image and browser provided a valid image MIME type, use it
-    if (fileInfo.isImage && browserMimeType && isImageMimeType(browserMimeType)) {
-        return browserMimeType
-    }
+   // If it's an image and browser provided a valid image MIME type, use it
+   if (fileInfo.isImage && browserMimeType && isImageMimeType(browserMimeType)) {
+      return browserMimeType;
+   }
 
-    // If it's a text file (any kind), just use text/plain
-    if (fileInfo.isText) {
-        return "text/plain"
-    }
+   // If it's a text file (any kind), just use text/plain
+   if (fileInfo.isText) {
+      return "text/plain";
+   }
 
-    // Default fallback
-    return browserMimeType || "application/octet-stream"
+   // Default fallback
+   return browserMimeType || "application/octet-stream";
+};
+
+export function cleanText(text: string): string {
+   // Remove control characters (C0 and C1 controls)
+   // Using Unicode escapes to avoid eslint `no-control-regex` error
+   // \u0000-\u001F corresponds to \x00-\x1F
+   // \u007F-\u009F corresponds to \x7F-\x9F
+   // Remove control characters (C0 and C1 controls) using Unicode escapes to avoid eslint `no-control-regex` error
+   let cleanedText = text.replace(
+      new RegExp(
+         [
+            "[",
+            "\\u0000-\\u001F", // C0 controls
+            "\\u007F-\\u009F", // C1 controls
+            "]",
+         ].join(""),
+         "g"
+      ),
+      ""
+   );
+
+   // Normalize spaces: replace multiple spaces, tabs, or line breaks with a single space
+   cleanedText = cleanedText.replace(/\s+/g, " ").trim();
+
+   // The previous version removed too many characters with /[^\x20-\x7E]/g
+   // It also had potentially overly aggressive punctuation cleaning.
+   // This simpler version focuses on removing control chars and normalizing space.
+
+   // Optional: Further specific cleaning can be added here if needed,
+   // for example, removing zero-width spaces:
+   // cleanedText = cleanedText.replace(/[\u200B-\u200D\uFEFF]/g, '');
+
+   return cleanedText;
+}
+
+export function limitWords(text: string, maxWords: number): string {
+   if (!text) return "";
+
+   const words = text.split(/\s+/); // Split by any whitespace
+
+   if (words.length <= maxWords) {
+      return text;
+   }
+
+   return words.slice(0, maxWords).join(" ");
 }
