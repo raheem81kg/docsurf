@@ -79,22 +79,10 @@ export const SectionFive: React.FC<SectionFiveProps> = ({
             tooltip="Insert table"
             icon={<TableIcon className="size-4.5" />}
             disableHoverableContent={true}
-            disabled={editorState.isCodeBlock || isDocLocked}
+            disabled={isDocLocked}
          />
-         <LinkEditPopover
-            editor={editor}
-            size={size}
-            variant={variant}
-            disableHoverableContent={true}
-            disabled={editorState.isCodeBlock || isDocLocked}
-         />
-         <ImageEditDialog
-            editor={editor}
-            size={size}
-            variant={variant}
-            disableHoverableContent={true}
-            disabled={editorState.isCodeBlock || isDocLocked}
-         />
+         <LinkEditPopover editor={editor} size={size} variant={variant} disableHoverableContent={true} disabled={isDocLocked} />
+         <ImageEditDialog editor={editor} size={size} variant={variant} disableHoverableContent={true} disabled={isDocLocked} />
          <ToolbarSection
             editor={editor}
             actions={formatActionsWithActive}
@@ -110,7 +98,7 @@ export const SectionFive: React.FC<SectionFiveProps> = ({
             dropdownTooltip="Insert elements"
             size={size}
             variant={variant}
-            disabled={editorState.isCodeBlock || isDocLocked}
+            disabled={isDocLocked}
          />
       </>
    );

@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_welcome")({
          {
             name: "description",
             content:
-               "Revolutionize your document workflow with AI-powered editing, collaboration, and intelligent content generation. Start for free today.",
+               "Revolutionize your document workflow with AI-powered editing and intelligent content generation. Start for free today.",
          },
          {
             name: "robots",
