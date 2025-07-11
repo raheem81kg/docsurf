@@ -36,7 +36,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
    return (
       <>
          {children}
-         <OnboardingDialog isOpen={true} onComplete={handleOnboardingComplete} />
+         <OnboardingDialog isOpen={isDialogOpen} onComplete={handleOnboardingComplete} />
       </>
    );
 }
