@@ -117,6 +117,7 @@ You have access to Model Context Protocol (MCP) tools from configured servers:
 ## Document Context Tool
 You have access to the current document being edited:
 - **get_current_document**: Returns the content and metadata of the currently active document as HTML. This tool always operates on the current document context and requires no parameters.
+- _You have read-only access to the document; you cannot modify or write to it in any way._
 - Use this tool to understand what the user is working on and provide relevant, context-aware assistance.
 - You do NOT need to provide a document ID or any parameters; simply call the tool to get the current document.
 - The HTML is generated from the document's rich text content and is safe for display or further processing.`

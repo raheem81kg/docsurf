@@ -374,7 +374,8 @@ export const chatPOST = httpAction(async (ctx, req) => {
                if (
                   part.type === "tool-invocation" &&
                   (part.toolInvocation.toolName === "get_current_document" ||
-                     part.toolInvocation.toolName === "get_current_document_html") &&
+                     part.toolInvocation.toolName === "get_current_document_html" ||
+                     part.toolInvocation.toolName === "document_context") &&
                   part.toolInvocation.state === "result" &&
                   part.toolInvocation.result
                ) {
