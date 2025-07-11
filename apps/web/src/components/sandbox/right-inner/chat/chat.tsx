@@ -7,7 +7,7 @@ import { useChatIntegration } from "./hooks/use-chat-integration";
 import { useDynamicTitle } from "./hooks/use-dynamic-title";
 import { useThreadSync } from "./hooks/use-thread-sync";
 import { type UploadedFile, useChatStore } from "./lib/chat-store";
-import { useModelStore } from "./lib/model-store";
+import { useModelStore } from "@docsurf/utils/chat/model-store";
 import { useThemeStore } from "./lib/theme-store";
 import { useAvailableModels } from "./lib/models-providers-shared";
 import { useDiskCachedQuery } from "./lib/convex-cached-query";
@@ -21,6 +21,10 @@ import { useSession } from "@/hooks/auth-hooks";
 import { ChatHeader } from "./chat-header";
 import { useConvexAuth } from "convex/react";
 import { api } from "@docsurf/backend/convex/_generated/api";
+import { useCurrentDocument } from "@/components/sandbox/left/_tree_components/SortableTree";
+import { useQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 
 interface ChatProps {
    threadId: string | undefined;
@@ -50,6 +54,11 @@ const ChatContent = ({ threadId: routeThreadId }: ChatProps) => {
       },
       session?.user?.id && !auth.isLoading ? {} : "skip"
    );
+   const { data: user } = useQuery({
+      ...convexQuery(api.auth.getCurrentUser, {}),
+      enabled: !!session?.user,
+   });
+   const { doc: currentDocument } = useCurrentDocument(user);
 
    // Get available models based on user's API keys
    const { availableModels } = useAvailableModels("error" in userSettings ? DefaultSettings(session?.user?.id ?? "") : userSettings);
@@ -73,12 +82,12 @@ const ChatContent = ({ threadId: routeThreadId }: ChatProps) => {
 
    const { status, data, messages, ...chatHelpers } = useChatIntegration({
       threadId,
-      // folderId,
+      currentDocumentId: currentDocument?._id as Id<"documents">,
    });
 
    const { handleInputSubmit, handleRetry, handleEditAndRetry } = useChatActions({
       threadId,
-      // folderId,
+      currentDocumentId: currentDocument?._id as Id<"documents">,
    });
 
    useChatDataProcessor({ data, messages });

@@ -4,7 +4,7 @@ import { z } from "zod";
 import { internal } from "../../_generated/api";
 import type { ToolAdapter } from "../toolkit";
 
-export const SupermemoryAdapter: ToolAdapter = async ({ ctx, enabledTools, userSettings }) => {
+export const SupermemoryAdapter: ToolAdapter = async ({ ctx, enabledTools, toolRequestContext }) => {
    if (!enabledTools.includes("supermemory")) return {};
 
    return {
@@ -23,7 +23,7 @@ export const SupermemoryAdapter: ToolAdapter = async ({ ctx, enabledTools, userS
          execute: async ({ content, metadata }) => {
             try {
                const apiKey = await ctx.runQuery(internal.settings.getSupermemoryKey, {
-                  userId: userSettings.userId,
+                  userId: toolRequestContext.userSettings.userId,
                });
 
                if (!apiKey) {
@@ -37,7 +37,7 @@ export const SupermemoryAdapter: ToolAdapter = async ({ ctx, enabledTools, userS
                   apiKey,
                });
 
-               const containerTags = [userSettings.userId];
+               const containerTags = [toolRequestContext.userSettings.userId];
                if (metadata?.category) {
                   containerTags.push(`category:${metadata.category}`);
                }
@@ -82,7 +82,7 @@ export const SupermemoryAdapter: ToolAdapter = async ({ ctx, enabledTools, userS
          execute: async ({ query, limit = 5, category, tags }) => {
             try {
                const apiKey = await ctx.runQuery(internal.settings.getSupermemoryKey, {
-                  userId: userSettings.userId,
+                  userId: toolRequestContext.userSettings.userId,
                });
 
                if (!apiKey) {
@@ -96,7 +96,7 @@ export const SupermemoryAdapter: ToolAdapter = async ({ ctx, enabledTools, userS
                   apiKey,
                });
 
-               const containerTags = [userSettings.userId];
+               const containerTags = [toolRequestContext.userSettings.userId];
                if (category) {
                   containerTags.push(`category:${category}`);
                }

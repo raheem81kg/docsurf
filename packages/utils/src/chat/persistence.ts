@@ -3,7 +3,9 @@ import { ABILITIES } from "./chat-constants";
 
 const AIConfigSchema = z.object({
    selectedModel: z.string().nullable(),
-   enabledTools: z.array(z.enum(ABILITIES as readonly ["web_search", "supermemory", "mcp"])).default(["web_search"]),
+   enabledTools: z
+      .array(z.enum(ABILITIES as readonly ["web_search", "supermemory", "mcp", "document_context"]))
+      .default(["web_search"]),
    selectedImageSize: z.string().optional().default("1:1"),
    reasoningEffort: z.enum(["off", "low", "medium", "high"]).default("medium"),
 });

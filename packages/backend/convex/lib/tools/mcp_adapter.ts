@@ -3,10 +3,10 @@ import { experimental_createMCPClient as createMCPClient } from "ai";
 import type { CoreTool } from "ai";
 import type { ToolAdapter } from "../toolkit";
 
-export const MCPAdapter: ToolAdapter = async ({ enabledTools, userSettings }) => {
+export const MCPAdapter: ToolAdapter = async ({ enabledTools, toolRequestContext }) => {
    console.log("[MCP] MCPAdapter called", {
       enabledTools,
-      mcpServersCount: userSettings.mcpServers?.length || 0,
+      mcpServersCount: toolRequestContext.userSettings.mcpServers?.length || 0,
    });
 
    // Check if MCP is enabled
@@ -16,7 +16,7 @@ export const MCPAdapter: ToolAdapter = async ({ enabledTools, userSettings }) =>
    }
 
    // Get MCP servers from user settings and filter only enabled ones
-   const allMcpServers = userSettings.mcpServers || [];
+   const allMcpServers = toolRequestContext.userSettings.mcpServers || [];
    const mcpServers = allMcpServers.filter((server) => server.enabled !== false); // Default to enabled if not specified
 
    if (mcpServers.length === 0) {

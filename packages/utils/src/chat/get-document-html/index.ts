@@ -1,19 +1,18 @@
-import DOMPurify from "isomorphic-dompurify";
-import { generateHTML } from "@tiptap/react";
+import { generateHTML } from "@tiptap/html";
 import { getServerTiptapExtensions } from "./server-extensions";
 import type { JSONContent } from "@tiptap/core";
 
-interface Document {
-   content: string;
+function isBrowser() {
+   return typeof window !== "undefined" && typeof document !== "undefined";
 }
 
 /**
  * Render a document's Tiptap JSON content as HTML using the server extension set.
  * Returns null if content is missing or invalid.
  */
-export function getDocumentHtml(document: Document): string | null {
-   if (!document.content) return null;
-   const originalJson = safeParseTiptapContent(document.content);
+export function getDocumentHtml(content: string): string | null {
+   if (!content) return null;
+   const originalJson = safeParseTiptapContent(content);
    if (originalJson) {
       try {
          let html = generateHTML(originalJson, getServerTiptapExtensions());
@@ -21,8 +20,13 @@ export function getDocumentHtml(document: Document): string | null {
          html = html.replace(/data:[^;]+;base64,[A-Za-z0-9+/=]+/g, "[base64 omitted]");
          // Replace all blob: URLs with a placeholder
          html = html.replace(/blob:[^"'\s)]+/g, "[blob omitted]");
-         // Sanitize HTML to prevent XSS and other issues
-         html = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
+         // Sanitize HTML to prevent XSS and other issues (browser only)
+         if (isBrowser()) {
+            // @ts-ignore
+            // This ensures isomorphic-dompurify is only loaded in environments where window exists. (CRITICAL)
+            const DOMPurify = require("isomorphic-dompurify");
+            html = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
+         }
          return html;
       } catch {
          return null;

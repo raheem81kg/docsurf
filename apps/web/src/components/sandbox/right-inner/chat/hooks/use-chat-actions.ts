@@ -7,11 +7,17 @@ import { useCallback } from "react";
 import { useChatIntegration } from "./use-chat-integration";
 import { useAuthTokenStore } from "@/hooks/use-auth-store";
 
-export function useChatActions({ threadId, folderId }: { threadId: string | undefined; folderId?: Id<"projects"> }) {
+export function useChatActions({
+   threadId,
+   currentDocumentId,
+}: {
+   threadId: string | undefined;
+   currentDocumentId?: Id<"documents">;
+}) {
    const { uploadedFiles, setUploadedFiles, setTargetFromMessageId, setTargetMode } = useChatStore();
    const { status, append, stop, messages, setMessages, reload } = useChatIntegration({
       threadId,
-      folderId,
+      currentDocumentId,
    });
 
    const handleInputSubmit = useCallback(

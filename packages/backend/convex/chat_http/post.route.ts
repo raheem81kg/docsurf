@@ -80,8 +80,9 @@ export const chatPOST = httpAction(async (ctx, req) => {
          targetMode?: "normal" | "edit" | "retry";
          imageSize?: ImageSize;
          mcpOverrides?: Record<string, boolean>;
-         folderId?: Id<"projects">;
          reasoningEffort?: ReasoningEffort;
+         currentDocumentId?: Id<"documents">;
+         workspaceId?: Id<"workspaces">;
       } = await req.json();
 
       if (body.targetFromMessageId && !body.id) {
@@ -98,7 +99,6 @@ export const chatPOST = httpAction(async (ctx, req) => {
          proposedNewAssistantId: body.proposedNewAssistantId,
          targetFromMessageId: body.targetFromMessageId,
          targetMode: body.targetMode,
-         folderId: body.folderId,
       });
 
       if (mutationResult instanceof ChatError) return mutationResult.toResponse();
@@ -331,7 +331,11 @@ export const chatPOST = httpAction(async (ctx, req) => {
                   experimental_transform: smoothStream(),
                   toolCallStreaming: true,
                   tools: modelData.abilities.includes("function_calling")
-                     ? await getToolkit(ctx, body.enabledTools, filteredSettings)
+                     ? await getToolkit(ctx, body.enabledTools, {
+                          userSettings: filteredSettings,
+                          currentDocumentId: body.currentDocumentId,
+                          workspaceId: body.workspaceId,
+                       })
                      : undefined,
                   messages: [
                      ...(modelData.modelId !== "gemini-2.0-flash-image-generation"
@@ -365,12 +369,34 @@ export const chatPOST = httpAction(async (ctx, req) => {
             remoteCancel.abort();
             console.log();
 
+            // Before saving, filter out HTML from get_current_document tool results to prevent DB bloat
+            const partsToPersist = parts.map((part) => {
+               if (
+                  part.type === "tool-invocation" &&
+                  (part.toolInvocation.toolName === "get_current_document" ||
+                     part.toolInvocation.toolName === "get_current_document_html") &&
+                  part.toolInvocation.state === "result" &&
+                  part.toolInvocation.result
+               ) {
+                  // Redact the HTML content before saving
+                  const { html, ...restResult } = part.toolInvocation.result;
+                  return {
+                     ...part,
+                     toolInvocation: {
+                        ...part.toolInvocation,
+                        result: restResult,
+                     },
+                  };
+               }
+               return part;
+            });
+
             await ctx.runMutation(internal.messages.patchMessage, {
                threadId: mutationResult.threadId,
                messageId: mutationResult.assistantMessageId,
                parts:
-                  parts.length > 0
-                     ? parts
+                  partsToPersist.length > 0
+                     ? partsToPersist
                      : [
                           {
                              type: "error",

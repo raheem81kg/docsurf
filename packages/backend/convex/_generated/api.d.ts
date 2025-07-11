@@ -41,6 +41,7 @@ import type * as lib_tools_adapters_search_adapter from "../lib/tools/adapters/s
 import type * as lib_tools_adapters_search_provider from "../lib/tools/adapters/search_provider.js";
 import type * as lib_tools_adapters_serper_search_adapter from "../lib/tools/adapters/serper_search_adapter.js";
 import type * as lib_tools_adapters_tavily_search_adapter from "../lib/tools/adapters/tavily_search_adapter.js";
+import type * as lib_tools_document_context from "../lib/tools/document_context.js";
 import type * as lib_tools_mcp_adapter from "../lib/tools/mcp_adapter.js";
 import type * as lib_tools_supermemory from "../lib/tools/supermemory.js";
 import type * as lib_tools_web_search from "../lib/tools/web_search.js";
@@ -116,6 +117,7 @@ declare const fullApi: ApiFromModules<{
   "lib/tools/adapters/search_provider": typeof lib_tools_adapters_search_provider;
   "lib/tools/adapters/serper_search_adapter": typeof lib_tools_adapters_serper_search_adapter;
   "lib/tools/adapters/tavily_search_adapter": typeof lib_tools_adapters_tavily_search_adapter;
+  "lib/tools/document_context": typeof lib_tools_document_context;
   "lib/tools/mcp_adapter": typeof lib_tools_mcp_adapter;
   "lib/tools/supermemory": typeof lib_tools_supermemory;
   "lib/tools/web_search": typeof lib_tools_web_search;

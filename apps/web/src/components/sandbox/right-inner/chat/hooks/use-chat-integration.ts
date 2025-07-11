@@ -6,7 +6,7 @@ import { useVerifyToken, useSession } from "@/hooks/auth-hooks";
 import { useAutoResume } from "./use-auto-resume";
 import { env } from "@/env";
 import { useChatStore } from "../lib/chat-store";
-import { useModelStore } from "../lib/model-store";
+import { useModelStore } from "@docsurf/utils/chat/model-store";
 import { type Message, useChat } from "@ai-sdk/react";
 import { useQuery as useConvexQuery } from "convex-helpers/react/cache";
 import type { Infer } from "convex/values";
@@ -18,12 +18,14 @@ export function useChatIntegration<IsShared extends boolean>({
    threadId,
    sharedThreadId,
    isShared,
-   folderId,
+   // folderId,
+   currentDocumentId,
 }: {
    threadId: string | undefined;
    sharedThreadId?: string | undefined;
    isShared?: IsShared;
-   folderId?: Id<"projects">;
+   // folderId?: Id<"projects">;
+   currentDocumentId?: Id<"documents">;
 }) {
    const { selectedModel, enabledTools, selectedImageSize, reasoningEffort, getEffectiveMcpOverrides } = useModelStore();
    const { rerenderTrigger, shouldUpdateQuery, setShouldUpdateQuery, triggerRerender } = useChatStore();
@@ -88,6 +90,10 @@ export function useChatIntegration<IsShared extends boolean>({
          // Get effective MCP overrides (includes defaults for new chats)
          const mcpOverrides = getEffectiveMcpOverrides(threadId);
 
+         if (currentDocumentId) {
+            enabledTools.push("document_context");
+         }
+
          requestBody = {
             ...body.requestBody,
             id: threadId,
@@ -100,9 +106,10 @@ export function useChatIntegration<IsShared extends boolean>({
             },
             enabledTools,
             imageSize: selectedImageSize,
-            folderId,
+            // folderId,
             reasoningEffort,
             mcpOverrides,
+            currentDocumentId,
          };
          return requestBody;
       },

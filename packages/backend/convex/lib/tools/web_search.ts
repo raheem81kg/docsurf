@@ -7,8 +7,9 @@ import { SearchProvider } from "./adapters";
 export const WebSearchAdapter: ToolAdapter = async (params) => {
    if (!params.enabledTools.includes("web_search")) return {};
 
-   const { userSettings, ctx } = params;
-   const searchProviderId = userSettings.searchProvider;
+   const { toolRequestContext, ctx } = params;
+   const userSettings = toolRequestContext.userSettings;
+   const searchProviderId = toolRequestContext.userSettings.searchProvider;
 
    // Get the API key for the selected provider
    // User-provided key takes precedence over server key

@@ -14,7 +14,7 @@ import { Globe, Settings2 } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 import { useSession } from "@/hooks/auth-hooks";
 import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
-import { useModelStore } from "./lib/model-store";
+import { useModelStore } from "@docsurf/utils/chat/model-store";
 import type { AbilityId } from "@docsurf/utils/chat/chat-constants";
 
 type ToolSelectorPopoverProps = {

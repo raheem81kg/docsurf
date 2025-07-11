@@ -7,22 +7,28 @@ import { MCPAdapter } from "./tools/mcp_adapter";
 import { SupermemoryAdapter } from "./tools/supermemory";
 import { WebSearchAdapter } from "./tools/web_search";
 import type { AbilityId } from "@docsurf/utils/chat/chat-constants";
+import { DocumentContextAdapter } from "./tools/document_context";
 
-export type ToolAdapter = (params: ConditionalToolParams) => Promise<Partial<Record<string, Tool>>>;
-export const TOOL_ADAPTERS = [WebSearchAdapter, SupermemoryAdapter, MCPAdapter];
+export type ToolRequestContext = {
+   userSettings: Infer<typeof UserSettings>;
+   currentDocumentId?: string;
+   workspaceId?: string;
+   // Add more ephemeral/request-scoped fields as needed
+};
 
-export type ConditionalToolParams = {
+export type ToolAdapter = (params: {
    ctx: GenericActionCtx<DataModel>;
    enabledTools: AbilityId[];
-   userSettings: Infer<typeof UserSettings>;
-};
+   toolRequestContext: ToolRequestContext;
+}) => Promise<Partial<Record<string, Tool>>>;
+export const TOOL_ADAPTERS = [WebSearchAdapter, SupermemoryAdapter, MCPAdapter, DocumentContextAdapter];
 
 export const getToolkit = async (
    ctx: GenericActionCtx<DataModel>,
    enabledTools: AbilityId[],
-   userSettings: Infer<typeof UserSettings>
+   toolRequestContext: ToolRequestContext
 ): Promise<Record<string, Tool>> => {
-   const toolResults = await Promise.all(TOOL_ADAPTERS.map((adapter) => adapter({ ctx, enabledTools, userSettings })));
+   const toolResults = await Promise.all(TOOL_ADAPTERS.map((adapter) => adapter({ ctx, enabledTools, toolRequestContext })));
 
    const tools: Record<string, Tool> = {};
    for (const toolResult of toolResults) {

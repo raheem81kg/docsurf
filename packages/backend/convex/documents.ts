@@ -3,7 +3,7 @@
 // Mirrors Supabase logic for document reordering, deletion, and tree retrieval.
 
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalQuery } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
 import type { Documents } from "./schema/documents";
 import type { Infer } from "convex/values";
@@ -511,6 +511,15 @@ export const fetchDocumentById = query({
       const { userId } = await requireWorkspacePermission(ctx, workspaceId);
       const doc = await ctx.db.get(id);
       if (!doc || doc.workspaceId !== workspaceId || doc.authorId !== userId) return null;
+      return doc;
+   },
+});
+
+export const getDocumentById = internalQuery({
+   args: { id: v.id("documents") },
+   handler: async ({ db }, { id }) => {
+      const doc = await db.get(id);
+      if (!doc) return null;
       return doc;
    },
 });

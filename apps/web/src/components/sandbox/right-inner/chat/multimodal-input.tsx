@@ -15,7 +15,7 @@ import { ArrowUp, Brain, Code, FileType, Image as ImageIcon, Loader2, Mic, Paper
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useChatStore, type UploadedFile } from "./lib/chat-store";
-import { useModelStore, type ReasoningEffort } from "./lib/model-store";
+import { useModelStore, type ReasoningEffort } from "@docsurf/utils/chat/model-store";
 import type { ImageSize } from "@docsurf/utils/chat/chat-constants";
 import { getChatWidthClass, useChatWidthStore } from "./lib/chat-width-store";
 import { useDiskCachedQuery } from "./lib/convex-cached-query";

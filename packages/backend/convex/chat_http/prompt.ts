@@ -10,7 +10,9 @@ export const buildPrompt = (enabledTools: AbilityId[], userSettings?: Infer<type
 
    // Get current UTC date in DD-MM-YYYY format
    const now = new Date();
-   const utcDate = `${now.getUTCDate().toString().padStart(2, "0")}-${(now.getUTCMonth() + 1).toString().padStart(2, "0")}-${now.getUTCFullYear()}`;
+   const utcDate = `${now.getUTCDate().toString().padStart(2, "0")}-${(now.getUTCMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${now.getUTCFullYear()}`;
 
    const layers: string[] = [
       `You are a helpful assistant inside a chatbot called "Docsurf Chat".`,
@@ -107,6 +109,17 @@ You have access to Model Context Protocol (MCP) tools from configured servers:
 - Tools are prefixed with the server name (e.g., "servername_toolname")
 - These tools provide additional capabilities based on the connected MCP servers
 - Use them as needed based on their descriptions and the user's request`
+      );
+
+   if (enabledTools.includes("document_context"))
+      layers.push(
+         dedent`
+## Document Context Tool
+You have access to the current document being edited:
+- **get_current_document**: Returns the content and metadata of the currently active document as HTML. This tool always operates on the current document context and requires no parameters.
+- Use this tool to understand what the user is working on and provide relevant, context-aware assistance.
+- You do NOT need to provide a document ID or any parameters; simply call the tool to get the current document.
+- The HTML is generated from the document's rich text content and is safe for display or further processing.`
       );
 
    layers.push(dedent`Today's date (UTC): ${utcDate}`);
