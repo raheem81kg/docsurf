@@ -134,7 +134,7 @@ export const SectionOne: React.FC<SectionOneProps> = function SectionOne({
 
    const blocks = getBlockBasedState(editor);
 
-   if (process.env.NODE_ENV === "development") {
+   if (import.meta.env.DEV) {
       // eslint-disable-next-line no-console
       // console.log("[SectionOne] blocks:", blocks);
    }

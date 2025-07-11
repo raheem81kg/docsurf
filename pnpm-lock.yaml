@@ -58,7 +58,7 @@ importers:
         version: 0.6.2(better-auth@1.2.7)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)
       '@convex-dev/polar':
         specifier: ^0.5.0
-        version: 0.5.0(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)
+        version: 0.5.0(@modelcontextprotocol/sdk@1.13.2)(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)
       '@convex-dev/rate-limiter':
         specifier: ^0.2.10
         version: 0.2.10(convex@1.25.2(react@19.0.0))(react@19.0.0)
@@ -578,7 +578,7 @@ importers:
         version: 0.6.2(better-auth@1.2.7)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)
       '@convex-dev/polar':
         specifier: ^0.5.0
-        version: 0.5.0(@modelcontextprotocol/sdk@1.13.2)(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react@19.1.8)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)
+        version: 0.5.0(@modelcontextprotocol/sdk@1.13.2)(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)
       '@convex-dev/rate-limiter':
         specifier: ^0.2.10
         version: 0.2.10(convex@1.25.2(react@19.0.0))(react@19.0.0)
@@ -921,6 +921,81 @@ importers:
 
   packages/utils:
     dependencies:
+      '@tiptap/core':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/pm@2.23.1)
+      '@tiptap/extension-character-count':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))(@tiptap/pm@2.23.1)
+      '@tiptap/extension-code-block-lowlight':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))(@tiptap/extension-code-block@2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))(@tiptap/pm@2.23.1))(@tiptap/pm@2.23.1)(highlight.js@11.11.1)(lowlight@3.3.0)
+      '@tiptap/extension-color':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))(@tiptap/extension-text-style@2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1)))
+      '@tiptap/extension-highlight':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))
+      '@tiptap/extension-horizontal-rule':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))(@tiptap/pm@2.23.1)
+      '@tiptap/extension-image':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))
+      '@tiptap/extension-link':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))(@tiptap/pm@2.23.1)
+      '@tiptap/extension-mathematics':
+        specifier: ^2.23.0
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))(@tiptap/pm@2.23.1)(katex@0.16.22)
+      '@tiptap/extension-placeholder':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))(@tiptap/pm@2.23.1)
+      '@tiptap/extension-subscript':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))
+      '@tiptap/extension-superscript':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))
+      '@tiptap/extension-table':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))(@tiptap/pm@2.23.1)
+      '@tiptap/extension-table-cell':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))
+      '@tiptap/extension-table-header':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))
+      '@tiptap/extension-table-row':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))
+      '@tiptap/extension-task-item':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))(@tiptap/pm@2.23.1)
+      '@tiptap/extension-task-list':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))
+      '@tiptap/extension-text-align':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))
+      '@tiptap/extension-text-style':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))
+      '@tiptap/extension-typography':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))
+      '@tiptap/extension-underline':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))
+      '@tiptap/react':
+        specifier: ^2.22.3
+        version: 2.23.1(@tiptap/core@2.23.1(@tiptap/pm@2.23.1))(@tiptap/pm@2.23.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@tiptap/starter-kit':
+        specifier: ^2.22.3
+        version: 2.23.1
+      isomorphic-dompurify:
+        specifier: ^2.26.0
+        version: 2.26.0
       ms:
         specifier: ^2.1.3
         version: 2.1.3
@@ -7243,6 +7318,10 @@ packages:
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
 
+  isomorphic-dompurify@2.26.0:
+    resolution: {integrity: sha512-nZmoK4wKdzPs5USq4JHBiimjdKSVAOm2T1KyDoadtMPNXYHxiENd19ou4iU/V4juFM6LVgYQnpxCYmxqNP4Obw==}
+    engines: {node: '>=18'}
+
   isomorphic.js@0.2.5:
     resolution: {integrity: sha512-PIeMbHqMt4DnUP3MA/Flc0HElYjMXArsw1qwJZcm9sqR8mq3l8NYizFMty0pWwE/tzIGH3EKK5+jes5mAr85yw==}
 
@@ -11330,29 +11409,7 @@ snapshots:
       - hono
       - typescript
 
-  '@convex-dev/polar@0.5.0(@modelcontextprotocol/sdk@1.13.2)(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react@19.1.8)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)':
-    dependencies:
-      '@polar-sh/checkout': 0.1.10(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(zod@3.25.67)
-      '@polar-sh/sdk': 0.32.11(@modelcontextprotocol/sdk@1.13.2)(zod@3.25.67)
-      buffer: 6.0.3
-      convex: 1.25.2(react@19.0.0)
-      convex-helpers: 0.1.95(convex@1.25.2(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
-      remeda: 2.23.2
-      standardwebhooks: 1.0.0
-    transitivePeerDependencies:
-      - '@modelcontextprotocol/sdk'
-      - '@standard-schema/spec'
-      - '@stripe/react-stripe-js'
-      - '@stripe/stripe-js'
-      - '@types/react'
-      - '@types/react-dom'
-      - hono
-      - typescript
-      - zod
-
-  '@convex-dev/polar@0.5.0(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)':
+  '@convex-dev/polar@0.5.0(@modelcontextprotocol/sdk@1.13.2)(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)':
     dependencies:
       '@polar-sh/checkout': 0.1.10(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(zod@3.25.67)
       '@polar-sh/sdk': 0.32.11(@modelcontextprotocol/sdk@1.13.2)(zod@3.25.67)
@@ -17570,6 +17627,16 @@ snapshots:
   isbot@5.1.28: {}
 
   isexe@2.0.0: {}
+
+  isomorphic-dompurify@2.26.0:
+    dependencies:
+      dompurify: 3.2.6
+      jsdom: 26.1.0
+    transitivePeerDependencies:
+      - bufferutil
+      - canvas
+      - supports-color
+      - utf-8-validate
 
   isomorphic.js@0.2.5: {}
 

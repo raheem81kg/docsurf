@@ -90,7 +90,7 @@ const saveVersionIfChanged = async (
 ): Promise<void> => {
    // Prevent concurrent saves
    if (storage.isSaving) {
-      if (process.env.NODE_ENV !== "production") {
+      if (!import.meta.env.DEV) {
          console.log("[VersionTracker] Save already in progress, skipping");
       }
       return;
@@ -104,7 +104,7 @@ const saveVersionIfChanged = async (
 
    // Early exit if no content changed
    if (!storage.contentChanged) {
-      if (process.env.NODE_ENV !== "production") {
+      if (!import.meta.env.DEV) {
          console.log("[VersionTracker] No content changed, skipping save");
       }
       return;
@@ -119,7 +119,7 @@ const saveVersionIfChanged = async (
 
       // Check for duplicate content (in-memory)
       if (storage.lastSavedContentHash === currentContentHash) {
-         if (process.env.NODE_ENV !== "production") {
+         if (!import.meta.env.DEV) {
             console.log("[VersionTracker] Content hash unchanged, skipping save");
          }
          storage.contentChanged = false;
@@ -131,7 +131,7 @@ const saveVersionIfChanged = async (
       const lastVersions = await getLastNDocVersions(docId, 3);
       const isDuplicate = lastVersions.some((v) => v.contentHash === currentContentHash);
       if (isDuplicate) {
-         if (process.env.NODE_ENV !== "production") {
+         if (!import.meta.env.DEV) {
             console.log("[VersionTracker] Content matches recent version, skipping save");
          }
          storage.contentChanged = false;
@@ -144,7 +144,7 @@ const saveVersionIfChanged = async (
 
       // Skip if document is too short (but allow deletion tracking)
       if (currentWordCount <= 1 && (storage.lastSavedWordCount ?? 0) <= 1) {
-         if (process.env.NODE_ENV !== "production") {
+         if (!import.meta.env.DEV) {
             console.log("[VersionTracker] Document too short, skipping save");
          }
          return;
@@ -163,7 +163,7 @@ const saveVersionIfChanged = async (
 
       // Only save if we meet criteria
       if (!hasSignificantChanges && !isManualSave && !isBlurSave && !isIntervalSave && !hasMinimalChanges) {
-         if (process.env.NODE_ENV !== "production") {
+         if (!import.meta.env.DEV) {
             console.log("[VersionTracker] Thresholds not met, skipping save");
          }
          return;

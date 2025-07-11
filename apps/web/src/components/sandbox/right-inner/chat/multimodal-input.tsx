@@ -246,12 +246,14 @@ export function MultimodalInput({
          promptInputRef.current?.focus();
          return;
       }
-      Analytics.track("chat_submitted", {
-         input: inputValue,
-         files: uploadedFiles,
-         model: selectedModel,
-         userEmail: session?.user?.email,
-      });
+      if (!import.meta.env.DEV) {
+         Analytics.track("chat_submitted", {
+            input: inputValue,
+            files: uploadedFiles,
+            model: selectedModel,
+            userEmail: session?.user?.email,
+         });
+      }
       promptInputRef.current?.clear();
       localStorage.removeItem("user-input");
       setInputValue("");
@@ -312,12 +314,14 @@ export function MultimodalInput({
       const formData = new FormData();
       formData.append("file", file);
       formData.append("fileName", file.name);
-      Analytics.track("file_uploaded", {
-         userEmail: session?.user?.email,
-         fileName: file.name,
-         fileSize: file.size,
-         fileType: file.type,
-      });
+      if (!import.meta.env.DEV) {
+         Analytics.track("file_uploaded", {
+            userEmail: session?.user?.email,
+            fileName: file.name,
+            fileSize: file.size,
+            fileType: file.type,
+         });
+      }
 
       const response = await fetch(`${env.VITE_CONVEX_SITE_URL}/upload`, {
          method: "POST",

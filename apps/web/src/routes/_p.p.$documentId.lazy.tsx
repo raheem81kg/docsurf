@@ -63,7 +63,7 @@ function PublicDocumentComponent() {
 
    // Fire analytics after render
    useEffect(() => {
-      if (doc) {
+      if (doc && !import.meta.env.DEV) {
          throttledTrack(doc._id, session?.user?.id, session?.user?.email);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps

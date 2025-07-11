@@ -156,7 +156,7 @@ export default function Navigation({ profile }: { profile: Profile }) {
                <Separator orientation="vertical" className="h-8 w-[1px] bg-border" />
                <Link to={profile.email ? "/doc" : "/auth"}>
                   <Button size="lg" className="!h-9 flex items-center gap-2">
-                     <span className="">Go to app</span>
+                     <span className="">Start Writing</span>
                      <ArrowRight className="size-4" />
                   </Button>
                </Link>
@@ -252,7 +252,7 @@ export default function Navigation({ profile }: { profile: Profile }) {
                                  // className="block w-full rounded-lg bg-foreground py-3 text-center font-medium text-background transition-all duration-200 hover:bg-foreground/90"
                                  onClick={() => setIsMobileMenuOpen(false)}
                               >
-                                 {profile.email ? "Go to app" : "Get Started"}
+                                 {profile.email ? "Start Writing" : "Get Started"}
                               </Link>
                            </motion.div>
                         </div>

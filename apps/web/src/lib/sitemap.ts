@@ -53,12 +53,12 @@ export const sitemap: Sitemap<TRoutes> = {
          return [];
       },
 
-      "/s/$sharedThreadId": async (route: string) => {
-         // TODO: Implement dynamic shared thread route generation
-         // Similar to documents, you'd fetch shared threads here
+      // "/s/$sharedThreadId": async (route: string) => {/
+      // TODO: Implement dynamic shared thread route generation
+      // Similar to documents, you'd fetch shared threads here
 
-         // Example implementation (uncomment and modify when ready):
-         /*
+      // Example implementation (uncomment and modify when ready):
+      /*
       try {
         const sharedThreads = await fetch(`${env.VITE_SITE_URL}/api/shared-threads`).then(r => r.json());
         return sharedThreads.map((thread: any) => ({
@@ -73,8 +73,8 @@ export const sitemap: Sitemap<TRoutes> = {
       }
       */
 
-         return [];
-      },
+      //  return [];
+      // },
    },
    // Note: App routes with noindex robots directive are excluded by omission:
    // - /auth* (All auth routes)

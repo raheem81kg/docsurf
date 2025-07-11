@@ -1,9 +1,8 @@
-import type { UserIdentity } from "convex/server";
 import type { GenericActionCtx, GenericQueryCtx } from "convex/server";
 import { betterAuthComponent } from "../auth";
 import { ConvexError } from "convex/values";
-import { MutationCtx, QueryCtx } from "../_generated/server";
-import { Id } from "../_generated/dataModel";
+import type { MutationCtx, QueryCtx } from "../_generated/server";
+import type { Id } from "../_generated/dataModel";
 import { requireUserId } from "../users";
 import { LRUCache } from "lru-cache";
 

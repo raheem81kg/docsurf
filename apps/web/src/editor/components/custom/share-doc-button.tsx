@@ -49,11 +49,12 @@ export function ShareDocButton() {
             console.error("Failed to share thread:", result.error);
             return;
          }
-
-         Analytics.track("document_shared", {
-            documentId: currentDocument?.doc?._id,
-            userEmail: session?.user?.email,
-         });
+         if (!import.meta.env.DEV) {
+            Analytics.track("document_shared", {
+               documentId: currentDocument?.doc?._id,
+               userEmail: session?.user?.email,
+            });
+         }
 
          // Invalidate the current document query to refetch state
          queryClient.invalidateQueries();

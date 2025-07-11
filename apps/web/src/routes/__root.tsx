@@ -50,9 +50,10 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
          // --- SEO Meta Tags ---
          ...seo({
             title: "Docsurf: The AI document editor",
-            description: "Docsurf is an AI document editor that allows you to create, edit, and share documents with ease.",
+            description: "Docsurf is an AI document editor that makes it easy to create, edit, and share essays and research papers.",
             image: `${PROD_APP_URL}/opengraph.jpg`,
-            keywords: "docsurf, docsurf ai, docs, document, writing, ai writing, essay, ai essay",
+            keywords:
+               "docsurf, docsurf ai, docs, document, writing, free document editor, ai essay generator, ai writing assistant, writing productivity tool, ai writing, essay, ai essay, essay writer, online text editor",
          }),
          // --- App & Theme Meta Tags ---
          {
@@ -86,8 +87,24 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
             name: "apple-mobile-web-app-title",
             content: "Docsurf",
          },
+         {
+            name: "author",
+            content: "Docsurf",
+         },
+         {
+            name: "application-name",
+            content: "Docsurf",
+         },
+         {
+            name: "msapplication-TileColor",
+            content: "#000000",
+         },
       ],
       links: [
+         {
+            rel: "canonical",
+            href: PROD_APP_URL,
+         },
          {
             rel: "stylesheet",
             href: appCss,

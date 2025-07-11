@@ -103,12 +103,14 @@ export function createRequestInlineSuggestionCallback(
             params.set("writingStyleSummary", writingStyleSummary);
          }
          params.set("applyStyle", applyStyle.toString());
-         Analytics.track("inline_suggestion_requested", {
-            documentId: docId,
-            workspaceId: workspaceId ?? "",
-            userEmail: userEmail,
-            userId: userId,
-         });
+         if (!import.meta.env.DEV) {
+            Analytics.track("inline_suggestion_requested", {
+               documentId: docId,
+               workspaceId: workspaceId ?? "",
+               userEmail: userEmail,
+               userId: userId,
+            });
+         }
          const response = await fetch(`/api/inline-suggestion?${params.toString()}`, {
             method: "GET",
             signal: controller.signal,

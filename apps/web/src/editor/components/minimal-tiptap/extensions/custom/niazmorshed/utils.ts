@@ -1,5 +1,5 @@
 import type { Editor } from "@tiptap/react";
-
+import { env } from "@/env";
 export const NODE_HANDLES_SELECTED_STYLE_CLASSNAME = "node-handles-selected-style";
 
 export function isValidUrl(url: string) {
@@ -34,5 +34,5 @@ export function getUrlFromString(str: string) {
 }
 
 export function absoluteUrl(path: string) {
-   return `${process.env.NEXT_PUBLIC_APP_URL}${path}`;
+   return `${env.VITE_SITE_URL}${path}`;
 }

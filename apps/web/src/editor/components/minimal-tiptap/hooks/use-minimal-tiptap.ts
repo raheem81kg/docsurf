@@ -382,7 +382,7 @@ export const useMinimalTiptapEditor = ({
             const newComparable = getComparableContent(content);
             const lastComparable = getComparableContent(lastSavedContent.current);
             if (!isEqual(newComparable, lastComparable)) {
-               if (process.env.NODE_ENV !== "production") {
+               if (import.meta.env.DEV) {
                   // eslint-disable-next-line no-console
                   console.log("Save triggered. Diff:", {
                      newComparable,
@@ -403,7 +403,7 @@ export const useMinimalTiptapEditor = ({
                      onSave?.(content);
                   } catch (err) {
                      showToast("Save failed", "error");
-                     if (process.env.NODE_ENV !== "production") {
+                     if (import.meta.env.DEV) {
                         // eslint-disable-next-line no-console
                         console.error("Save error:", err);
                      }

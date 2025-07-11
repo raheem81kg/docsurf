@@ -148,7 +148,7 @@ export const SectionSix: React.FC<SectionSixProps> = ({
    return (
       <div className="flex w-full items-center justify-between gap-2 px-2">
          {/* Left: Remaining characters */}
-         <span className={"font-mono text-xs " + (isLimit ? "font-bold text-red-600" : "text-muted-foreground")}>{remaining}</span>
+         <span className={`font-mono text-xs ${isLimit ? "font-bold text-red-600" : "text-muted-foreground"}`}>{remaining}</span>
          {/* Center: Dynamic word/char count */}
          <span className="select-none hidden lg:block text-center font-mono text-xs text-muted-foreground">
             {used} | {words} words

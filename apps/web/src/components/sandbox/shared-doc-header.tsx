@@ -96,7 +96,7 @@ const SharedDocHeader = () => {
 
          <div className="flex items-center md:gap-[0.1875rem] gap-[0.725rem] ml-auto">
             <Button size="sm" data-sidebar="trigger" data-slot="sidebar-trigger" onClick={() => navigate({ to: "/doc" })}>
-               {session?.user ? "Go to App" : "Sign in"}
+               {session?.user ? "Start Writing" : "Sign in"}
             </Button>
          </div>
       </header>

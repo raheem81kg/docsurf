@@ -497,13 +497,15 @@ export default function SuggestionOverlay({
                return;
             }
 
-            Analytics.track("suggestion_requested", {
-               documentId,
-               description: prompt.trim(),
-               selectedText,
-               userId: userId,
-               workspaceId: workspaceId,
-            });
+            if (!import.meta.env.DEV) {
+               Analytics.track("suggestion_requested", {
+                  documentId,
+                  description: prompt.trim(),
+                  selectedText,
+                  userId: userId,
+                  workspaceId: workspaceId,
+               });
+            }
 
             // Make POST request
             const response = await fetch("/api/suggestion", {

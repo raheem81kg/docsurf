@@ -1,11 +1,12 @@
 {
    "name": "Docsurf: The AI document editor",
    "short_name": "Docsurf",
-   "description": "Docsurf is an AI document editor that allows you to create, edit, and share documents with ease.",
+   "description": "Docsurf is an AI document editor that makes it easy to create, edit, and share essays and research papers.",
    "start_url": "/auth",
    "display": "standalone",
    "background_color": "#ffffff",
    "theme_color": "#000000",
+   "categories": ["productivity", "writing", "education", "research"],
    "icons": [
       {
          "src": "/manifest-icon-192.maskable.png",
