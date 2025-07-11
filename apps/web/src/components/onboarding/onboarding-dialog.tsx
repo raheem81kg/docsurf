@@ -28,6 +28,9 @@ import {
    Sparkles,
    Wand2,
    Zap,
+   GripVertical,
+   Check,
+   X,
 } from "lucide-react";
 import { CheckCircle, MoonIcon, SunIcon } from "lucide-react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
@@ -95,6 +98,87 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
                <span className="text-xs text-muted-foreground mt-1">
                   Press <kbd className="inline-tab-icon">Ctrl+Space</kbd> to accept
                </span>
+            </div>
+         </div>
+      ),
+   },
+   {
+      id: "ai-suggestions",
+      title: "Smart Text Suggestions",
+      icon: Edit,
+      content: (
+         <div className="flex flex-col items-center space-y-4 w-full">
+            <div className="flex flex-col items-center space-y-2">
+               <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 mb-2">
+                  <Edit className="h-8 w-8 text-primary" />
+               </div>
+               <h3 className="font-bold text-xl text-foreground">Smart Text Suggestions</h3>
+               <span className="text-muted-foreground text-sm max-w-xs text-center">
+                  Get AI-powered suggestions with visual diffs to improve your writing.
+               </span>
+            </div>
+
+            <div className="w-full max-w-md space-y-3">
+               <div className="text-left space-y-2">
+                  <div className="flex items-center space-x-2 text-sm">
+                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-medium">
+                        1
+                     </span>
+                     <span>Select text in the editor</span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-sm">
+                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-medium">
+                        2
+                     </span>
+                     <span>
+                        Click "Transform" or press <kbd className="inline-tab-icon">Cmd+J</kbd>
+                     </span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-sm">
+                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-medium">
+                        3
+                     </span>
+                     <span>Describe what changes you want</span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-sm">
+                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-medium">
+                        4
+                     </span>
+                     <span>Review the AI suggestion and accept/reject</span>
+                  </div>
+               </div>
+
+               <div className="relative mt-4">
+                  <div className="demo-suggestion-overlay-animated min-w-[38ch] border border-border bg-background px-3 py-2.5 rounded-lg shadow-lg">
+                     <div className="demo-overlay-header drag-handle mb-1 flex h-8 cursor-move items-center gap-2">
+                        <GripVertical
+                           size={14}
+                           className="demo-overlay-drag-handle cursor-grab text-muted-foreground/70 active:cursor-grabbing"
+                        />
+                        <h3 className="font-medium text-xs">Suggestion</h3>
+                     </div>
+                     <div className="flex flex-col gap-2">
+                        <div className="demo-overlay-input-placeholder rounded-[3.5px] border border-border">
+                           {/* Text will be animated by CSS ::before */}
+                        </div>
+                        <div className="demo-overlay-diff-view rounded-[3.5px] border border-border">
+                           <span className="text-red-500 line-through dark:text-red-400/70">lacks clarity and strength.</span>
+                           <span className="demo-diff-new-text-animated ml-1 text-green-600 dark:text-green-400/70">
+                              lacks punch and impact.
+                           </span>
+                        </div>
+                     </div>
+
+                     <div className="demo-overlay-actions mt-2">
+                        <Button variant="ghost" size="sm" className="!py-0.5 h-7 rounded-full px-2 text-xs hover:text-destructive">
+                           <X size={13} strokeWidth={2.5} className="mr-1" /> Reject
+                        </Button>
+                        <Button variant="ghost" size="sm" className="!py-0.5 h-7 rounded-full px-2 text-xs hover:text-primary">
+                           <Check size={13} strokeWidth={2.5} className="mr-1" /> Accept
+                        </Button>
+                     </div>
+                  </div>
+               </div>
             </div>
          </div>
       ),
@@ -175,18 +259,18 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
                   <div className="space-y-2">
                      <div className="font-medium text-sm">"Is flutter the best mobile app framework?"</div>
                      <div className="flex flex-wrap gap-1">
-                        <Badge variant="secondary" className="text-xs">
+                        {/* <Badge variant="secondary" className="text-xs">
                            Brave Search
-                        </Badge>
+                        </Badge> */}
                         <Badge variant="secondary" className="text-xs">
                            Firecrawl
                         </Badge>
                         <Badge variant="secondary" className="text-xs">
                            Tavily
                         </Badge>
-                        <Badge variant="secondary" className="text-xs">
+                        {/* <Badge variant="secondary" className="text-xs">
                            Serper
-                        </Badge>
+                        </Badge> */}
                      </div>
                   </div>
                </div>
@@ -253,7 +337,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
             <div className="flex flex-wrap gap-1.5">
                {[
                   { icon: Image, label: "Image generation" },
-                  { icon: Folder, label: "Chat folders" },
+                  { icon: Folder, label: "Document folders" },
                   { icon: Command, label: "Keyboard shortcuts" },
                   { icon: Paperclip, label: "Attachments management" },
                   { icon: Play, label: "Resumable streams" },

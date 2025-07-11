@@ -29,10 +29,11 @@ function RouteComponent() {
                Since launching DocSurf, we've focused on building a comprehensive writing platform that combines:
             </p>
             <ul className="mt-4 list-disc space-y-2 pl-6">
-               <li>Real-time AI writing assistance with smart suggestions and completions</li>
-               <li>Intelligent document chat for summaries, questions, and AI-powered edits</li>
-               <li>Seamless Word document import/export with full formatting support</li>
-               <li>Smart document organization with powerful search and filtering capabilities</li>
+               <li>AI Autocomplete with real-time, context-aware suggestions as you type</li>
+               <li>Smart Text Suggestions that let you select text, describe changes, and see visual diffs</li>
+               <li>AI Chat Features with multiple models, file uploads, web search, and image generation</li>
+               <li>Document Management with automatic saving, document history, and organization</li>
+               <li>Word Document Support for seamless import/export with formatting preservation</li>
             </ul>
             <p className="mt-6 leading-7">
                Our users appreciate how DocSurf makes writing more efficient through AI assistance, whether they're working on personal

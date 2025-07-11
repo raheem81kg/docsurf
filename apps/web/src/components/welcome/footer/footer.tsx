@@ -42,7 +42,7 @@ export function Footer() {
                         </li>
                         <li className="text-[#878787] transition-colors">
                            <Link to="/doc" title="Version Control">
-                              Version Control
+                              Document History
                            </Link>
                         </li>
                         <li className="text-[#878787] transition-colors">

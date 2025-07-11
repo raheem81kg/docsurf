@@ -18,7 +18,7 @@ export function HeroImage() {
                <DynamicImage
                   lightSrc={docSurfDash}
                   darkSrc={docSurfDashDark}
-                  alt="Dashboard interface showing financial data and charts"
+                  alt="Document editor interface with AI writing features"
                   width={1141}
                   height={641}
                   onLoad={() => setIsLoaded(true)}

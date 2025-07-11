@@ -10,7 +10,7 @@ function RouteComponent() {
          <h1 className="scroll-m-20 text-2xl tracking-tight lg:text-3xl">Privacy Policy</h1>
 
          <div className="line-height-lg v-space-md text-component">
-            <p className="mt-8 leading-7">Last updated: March 19, 2024</p>
+            <p className="mt-8 leading-7">Last updated: July 10, 2025</p>
 
             <p className="mt-8 leading-7">
                DocSurf ("us", "we", or "our") operates the DocSurf application (hereinafter referred to as the "Service").
@@ -348,28 +348,22 @@ function RouteComponent() {
             <ul>
                <li>
                   <p className="mt-8 leading-7">
-                     <strong>Firebase</strong>
+                     <strong>PostHog</strong>
                   </p>
-                  <p className="mt-8 leading-7">Firebase is analytics service provided by Google Inc.</p>
                   <p className="mt-8 leading-7">
-                     You may opt-out of certain Firebase features through your mobile device settings, such as your device advertising
-                     settings or by following the instructions provided by Google in their Privacy Policy:{" "}
-                     <a target="_blank" rel="noreferrer" href="https://policies.google.com/privacy?hl=en">
-                        https://policies.google.com/privacy?hl=en
+                     PostHog is a product analytics service that helps us understand how users interact with our Service.
+                  </p>
+                  <p className="mt-8 leading-7">
+                     PostHog provides privacy-focused analytics and allows users to control their data. You can learn more about
+                     PostHog's privacy practices at:{" "}
+                     <a target="_blank" rel="noreferrer" href="https://posthog.com/privacy">
+                        https://posthog.com/privacy
                      </a>
                   </p>
                   <p className="mt-8 leading-7">
-                     We also encourage you to review the Google's policy for safeguarding your data:{" "}
-                     <a target="_blank" rel="noreferrer" href="https://support.google.com/analytics/answer/6004245">
-                        https://support.google.com/analytics/answer/6004245
-                     </a>
-                     .
-                  </p>
-                  <p className="mt-8 leading-7">
-                     For more information on what type of information Firebase collects, please visit the Google Privacy & Terms web
-                     page:{" "}
-                     <a target="_blank" rel="noreferrer" href="https://policies.google.com/privacy?hl=en">
-                        https://policies.google.com/privacy?hl=en
+                     For more information on what type of information PostHog collects, please visit their Privacy Policy:{" "}
+                     <a target="_blank" rel="noreferrer" href="https://posthog.com/privacy">
+                        https://posthog.com/privacy
                      </a>
                   </p>
                </li>
@@ -391,23 +385,24 @@ function RouteComponent() {
             <ul>
                <li>
                   <p className="mt-8 leading-7">
-                     <strong>Apple Store In-App Payments</strong>
+                     <strong>Polar.sh</strong>
                   </p>
                   <p className="mt-8 leading-7">
-                     Their Privacy Policy can be viewed at
-                     <a target="_blank" rel="noreferrer" href="https://www.apple.com/legal/privacy/en-ww/">
-                        https:// www.apple.com/legal/privacy/en-ww/
+                     Polar.sh is our payment infrastructure provider that handles billing, taxes, and payments. Polar.sh uses Stripe
+                     Connect for payment processing. Their Privacy Policy can be viewed at{" "}
+                     <a target="_blank" rel="noreferrer" href="https://polar.sh/legal/privacy">
+                        https://polar.sh/legal/privacy
                      </a>
                   </p>
                </li>
                <li>
                   <p className="mt-8 leading-7">
-                     <strong>Google Play In-App Payments</strong>
+                     <strong>Stripe</strong>
                   </p>
                   <p className="mt-8 leading-7">
-                     Their Privacy Policy can be viewed at
-                     <a target="_blank" rel="noreferrer" href="https://www.google.com/policies/privacy/">
-                        https:// www.google.com/policies/privacy/
+                     Stripe processes payments on behalf of Polar.sh. Their Privacy Policy can be viewed at{" "}
+                     <a target="_blank" rel="noreferrer" href="https://stripe.com/privacy">
+                        https://stripe.com/privacy
                      </a>
                   </p>
                </li>

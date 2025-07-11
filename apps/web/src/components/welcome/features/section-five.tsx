@@ -18,7 +18,7 @@ export function SectionFive() {
                <h4 className="mb-4 font-medium text-xl md:text-2xl">Document Management</h4>
 
                <p className="mb-4 text-[#878787] text-sm">
-                  Organize and manage your documents with version control and auto-save features.
+                  Organize and manage your documents with automatic saving and history tracking.
                </p>
 
                <p className="text-[#878787] text-sm">
@@ -37,7 +37,7 @@ export function SectionFive() {
                      <svg xmlns="http://www.w3.org/2000/svg" width={18} height={13} fill="none">
                         <path fill="currentColor" d="M6.55 13 .85 7.3l1.425-1.425L6.55 10.15 15.725.975 17.15 2.4 6.55 13Z" />
                      </svg>
-                     <span className="text-primary">Version history & auto-save</span>
+                     <span className="text-primary">Document history & auto-save</span>
                   </div>
 
                   <div className="absolute bottom-0 left-0">
@@ -49,17 +49,14 @@ export function SectionFive() {
 
          <div className="group flex basis-1/3 flex-col border border-border p-10 dark:bg-[#121212]">
             <h4 className="mb-4 font-medium text-xl md:text-2xl">Word Document Support</h4>
-            <p className="mb-8 text-[#878787] text-sm">
-               Seamlessly import and export Word documents with full formatting support. Import .docx files up to 10MB and export your
-               content with preserved formatting and images.
-            </p>
+            <p className="mb-8 text-[#878787] text-sm">Import and export Word documents with formatting support.</p>
 
             <div className="mb-6 flex flex-col space-y-2">
                <div className="mt-8 flex items-center space-x-2 text-sm">
                   <svg xmlns="http://www.w3.org/2000/svg" width={18} height={13} fill="none">
                      <path fill="currentColor" d="M6.55 13 .85 7.3l1.425-1.425L6.55 10.15 15.725.975 17.15 2.4 6.55 13Z" />
                   </svg>
-                  <span className="text-primary">Import .docx files (up to 10MB)</span>
+                  <span className="text-primary">Import Word documents</span>
                </div>
                <div className="flex items-center space-x-2 text-sm">
                   <svg xmlns="http://www.w3.org/2000/svg" width={18} height={13} fill="none">

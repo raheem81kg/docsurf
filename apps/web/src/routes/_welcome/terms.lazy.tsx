@@ -10,7 +10,7 @@ function RouteComponent() {
          <h1 className="scroll-m-20 text-2xl tracking-tight lg:text-3xl">Terms and Conditions</h1>
 
          <div className="line-height-lg v-space-md text-component">
-            <p className="mt-8 leading-7">Last updated: March 19, 2024</p>
+            <p className="mt-8 leading-7">Last updated: June 16, 2025</p>
 
             <p className="mt-8 leading-7">
                These Terms and Conditions ("Terms", "Terms and Conditions") govern your relationship with DocSurf application (the

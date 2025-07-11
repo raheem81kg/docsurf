@@ -11,11 +11,10 @@ export function SectionFour() {
       <section className="relative mb-12 flex flex-col justify-between space-y-12 overflow-hidden lg:flex-row lg:space-x-8 lg:space-y-0">
          <div className="group flex flex-col justify-between border border-border p-10 md:basis-2/3 md:flex-row md:space-x-8 dark:bg-[#121212]">
             <div className="flex flex-col md:basis-1/2">
-               <h4 className="mb-4 font-medium text-xl md:text-2xl">Advanced AI Writing Suite</h4>
+               <h4 className="mb-4 font-medium text-xl md:text-2xl">AI Chat Features</h4>
 
                <p className="text-[#878787] text-sm md:mb-4">
-                  Transform your writing with our sophisticated AI suite that delivers intelligent enhancements, style optimization,
-                  and creative suggestions to elevate your content.
+                  Collaborate with an intelligent assistant that understands your document context.
                </p>
 
                <div className="flex flex-col space-y-2">
@@ -23,45 +22,29 @@ export function SectionFour() {
                      <svg xmlns="http://www.w3.org/2000/svg" width={18} height={13} fill="none">
                         <path fill="currentColor" d="M6.55 13 .85 7.3l1.425-1.425L6.55 10.15 15.725.975 17.15 2.4 6.55 13Z" />
                      </svg>
-                     <span className="text-primary">Intelligent style enhancement</span>
+                     <span className="text-primary">Choose from GPT-4, Claude, Gemini, and more</span>
                   </div>
                   <div className="flex items-center space-x-2 text-sm">
                      <svg xmlns="http://www.w3.org/2000/svg" width={18} height={13} fill="none">
                         <path fill="currentColor" d="M6.55 13 .85 7.3l1.425-1.425L6.55 10.15 15.725.975 17.15 2.4 6.55 13Z" />
                      </svg>
-                     <span className="text-primary">Advanced content optimization</span>
+                     <span className="text-primary">Upload files and images for analysis</span>
                   </div>
-
                   <div className="flex items-center space-x-2 text-sm">
                      <svg xmlns="http://www.w3.org/2000/svg" width={18} height={13} fill="none">
                         <path fill="currentColor" d="M6.55 13 .85 7.3l1.425-1.425L6.55 10.15 15.725.975 17.15 2.4 6.55 13Z" />
                      </svg>
-                     <span className="text-primary">Creative content generation</span>
+                     <span className="text-primary">Search the web for current information</span>
                   </div>
-
                   <div className="flex items-center space-x-2 text-sm">
                      <svg xmlns="http://www.w3.org/2000/svg" width={18} height={13} fill="none">
                         <path fill="currentColor" d="M6.55 13 .85 7.3l1.425-1.425L6.55 10.15 15.725.975 17.15 2.4 6.55 13Z" />
                      </svg>
-                     <span className="text-primary">Precision grammar & style checks</span>
-                  </div>
-
-                  <div className="flex items-center space-x-2 text-sm">
-                     <svg xmlns="http://www.w3.org/2000/svg" width={18} height={13} fill="none">
-                        <path fill="currentColor" d="M6.55 13 .85 7.3l1.425-1.425L6.55 10.15 15.725.975 17.15 2.4 6.55 13Z" />
-                     </svg>
-                     <span className="text-primary">Dynamic tone adaptation</span>
-                  </div>
-
-                  <div className="flex items-center space-x-2 text-sm">
-                     <svg xmlns="http://www.w3.org/2000/svg" width={18} height={13} fill="none">
-                        <path fill="currentColor" d="M6.55 13 .85 7.3l1.425-1.425L6.55 10.15 15.725.975 17.15 2.4 6.55 13Z" />
-                     </svg>
-                     <span className="text-primary">Advanced version tracking</span>
+                     <span className="text-primary">Generate images and visuals</span>
                   </div>
 
                   <div className="absolute bottom-6">
-                     <CtaLink text="Start writing with AI assistance" />
+                     <CtaLink text="Start chatting with AI" />
                   </div>
                </div>
             </div>
@@ -96,11 +79,11 @@ export function SectionFour() {
          </div>
 
          <div className="group relative flex basis-1/3 flex-col border border-border p-10 dark:bg-[#121212]">
-            <h4 className="mb-4 font-medium text-xl md:text-2xl">Smart Features</h4>
+            <h4 className="mb-4 font-medium text-xl md:text-2xl">AI Autocomplete</h4>
             <ul className="list-inside list-decimal space-y-2 text-[#878787] text-sm leading-relaxed">
-               <li>Get intelligent suggestions as you type, powered by advanced AI.</li>
-               <li>One-click improvements for clarity, conciseness, and style.</li>
-               <li>Automatic version tracking and document history.</li>
+               <li>Get real-time, context-aware suggestions as you type.</li>
+               <li>AI completes your thoughts and sentences intelligently.</li>
+               <li>Accept suggestions instantly with keyboard shortcuts.</li>
             </ul>
 
             <div className="mb-6 flex flex-col space-y-2">
@@ -108,20 +91,20 @@ export function SectionFour() {
                   <svg xmlns="http://www.w3.org/2000/svg" width={18} height={13} fill="none">
                      <path fill="currentColor" d="M6.55 13 .85 7.3l1.425-1.425L6.55 10.15 15.725.975 17.15 2.4 6.55 13Z" />
                   </svg>
-                  <span className="text-primary">Real-time suggestions</span>
+                  <span className="text-primary">Context-aware completions</span>
                </div>
                <div className="flex items-center space-x-2 text-sm">
                   <svg xmlns="http://www.w3.org/2000/svg" width={18} height={13} fill="none">
                      <path fill="currentColor" d="M6.55 13 .85 7.3l1.425-1.425L6.55 10.15 15.725.975 17.15 2.4 6.55 13Z" />
                   </svg>
-                  <span className="text-primary">Smart formatting & structure</span>
+                  <span className="text-primary">Inline suggestions as you type</span>
                </div>
 
                <div className="flex items-center space-x-2 text-sm">
                   <svg xmlns="http://www.w3.org/2000/svg" width={18} height={13} fill="none">
                      <path fill="currentColor" d="M6.55 13 .85 7.3l1.425-1.425L6.55 10.15 15.725.975 17.15 2.4 6.55 13Z" />
                   </svg>
-                  <span className="text-primary">Auto-save & cloud sync</span>
+                  <span className="text-primary">Press Ctrl+Space to accept</span>
                </div>
             </div>
 
@@ -147,7 +130,7 @@ export function SectionFour() {
             </motion.div>
 
             <div className="absolute bottom-6">
-               <CtaLink text="Experience AI-powered writing" />
+               <CtaLink text="Try AI autocomplete" />
             </div>
          </div>
       </section>

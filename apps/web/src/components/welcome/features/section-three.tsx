@@ -12,16 +12,16 @@ export function SectionThree() {
          <div className="container overflow-hidden border border-border p-8 md:p-10 md:pb-0 dark:bg-[#121212]">
             <div className="flex flex-col md:flex-row md:space-x-12">
                <div className="md:mr-8 md:mb-8 md:max-w-[40%] xl:mt-6">
-                  <h3 className="mb-4 font-medium text-xl md:text-2xl">AI-powered writing assistance</h3>
+                  <h3 className="mb-4 font-medium text-xl md:text-2xl">Smart Text Suggestions</h3>
 
                   <p className="text-[#878787] text-sm md:mb-4">
-                     Enhance your writing with intelligent suggestions and
+                     Get AI-powered suggestions to improve your writing with visual diffs.
                      <br />
-                     context-aware completions powered by advanced AI.
+                     Select text, describe changes, and see before/after comparisons.
                   </p>
 
                   <div className="flex flex-col space-y-2">
-                     <div className="mt-8 flex items-center space-x-2 text-sm">
+                     <div className="mt-7 flex items-center space-x-2 text-sm">
                         <svg
                            xmlns="http://www.w3.org/2000/svg"
                            width={18}
@@ -31,7 +31,7 @@ export function SectionThree() {
                         >
                            <path fill="currentColor" d="M6.55 13 .85 7.3l1.425-1.425L6.55 10.15 15.725.975 17.15 2.4 6.55 13Z" />
                         </svg>
-                        <span className="text-primary">Smart text suggestions as you type</span>
+                        <span className="text-primary">Select text in the editor</span>
                      </div>
                      <div className="flex items-center space-x-2 text-sm">
                         <svg
@@ -43,7 +43,9 @@ export function SectionThree() {
                         >
                            <path fill="currentColor" d="M6.55 13 .85 7.3l1.425-1.425L6.55 10.15 15.725.975 17.15 2.4 6.55 13Z" />
                         </svg>
-                        <span className="text-primary">One-click text improvements & rewrites</span>
+                        <span className="text-primary">
+                           Press <kbd className="inline-tab-icon">Cmd+J</kbd> for text suggestions
+                        </span>
                      </div>
 
                      <div className="flex items-center space-x-2 text-sm">
@@ -56,7 +58,7 @@ export function SectionThree() {
                         >
                            <path fill="currentColor" d="M6.55 13 .85 7.3l1.425-1.425L6.55 10.15 15.725.975 17.15 2.4 6.55 13Z" />
                         </svg>
-                        <span className="text-primary">Context-aware completions</span>
+                        <span className="text-primary">Describe what changes you want</span>
                      </div>
 
                      <div className="hidden items-center space-x-2 text-sm md:flex">
@@ -69,12 +71,12 @@ export function SectionThree() {
                         >
                            <path fill="currentColor" d="M6.55 13 .85 7.3l1.425-1.425L6.55 10.15 15.725.975 17.15 2.4 6.55 13Z" />
                         </svg>
-                        <span className="text-primary">Version history </span>
+                        <span className="text-primary">Review visual diffs and accept/reject changes</span>
                      </div>
                   </div>
 
                   <div className="absolute bottom-6">
-                     <CtaLink text="Start writing with AI" />
+                     <CtaLink text="Try smart text suggestions" />
                   </div>
                </div>
 
