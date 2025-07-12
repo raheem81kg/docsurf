@@ -7,6 +7,7 @@ import { getUserIdentity } from "./lib/identity";
 import { MODELS_SHARED, type RegistryKey, type SharedModel } from "./lib/models";
 import type { UserSettings } from "./schema";
 import { NonSensitiveUserSettings } from "./schema/settings";
+import { internal } from "./_generated/api";
 
 export const DefaultSettings = (userId: string) =>
    ({
@@ -23,8 +24,8 @@ export const DefaultSettings = (userId: string) =>
          supermemory: undefined,
          firecrawl: undefined,
          tavily: undefined,
-         brave: undefined,
-         serper: undefined,
+         // brave: undefined,
+         // serper: undefined,
       },
       customization: undefined,
       onboardingCompleted: false,
@@ -66,6 +67,12 @@ export const getUserRegistryInternal = internalQuery({
    handler: async (ctx, args) => {
       const settings = await getSettings(ctx, args.userId);
 
+      // Fetch subscription
+      const subscription = await ctx.runQuery(internal.subscriptions.getSubscription, {
+         userId: args.userId as Id<"users">,
+      });
+      const hasPro = !!subscription?.isPremium;
+
       const providers: Record<string, { key: string; endpoint?: string; name?: string }> = {};
       for (const [providerId, provider] of Object.entries(settings.coreAIProviders)) {
          if (!provider.enabled) continue;
@@ -89,7 +96,15 @@ export const getUserRegistryInternal = internalQuery({
          const available_adapters: RegistryKey[] = [];
          for (const adapter of model.adapters) {
             const provider = adapter.split(":")[0];
-            if (provider in providers || provider.startsWith("i3-")) {
+            if (provider.startsWith("i3-")) {
+               // Only allow if user has Pro, or model doesn't require Pro
+               if (model.requiredPlanIfNoApiKey === "pro" && !hasPro) {
+                  continue;
+               }
+               available_adapters.push(adapter);
+               continue;
+            }
+            if (provider in providers) {
                available_adapters.push(adapter);
             }
          }
@@ -115,6 +130,8 @@ export const getUserRegistryInternal = internalQuery({
             customProviderId: model.providerId,
          };
       }
+
+      console.log("providers", providers);
 
       return { providers, models, settings };
    },

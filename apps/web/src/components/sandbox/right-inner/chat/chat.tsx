@@ -54,14 +54,19 @@ const ChatContent = ({ threadId: routeThreadId }: ChatProps) => {
       },
       session?.user?.id && !auth.isLoading ? {} : "skip"
    );
+
    const { data: user } = useQuery({
       ...convexQuery(api.auth.getCurrentUser, {}),
       enabled: !!session?.user,
    });
+   const hasPro = !!user?.subscription?.isPremium;
    const { doc: currentDocument } = useCurrentDocument(user);
 
    // Get available models based on user's API keys
-   const { availableModels } = useAvailableModels("error" in userSettings ? DefaultSettings(session?.user?.id ?? "") : userSettings);
+   const { availableModels } = useAvailableModels(
+      "error" in userSettings ? DefaultSettings(session?.user?.id ?? "") : userSettings,
+      hasPro
+   );
 
    // Set default model to first available model (not first in MODELS_SHARED)
    useMemo(() => {
@@ -155,7 +160,7 @@ const ChatContent = ({ threadId: routeThreadId }: ChatProps) => {
                   className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
                >
                   <div className="mb-6 size-16 rounded-full opacity-80">
-                     <img src="/logo-black.png" alt="DocSurf" className="dark:invert" width={60} height={60} />
+                     <img src="/logo-black.png" alt="DocSurf" className="dark:invert" width={58} height={58} />
                   </div>
                   <motion.div
                      initial={{ opacity: 0, y: 10 }}
@@ -163,7 +168,7 @@ const ChatContent = ({ threadId: routeThreadId }: ChatProps) => {
                      transition={{ duration: 0.2 }}
                      className="mb-8 text-center"
                   >
-                     <h1 className="px-4 font-medium text-3xl text-foreground">
+                     <h1 className="px-4 font-medium text-2xl text-foreground">
                         {userName ? `What do you want to explore, ${userName?.split(" ")[0]}?` : "What do you want to explore?"}
                      </h1>
                   </motion.div>

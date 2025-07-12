@@ -1,5 +1,7 @@
 import { HARDCODED_APP_URL } from "./constants.js";
 
+export const INFINITY_NUMBER = 1000000000;
+
 export type PlanFeature = {
    id?: string;
    text: string;
@@ -20,37 +22,39 @@ export const PLANS = [
          yearly: 0,
       },
       limits: {
-         requests7d: 10000, // Total Requests (last 7 days)
-         tokens7d: 10000000, // Total Tokens (input + output + reasoning)
+         requests30d: 500, // Total Requests (last 30 days)
+         tokens30d: 1000000, // Total Tokens (input + output + reasoning)
+         // Suggestions are unlimited for all users
       },
+      features: [{ text: "Unlimited suggestions" }, { text: "Basic AI models" }, { text: "500 chat requests/mo" }],
    },
    {
       name: "Pro",
       link: `${HARDCODED_APP_URL}/pricing`,
       price: {
-         monthly: 30,
-         yearly: 25,
+         monthly: 12,
+         yearly: 12,
          ids: [
             // 2025 pricing
             "20a3a3ba-0e8a-4523-afec-8723bce557ac", // monthly
          ],
       },
       limits: {
-         requests7d: 10000, // Total Requests (last 7 days)
-         tokens7d: 10000000, // Total Tokens (input + output + reasoning)
+         requests30d: INFINITY_NUMBER, // Total Requests (last 30 days)
+         tokens30d: INFINITY_NUMBER, // Total Tokens (input + output + reasoning)
+         // Suggestions are unlimited for all users
       },
       featureTitle: "Everything in Free, plus:",
       features: [
-         { id: "clicks", text: "50K tracked clicks/mo" },
-         { id: "links", text: "1K new links/mo" },
-         { id: "retention", text: "1-year analytics retention" },
-         { id: "domains", text: "10 domains" },
-         { id: "users", text: "3 users" },
-         {
-            id: "advanced",
-            text: "Advanced link features",
-            tooltip: "ADVANCED_LINK_FEATURES",
-         },
+         { text: "Unlimited suggestions" },
+         { text: "Premium AI models" },
+         { text: "Unlimited chat requests" },
+         { text: "200 version history per document" },
+         // {
+         //    id: "advanced",
+         //    text: "Advanced link features",
+         //    tooltip: "ADVANCED_LINK_FEATURES",
+         // },
          // {
          //    id: "ai",
          //    text: "Unlimited AI credits",

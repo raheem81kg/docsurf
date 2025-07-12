@@ -8,7 +8,7 @@ import { api, components, internal } from "./_generated/api";
 import type { DataModel, Id, Doc } from "./_generated/dataModel";
 import { type GenericCtx, query } from "./_generated/server";
 import { sendSignInOTP, sendWelcomeEmail } from "./email";
-// import type { SafeSubscription } from "./subscriptions";
+import type { SafeSubscription } from "./subscriptions";
 import gettingStartedContent from "./getting_started.json";
 import type { CurrentUser } from "./users";
 import { Resend } from "resend";
@@ -218,9 +218,9 @@ export const getCurrentUser = query({
       if (!user) {
          return null;
       }
-      // const subscription: SafeSubscription = await ctx.runQuery(internal.subscriptions.getSubscription, {
-      //    userId: userMetadata.userId as Id<"users">,
-      // });
+      const subscription: SafeSubscription = await ctx.runQuery(internal.subscriptions.getSubscription, {
+         userId: userMetadata.userId as Id<"users">,
+      });
 
       // Fetch all workspace memberships for this user
       const memberships = await ctx.db
@@ -240,7 +240,7 @@ export const getCurrentUser = query({
       return {
          ...userMetadataWithoutName,
          ...user,
-         // subscription,
+         subscription,
          workspaces: workspaces.filter(Boolean) as Array<{ workspace: Doc<"workspaces">; role: string }>,
       };
    },

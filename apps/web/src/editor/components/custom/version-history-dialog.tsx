@@ -216,6 +216,7 @@ const VersionItem = React.memo(
 
 const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOpen }) => {
    const { data: user, isLoading: userLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const isProUser = user?.subscription?.isPremium;
    const { doc } = useCurrentDocument(user);
    const docId = doc?._id;
    const [isSaving, setIsSaving] = useState(false);
@@ -540,7 +541,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
                return;
             }
          }
-         await createDocVersion(docId, content, "manual", 0, 0, wordCount);
+         await createDocVersion(docId, content, "manual", 0, 0, wordCount, isProUser);
          showToast("Version saved successfully", "success");
       } catch (error) {
          console.error("Failed to save version:", error);

@@ -30,6 +30,7 @@ export type SharedModel<Abilities extends ModelAbility[] = ModelAbility[]> = {
    supportedImageSizes?: ImageSize[];
    customIcon?: "stability-ai" | "openai" | "bflabs" | "google" | "meta";
    supportsDisablingReasoning?: boolean;
+   requiredPlanIfNoApiKey?: "pro" | "free"; // <-- added
 };
 
 // unncomment models when I can afford the cost
@@ -39,8 +40,9 @@ export const MODELS_SHARED: SharedModel[] = [
       id: "gpt-4o",
       name: "GPT 4o",
       shortName: "4o",
-      adapters: ["openai:gpt-4o", "openrouter:openai/gpt-4o"],
+      adapters: ["i3-openai:gpt-4o", "openai:gpt-4o", "openrouter:openai/gpt-4o"],
       abilities: ["vision", "function_calling", "pdf"],
+      requiredPlanIfNoApiKey: "pro",
    },
    {
       id: "gpt-4o-mini",
@@ -48,26 +50,29 @@ export const MODELS_SHARED: SharedModel[] = [
       shortName: "4o mini",
       adapters: ["i3-openai:gpt-4o-mini", "openai:gpt-4o-mini", "openrouter:openai/gpt-4o-mini"],
       abilities: ["vision", "function_calling", "pdf"],
+      requiredPlanIfNoApiKey: "free",
    },
    // api key only
    {
       id: "o3-mini",
       name: "o3 mini",
-      adapters: ["openai:o3-mini", "openrouter:openai/o3-mini"],
+      adapters: ["i3-openai:o3-mini", "openai:o3-mini", "openrouter:openai/o3-mini"],
       abilities: ["reasoning", "function_calling", "effort_control"],
+      requiredPlanIfNoApiKey: "pro",
    },
    // api key only
    {
       id: "o4-mini",
       name: "o4 mini",
-      adapters: ["openai:o4-mini", "openrouter:openai/o4-mini"],
+      adapters: ["i3-openai:o4-mini", "openai:o4-mini", "openrouter:openai/o4-mini"],
       abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
+      requiredPlanIfNoApiKey: "pro",
    },
    // api key only
    {
       id: "o3",
       name: "o3",
-      adapters: ["openai:o3", "openrouter:openai/o3"],
+      adapters: ["i3-openai:o4-mini", "openai:o3", "openrouter:openai/o3"],
       abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
    },
    // api key only
@@ -81,8 +86,9 @@ export const MODELS_SHARED: SharedModel[] = [
    {
       id: "gpt-4.1",
       name: "GPT 4.1",
-      adapters: ["openai:gpt-4.1", "openrouter:openai/gpt-4.1"],
+      adapters: ["i3-openai:gpt-4.1", "openai:gpt-4.1", "openrouter:openai/gpt-4.1"],
       abilities: ["vision", "function_calling", "pdf"],
+      requiredPlanIfNoApiKey: "pro",
    },
    {
       id: "gpt-4.1-mini",
@@ -182,6 +188,7 @@ export const MODELS_SHARED: SharedModel[] = [
       adapters: ["google:gemini-2.5-pro", "openrouter:google/gemini-2.5-pro"],
       abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
       supportsDisablingReasoning: true,
+      requiredPlanIfNoApiKey: "pro",
    },
    // api key only
    // // Image Generation Models

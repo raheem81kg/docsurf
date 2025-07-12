@@ -13,6 +13,9 @@ import type { Infer } from "convex/values";
 import { nanoid } from "nanoid";
 import { useCallback, useMemo, useRef } from "react";
 import { useAuthTokenStore } from "@/hooks/use-auth-store";
+import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
+import { useRouter } from "@tanstack/react-router";
+import { RATE_LIMIT_ERROR } from "@docsurf/utils/constants/errors";
 
 export function useChatIntegration<IsShared extends boolean>({
    threadId,
@@ -32,6 +35,7 @@ export function useChatIntegration<IsShared extends boolean>({
    const seededNextId = useRef<string | null>(null);
    const token = useAuthTokenStore.getState().token;
    const verifyToken = useVerifyToken("You must be logged in to use the chat.");
+   const router = useRouter();
 
    // For regular threads, use getThreadMessages
    const threadMessages = useConvexQuery(
@@ -128,6 +132,26 @@ export function useChatIntegration<IsShared extends boolean>({
             return id;
          }
          return nanoid();
+      },
+      onError: (error) => {
+         // Handle rate limit error (HTTP 429)
+         const upgradeAction = {
+            label: "Upgrade",
+            onClick: () => {
+               router.navigate({ to: "/settings/subscription" });
+            },
+         };
+         if (error && typeof error === "object" && "status" in error && error.status === 429) {
+            showToast("You have reached your plan's usage limit. Upgrade for unlimited usage.", "error", { action: upgradeAction });
+         } else if (
+            error &&
+            typeof error === "object" &&
+            "message" in error &&
+            typeof error.message === "string" &&
+            error.message.includes(RATE_LIMIT_ERROR)
+         ) {
+            showToast("You have reached your plan's usage limit. Upgrade for unlimited usage.", "error", { action: upgradeAction });
+         }
       },
    });
 

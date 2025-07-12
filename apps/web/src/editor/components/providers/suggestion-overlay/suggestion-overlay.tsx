@@ -15,6 +15,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@docsu
 import type { Editor } from "@tiptap/react";
 import { DiffView } from "../../custom/ui/diffview/diffview";
 import { Analytics } from "@/components/providers/posthog";
+import { RATE_LIMIT_ERROR } from "@docsurf/utils/constants/errors";
 
 // Add FrameService class for smooth animations
 class FrameService {
@@ -517,8 +518,17 @@ export default function SuggestionOverlay({
             });
 
             if (!response.ok) {
-               const errorData = await response.json();
-               throw new Error(errorData.message || "Failed to get suggestion");
+               let errorData: any;
+               try {
+                  errorData = await response.json();
+               } catch {}
+               if (errorData?.error?.message && errorData.error.message.toLowerCase() === RATE_LIMIT_ERROR) {
+                  showToast("You're sending requests too quickly. Please wait a moment and try again.", "error");
+                  setError("You're sending requests too quickly. Please wait a moment and try again.");
+                  setIsGenerating(false);
+                  return;
+               }
+               throw new Error(errorData?.message || "Failed to get suggestion");
             }
 
             if (!response.body) {

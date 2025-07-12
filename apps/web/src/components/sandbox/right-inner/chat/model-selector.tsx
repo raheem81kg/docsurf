@@ -18,6 +18,8 @@ import { MODELS_SHARED, type SharedModel } from "@docsurf/backend/convex/lib/mod
 import { useDiskCachedQuery } from "./lib/convex-cached-query";
 import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
 import { useSession } from "@/hooks/auth-hooks";
+import { useQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
 
 export const getProviderIcon = (model: DisplayModel, isCustom: boolean) => {
    if (isCustom) {
@@ -141,7 +143,11 @@ export function ModelSelector({
 }) {
    const auth = useConvexAuth();
    const { data: session, isPending } = useSession();
-
+   const { data: user } = useQuery({
+      ...convexQuery(api.auth.getCurrentUser, {}),
+      enabled: !!session?.user,
+   });
+   const hasPro = !!user?.subscription?.isPremium;
    const userSettings = useDiskCachedQuery(
       api.settings.getUserSettings,
       {
@@ -151,8 +157,13 @@ export function ModelSelector({
       },
       session?.user?.id && !auth.isLoading ? {} : "skip"
    );
-
-   const { availableModels } = useAvailableModels("error" in userSettings ? DefaultSettings(session?.user?.id ?? "") : userSettings);
+   console.log("testing: userSettings in selector", userSettings);
+   console.log("testing: hasPro in selector", hasPro);
+   const { availableModels } = useAvailableModels(
+      "error" in userSettings ? DefaultSettings(session?.user?.id ?? "") : userSettings,
+      hasPro
+   );
+   console.log("testing: models shown in selector", availableModels);
 
    const [open, setOpen] = React.useState(false);
 

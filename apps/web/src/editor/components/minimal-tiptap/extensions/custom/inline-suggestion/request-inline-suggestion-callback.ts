@@ -16,7 +16,7 @@ import type { Editor } from "@tiptap/react";
 import { useInlineSuggestionAiOptions } from "@/store/inline-suggestion-ai-options-store";
 import pRetry, { AbortError } from "p-retry";
 import { LRUCache } from "lru-cache";
-// import { RATE_LIMIT_REACHED } from "@/lib/api";
+import { RATE_LIMIT_ERROR } from "@docsurf/utils/constants/errors";
 // import { useUsageStore } from "@/store/use-usage-store";
 import { useEditorRefStore } from "@/store/use-editor-ref-store";
 import { Analytics } from "@/components/providers/posthog";
@@ -115,6 +115,18 @@ export function createRequestInlineSuggestionCallback(
             method: "GET",
             signal: controller.signal,
          });
+         if (response.status === 429) {
+            // Try to parse the error body
+            let errorData: any;
+            try {
+               errorData = await response.json();
+            } catch {}
+            if (errorData?.error?.message && errorData.error.message.toLowerCase() === RATE_LIMIT_ERROR) {
+               showToast("You're sending requests too quickly. Please wait a moment and try again.", "error");
+               editor.view?.dispatch(editor.state.tr.setMeta(CLEAR_SUGGESTION, true));
+               return;
+            }
+         }
          if (!response.body) {
             throw new Error("server");
          }

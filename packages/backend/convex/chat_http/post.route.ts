@@ -26,6 +26,8 @@ import { buildPrompt } from "./prompt";
 import { RESPONSE_OPTS } from "./shared";
 import { requireUserId } from "../users";
 import { getUserIdentity } from "../lib/identity";
+import { getCurrentPlan, FREE_PLAN } from "@docsurf/utils/constants/pricing";
+import { RATE_LIMIT_ERROR } from "@docsurf/utils/constants/errors";
 
 const buildGoogleProviderOptions = (modelId: string, reasoningEffort?: ReasoningEffort): GoogleGenerativeAIProviderOptions => {
    const options: GoogleGenerativeAIProviderOptions = {};
@@ -89,8 +91,48 @@ export const chatPOST = httpAction(async (ctx, req) => {
          return new ChatError("bad_request:chat").toResponse();
       }
 
+      // Get user
       const user = await getUserIdentity(ctx, { allowAnons: false });
       if ("error" in user) return new ChatError("unauthorized:chat").toResponse();
+
+      // Fetch subscription (plan) for user
+      const subscription = await ctx.runQuery(internal.subscriptions.getSubscription, {
+         userId: user.id as Id<"users">,
+      });
+
+      // Fetch usage for user (last 30 days)
+      const usage = await ctx.runQuery(internal.analytics.getUserUsageStats, {
+         userId: user.id as Id<"users">,
+         timeframe: "30d",
+      });
+
+      // Determine plan name
+      const planName = subscription?.isPremium ? "Pro" : "Free";
+      const plan = getCurrentPlan(planName);
+      const planLimits = plan.limits;
+
+      // Check usage against plan limits
+      const requestsUsed = usage?.totalRequests ?? 0;
+      // const tokensUsed = usage?.totalTokens ?? 0;
+      const requestsLimit = planLimits.requests30d;
+
+      console.log("requestsUsed", requestsUsed);
+      console.log("requestsLimit", requestsLimit);
+      // console.log("tokensUsed", tokensUsed);
+      // console.log("tokensLimit", tokensLimit);
+
+      if (requestsUsed >= requestsLimit) {
+         return new Response(
+            JSON.stringify({
+               error: RATE_LIMIT_ERROR,
+               message: "You have reached your plan's usage limit. Upgrade for unlimited usage.",
+            }),
+            {
+               status: 429,
+               headers: { "Content-Type": "application/json" },
+            }
+         );
+      }
 
       const mutationResult = await ctx.runMutation(internal.threads.createThreadOrInsertMessages, {
          threadId: body.id as Id<"threads">,

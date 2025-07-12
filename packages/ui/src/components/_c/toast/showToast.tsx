@@ -20,6 +20,7 @@ export const SuccessToast = ({ message, onClose, toastId, action }: IToast & { a
       className={cn(
          "mb-2 flex h-auto items-center space-x-2 rounded-lg border border-border-subtle bg-background px-3 py-2.5 font-semibold text-sm text-text-default shadow-elevation-low md:max-w-sm rtl:space-x-reverse"
       )}
+      style={{ pointerEvents: "auto" }}
    >
       <span className="mt-0.5">
          <Check className="h-4 w-4" />
@@ -28,6 +29,7 @@ export const SuccessToast = ({ message, onClose, toastId, action }: IToast & { a
       {action && (
          <button
             className="ml-2 rounded bg-muted px-2 py-1 font-medium text-primary text-xs hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            style={{ pointerEvents: "auto" }}
             onClick={() => {
                action.onClick();
                onClose(toastId);
@@ -48,6 +50,7 @@ export const ErrorToast = ({ message, onClose, toastId, action }: IToast & { act
       className={cn(
          "mb-2 flex h-auto animate-[fade-in-up] items-center space-x-2 rounded-sm border border-border-semantic-error-subtle bg-bg-semantic-error-subtle px-3 py-2.5 font-semibold text-sm text-text-semantic-error shadow-elevation-low md:max-w-sm rtl:space-x-reverse"
       )}
+      style={{ pointerEvents: "auto" }}
    >
       <span className="mt-0.5">
          <Info className="h-4 w-4 text-semantic-error" />
@@ -56,6 +59,7 @@ export const ErrorToast = ({ message, onClose, toastId, action }: IToast & { act
       {action && (
          <button
             className="ml-2 rounded bg-muted px-2 py-1 font-medium text-primary text-xs hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            style={{ pointerEvents: "auto" }}
             onClick={() => {
                action.onClick();
                onClose(toastId);
@@ -76,6 +80,7 @@ export const WarningToast = ({ message, onClose, toastId, action }: IToast & { a
       className={cn(
          "mb-2 flex h-auto animate-[fade-in-up] items-center space-x-2 rounded-sm border border-border-semantic-attention-subtle bg-bg-semantic-attention-subtle px-3 py-2.5 font-semibold text-sm text-text-semantic-attention shadow-elevation-low md:max-w-sm rtl:space-x-reverse"
       )}
+      style={{ pointerEvents: "auto" }}
    >
       <span className="mt-0.5">
          <Info className="h-4 w-4 text-semantic-attention" />
@@ -84,6 +89,7 @@ export const WarningToast = ({ message, onClose, toastId, action }: IToast & { a
       {action && (
          <button
             className="ml-2 rounded bg-muted px-2 py-1 font-medium text-primary text-xs hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            style={{ pointerEvents: "auto" }}
             onClick={() => {
                action.onClick();
                onClose(toastId);

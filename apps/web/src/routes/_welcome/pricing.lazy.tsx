@@ -36,7 +36,7 @@ function RouteComponent() {
                            </li>
                            <li className="flex items-start">
                               <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
-                              <span className="text-sm text-text-default">Smart text suggestions & completions</span>
+                              <span className="text-sm text-text-default">Unlimited text suggestions & auto-completions</span>
                            </li>
                            <li className="flex items-start">
                               <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
@@ -46,9 +46,14 @@ function RouteComponent() {
                               <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
                               <span className="text-sm text-text-default">20 version history per document</span>
                            </li>
+
                            <li className="flex items-start">
                               <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
-                              <span className="text-sm text-text-default">Access to AI chat</span>
+                              <span className="text-sm text-text-default">Basic AI models</span>
+                           </li>
+                           <li className="flex items-start">
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">500 chat requests/mo</span>
                            </li>
                         </ul>
                      </div>
@@ -63,44 +68,51 @@ function RouteComponent() {
                   </div>
 
                   {/* Pro Plan */}
-                  <div className="relative flex flex-col rounded-[4px] border border-border bg-[#F2F1EF] dark:bg-[#121212] p-8 opacity-50">
+                  <div className="relative flex flex-col rounded-[4px] border border-border bg-[#F2F1EF] dark:bg-[#121212] p-8">
                      <div className="absolute top-0 right-0 mt-4 mr-4 rounded-full border px-2 py-1 font-mono font-normal text-[9px] text-text-default border-border bg-[#fff] dark:bg-[#121212]">
-                        Coming Soon
+                        Limited Offer
                      </div>
                      <h2 className="mb-2 text-left text-xl text-text-default">Pro</h2>
+
                      <div className="mt-1 flex items-baseline">
-                        <span className="ml-1 font-medium text-[40px] tracking-tight text-text-default">TBD</span>
-                        <span className="ml-1 font-medium text-xl text-text-default">/mo</span>
+                        <span className="text-[40px] font-medium tracking-tight line-through text-[#878787]">$12</span>
+                        <span className="ml-1 text-[40px] font-medium tracking-tight">10</span>
+                        <span className="ml-1 text-xl font-medium">/mo</span>
                      </div>
                      <p className="mt-4 text-left text-[#878787] text-sm">Advanced features for teams and businesses. Coming soon.</p>
 
                      <div className="mt-8">
                         <h3 className="text-left font-medium font-mono text-xs uppercase tracking-wide text-text-default">
-                           COMING SOON
+                           INCLUDING
                         </h3>
                         <ul className="mt-4 space-y-2">
                            <li className="flex items-start">
                               <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
-                              <span className="text-sm text-text-default">Advanced AI writing assistance</span>
+                              <span className="text-sm text-text-default">Everything in Free, plus:</span>
                            </li>
-                           <li className="flex items-start">
-                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
-                              <span className="text-sm text-text-default">Much higher usage limits</span>
-                           </li>
+
                            <li className="flex items-start">
                               <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
                               <span className="text-sm text-text-default">Priority support</span>
                            </li>
                            <li className="flex items-start">
                               <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
-                              <span className="text-sm text-text-default">And much more...</span>
+                              <span className="text-sm text-text-default">200 version history per document</span>
+                           </li>
+                           <li className="flex items-start">
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">Premium AI models</span>
+                           </li>
+                           <li className="flex items-start">
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">Unlimited chat requests</span>
                            </li>
                         </ul>
                      </div>
 
                      <div className="mt-8 border-border border-t pt-8">
-                        <Button disabled className="h-12 w-full" variant="default">
-                           Coming Soon
+                        <Button className="h-12 w-full" variant="default">
+                           Get Started
                         </Button>
                      </div>
                   </div>

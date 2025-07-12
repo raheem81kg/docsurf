@@ -6,14 +6,12 @@ import { Link } from "@tanstack/react-router";
 import { type CSSProperties, forwardRef, useMemo, useState } from "react";
 import { cn, type Icon } from "@docsurf/ui/lib/utils";
 import { AnimatedSizeContainer } from "@docsurf/ui/components/_c/animated-size-container";
-// import { buttonVariants } from "@docsurf/ui/components/button";
-// import ManageSubscriptionButton from "./manage-subscription-button";
-import { getCurrentPlan, getNextPlan, PLANS } from "@docsurf/utils/constants/pricing";
+import { buttonVariants } from "@docsurf/ui/components/button";
+import ManageSubscriptionButton from "./manage-subscription-button";
+import { getCurrentPlan, getNextPlan, INFINITY_NUMBER } from "@docsurf/utils/constants/pricing";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
-
-export const INFINITY_NUMBER = 1000000000;
 
 /**
  * Format numbers for display (e.g., 1.2K, 1M)
@@ -57,12 +55,12 @@ export function Usage() {
 function UsageInner() {
    // Fetch current user (includes subscription info)
    const { data: user, isLoading: userLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
-   // Fetch usage stats for the last 7 days
-   const { data: usageStats, isLoading: usageLoading } = useQuery(convexQuery(api.analytics.getMyUsageStats, { timeframe: "7d" }));
+   // Fetch usage stats for the last 30 days
+   const { data: usageStats, isLoading: usageLoading } = useQuery(convexQuery(api.analytics.getMyUsageStats, { timeframe: "30d" }));
 
    // Determine plan and limits
-   // const planName = user?.subscription?.isPremium ? "Pro" : "Free";
-   const planName = "Free"; // Default to Free plan for now
+   const planName = user?.subscription?.isPremium ? "Pro" : "Free";
+   // const planName = "Free"; // Default to Free plan for now
    const plan = getCurrentPlan(planName);
    const nextPlan = getNextPlan(planName);
    const isFreePlan = planName === "Free";
@@ -71,24 +69,24 @@ function UsageInner() {
 
    // Usage values
    const requestsUsed = usageStats?.totalRequests ?? 0;
-   const requestsLimit = plan.limits.requests7d ?? 999999999;
+   const requestsLimit = plan.limits.requests30d ?? INFINITY_NUMBER;
    const tokensUsed = usageStats?.totalTokens ?? 0;
-   const tokensLimit = plan.limits.tokens7d ?? 999999999;
+   const tokensLimit = plan.limits.tokens30d ?? INFINITY_NUMBER;
    // TODO: Use usage stats in UsageRows when we add limits
 
    // Next plan limits
-   const nextRequestsLimit = nextPlan?.limits.requests7d;
-   const nextTokensLimit = nextPlan?.limits.tokens7d;
+   const nextRequestsLimit = nextPlan?.limits.requests30d;
+   const nextTokensLimit = nextPlan?.limits.tokens30d;
 
    // Billing reset date from subscription
-   // const billingEnd = user?.subscription?.currentPeriodEnd
-   //    ? new Date(user.subscription.currentPeriodEnd).toLocaleDateString("en-us", {
-   //         month: "short",
-   //         day: "numeric",
-   //         year: "numeric",
-   //      })
-   //    : undefined;
-   const billingEnd = undefined; // Commented out subscription billing
+   const billingEnd = user?.subscription?.currentPeriodEnd
+      ? new Date(user.subscription.currentPeriodEnd).toLocaleDateString("en-us", {
+           month: "short",
+           day: "numeric",
+           year: "numeric",
+        })
+      : undefined;
+   // const billingEnd = undefined; // Commented out subscription billing
 
    // Warn if >= 90% of any limit
    const warnings = useMemo(
@@ -106,14 +104,14 @@ function UsageInner() {
                className="group flex items-center gap-0.5 text-xs font-normal text-muted-foreground opacity-50 transition-colors hover:text-text-default"
                to="/settings/usage"
             >
-               Chat Usage
+               Usage
                <ChevronRight className="size-3 text-neutral-400 transition-all group-hover:translate-x-0.5 group-hover:text-neutral-500" />
             </Link>
 
             <div className="mt-3 flex flex-col gap-4">
                <UsageRow
                   icon={Activity}
-                  label="Requests"
+                  label="Chat Requests"
                   usage={requestsUsed}
                   limit={requestsLimit}
                   showNextPlan={hovered}
@@ -121,7 +119,18 @@ function UsageInner() {
                   warning={warnings[0] ?? false}
                   isLoading={userLoading || usageLoading}
                />
-               <UsageRow
+               {/* Suggestions are unlimited for all users */}
+               {/* <UsageRow
+                  icon={Zap}
+                  label="Suggestions"
+                  usage={undefined}
+                  limit={INFINITY_NUMBER}
+                  showNextPlan={hovered}
+                  nextPlanLimit={INFINITY_NUMBER}
+                  warning={false}
+                  isLoading={false}
+               /> */}
+               {/* <UsageRow
                   icon={Zap}
                   label="Tokens"
                   usage={tokensUsed}
@@ -130,25 +139,25 @@ function UsageInner() {
                   nextPlanLimit={nextTokensLimit}
                   warning={warnings[1] ?? false}
                   isLoading={userLoading || usageLoading}
-               />
+               /> */}
             </div>
 
             <div className="mt-3">
-               <p className="text-xs text-muted-foreground opacity-50">7-day usage</p>
-               {/* <p className={cn("text-xs text-muted-foreground opacity-50", paymentFailedAt && "text-red-600")}>
+               <p className="text-xs text-muted-foreground opacity-50">Last 30-day usage</p>
+               <p className={cn("text-xs text-muted-foreground opacity-50", paymentFailedAt && "text-red-600")}>
                   {paymentFailedAt
                      ? "Your last payment failed. Please update your payment method to continue using DocSurf."
                      : billingEnd
                      ? `Usage will reset ${billingEnd}`
                      : ""}
-               </p> */}
+               </p>
             </div>
 
-            <Link className="text-muted-foreground text-xs underline opacity-70 transition hover:opacity-100" to="/settings/usage">
+            {/* <Link className="text-muted-foreground text-xs underline opacity-70 transition hover:opacity-100" to="/settings/usage">
                DocSurf is free during Beta
-            </Link>
+            </Link> */}
             {/* Commented out subscription/payment related buttons */}
-            {/* {paymentFailedAt ? (
+            {paymentFailedAt ? (
                <ManageSubscriptionButton
                   text="Update Payment Method"
                   variant="ghost"
@@ -165,7 +174,7 @@ function UsageInner() {
                >
                   {isFreePlan ? "Get DocSurf Pro" : "Upgrade plan"}
                </Link>
-            ) : null} */}
+            ) : null}
          </div>
       </AnimatedSizeContainer>
    );

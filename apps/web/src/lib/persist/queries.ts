@@ -12,26 +12,34 @@ export const MAX_VERSIONS_PER_DOC = 20;
 /**
  * Maximum number of versions to keep across all documents.
  */
-export const MAX_VERSIONS_TOTAL = 200;
+export const MAX_VERSIONS_TOTAL = 20;
+export const MAX_VERSIONS_TOTAL_PRO = 200;
 
 /**
  * Prune old versions if we exceed MAX_VERSIONS_PER_DOC or MAX_VERSIONS_TOTAL.
  * Keeps the most recent versions and deletes the rest.
  * Uses bulk operations and proper indexing for efficiency.
  */
-const pruneOldVersions = async (docId: string) => {
+const pruneOldVersions = async (docId: string, isProUser: boolean) => {
    await db.transaction("rw", db.doc_versions, async () => {
       // First, check and prune per-document limit using index
       const docVersions = await db.doc_versions.where("docId").equals(docId).sortBy("timestamp");
 
-      if (docVersions.length > MAX_VERSIONS_PER_DOC) {
+      if (docVersions.length > MAX_VERSIONS_PER_DOC && !isProUser) {
          const versionsToDelete = docVersions.slice(0, docVersions.length - MAX_VERSIONS_PER_DOC);
          await db.doc_versions.bulkDelete(versionsToDelete.map((v) => v.id));
       }
 
       // Then, check and prune overall limit using index
       const totalCount = await db.doc_versions.count();
-      if (totalCount > MAX_VERSIONS_TOTAL) {
+      if (totalCount > MAX_VERSIONS_TOTAL_PRO && isProUser) {
+         const versionsToDelete = await db.doc_versions
+            .orderBy("timestamp")
+            .limit(totalCount - MAX_VERSIONS_TOTAL_PRO)
+            .toArray();
+
+         await db.doc_versions.bulkDelete(versionsToDelete.map((v) => v.id));
+      } else if (totalCount > MAX_VERSIONS_TOTAL && !isProUser) {
          const versionsToDelete = await db.doc_versions
             .orderBy("timestamp")
             .limit(totalCount - MAX_VERSIONS_TOTAL)
@@ -85,7 +93,8 @@ export const createDocVersion = async (
    saveReason: DocVersion["saveReason"],
    changesSinceLastSave: number,
    timeSinceLastSave: number,
-   wordCount: number
+   wordCount: number,
+   isProUser?: boolean
 ) => {
    const now = Date.now();
    // Compute content hash for deduplication
@@ -105,7 +114,7 @@ export const createDocVersion = async (
    await db.transaction("rw", db.doc_versions, async () => {
       const addResult = await db.doc_versions.add(version);
       console.log("Added version with id:", addResult);
-      await pruneOldVersions(docId);
+      await pruneOldVersions(docId, isProUser ?? false);
       // TODO: Consider batching saves for optimization in the future.
    });
 

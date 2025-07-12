@@ -38,6 +38,8 @@ import {
    type DisplayModel,
 } from "@/components/sandbox/right-inner/chat/lib/models-providers-shared";
 import { Skeleton } from "@docsurf/ui/components/skeleton";
+import { useQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
 
 export const Route = createFileRoute("/settings/models")({
    component: ModelsSettings,
@@ -191,7 +193,11 @@ function ModelsSettings() {
    const { data: session, isPending: sessionLoading } = useSession();
    const userSettings = useConvexQuery(api.settings.getUserSettings, session?.user?.id ? {} : "skip");
    const updateSettings = useMutation(api.settings.updateUserSettingsPartial);
-
+   const { data: user } = useQuery({
+      ...convexQuery(api.auth.getCurrentUser, {}),
+      enabled: !!session?.user,
+   });
+   const hasPro = !!user?.subscription?.isPremium;
    const [loading, setLoading] = useState(false);
    const [addingCustomModel, setAddingCustomModel] = useState(false);
    const [editingCustomModel, setEditingCustomModel] = useState<string | null>(null);
@@ -205,8 +211,10 @@ function ModelsSettings() {
       enabled: true,
    });
 
-   const { availableModels, unavailableModels, currentProviders } = useAvailableModels(userSettings);
-
+   const { availableModels, unavailableModels, currentProviders } = useAvailableModels(userSettings, hasPro);
+   console.log("models:hasPro", hasPro);
+   console.log("models:availableModels", availableModels);
+   console.log("models:unavailableModels", unavailableModels);
    // Get available provider IDs for dropdown
    const availableProviders = useMemo(() => {
       const providers = new Set<string>();

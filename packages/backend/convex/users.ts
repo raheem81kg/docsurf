@@ -1,7 +1,7 @@
 import { type ActionCtx, type QueryCtx, query, internalQuery } from "./_generated/server";
 import { ConvexError } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
-// import { SafeSubscription } from "./subscriptions";
+import type { SafeSubscription } from "./subscriptions";
 import { v } from "convex/values";
 
 type CurrentUserMetadata = {
@@ -20,7 +20,7 @@ type CurrentUserMetadata = {
 export type CurrentUser =
    | (Doc<"users"> &
         CurrentUserMetadata & {
-           //   subscription: SafeSubscription | null;
+           subscription: SafeSubscription | null;
            workspaces: Array<{ workspace: Doc<"workspaces">; role: string }>;
         })
    | null;

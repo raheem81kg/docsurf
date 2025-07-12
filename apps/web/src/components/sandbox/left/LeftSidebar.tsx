@@ -38,7 +38,7 @@ import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { TrashPopover } from "./trash-popover";
 import { SortableTree } from "./_tree_components/SortableTree";
-import { Usage } from "./usage";
+import { Usage } from "./usage-sidebar-item";
 import { NewDocumentButton } from "../right-inner/chat/threads/new-document-button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@docsurf/ui/components/tooltip";
 

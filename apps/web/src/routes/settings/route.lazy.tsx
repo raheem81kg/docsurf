@@ -8,7 +8,7 @@ import { cn } from "@docsurf/ui/lib/utils";
 import { useConvexQuery } from "@convex-dev/react-query";
 import { Outlet, createLazyFileRoute, useLocation, useNavigate } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, BarChart3, Bot, Box, Key, PaintBucket, Paperclip, User, Edit3 } from "lucide-react";
+import { ArrowLeft, BarChart3, Bot, Box, Key, PaintBucket, Paperclip, User, Edit3, CreditCard } from "lucide-react";
 import { type ReactNode, useEffect } from "react";
 
 interface SettingsLayoutProps {
@@ -23,11 +23,11 @@ const settingsNavItems = [
       href: "/settings/profile",
       icon: User,
    },
-   // {
-   //    title: "Subscription",
-   //    href: "/settings/subscription",
-   //    icon: CreditCard,
-   // },
+   {
+      title: "Subscription",
+      href: "/settings/subscription",
+      icon: CreditCard,
+   },
    {
       title: "Providers",
       href: "/settings/providers",

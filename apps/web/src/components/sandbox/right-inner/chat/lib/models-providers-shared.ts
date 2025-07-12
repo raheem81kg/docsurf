@@ -117,7 +117,7 @@ export const SEARCH_PROVIDERS: SearchProviderInfo[] = [
    // },
 ];
 
-export function useAvailableModels(userSettings: Infer<typeof UserSettings> | undefined) {
+export function useAvailableModels(userSettings: Infer<typeof UserSettings> | undefined, hasPro: boolean) {
    const currentProviders = {
       core: userSettings?.coreAIProviders || {},
       custom: userSettings?.customAIProviders || {},
@@ -130,14 +130,32 @@ export function useAvailableModels(userSettings: Infer<typeof UserSettings> | un
    MODELS_SHARED.forEach((model) => {
       const hasProvider = model.adapters.some((adapter) => {
          const providerId = adapter.split(":")[0];
-         if (providerId.startsWith("i3-")) return true;
-         if (providerId === "openrouter") return currentProviders.core.openrouter?.enabled;
-         return currentProviders.core[providerId as CoreProvider]?.enabled;
+         if (providerId.startsWith("i3-")) {
+            // Only allow if user has Pro, or model doesn't require Pro
+            if (model.requiredPlanIfNoApiKey === "pro" && !hasPro) {
+               console.log(
+                  `testing: skipping model ${model.id} (adapter: ${adapter}) because requiredPlanIfNoApiKey=pro and hasPro=${hasPro}`
+               );
+               return false;
+            }
+            console.log(`testing: including model ${model.id} (adapter: ${adapter}) because internal adapter and hasPro=${hasPro}`);
+            return true;
+         }
+         if (providerId === "openrouter") {
+            const enabled = currentProviders.core.openrouter?.enabled;
+            console.log(`testing: checking openrouter for model ${model.id}: enabled=${enabled}`);
+            return enabled;
+         }
+         const enabled = currentProviders.core[providerId as CoreProvider]?.enabled;
+         console.log(`testing: checking core provider ${providerId} for model ${model.id}: enabled=${enabled}`);
+         return enabled;
       });
 
       if (hasProvider) {
+         console.log(`testing: model ${model.id} is available`);
          availableModels.push(model);
       } else {
+         console.log(`testing: model ${model.id} is unavailable`);
          unavailableModels.push(model);
       }
    });
@@ -158,8 +176,10 @@ export function useAvailableModels(userSettings: Infer<typeof UserSettings> | un
       };
 
       if (hasProvider) {
+         console.log(`testing: custom model ${id} is available (providerId: ${customModel.providerId})`);
          availableModels.push(modelData);
       } else {
+         console.log(`testing: custom model ${id} is unavailable (providerId: ${customModel.providerId})`);
          unavailableModels.push(modelData);
       }
    });

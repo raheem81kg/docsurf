@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query } from "./_generated/server";
+import { internalQuery } from "./_generated/server";
 import { getUserIdentity } from "./lib/identity";
 import { MODELS_SHARED } from "./lib/models";
 import { Id } from "./_generated/dataModel";
@@ -233,6 +234,47 @@ export const getMyModelUsage = query({
          reasoningTokens: events.reduce((sum, e) => sum + e.r, 0),
          totalTokens: events.reduce((sum, e) => sum + e.p + e.c + e.r, 0),
          timeframe,
+      };
+   },
+});
+
+export const getUserUsageStats = internalQuery({
+   args: {
+      userId: v.id("users"),
+      timeframe: v.union(v.literal("1d"), v.literal("7d"), v.literal("30d")),
+   },
+   handler: async (ctx, { userId, timeframe }) => {
+      const days = timeframe === "1d" ? 1 : timeframe === "7d" ? 7 : 30;
+      const startDay = getDaysSinceEpoch(days);
+
+      // Get user's events in time range - super efficient with the index
+      const events = await ctx.db
+         .query("usageEvents")
+         .withIndex("byUserDay", (q) => q.eq("userId", userId).gte("daysSinceEpoch", startDay))
+         .collect();
+
+      // Post-filter by model and aggregate
+      const modelStats = MODELS_SHARED.map((model) => {
+         const modelEvents = events.filter((e) => e.modelId === model.id);
+         return {
+            modelId: model.id,
+            modelName: model.name,
+            requests: modelEvents.length,
+            promptTokens: modelEvents.reduce((sum, e) => sum + e.p, 0),
+            completionTokens: modelEvents.reduce((sum, e) => sum + e.c, 0),
+            reasoningTokens: modelEvents.reduce((sum, e) => sum + e.r, 0),
+            totalTokens: modelEvents.reduce((sum, e) => sum + e.p + e.c + e.r, 0),
+         };
+      }).filter((stat) => stat.requests > 0);
+
+      const totalRequests = events.length;
+      const totalTokens = events.reduce((sum, e) => sum + e.p + e.c + e.r, 0);
+
+      return {
+         modelStats,
+         timeframe,
+         totalRequests,
+         totalTokens,
       };
    },
 });
