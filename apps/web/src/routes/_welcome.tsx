@@ -31,7 +31,7 @@ function LayoutComponent() {
    const user = useQuery(convexQuery(api.auth.getCurrentUser, {}));
 
    return (
-      <div className="relative max-w-full overflow-x-hidden">
+      <div className="relative max-w-full overflow-x-clip">
          <Navigation
             profile={{
                full_name: user?.data?.name ?? null,
