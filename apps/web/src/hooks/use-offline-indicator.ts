@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 import { toast } from "sonner";
 
@@ -8,19 +8,35 @@ import { toast } from "sonner";
  * Uses a constant string as the toast ID for the offline toast.
  */
 export function useOfflineIndicator() {
+   const prevOnlineRef = useRef<boolean | null>(null);
    useEffect(() => {
       const offlineToastId = "offline-toast";
 
       const handleStatus = () => {
          const isOnline = typeof window !== "undefined" ? window.navigator.onLine : true;
-         if (isOnline) {
-            toast.dismiss(offlineToastId);
-            showToast("Back online!", "success", { duration: 2000 });
-         } else {
-            showToast("You are offline", "error", {
-               duration: Number.POSITIVE_INFINITY,
-               id: offlineToastId,
-            });
+         // Only trigger if status actually changes
+         if (prevOnlineRef.current === null) {
+            // First run, just set the ref
+            prevOnlineRef.current = isOnline;
+            if (!isOnline) {
+               showToast("You are offline", "error", {
+                  duration: Number.POSITIVE_INFINITY,
+                  id: offlineToastId,
+               });
+            }
+            return;
+         }
+         if (isOnline !== prevOnlineRef.current) {
+            if (isOnline) {
+               toast.dismiss(offlineToastId);
+               showToast("Back online!", "success", { duration: 2000 });
+            } else {
+               showToast("You are offline", "error", {
+                  duration: Number.POSITIVE_INFINITY,
+                  id: offlineToastId,
+               });
+            }
+            prevOnlineRef.current = isOnline;
          }
       };
 

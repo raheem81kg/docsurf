@@ -164,7 +164,7 @@ const HeaderContent = () => {
                   }}
                   onFocus={(e) => e.currentTarget.blur()}
                >
-                  <VscLayoutSidebarLeft size={16} className="!size-4" />
+                  <VscLayoutSidebarLeft className="!size-4.5 md:!size-4" />
                   <span className="sr-only">Toggle Sidebar</span>
                </Button>
             </TooltipTrigger>
@@ -222,7 +222,9 @@ const HeaderContent = () => {
                                  ref={inputRef}
                                  onBlur={handleInputBlur}
                                  className={cn(
-                                    "relative max-w-[250px] -ml-1 text-[13px] truncate h-7 justify-start bg-muted/50 border-primary border rounded-sm px-2 py-1.5 text-left self-start",
+                                    "relative max-w-[250px] -ml-1 truncate h-7 justify-start bg-muted/50 border-primary border rounded-sm px-2 py-1.5 text-left self-start",
+                                    "text-base", // 16px on all screens
+                                    "sm:text-[13px]", // 13px on small and up
                                     isEvenLargerTitle && "w-[250px]",
                                     isLargeTitle && !isEvenLargerTitle && "w-[180px]",
                                     isShortTitle && "w-[90px]",
@@ -284,7 +286,7 @@ const HeaderContent = () => {
                      }}
                      onFocus={(e) => e.currentTarget.blur()}
                   >
-                     <VscLayoutSidebarLeft size={16} className="!size-4" />
+                     <VscLayoutSidebarLeft className="!size-4.5 md:!size-4" />
                      <span className="sr-only">Toggle Left Sidebar</span>
                   </Button>
                </TooltipTrigger>
@@ -310,7 +312,7 @@ const HeaderContent = () => {
                }}
                onFocus={(e) => e.currentTarget.blur()}
             >
-               <VscLayoutSidebarRight className="!size-4" size={16} />
+               <VscLayoutSidebarRight className="!size-4.5 md:!size-4" />
                <span className="sr-only">Toggle Inner Right Sidebar</span>
             </Button>
          </div>

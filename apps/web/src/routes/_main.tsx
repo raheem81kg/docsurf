@@ -52,7 +52,7 @@ function MainLayoutComponent() {
                   <Header />
 
                   <div className="flex overflow-hidden h-full">
-                     <div className="flex-1 min-w-0 overflow-auto scrollbar-hidden">
+                     <div className="flex-1 min-w-0 scrollbar-hidden">
                         <Outlet />
                      </div>
 
