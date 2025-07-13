@@ -95,7 +95,7 @@ function SubscriptionSettingsPage() {
                      <h3 className="text-sm font-medium">{proPlan?.name}</h3>
                      <Badge variant="secondary">Recommended</Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground">Gain access to premium models, research tool, and more.</p>
+                  <p className="text-sm text-muted-foreground">Gain access to premium models, unlimited chats, and more.</p>
                   <div className="flex gap-2 items-center">
                      <span className="text-sm font-medium line-through text-muted-foreground mr-1">${proPlan?.price.monthly}</span>
                      <p className="text-sm font-medium">${proPlan?.price.monthly}</p>
@@ -120,9 +120,6 @@ function SubscriptionSettingsPage() {
                         </p>
                         <p className="text-sm text-muted-foreground flex gap-2 items-center">
                            <Check className="!size-4 text-primary" /> Search Tool
-                        </p>
-                        <p className="text-sm text-muted-foreground flex gap-2 items-center">
-                           <Check className="!size-4 text-primary" /> Research Tool
                         </p>
                      </div>
                   </div>
