@@ -78,9 +78,6 @@ export const SectionFour: React.FC<SectionFourProps> = ({
    variant,
    isDocLocked,
 }) => {
-   // Log rerender and state for debugging
-   console.log("[SectionFour] rerender", { isDocLocked, activeActions, size, variant, editor });
-
    const editorState = useEditorState({
       editor,
       selector: (context) => {

@@ -21,7 +21,7 @@ interface TextStyle extends FormatAction {
 }
 
 interface SectionTwoProps extends VariantProps<typeof toggleVariants> {
-   editor?: Editor;
+   editor: Editor;
    activeActions?: TextStyleAction[];
    mainActionCount?: number;
    isDocLocked?: boolean;
@@ -35,9 +35,6 @@ export const SectionTwo: React.FC<SectionTwoProps> = ({
    variant,
    isDocLocked,
 }) => {
-   // Log rerender
-   console.log("[SectionTwo] rerender", { isDocLocked, activeActions, size, variant });
-   if (!editor) return null;
    const editorState = useEditorState({
       editor,
       selector: (context) => ({

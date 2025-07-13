@@ -157,13 +157,10 @@ export function ModelSelector({
       },
       session?.user?.id && !auth.isLoading ? {} : "skip"
    );
-   console.log("testing: userSettings in selector", userSettings);
-   console.log("testing: hasPro in selector", hasPro);
    const { availableModels } = useAvailableModels(
       "error" in userSettings ? DefaultSettings(session?.user?.id ?? "") : userSettings,
       hasPro
    );
-   console.log("testing: models shown in selector", availableModels);
 
    const [open, setOpen] = React.useState(false);
 

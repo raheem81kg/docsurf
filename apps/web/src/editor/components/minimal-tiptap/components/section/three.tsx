@@ -329,8 +329,6 @@ export const HighlightPopoverButton = ({
 };
 
 export const SectionThree: React.FC<SectionThreeProps> = ({ editor, size, variant, isDocLocked }) => {
-   // Log rerender
-   console.log("[SectionThree] rerender", { isDocLocked, size, variant });
    const editorState = useEditorState({
       editor,
       selector: (context) => {

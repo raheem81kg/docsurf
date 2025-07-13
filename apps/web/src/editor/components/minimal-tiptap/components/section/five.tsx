@@ -30,9 +30,6 @@ export const SectionFive: React.FC<SectionFiveProps> = ({
    variant,
    isDocLocked,
 }) => {
-   // Log rerender
-   console.log("[SectionFive] rerender", { isDocLocked, activeActions, size, variant });
-
    const editorState = useEditorState({
       editor,
       selector: (context) => ({

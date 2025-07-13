@@ -87,8 +87,6 @@ export const SectionOne: React.FC<SectionOneProps> = function SectionOne({
    variant,
    isDocLocked,
 }) {
-   // Log rerender
-   console.log("[SectionOne] rerender", { isDocLocked, activeLevels, size, variant });
    const editorState = useEditorState({
       editor,
       selector: ({ editor }: { editor: Editor }) => {

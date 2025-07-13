@@ -235,16 +235,17 @@ export function hasExtension(editor: Editor, name: string): boolean {
 
 /**
  * Recursively normalize content for comparison by removing non-essential fields.
- * Only keeps type, content, and text fields.
+ * Keeps type, content, text, and attrs fields (for node attributes like image width/height).
  */
 export function normalizeContentForComparison(node: any): any {
    if (Array.isArray(node)) {
       return node.map(normalizeContentForComparison);
    }
    if (node && typeof node === "object") {
-      // Only keep essential fields: type, content, text
-      const { type, content, text } = node;
+      // Keep essential fields: type, content, text, attrs
+      const { type, content, text, attrs } = node;
       const normalized: any = { type };
+      if (attrs) normalized.attrs = attrs;
       if (content) normalized.content = normalizeContentForComparison(content);
       if (text) normalized.text = text;
       return normalized;

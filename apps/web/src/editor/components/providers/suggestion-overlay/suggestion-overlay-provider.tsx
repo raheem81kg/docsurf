@@ -9,7 +9,6 @@ import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { useCurrentDocument } from "@/components/sandbox/left/_tree_components/SortableTree";
 import { useConvexTree } from "@/components/sandbox/left/_tree_components/use-convex-tree";
-import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 
 interface SuggestionOverlayContextType {
    openSuggestionOverlay: (options: {
@@ -33,13 +32,12 @@ export function SuggestionOverlayProvider({ children }: { children: ReactNode })
    const [selectionRange, setSelectionRange] = useState<{ from: number; to: number } | null>(null);
    // Get user and workspaceId
    const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
-   const workspaceId = user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">;
+   const workspaceId = user?.workspaces?.[0]?.workspace?._id;
    const { doc } = useCurrentDocument(user);
    const { isLoading: isTreeLoading } = useConvexTree({
-      workspaceId: user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">,
+      workspaceId: workspaceId,
    });
    const editor = useEditorRefStore((state) => state.editor);
-   console.log("editor in suggestion overlay provider", editor);
 
    const setSuggestionIsLoading = useCallback((isLoading: boolean) => {}, []);
 
@@ -141,7 +139,6 @@ export function SuggestionOverlayProvider({ children }: { children: ReactNode })
       }
       const { from, to, empty } = editor.state.selection;
       if (empty) {
-         console.log("empty selection editor ref", editor);
          showToast("Select text in the document before using AI commands.", "warning");
          return;
       }
@@ -206,7 +203,7 @@ export function SuggestionOverlayProvider({ children }: { children: ReactNode })
          {doc?._id && !isTreeLoading && (
             <SuggestionOverlay
                documentId={doc._id}
-               workspaceId={user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">}
+               workspaceId={workspaceId ?? ""}
                isOpen={isOpen}
                onClose={closeSuggestionOverlay}
                selectedText={selectedText}
