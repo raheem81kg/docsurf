@@ -2,7 +2,7 @@ import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import { fetchSession, getCookieName } from "@convex-dev/better-auth/react-start";
 import type { ConvexQueryClient } from "@convex-dev/react-query";
 import { createAuth } from "@docsurf/backend/convex/auth";
-import { Toaster } from "@docsurf/ui/components/sonner";
+import { Toaster } from "@/components/sonner";
 import appCss from "@docsurf/ui/globals.css?url";
 import type { QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts, useRouteContext, useRouter } from "@tanstack/react-router";
@@ -186,7 +186,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <HeadContent />
          </head>
          <body className="min-h-screen max-w-screen antialiased">
-            <Providers attribute="class" enableSystem disableTransitionOnChange defaultTheme="dark" storageKey="vite-ui-theme">
+            <Providers>
                {children}
                <Analytics />
                {/* TODO: Add cookie consent */}

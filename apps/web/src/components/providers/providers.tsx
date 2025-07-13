@@ -1,5 +1,4 @@
 import { TooltipProvider } from "@docsurf/ui/components/tooltip";
-import type { ThemeProviderProps } from "next-themes";
 // import { CompliantCookieProvider } from "./compliant-cookie-provider";
 import { CookiesProvider } from "react-cookie";
 import { PostHogProvider } from "./posthog/posthog-provider";
@@ -8,9 +7,7 @@ import { ClientOnly } from "@tanstack/react-router";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache";
 import { HotkeysProvider } from "react-hotkeys-hook";
 
-interface ProvidersProps extends ThemeProviderProps {}
-
-export function Providers({ children, ...props }: ProvidersProps) {
+export function Providers({ children }: { children: React.ReactNode }) {
    return (
       <ClientOnly>
          <HotkeysProvider initiallyActiveScopes={["global", "navigation"]}>

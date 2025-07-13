@@ -115,7 +115,6 @@
       "micromark-extension-llm-math": "^3.1.0",
       "motion": "^12.18.1",
       "nanoid": "^5.1.5",
-      "next-themes": "^0.4.6",
       "nuqs": "^2.4.3",
       "object-hash": "^3.0.0",
       "orderedmap": "^2.1.1",
