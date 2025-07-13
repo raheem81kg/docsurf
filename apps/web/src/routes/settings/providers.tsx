@@ -19,7 +19,7 @@ import { Label } from "@docsurf/ui/components/label";
 import { Switch } from "@docsurf/ui/components/switch";
 import { api } from "@docsurf/backend/convex/_generated/api";
 
-import { useConvexQuery } from "@convex-dev/react-query";
+import { convexQuery, useConvexQuery } from "@convex-dev/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
 import { AlertCircle, Bot, Check, Globe, Key, PackageIcon, Plus, RotateCcw, Settings2, SquarePen, Trash2, X } from "lucide-react";
@@ -35,6 +35,7 @@ import { useSession } from "@/hooks/auth-hooks";
 import { BYOKSearchProviderCard } from "@/components/sandbox/right-inner/chat/settings/search-provider-card";
 import { Logo } from "@/components/sandbox/right-inner/chat/logo";
 import { Skeleton } from "@docsurf/ui/components/skeleton";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/settings/providers")({
    component: ProvidersSettings,
@@ -386,9 +387,15 @@ function ProvidersSettings() {
    const { data: session, isPending: sessionLoading } = useSession();
    const userSettings = useConvexQuery(api.settings.getUserSettings, session?.user?.id ? {} : "skip");
    const updateSettings = useMutation(api.settings.updateUserSettingsPartial);
+   const { data: user } = useQuery({
+      ...convexQuery(api.auth.getCurrentUser, {}),
+      enabled: !!session?.user,
+   });
+
+   const hasPro = !!user?.subscription?.isPremium;
 
    // Call hooks at the top to avoid conditional hook calls
-   const { currentProviders } = useAvailableModels(userSettings && !("error" in userSettings) ? userSettings : undefined);
+   const { currentProviders } = useAvailableModels(userSettings && !("error" in userSettings) ? userSettings : undefined, hasPro);
 
    const [loading, setLoading] = useState(false);
    const [addingCustomProvider, setAddingCustomProvider] = useState(false);

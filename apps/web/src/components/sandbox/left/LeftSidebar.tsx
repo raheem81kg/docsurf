@@ -370,7 +370,7 @@ export const LeftSidebar = ({
                </SidebarMenuItem>
             </SidebarMenu>
          </SidebarFooter>
-         <SidebarRail onToggle={handleRailClick} sideForDrag="left" enableDrag maxSidebarWidth={20} />
+         <SidebarRail onToggle={handleRailClick} sideForDrag="left" enableDrag maxSidebarWidth={21} />
          <CommandK open={commandKOpen} onOpenChange={setCommandKOpen} />
       </Sidebar>
    );

@@ -2,7 +2,7 @@ import * as React from "react";
 import { useEditorState, type Editor } from "@tiptap/react";
 import { MAX_CHARACTERS } from "../../tiptap-util";
 import { ActionButton } from "../../extensions/image/components/image-actions";
-import { FileUpIcon, DownloadIcon, LockIcon, UnlockIcon, Trash2Icon } from "lucide-react";
+import { FileUpIcon, DownloadIcon, LockIcon, UnlockIcon, Trash2Icon, SendIcon } from "lucide-react";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 import { showProgressToast, hideProgressToast } from "@docsurf/ui/components/_c/toast/progressToast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@docsurf/ui/components/dialog";
@@ -10,6 +10,9 @@ import { cn } from "@docsurf/ui/lib/utils";
 import { ClockRewind } from "@/editor/components/custom/ui/diffview/lib/icons";
 import VersionHistoryDialog from "@/editor/components/custom/version-history-dialog";
 import { ShareDocButton } from "@/editor/components/custom/share-doc-button";
+import { ToolbarSection } from "../toolbar-section";
+import type { FormatAction } from "../../types";
+import { useBreakpoint } from "@docsurf/ui/hooks/use-breakpoint";
 
 /**
  * SectionSix displays character/word count and formatting actions in the bottom toolbar.
@@ -17,6 +20,9 @@ import { ShareDocButton } from "@/editor/components/custom/share-doc-button";
  * - Center: Fixed text '30 | 3 words'
  * - Right: SectionTwo (formatting actions)
  */
+
+// Define the allowed action values for SectionSix, including clear/lock for completeness
+export type SectionSixAction = "share" | "exportWord" | "importWord" | "versionHistory" | "clearEditor" | "lockEditor";
 
 export interface SectionSixProps {
    editor: Editor;
@@ -26,6 +32,7 @@ export interface SectionSixProps {
    isDocLocked?: boolean;
    loadingDoc?: boolean;
    toggleLock?: () => void;
+   activeActions?: SectionSixAction[];
 }
 
 export const SectionSix: React.FC<SectionSixProps> = ({
@@ -36,7 +43,10 @@ export const SectionSix: React.FC<SectionSixProps> = ({
    isDocLocked,
    loadingDoc,
    toggleLock,
+   activeActions = ["share", "exportWord", "importWord", "versionHistory", "lockEditor", "clearEditor"],
 }) => {
+   // Flip logic: isWide is true when window.innerWidth >= 1324
+   const isWide = !useBreakpoint(1300);
    const { characterCount, wordCount } = useEditorState({
       editor,
       selector: (ctx) => {
@@ -56,6 +66,67 @@ export const SectionSix: React.FC<SectionSixProps> = ({
    const isLimit = used >= characterLimit;
    const [showClearDialog, setShowClearDialog] = React.useState(false);
    const [openVersionHistoryDialog, setOpenVersionHistoryDialog] = React.useState(false);
+
+   // --- ACTIONS SETUP ---
+   // Handler to open share dialog
+   const [openShareDialog, setOpenShareDialog] = React.useState(false);
+
+   const sectionSixActions: FormatAction[] = [
+      {
+         value: "share",
+         label: "Share",
+         icon: <SendIcon className="size-4" />,
+         action: () => setOpenShareDialog(true),
+         isActive: () => false,
+         canExecute: () => !!docId,
+         shortcuts: [],
+      },
+      {
+         value: "exportWord",
+         label: "Export as Word",
+         icon: <DownloadIcon className="size-4" />,
+         action: () => handleExport(),
+         isActive: () => false,
+         canExecute: () => !!docId,
+         shortcuts: [],
+      },
+      {
+         value: "importWord",
+         label: loading ? "Importing..." : "Import Word",
+         icon: <FileUpIcon className="size-4" />,
+         action: () => triggerFileInput(),
+         isActive: () => false,
+         canExecute: () => !!docId && !loading,
+         shortcuts: [],
+      },
+      {
+         value: "versionHistory",
+         label: "Version History",
+         icon: <ClockRewind size={16} />,
+         action: () => setOpenVersionHistoryDialog(true),
+         isActive: () => openVersionHistoryDialog,
+         canExecute: () => !!docId,
+         shortcuts: [],
+      },
+      {
+         value: "lockEditor",
+         label: isDocLocked ? "Unlock Editor" : "Lock Editor",
+         icon: isDocLocked ? <UnlockIcon className="size-4" /> : <LockIcon className="size-4" />,
+         action: () => toggleLock?.(),
+         isActive: () => !!isDocLocked,
+         canExecute: () => !!docId,
+         shortcuts: [],
+      },
+      {
+         value: "clearEditor",
+         label: "Clear Editor",
+         icon: <Trash2Icon className="size-4" />,
+         action: () => setShowClearDialog(true),
+         isActive: () => false,
+         canExecute: () => !isDocLocked,
+         shortcuts: [],
+      },
+   ];
 
    // Sync Tiptap's editable state with isDocLocked
    React.useEffect(() => {
@@ -86,12 +157,12 @@ export const SectionSix: React.FC<SectionSixProps> = ({
          }
       }, 100);
       try {
-         const filename = sanitizeFilename(docTitle) + ".docx";
+         const filename = `${sanitizeFilename(docTitle)}.docx`;
          editor.commands.exportToWord(filename);
          clearInterval(progressInterval);
          hideProgressToast();
          showToast("Word document exported!", "success");
-      } catch (err) {
+      } catch {
          clearInterval(progressInterval);
          hideProgressToast();
          showToast("Failed to export Word document.", "error");
@@ -153,24 +224,19 @@ export const SectionSix: React.FC<SectionSixProps> = ({
          <span className="select-none hidden lg:block text-center font-mono text-xs text-muted-foreground">
             {used} | {words} words
          </span>
-         {/* Right: Import/Export Word and Lock/Unlock */}
+         {/* Right: ToolbarSection for actions, plus Clear/Lock as standalone */}
          <div className="flex flex-shrink-0 items-center gap-2">
-            <ShareDocButton />
-            {/* Export Word */}
-            <ActionButton
-               icon={<DownloadIcon className="size-4" />}
-               tooltip="Export as Word (.docx)"
-               onClick={handleExport}
-               disabled={isDocLocked}
+            <ToolbarSection
+               editor={editor}
+               actions={sectionSixActions}
+               activeActions={activeActions}
+               // Show all actions if wide, else fallback to previous logic
+               mainActionCount={isWide ? sectionSixActions.length : 4}
+               dropdownTooltip="More actions"
+               dropdownClassName="w-8"
+               disabled={!docId}
             />
-
-            {/* Import Word */}
-            <ActionButton
-               icon={<FileUpIcon className="size-4" />}
-               tooltip={loading ? "Importing..." : "Import Word (.docx)"}
-               onClick={triggerFileInput}
-               disabled={loading || isDocLocked}
-            />
+            {/* Hidden file input for import */}
             <input
                type="file"
                accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -179,34 +245,12 @@ export const SectionSix: React.FC<SectionSixProps> = ({
                onChange={handleFileChange}
             />
 
-            {/* Lock/Unlock Editor */}
-            <ActionButton
-               icon={isDocLocked ? <LockIcon className="size-4" /> : <UnlockIcon className="size-4" />}
-               tooltip={isDocLocked ? "Unlock editor" : "Lock editor"}
-               onClick={toggleLock}
-               disabled={loadingDoc}
-               className={cn(isDocLocked && "text-muted-foreground")}
-            />
-
-            {/* Version History Dialog Trigger and Dialog */}
+            {/* Version History Dialog (controlled by ToolbarSection action) */}
             <VersionHistoryDialog open={openVersionHistoryDialog} setOpen={setOpenVersionHistoryDialog} />
-
-            <ActionButton
-               icon={<ClockRewind size={16} />}
-               tooltip="Show version history"
-               aria-label="Show version history"
-               title="Show version history"
-               onClick={() => setOpenVersionHistoryDialog(true)}
-               disabled={isDocLocked}
-            />
-
+            {/* Share Dialog (controlled by ToolbarSection action) */}
+            {/* <ShareDocButton /> Removed: now handled by ToolbarSection */}
             {/* Clear Editor */}
-            <ActionButton
-               icon={<Trash2Icon className="size-4" />}
-               tooltip="Clear editor"
-               onClick={() => setShowClearDialog(true)}
-               disabled={isDocLocked}
-            />
+            {/* <ActionButton ... /> Removed: now handled by ToolbarSection */}
          </div>
          <Dialog open={showClearDialog} onOpenChange={setShowClearDialog}>
             <DialogContent>

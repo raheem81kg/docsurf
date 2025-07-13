@@ -7,9 +7,6 @@ import { Chat } from "./chat/chat";
 import { useChatStore } from "./chat/lib/chat-store";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
-import { useCurrentDocument } from "@/components/sandbox/left/_tree_components/SortableTree";
-import { useConvexTree } from "@/components/sandbox/left/_tree_components/use-convex-tree";
-import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { useSession } from "@/hooks/auth-hooks";
 
@@ -29,11 +26,6 @@ export const InnerRightSidebar = ({
       ...convexQuery(api.auth.getCurrentUser, {}),
       enabled: !!session?.user,
    });
-   const { doc } = useCurrentDocument(user);
-   const { isLoading: isTreeLoading } = useConvexTree({
-      workspaceId:
-         session?.user && user?.workspaces?.[0]?.workspace?._id ? (user.workspaces[0].workspace._id as Id<"workspaces">) : undefined,
-   });
 
    // Get the current threadId from the chat store
    const threadId = useChatStore((s) => s.threadId);
@@ -52,13 +44,6 @@ export const InnerRightSidebar = ({
          set_ir_sidebar_state(false);
       }
    }, [isUserNotSignedIn, ir_sidebar_state, set_ir_sidebar_state]);
-
-   // Close sidebar if doc is locked
-   useEffect(() => {
-      if (doc?.isLocked && open) {
-         toggle_ir_sidebar();
-      }
-   }, [doc?.isLocked, open, toggle_ir_sidebar]);
 
    React.useEffect(() => {
       if (isMobile) {
@@ -96,7 +81,7 @@ export const InnerRightSidebar = ({
                <Chat threadId={threadId} />
             </React.Suspense>
          </SidebarContent>
-         <SidebarRail className="after:w-[1px]" onToggle={handleRailClick} enableDrag sideForDrag="right" maxSidebarWidth={29.5} />
+         <SidebarRail className="after:w-[1px]" onToggle={handleRailClick} enableDrag sideForDrag="right" maxSidebarWidth={39.5} />
       </Sidebar>
    );
 };
