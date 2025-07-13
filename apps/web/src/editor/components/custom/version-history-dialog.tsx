@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { Dialog, DialogContent, DialogTrigger, DialogClose, DialogTitle } from "@docsurf/ui/components/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogClose, DialogTitle, DialogDescription } from "@docsurf/ui/components/dialog";
 import { Button } from "@docsurf/ui/components/button";
 import { ScrollArea } from "@docsurf/ui/components/scroll-area";
 import { format } from "date-fns";
@@ -449,9 +449,9 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
          setRestoring(drawerVersion.id);
 
          // Update the editor content directly, deferred to avoid flushSync warning
-         setTimeout(() => {
+         queueMicrotask(() => {
             mainEditor.commands.setContent(versionContent, false);
-         }, 0);
+         });
 
          showToast("Version restored.", "success");
          setConfirmingRestore(false);
@@ -528,7 +528,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
       try {
          const content = mainEditor.getJSON();
          const wordCount = getWordCount(mainEditor);
-         if (wordCount <= 1) {
+         if (wordCount < 1) {
             showToast("Cannot save version with no content", "error");
             return;
          }
@@ -582,9 +582,9 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
 
       try {
          // Apply the version content directly to the editor, deferred to avoid flushSync warning
-         setTimeout(() => {
+         queueMicrotask(() => {
             mainEditor.commands.setContent(versionContent, false);
-         }, 0);
+         });
          showToast("Version restored.", "success");
          setOpen(false);
       } catch (error) {
@@ -612,6 +612,9 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
             <DialogContent className="p-0 flex flex-col h-[80vh] max-h-[90vh] w-full sm:max-w-[93vw] overflow-hidden">
                <VisuallyHidden>
                   <DialogTitle>Version History</DialogTitle>
+                  <DialogDescription>
+                     {liveVersions.length}/{isProUser ? "200" : "100"} (oldest pruned after {isProUser ? "200" : "100"})
+                  </DialogDescription>
                </VisuallyHidden>
                <div className="flex flex-1 min-h-0 flex-col">
                   <aside className="w-full border-r border-r-border/40  flex flex-col min-h-0 h-full overflow-x-auto">
@@ -619,7 +622,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
                         <div className="flex flex-col gap-0.5">
                            <h2 className="font-semibold text-base">Versions</h2>
                            <span className="text-xs text-muted-foreground">
-                              {liveVersions.length}/{20} (oldest pruned after 20)
+                              {liveVersions.length}/{isProUser ? "200" : "100"} (oldest pruned after {isProUser ? "200" : "100"})
                            </span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -791,6 +794,9 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
          <DialogContent className="p-0 flex flex-col h-[950px] max-h-[90vh] w-full lg:max-w-[80vw] sm:max-w-[93vw] overflow-hidden">
             <VisuallyHidden>
                <DialogTitle>Version History</DialogTitle>
+               <DialogDescription>
+                  {liveVersions.length}/{isProUser ? "200" : "100"} (oldest pruned after {isProUser ? "200" : "100"})
+               </DialogDescription>
             </VisuallyHidden>
             <div className="flex flex-1 min-h-0 items-stretch flex-col md:flex-row">
                <aside className="w-full md:w-56 border-r border-r-border/40  flex flex-col min-h-0 md:h-auto h-40 overflow-x-auto md:overflow-x-visible">
@@ -798,7 +804,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
                      <div className="flex flex-col gap-0.5">
                         <h2 className="font-semibold text-base">Versions</h2>
                         <span className="text-xs text-muted-foreground">
-                           {liveVersions.length}/{20} (oldest pruned after 20)
+                           {liveVersions.length}/{isProUser ? "200" : "100"} (oldest pruned after {isProUser ? "200" : "100"})
                         </span>
                      </div>
                      <div className="flex items-center gap-2">

@@ -191,7 +191,6 @@ export const SectionFour: React.FC<SectionFourProps> = ({
       bulletList: !editorState.isBulletList && !editorState.canBulletList,
       taskList: !editorState.isTaskList && !editorState.canTaskList,
    };
-   console.log("[SectionFour] disabledMap", disabledMap);
 
    return (
       <ToolbarSection
