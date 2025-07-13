@@ -70,6 +70,12 @@ export function useChatActions({
          await useAuthTokenStore.getState().refetchToken();
          // If there is no threadId, treat retry as a new message send
          if (!threadId) {
+            // Remove the last user message (the failed one) before retrying
+            const lastUserIndex = messages.map((m) => m.role).lastIndexOf("user");
+            if (lastUserIndex !== -1) {
+               const messagesWithoutLastUser = messages.slice(0, lastUserIndex);
+               setMessages(messagesWithoutLastUser);
+            }
             // If the message has text parts, extract the text and call handleInputSubmit
             const textPart = message.parts?.find((part) => part.type === "text");
             if (textPart && typeof textPart.text === "string") {
