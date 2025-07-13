@@ -93,11 +93,13 @@ function SubscriptionSettingsPage() {
                <div className="flex flex-col gap-4 bg-muted/50 p-4 rounded-lg border-primary/50 border">
                   <div className="flex gap-2 items-center justify-between">
                      <h3 className="text-sm font-medium">{proPlan?.name}</h3>
-                     <Badge variant="secondary">Recommended</Badge>
+                     <Badge variant="secondary">Limited Offer</Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">Gain access to premium models, unlimited chats, and more.</p>
                   <div className="flex gap-2 items-center">
-                     <span className="text-sm font-medium line-through text-muted-foreground mr-1">${proPlan?.price.monthly}</span>
+                     <span className="text-sm font-medium line-through text-muted-foreground mr-1">
+                        ${(proPlan?.price.monthly || 0) + 2}
+                     </span>
                      <p className="text-sm font-medium">${proPlan?.price.monthly}</p>
                      <p className="text-sm text-muted-foreground">/month</p>
                   </div>
@@ -128,7 +130,7 @@ function SubscriptionSettingsPage() {
                         <Button variant="outline" asChild className="cursor-pointer ">
                            <CheckoutLink
                               polarApi={{ generateCheckoutLink: api.polar.generateCheckoutLink }}
-                              productIds={products.map((product: any) => product.id)}
+                              productIds={products.map((product) => product.id)}
                               embed={false}
                               className=""
                            >

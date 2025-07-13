@@ -12,6 +12,8 @@ import { getCurrentPlan, getNextPlan, INFINITY_NUMBER } from "@docsurf/utils/con
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
+import { PricingDialog } from "@/components/dialogs/pricing-dialog";
+import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 
 /**
  * Format numbers for display (e.g., 1.2K, 1M)
@@ -65,7 +67,6 @@ function UsageInner() {
    const isFreePlan = planName === "Free";
    const isEnterprisePlan = false; // Extend if you add enterprise
    const paymentFailedAt = undefined; // Extend if you add payment failure logic
-   console.log("usage-sidebar-item: usageStats", usageStats);
    // Usage values
    // Use chargedRequests to reflect only charged (platform) usage, not BYOK
    // TODO: If you want to show both, add a separate display for totalRequests
@@ -96,6 +97,7 @@ function UsageInner() {
    const warning = warnings.some(Boolean);
 
    const [hovered, setHovered] = useState(false);
+   const [pricingOpen, setPricingOpen] = useState(false);
 
    return (
       <AnimatedSizeContainer height>
@@ -166,14 +168,23 @@ function UsageInner() {
                   onMouseLeave={() => setHovered(false)}
                />
             ) : (warning || isFreePlan) && !isEnterprisePlan ? (
-               <Link
-                  to="/settings/subscription"
-                  className={cn(buttonVariants(), "mt-4 flex h-9 items-center justify-center border px-4 text-sm")}
-                  onMouseEnter={() => setHovered(true)}
-                  onMouseLeave={() => setHovered(false)}
-               >
-                  {isFreePlan ? "Get DocSurf Pro" : "Upgrade plan"}
-               </Link>
+               <PricingDialog open={pricingOpen} onOpenChange={setPricingOpen}>
+                  <button
+                     type="button"
+                     className={cn(buttonVariants(), "mt-4 flex h-9 w-full items-center justify-center border px-4 text-sm")}
+                     onMouseEnter={() => setHovered(true)}
+                     onMouseLeave={() => setHovered(false)}
+                     onClick={() => {
+                        if (!user) {
+                           showToast("Please sign in to manage your subscription.", "warning");
+                           return;
+                        }
+                        setPricingOpen(true);
+                     }}
+                  >
+                     {isFreePlan ? "Get DocSurf Pro" : "Upgrade plan"}
+                  </button>
+               </PricingDialog>
             ) : null}
          </div>
       </AnimatedSizeContainer>

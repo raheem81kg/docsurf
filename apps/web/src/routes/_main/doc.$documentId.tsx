@@ -165,19 +165,21 @@ function DocumentComponent() {
 
    const isMobileBreakPoint = useBreakpoint(INLINE_SUGGESTION_MOBILE_BREAKPOINT);
 
+   const EMPTY_DOC = { type: "doc", content: [{ type: "paragraph" }] };
+
    // // Memoize the editor value for performance
    const editorValue = React.useMemo(() => {
       if (typeof doc?.content === "string" && doc.content.length > 0) {
          try {
             return JSON.parse(doc.content);
          } catch (e) {
-            return {};
+            return EMPTY_DOC;
          }
       }
       if (doc?.content && typeof doc.content === "object" && Object.keys(doc.content).length > 0) {
          return doc.content;
       }
-      return {};
+      return EMPTY_DOC;
    }, [doc?.content]);
 
    // Show loading only when we're actually loading something

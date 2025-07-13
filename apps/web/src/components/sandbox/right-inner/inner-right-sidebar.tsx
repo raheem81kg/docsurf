@@ -21,29 +21,16 @@ export const InnerRightSidebar = ({
 }) => {
    const { setOpen, setOpenMobile, open, openMobile, isMobile } = useSidebar();
    const set_ir_sidebar_state = useSandStateStore((s) => s.set_ir_sidebar_state);
-   const { data: session, isPending } = useSession();
-   const { data: user } = useQuery({
-      ...convexQuery(api.auth.getCurrentUser, {}),
-      enabled: !!session?.user,
-   });
-
    // Get the current threadId from the chat store
    const threadId = useChatStore((s) => s.threadId);
 
    // Check if user is not signed in
-   const isUserNotSignedIn = !session?.user && !isPending;
+   // const isUserNotSignedIn = !session?.user && !isPending;
 
    // Define handleRailClick as a stable callback with useCallback
    const handleRailClick = useCallback(() => {
       toggle_ir_sidebar();
    }, [toggle_ir_sidebar]);
-
-   // Close sidebar if user is not signed in
-   useEffect(() => {
-      if (isUserNotSignedIn && ir_sidebar_state) {
-         set_ir_sidebar_state(false);
-      }
-   }, [isUserNotSignedIn, ir_sidebar_state, set_ir_sidebar_state]);
 
    React.useEffect(() => {
       if (isMobile) {

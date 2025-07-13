@@ -164,7 +164,7 @@ const HeaderContent = () => {
                   }}
                   onFocus={(e) => e.currentTarget.blur()}
                >
-                  <VscLayoutSidebarLeft className="!size-4.5 md:!size-4" />
+                  <VscLayoutSidebarLeft className="!h-4.5 !w-4.5 md:!h-[1.04rem] md:!w-[1.04rem] 2xl:!h-[1.063rem] 2xl:!w-[1.-63rem]" />
                   <span className="sr-only">Toggle Sidebar</span>
                </Button>
             </TooltipTrigger>
@@ -286,7 +286,7 @@ const HeaderContent = () => {
                      }}
                      onFocus={(e) => e.currentTarget.blur()}
                   >
-                     <VscLayoutSidebarLeft className="!size-4.5 md:!size-4" />
+                     <VscLayoutSidebarLeft className="!h-4.5 !w-4.5 md:!h-[1.04rem] md:!w-[1.04rem] 2xl:!h-[1.063rem] 2xl:!w-[1.-63rem]" />
                      <span className="sr-only">Toggle Left Sidebar</span>
                   </Button>
                </TooltipTrigger>
@@ -300,21 +300,28 @@ const HeaderContent = () => {
                )}
             </Tooltip>
 
-            <Button
-               data-sidebar="trigger"
-               data-slot="sidebar-trigger"
-               variant="ghost"
-               size="icon"
-               disabled={isUserNotSignedIn} //  !doc || doc?.isLocked || doc?.isDeleted || !isDocDetailPage (for now)
-               className={cn("size-7 text-primary cursor-pointer")}
-               onClick={() => {
-                  toggle_ir_sidebar();
-               }}
-               onFocus={(e) => e.currentTarget.blur()}
-            >
-               <VscLayoutSidebarRight className="!size-4.5 md:!size-4" />
-               <span className="sr-only">Toggle Inner Right Sidebar</span>
-            </Button>
+            <Tooltip delayDuration={0}>
+               <TooltipTrigger asChild>
+                  <Button
+                     data-sidebar="trigger"
+                     data-slot="sidebar-trigger"
+                     variant="ghost"
+                     size="icon"
+                     // disabled={isUserNotSignedIn} //  !doc || doc?.isLocked || doc?.isDeleted || !isDocDetailPage (for now)
+                     className={cn("size-7 text-primary cursor-pointer")}
+                     onClick={() => {
+                        toggle_ir_sidebar();
+                     }}
+                     onFocus={(e) => e.currentTarget.blur()}
+                  >
+                     <VscLayoutSidebarRight className="!h-4.5 !w-4.5 md:!h-[1.04rem] md:!w-[1.04rem] 2xl:!h-[1.063rem] 2xl:!w-[1.-63rem]" />
+                     <span className="sr-only">Toggle Inner Right Sidebar</span>
+                  </Button>
+               </TooltipTrigger>
+               <TooltipContent side="bottom" className="flex-row items-center hidden md:flex">
+                  Open AI Assistant
+               </TooltipContent>
+            </Tooltip>
          </div>
       </header>
    );

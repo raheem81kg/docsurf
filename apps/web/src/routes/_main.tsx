@@ -55,7 +55,7 @@ function MainLayoutComponent() {
                      <SuggestionOverlayRoot />
                   </div>
                   {/* sidebar 3 */}
-                  {!isUserNotSignedIn && <WrapperInnerRightSidebar />}
+                  <WrapperInnerRightSidebar />
                </div>
             </SidebarInset>
          </div>
