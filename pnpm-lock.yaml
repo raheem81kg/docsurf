@@ -58,7 +58,7 @@ importers:
         version: 0.6.2(better-auth@1.2.7)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)
       '@convex-dev/polar':
         specifier: ^0.5.0
-        version: 0.5.0(@modelcontextprotocol/sdk@1.13.2)(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)
+        version: 0.5.0(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)
       '@convex-dev/rate-limiter':
         specifier: ^0.2.10
         version: 0.2.10(convex@1.25.2(react@19.0.0))(react@19.0.0)
@@ -67,7 +67,7 @@ importers:
         version: 0.0.0-alpha.11(@tanstack/react-query@5.81.5(react@19.0.0))(convex@1.25.2(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)
       '@daveyplate/better-auth-ui':
         specifier: ^2.0.8
-        version: 2.0.12(4c3f7e8f995648e3bfcfb4f00fc43338)
+        version: 2.0.12(6afc0c158f119f2d95fd409d0b9d2dbf)
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -438,8 +438,8 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0
       sonner:
-        specifier: ^2.0.3
-        version: 2.0.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        specifier: ^2.0.6
+        version: 2.0.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       supermemory:
         specifier: 3.0.0-alpha.18
         version: 3.0.0-alpha.18
@@ -590,7 +590,7 @@ importers:
         version: 0.6.2(better-auth@1.2.7)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)
       '@convex-dev/polar':
         specifier: ^0.5.0
-        version: 0.5.0(@modelcontextprotocol/sdk@1.13.2)(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)
+        version: 0.5.0(@modelcontextprotocol/sdk@1.13.2)(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react@19.1.8)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)
       '@convex-dev/rate-limiter':
         specifier: ^0.2.10
         version: 0.2.10(convex@1.25.2(react@19.0.0))(react@19.0.0)
@@ -894,8 +894,8 @@ importers:
         specifier: ^2.15.4
         version: 2.15.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       sonner:
-        specifier: ^1.7.4
-        version: 1.7.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        specifier: ^2.0.6
+        version: 2.0.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       tailwind-merge:
         specifier: ^3.0.1
         version: 3.3.1
@@ -9332,14 +9332,8 @@ packages:
   solid-js@1.9.7:
     resolution: {integrity: sha512-/saTKi8iWEM233n5OSi1YHCCuh66ZIQ7aK2hsToPe4tqGm7qAejU1SwNuTPivbWAYq7SjuHVVYxxuZQNRbICiw==}
 
-  sonner@1.7.4:
-    resolution: {integrity: sha512-DIS8z4PfJRbIyfVFDVnK9rO3eYDtse4Omcm6bt0oEr5/jtLgysmjuBl1frJ9E/EQZrFmKx2A8m/s5s9CRXIzhw==}
-    peerDependencies:
-      react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-      react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-
-  sonner@2.0.5:
-    resolution: {integrity: sha512-YwbHQO6cSso3HBXlbCkgrgzDNIhws14r4MO87Ofy+cV2X7ES4pOoAK3+veSmVTvqNx1BWUxlhPmZzP00Crk2aQ==}
+  sonner@2.0.6:
+    resolution: {integrity: sha512-yHFhk8T/DK3YxjFQXIrcHT1rGEeTLliVzWbO0xN8GberVun2RiBnxAjXAYpZrqwEVHBG9asI/Li8TAAhN9m59Q==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
       react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
@@ -11436,7 +11430,29 @@ snapshots:
       - hono
       - typescript
 
-  '@convex-dev/polar@0.5.0(@modelcontextprotocol/sdk@1.13.2)(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)':
+  '@convex-dev/polar@0.5.0(@modelcontextprotocol/sdk@1.13.2)(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react@19.1.8)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)':
+    dependencies:
+      '@polar-sh/checkout': 0.1.10(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(zod@3.25.67)
+      '@polar-sh/sdk': 0.32.11(@modelcontextprotocol/sdk@1.13.2)(zod@3.25.67)
+      buffer: 6.0.3
+      convex: 1.25.2(react@19.0.0)
+      convex-helpers: 0.1.95(convex@1.25.2(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+      remeda: 2.23.2
+      standardwebhooks: 1.0.0
+    transitivePeerDependencies:
+      - '@modelcontextprotocol/sdk'
+      - '@standard-schema/spec'
+      - '@stripe/react-stripe-js'
+      - '@stripe/stripe-js'
+      - '@types/react'
+      - '@types/react-dom'
+      - hono
+      - typescript
+      - zod
+
+  '@convex-dev/polar@0.5.0(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(convex@1.25.2(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@3.25.67)':
     dependencies:
       '@polar-sh/checkout': 0.1.10(@stripe/react-stripe-js@3.7.0(@stripe/stripe-js@5.10.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@stripe/stripe-js@5.10.0)(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(zod@3.25.67)
       '@polar-sh/sdk': 0.32.11(@modelcontextprotocol/sdk@1.13.2)(zod@3.25.67)
@@ -11521,7 +11537,7 @@ snapshots:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
 
-  '@daveyplate/better-auth-ui@2.0.12(4c3f7e8f995648e3bfcfb4f00fc43338)':
+  '@daveyplate/better-auth-ui@2.0.12(6afc0c158f119f2d95fd409d0b9d2dbf)':
     dependencies:
       '@better-fetch/fetch': 1.1.18
       '@daveyplate/better-auth-tanstack': 1.3.6(@tanstack/query-core@5.81.5)(@tanstack/react-query@5.81.5(react@19.0.0))(better-auth@1.2.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -11558,7 +11574,7 @@ snapshots:
       react-google-recaptcha: 3.1.0(react@19.0.0)
       react-hook-form: 7.59.0(react@19.0.0)
       react-qr-code: 2.0.16(react@19.0.0)
-      sonner: 2.0.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      sonner: 2.0.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       tailwind-merge: 2.6.0
       tailwindcss: 4.1.11
       ua-parser-js: 2.0.4
@@ -20291,12 +20307,7 @@ snapshots:
       seroval: 1.3.2
       seroval-plugins: 1.3.2(seroval@1.3.2)
 
-  sonner@1.7.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
-    dependencies:
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
-
-  sonner@2.0.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+  sonner@2.0.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
