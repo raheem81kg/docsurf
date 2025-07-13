@@ -1,51 +1,42 @@
-import { onlineManager } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 import { toast } from "sonner";
 
 /**
  * Hook to show a toast when the user goes offline/online.
- * Shows an infinite error toast when offline, and a short success toast when back online.
+ * Uses native window event listeners for reliability in all environments.
+ * Uses a constant string as the toast ID for the offline toast.
  */
 export function useOfflineIndicator() {
-   const offlineToastId = useRef<string | number | null>(null);
-   const didMount = useRef(false);
-
    useEffect(() => {
-      // Helper to show/hide toasts based on online status
+      const offlineToastId = "offline-toast";
+
       const handleStatus = () => {
-         const isOnline = onlineManager.isOnline();
-         // Always dismiss any existing offline toast when back online
+         const isOnline = typeof window !== "undefined" ? window.navigator.onLine : true;
          if (isOnline) {
-            if (offlineToastId.current !== null) {
-               toast.dismiss(offlineToastId.current);
-               offlineToastId.current = null;
-            }
+            toast.dismiss(offlineToastId);
             showToast("Back online!", "success", { duration: 2000 });
          } else {
-            // Only show the offline toast if not already shown
-            if (offlineToastId.current === null) {
-               const id = showToast("You are offline", "error", {
-                  duration: Number.POSITIVE_INFINITY,
-               });
-               offlineToastId.current = id;
-            }
+            showToast("You are offline", "error", {
+               duration: Number.POSITIVE_INFINITY,
+               id: offlineToastId,
+            });
          }
       };
 
-      // Subscribe to online status changes
-      const unsubscribe = onlineManager.subscribe(handleStatus);
+      if (typeof window !== "undefined") {
+         window.addEventListener("online", handleStatus);
+         window.addEventListener("offline", handleStatus);
+      }
 
-      // On mount, check initial status (in case already offline)
       handleStatus();
 
-      // Cleanup on unmount
       return () => {
-         if (offlineToastId.current !== null) {
-            toast.dismiss(offlineToastId.current);
-            offlineToastId.current = null;
+         toast.dismiss(offlineToastId);
+         if (typeof window !== "undefined") {
+            window.removeEventListener("online", handleStatus);
+            window.removeEventListener("offline", handleStatus);
          }
-         unsubscribe();
       };
    }, []);
 }
