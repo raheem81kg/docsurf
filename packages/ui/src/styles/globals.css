@@ -22,6 +22,7 @@
 @import "./editor-styles/partials/zoom.css";
 @import "./editor-styles/partials/table.css";
 @import "./editor-styles/partials/inline-suggestion.css";
+@import "./editor-styles/partials/highlight.css";
 
 html,
 body {

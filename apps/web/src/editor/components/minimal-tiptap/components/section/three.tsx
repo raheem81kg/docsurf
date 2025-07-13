@@ -186,14 +186,14 @@ const isAlignDisabled = (editor: Editor | null) => {
 
 // Highlight colors
 const HIGHLIGHT_COLORS = [
-   { value: "#f7e98e", label: "Yellow" },
+   { value: "hsl(54 50% 25%)", label: "Yellow" },
    { value: "#f5a623", label: "Orange" },
-   { value: "#7ee7d6", label: "Teal" },
-   { value: "#9ad7e9", label: "Blue" },
-   { value: "#a8e67e", label: "Green" },
-   { value: "#f5a1c5", label: "Pink" },
-   { value: "#c49df5", label: "Purple" },
-   { value: "#d4b08c", label: "Brown" },
+   { value: "hsl(174 50% 25%)", label: "Teal" },
+   { value: "hsl(214 50% 25%)", label: "Blue" },
+   { value: "hsl(138 40% 25%)", label: "Green" },
+   { value: "hsl(330 50% 35%)", label: "Pink" },
+   { value: "hsl(270 50% 25%)", label: "Purple" },
+   { value: "hsl(0 50% 25%)", label: "Red" },
 ];
 
 type HighlightMenuItem = { value: string; label: string };

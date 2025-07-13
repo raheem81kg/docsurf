@@ -1,0 +1,19 @@
+.highlight-yellow {
+   background-color: hsl(54 50% 25%);
+}
+
+.highlight-blue {
+   background-color: hsl(214 50% 25%);
+}
+
+.highlight-green {
+   background-color: hsl(138 40% 25%);
+}
+
+.highlight-red {
+   background-color: hsl(0 50% 25%);
+}
+
+.highlight-purple {
+   background-color: hsl(270 50% 25%);
+}
