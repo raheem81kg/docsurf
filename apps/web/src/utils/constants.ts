@@ -20,9 +20,6 @@ export const INNER_RIGHT_SIDEBAR_COOKIE_NAME = "ir_sidebar_state";
 
 export const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
-export const FREE_CHAT_USAGE_LIMIT = 500;
-export const PRO_CHAT_USAGE_LIMIT = "Unlimited";
-
-export const IMAGE_GENERATION_COST = 1;
-export const SEARCH_COST = 1;
-export const RESEARCH_COST = 2;
+// export const IMAGE_GENERATION_COST = 1;
+// export const SEARCH_COST = 1;
+// export const RESEARCH_COST = 2;

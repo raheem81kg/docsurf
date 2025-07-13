@@ -5,7 +5,7 @@ import type { BubbleMenuProps } from "@tiptap/react";
 import { WandSparkles, MessageSquarePlus } from "lucide-react";
 import { ToolbarButton } from "../minimal-tiptap/components/toolbar-button";
 import { TooltipProvider } from "@docsurf/ui/components/tooltip";
-import { useSuggestionOverlay } from "@/editor/components/providers/suggestion-overlay/suggestion-overlay-provider";
+import { useSuggestionOverlayStore } from "@/store/use-suggestion-overlay-store";
 import { useEditorState } from "@tiptap/react";
 import deepEql from "fast-deep-equal";
 import { isTextSelected } from "@/utils/is-text-selected";
@@ -25,12 +25,7 @@ export type EditorBubbleMenuProps = Omit<BubbleMenuProps, "children"> & {
 
 export function TextBubbleMenu(props: EditorBubbleMenuProps) {
    const { editor, appendTo, className } = props;
-   const {
-      isOpen: isSuggestionOverlayOpen,
-      isOpen,
-      closeSuggestionOverlay,
-      tryOpenSuggestionOverlayFromEditorSelection,
-   } = useSuggestionOverlay();
+   const { isOpen, closeSuggestionOverlay, tryOpenSuggestionOverlayFromEditorSelection } = useSuggestionOverlayStore();
    const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
    const { doc } = useCurrentDocument(user);
    const workspaceId = user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">;
@@ -51,7 +46,7 @@ export function TextBubbleMenu(props: EditorBubbleMenuProps) {
       ...(appendTo ? { appendTo: appendTo.current } : {}),
       pluginKey: "text-menu",
       shouldShow: ({ editor, from, view }) => {
-         if (isSuggestionOverlayOpen) return false;
+         if (isOpen) return false;
          if (!view || editor.view.dragging) return false;
 
          const domAtPos = view.domAtPos(from || 0).node as HTMLElement;
@@ -82,7 +77,7 @@ export function TextBubbleMenu(props: EditorBubbleMenuProps) {
       if (isOpen) {
          closeSuggestionOverlay();
       } else {
-         tryOpenSuggestionOverlayFromEditorSelection();
+         tryOpenSuggestionOverlayFromEditorSelection(editor);
       }
    }
 
@@ -91,7 +86,7 @@ export function TextBubbleMenu(props: EditorBubbleMenuProps) {
          {...bubbleMenuProps}
          className={cn("flex gap-0 overflow-hidden rounded-lg border bg-background shadow-md", className)}
       >
-         {isSuggestionOverlayOpen && doc?._id && workspaceId ? (
+         {isOpen && doc?._id && workspaceId ? (
             <></>
          ) : (
             // <SuggestionOverlay

@@ -55,30 +55,31 @@ export function Usage() {
 function UsageInner() {
    // Fetch current user (includes subscription info)
    const { data: user, isLoading: userLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
-   // Fetch usage stats for the last 30 days
-   const { data: usageStats, isLoading: usageLoading } = useQuery(convexQuery(api.analytics.getMyUsageStats, { timeframe: "30d" }));
+   // Fetch usage stats for the last 1 day
+   const { data: usageStats, isLoading: usageLoading } = useQuery(convexQuery(api.analytics.getMyUsageStats, { timeframe: "1d" }));
 
    // Determine plan and limits
    const planName = user?.subscription?.isPremium ? "Pro" : "Free";
-   // const planName = "Free"; // Default to Free plan for now
    const plan = getCurrentPlan(planName);
    const nextPlan = getNextPlan(planName);
    const isFreePlan = planName === "Free";
    const isEnterprisePlan = false; // Extend if you add enterprise
    const paymentFailedAt = undefined; // Extend if you add payment failure logic
-
+   console.log("usage-sidebar-item: usageStats", usageStats);
    // Usage values
-   const requestsUsed = usageStats?.totalRequests ?? 0;
-   const requestsLimit = plan.limits.requests30d ?? INFINITY_NUMBER;
+   // Use chargedRequests to reflect only charged (platform) usage, not BYOK
+   // TODO: If you want to show both, add a separate display for totalRequests
+   const requestsUsed = usageStats?.chargedRequests ?? 0;
+   const requestsLimit = plan.limits.requests1d ?? INFINITY_NUMBER;
    const tokensUsed = usageStats?.totalTokens ?? 0;
-   const tokensLimit = plan.limits.tokens30d ?? INFINITY_NUMBER;
+   const tokensLimit = plan.limits.tokens1d ?? INFINITY_NUMBER;
    // TODO: Use usage stats in UsageRows when we add limits
 
    // Next plan limits
-   const nextRequestsLimit = nextPlan?.limits.requests30d;
-   const nextTokensLimit = nextPlan?.limits.tokens30d;
+   const nextRequestsLimit = nextPlan?.limits.requests1d;
+   const nextTokensLimit = nextPlan?.limits.tokens1d;
 
-   // Billing reset date from subscription
+   // Billing reset date from subscription (not relevant for daily, but keep for paid plans)
    const billingEnd = user?.subscription?.currentPeriodEnd
       ? new Date(user.subscription.currentPeriodEnd).toLocaleDateString("en-us", {
            month: "short",
@@ -86,7 +87,6 @@ function UsageInner() {
            year: "numeric",
         })
       : undefined;
-   // const billingEnd = undefined; // Commented out subscription billing
 
    // Warn if >= 90% of any limit
    const warnings = useMemo(
@@ -104,7 +104,7 @@ function UsageInner() {
                className="group flex items-center gap-0.5 text-xs font-normal text-muted-foreground opacity-50 transition-colors hover:text-text-default"
                to="/settings/usage"
             >
-               Usage
+               Daily Usage
                <ChevronRight className="size-3 text-neutral-400 transition-all group-hover:translate-x-0.5 group-hover:text-neutral-500" />
             </Link>
 
@@ -132,7 +132,7 @@ function UsageInner() {
                /> */}
                {/* <UsageRow
                   icon={Zap}
-                  label="Tokens"
+                  label="Tokens (today)"
                   usage={tokensUsed}
                   limit={tokensLimit}
                   showNextPlan={hovered}
@@ -143,12 +143,12 @@ function UsageInner() {
             </div>
 
             <div className="mt-3">
-               <p className="text-xs text-muted-foreground opacity-50">Last 30-day usage</p>
+               <p className="text-xs text-muted-foreground opacity-50">Today's usage</p>
                <p className={cn("text-xs text-muted-foreground opacity-50", paymentFailedAt && "text-red-600")}>
                   {paymentFailedAt
                      ? "Your last payment failed. Please update your payment method to continue using DocSurf."
                      : billingEnd
-                     ? `Usage will reset ${billingEnd}`
+                     ? `Your plan renews ${billingEnd}`
                      : ""}
                </p>
             </div>

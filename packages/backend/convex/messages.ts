@@ -27,6 +27,7 @@ export const patchMessage = internalMutation({
             completionTokens: v.optional(v.number()),
             reasoningTokens: v.optional(v.number()),
             serverDurationMs: v.optional(v.number()),
+            charged: v.optional(v.boolean()),
          })
       ),
    },
@@ -58,6 +59,7 @@ export const patchMessage = internalMutation({
                c: metadata.completionTokens ?? 0,
                r: metadata.reasoningTokens ?? 0,
                daysSinceEpoch: Math.floor(Date.now() / (24 * 60 * 60 * 1000)),
+               charged: metadata.charged !== undefined ? metadata.charged : true,
             });
          }
       }

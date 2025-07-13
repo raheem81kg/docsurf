@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 // import { useUsageStore } from "@/store/use-usage-store";
 
-import { useSuggestionOverlay } from "./suggestion-overlay-provider";
+// import { useSuggestionOverlay } from "./suggestion-overlay-provider";
 
 import { cn } from "@docsurf/ui/lib/utils";
 // import { useAiOptions } from "@/store/use-ai-options-store";
@@ -70,6 +70,7 @@ interface SuggestionOverlayProps {
    from?: number;
    to?: number;
    userId?: string;
+   setSuggestionIsLoading: (isLoading: boolean) => void;
 }
 
 export default function SuggestionOverlay({
@@ -84,6 +85,7 @@ export default function SuggestionOverlay({
    from,
    to,
    userId,
+   setSuggestionIsLoading,
 }: SuggestionOverlayProps) {
    const [currentPosition, setCurrentPosition] = useState(position);
    const [isDragging, setIsDragging] = useState(false);
@@ -99,7 +101,6 @@ export default function SuggestionOverlay({
    const inputRef = useRef<HTMLInputElement>(null);
    const overlayRef = useRef<HTMLDivElement>(null);
    // const { customInstructions } = useAiOptions();
-   const { setSuggestionIsLoading } = useSuggestionOverlay();
    // const { refetchUsage } = useUsageStore();
    const frameServiceRef = useRef<FrameService>(new FrameService());
 

@@ -100,10 +100,10 @@ export const chatPOST = httpAction(async (ctx, req) => {
          userId: user.id as Id<"users">,
       });
 
-      // Fetch usage for user (last 30 days)
+      // Fetch usage for user (last 1 day)
       const usage = await ctx.runQuery(internal.analytics.getUserUsageStats, {
          userId: user.id as Id<"users">,
-         timeframe: "30d",
+         timeframe: "1d",
       });
 
       // Determine plan name
@@ -114,7 +114,7 @@ export const chatPOST = httpAction(async (ctx, req) => {
       // Check usage against plan limits
       const requestsUsed = usage?.totalRequests ?? 0;
       // const tokensUsed = usage?.totalTokens ?? 0;
-      const requestsLimit = planLimits.requests30d;
+      const requestsLimit = planLimits.requests1d;
 
       console.log("requestsUsed", requestsUsed);
       console.log("requestsLimit", requestsLimit);
@@ -125,7 +125,7 @@ export const chatPOST = httpAction(async (ctx, req) => {
          return new Response(
             JSON.stringify({
                error: RATE_LIMIT_ERROR,
-               message: "You have reached your plan's usage limit. Upgrade for unlimited usage.",
+               message: "You have reached your daily usage limit. Upgrade for unlimited usage.",
             }),
             {
                status: 429,
@@ -155,7 +155,7 @@ export const chatPOST = httpAction(async (ctx, req) => {
 
       const modelData = await getModel(ctx, body.model);
       if (modelData instanceof ChatError) return modelData.toResponse();
-      const { model, modelName } = modelData;
+      const { model, modelName, charged } = modelData;
 
       const mapped_messages = await dbMessagesToCore(dbMessages, modelData.abilities);
 
@@ -285,6 +285,7 @@ export const chatPOST = httpAction(async (ctx, req) => {
                         modelId: body.model,
                         modelName,
                         serverDurationMs: Date.now() - streamStartTime,
+                        charged,
                      },
                   });
 
@@ -434,6 +435,7 @@ export const chatPOST = httpAction(async (ctx, req) => {
                return part;
             });
 
+            // In both image and text branches, when calling patchMessage, add 'charged' to metadata
             await ctx.runMutation(internal.messages.patchMessage, {
                threadId: mutationResult.threadId,
                messageId: mutationResult.assistantMessageId,
@@ -456,6 +458,7 @@ export const chatPOST = httpAction(async (ctx, req) => {
                   completionTokens: totalTokenUsage.completionTokens,
                   reasoningTokens: totalTokenUsage.reasoningTokens,
                   serverDurationMs: Date.now() - streamStartTime,
+                  charged, // <-- propagate charged
                },
             });
 

@@ -2,12 +2,16 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@d
 import { Button } from "@docsurf/ui/components/button";
 import { Link, createLazyFileRoute } from "@tanstack/react-router";
 import { Check } from "lucide-react";
+import { PLANS, getCurrentPlan } from "@docsurf/utils/constants/pricing";
 
 export const Route = createLazyFileRoute("/_welcome/pricing")({
    component: RouteComponent,
 });
 
 function RouteComponent() {
+   const freePlan = getCurrentPlan("Free");
+   const proPlan = getCurrentPlan("Pro");
+
    return (
       <>
          <div className="container mx-auto text-text-default">
@@ -18,12 +22,14 @@ function RouteComponent() {
                <div className="mt-8 grid w-full max-w-5xl grid-cols-1 gap-10 md:grid-cols-2">
                   {/* Free Plan */}
                   <div className="flex flex-col rounded-[4px] border border-border bg-[#F2F1EF] dark:bg-[#121212] p-8">
-                     <h2 className="mb-2 text-left text-xl text-text-default">Free</h2>
+                     <h2 className="mb-2 text-left text-xl text-text-default">{freePlan?.name}</h2>
                      <div className="mt-4 flex items-baseline">
-                        <span className="font-medium text-[40px] tracking-tight text-text-default">$0</span>
+                        <span className="font-medium text-[40px] tracking-tight text-text-default">${freePlan?.price.monthly}</span>
                         <span className="ml-1 font-medium text-2xl text-text-default">/mo</span>
                      </div>
-                     <p className="mt-4 text-left text-[#878787] text-sm">Unlimited usage while in beta. Rate limits apply.</p>
+                     <p className="mt-4 text-left text-[#878787] text-sm">
+                        {freePlan?.limits.requests1d} chat requests per day and unlimited suggestions.
+                     </p>
 
                      <div className="mt-8">
                         <h3 className="text-left font-medium font-mono text-xs uppercase tracking-wide text-text-default">
@@ -53,7 +59,7 @@ function RouteComponent() {
                            </li>
                            <li className="flex items-start">
                               <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
-                              <span className="text-sm text-text-default">500 chat requests/mo</span>
+                              <span className="text-sm text-text-default">{freePlan?.limits.requests1d} chat requests/day</span>
                            </li>
                         </ul>
                      </div>
@@ -72,14 +78,16 @@ function RouteComponent() {
                      <div className="absolute top-0 right-0 mt-4 mr-4 rounded-full border px-2 py-1 font-mono font-normal text-[9px] text-text-default border-border bg-[#fff] dark:bg-[#121212]">
                         Limited Offer
                      </div>
-                     <h2 className="mb-2 text-left text-xl text-text-default">Pro</h2>
+                     <h2 className="mb-2 text-left text-xl text-text-default">{proPlan?.name}</h2>
 
                      <div className="mt-1 flex items-baseline">
-                        <span className="text-[40px] font-medium tracking-tight line-through text-[#878787]">$12</span>
-                        <span className="ml-1 text-[40px] font-medium tracking-tight">10</span>
+                        <span className="text-[40px] font-medium tracking-tight line-through text-[#878787]">
+                           ${proPlan?.price.monthly + 2}
+                        </span>
+                        <span className="ml-1 text-[40px] font-medium tracking-tight">${proPlan?.price.monthly}</span>
                         <span className="ml-1 text-xl font-medium">/mo</span>
                      </div>
-                     <p className="mt-4 text-left text-[#878787] text-sm">Advanced features for teams and businesses. Coming soon.</p>
+                     <p className="mt-4 text-left text-[#878787] text-sm">Unlimited chat requests per day.</p>
 
                      <div className="mt-8">
                         <h3 className="text-left font-medium font-mono text-xs uppercase tracking-wide text-text-default">

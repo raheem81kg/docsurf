@@ -26,10 +26,10 @@ export const getModel = async (ctx: ActionCtx, modelId: string) => {
       const providerB = b.split(":")[0];
 
       const getPriority = (provider: string) => {
-         if (CoreProviders.includes(provider as CoreProvider)) return 1;
-         if (provider === "openrouter") return 2;
-         if (provider.startsWith("i3-")) return 3;
-         return 4;
+         if (CoreProviders.includes(provider as CoreProvider)) return 1; // User BYOK key (if present)
+         if (provider === "openrouter") return 2; // OpenRouter (always charged)
+         if (provider.startsWith("i3-")) return 3; // Internal (always charged)
+         return 4; // Custom
       };
 
       return getPriority(providerA) - getPriority(providerB);
@@ -37,10 +37,46 @@ export const getModel = async (ctx: ActionCtx, modelId: string) => {
 
    console.log("[getModel] model", model, "sortedAdapters", sortedAdapters);
    let finalModel: LanguageModelV1 | ImageModelV1 | undefined = undefined;
+   let charged = true; // default: charge unless proven BYOK
 
    for (const adapter of sortedAdapters) {
       const providerIdRaw = model.customProviderId ?? adapter.split(":")[0];
       const providerSpecificModelId = model.customProviderId ? model.id : adapter.split(":")[1];
+      let usingUserKey = false;
+
+      // --- Provider selection and charged flag logic ---
+      // 1. i3- (internal): always charged, only used if no BYOK key is present
+      // 2. openrouter: always charged
+      // 3. Core provider (e.g., openai):
+      //    - If user has a key, it's BYOK (not charged)
+      //    - If no user key, fallback to i3- (charged)
+      // 4. Custom provider: always BYOK (not charged)
+      const provider = registry.providers[providerIdRaw];
+      console.log("[getModel] adapter:", adapter, "providerIdRaw:", providerIdRaw, "provider:", provider);
+      if (providerIdRaw.startsWith("i3-")) {
+         // Internal adapter: always charged, only used if no BYOK key is present
+         charged = true;
+      } else if (providerIdRaw === "openrouter") {
+         // OpenRouter: treat as BYOK if user has supplied a key
+         if (provider?.key) {
+            usingUserKey = true;
+         }
+         charged = !usingUserKey;
+      } else if (CoreProviders.includes(providerIdRaw as CoreProvider)) {
+         // Core provider: if user has a key, it's BYOK (not charged)
+         if (provider?.key) {
+            usingUserKey = true;
+         }
+         charged = !usingUserKey;
+      } else {
+         // Custom provider: always BYOK (not charged)
+         usingUserKey = true;
+         charged = false;
+      }
+      // --- End provider selection logic ---
+      console.log("[getModel] usingUserKey:", usingUserKey, "charged:", charged);
+
+      // --- Adapter instantiation (unchanged) ---
       if (providerIdRaw.startsWith("i3-")) {
          const providerId = providerIdRaw.slice(3) as CoreProvider;
          const sdk_provider = createProvider(providerId, "internal");
@@ -67,7 +103,6 @@ export const getModel = async (ctx: ActionCtx, modelId: string) => {
          break;
       }
 
-      const provider = registry.providers[providerIdRaw];
       if (!provider) {
          console.error(`Provider ${providerIdRaw} not found`);
          continue;
@@ -120,11 +155,16 @@ export const getModel = async (ctx: ActionCtx, modelId: string) => {
       modelType: "maxImagesPerCall" in finalModel ? "image" : "text",
    });
 
+   if (typeof charged !== "boolean") {
+      throw new Error("charged must be set to true or false before returning from getModel");
+   }
+
    return {
       model: finalModel as (LanguageModelV1 & { modelType: "text" }) | (ImageModelV1 & { modelType: "image" }),
       abilities: model.abilities,
       registry,
       modelId: model.id,
       modelName: model.name ?? model.id,
+      charged, // <-- add this
    };
 };

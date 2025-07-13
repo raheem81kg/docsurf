@@ -4,7 +4,7 @@ import { ToolbarButton } from "../toolbar-button";
 import { Redo2Icon, Undo2Icon } from "lucide-react";
 import { WandSparkles } from "lucide-react";
 import { Separator } from "@docsurf/ui/components/separator";
-import { useSuggestionOverlay } from "@/editor/components/providers/suggestion-overlay/suggestion-overlay-provider";
+import { useSuggestionOverlayStore } from "@/store/use-suggestion-overlay-store";
 import { cn } from "@docsurf/ui/lib/utils";
 
 /**
@@ -39,12 +39,12 @@ export const SectionZero: React.FC<SectionZeroProps> = ({ editor, className, isD
    }
 
    // Suggestion overlay logic
-   const { isOpen, closeSuggestionOverlay, tryOpenSuggestionOverlayFromEditorSelection } = useSuggestionOverlay();
+   const { isOpen, closeSuggestionOverlay, tryOpenSuggestionOverlayFromEditorSelection } = useSuggestionOverlayStore();
    function handleAiButtonClick() {
       if (isOpen) {
          closeSuggestionOverlay();
       } else {
-         tryOpenSuggestionOverlayFromEditorSelection();
+         tryOpenSuggestionOverlayFromEditorSelection(editor);
       }
    }
 

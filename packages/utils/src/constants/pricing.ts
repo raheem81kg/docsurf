@@ -22,26 +22,26 @@ export const PLANS = [
          yearly: 0,
       },
       limits: {
-         requests30d: 500, // Total Requests (last 30 days)
-         tokens30d: 1000000, // Total Tokens (input + output + reasoning)
+         requests1d: 60, // Total Requests (per day)
+         tokens1d: 100000000, // Total Tokens (input + output + reasoning) per day
          // Suggestions are unlimited for all users
       },
-      features: [{ text: "Unlimited suggestions" }, { text: "Basic AI models" }, { text: "500 chat requests/mo" }],
+      features: [{ text: "Unlimited suggestions" }, { text: "Basic AI models" }, { text: "60 chat requests/day" }],
    },
    {
       name: "Pro",
       link: `${HARDCODED_APP_URL}/pricing`,
       price: {
-         monthly: 12,
-         yearly: 12,
+         monthly: 10,
+         yearly: 10,
          ids: [
             // 2025 pricing
             "20a3a3ba-0e8a-4523-afec-8723bce557ac", // monthly
          ],
       },
       limits: {
-         requests30d: INFINITY_NUMBER, // Total Requests (last 30 days)
-         tokens30d: INFINITY_NUMBER, // Total Tokens (input + output + reasoning)
+         requests1d: INFINITY_NUMBER, // Total Requests (per day)
+         tokens1d: INFINITY_NUMBER, // Total Tokens (input + output + reasoning) per day
          // Suggestions are unlimited for all users
       },
       featureTitle: "Everything in Free, plus:",
@@ -108,7 +108,7 @@ export const getPlanDetails = (plan: string) => {
    return SELF_SERVE_PAID_PLANS.find((p) => p.name.toLowerCase() === plan.toLowerCase())!;
 };
 
-export const getCurrentPlan = (plan: string) => {
+export const getCurrentPlan = (plan: "Free" | "Pro") => {
    return PLANS.find((p) => p.name.toLowerCase() === plan.toLowerCase()) || FREE_PLAN;
 };
 

@@ -5,7 +5,7 @@ import Header from "@/components/sandbox/header";
 import { useSandStateStore } from "@/store/sandstate";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { OnboardingProvider } from "@/components/onboarding/onboarding-provider";
-import { SuggestionOverlayProvider } from "@/editor/components/providers/suggestion-overlay/suggestion-overlay-provider";
+import SuggestionOverlayRoot from "@/editor/components/providers/suggestion-overlay/suggestion-overlay-root";
 import { useOfflineIndicator } from "@/hooks/use-offline-indicator";
 import { useSession } from "@/hooks/auth-hooks";
 import { useAuthTokenStore } from "@/hooks/use-auth-store";
@@ -43,26 +43,23 @@ function MainLayoutComponent() {
       }
    }, [isPending, session?.user?.id]);
    return (
-      <SuggestionOverlayProvider>
-         <OnboardingProvider>
-            <div className="flex overflow-hidden max-h-dvh">
-               {/* sidebar 1 */}
-               <WrapperLeftSidebar />
-               <SidebarInset className="flex-1 min-w-0 bg-background dark:bg-background flex flex-col">
-                  <Header />
-
-                  <div className="flex overflow-hidden h-full">
-                     <div className="flex-1 min-w-0 scrollbar-hidden">
-                        <Outlet />
-                     </div>
-
-                     {/* sidebar 3 */}
-                     {!isUserNotSignedIn && <WrapperInnerRightSidebar />}
+      <OnboardingProvider>
+         <div className="flex overflow-hidden max-h-dvh">
+            {/* sidebar 1 */}
+            <WrapperLeftSidebar />
+            <SidebarInset className="flex-1 min-w-0 bg-background dark:bg-background flex flex-col">
+               <Header />
+               <div className="flex overflow-hidden h-full">
+                  <div className="flex-1 min-w-0 scrollbar-hidden">
+                     <Outlet />
+                     <SuggestionOverlayRoot />
                   </div>
-               </SidebarInset>
-            </div>
-         </OnboardingProvider>
-      </SuggestionOverlayProvider>
+                  {/* sidebar 3 */}
+                  {!isUserNotSignedIn && <WrapperInnerRightSidebar />}
+               </div>
+            </SidebarInset>
+         </div>
+      </OnboardingProvider>
    );
 }
 
