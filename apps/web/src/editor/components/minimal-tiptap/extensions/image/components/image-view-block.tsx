@@ -100,18 +100,32 @@ export const ImageViewBlock: React.FC<NodeViewProps> = ({ editor, node, selected
             naturalSize: newNaturalSize,
             imageLoaded: true,
          }));
-         updateAttributes({
-            width: img.width || newNaturalSize.width,
-            height: img.height || newNaturalSize.height,
-            alt: img.alt,
-            title: img.title,
-         });
 
-         if (!initialWidth) {
-            updateDimensions((state) => ({ ...state, width: newNaturalSize.width }));
+         // Only set width/height if not already set (i.e., on initial insert)
+         const hasWidth = !!node.attrs.width;
+         const hasHeight = !!node.attrs.height;
+         let width = img.naturalWidth;
+         let height = img.naturalHeight;
+         // Clamp width to a sensible max (e.g., 1000px or editor width, but not less than MIN_WIDTH)
+         const MAX_INITIAL_WIDTH = 900;
+         if (!hasWidth || !hasHeight) {
+            width = Math.max(Math.min(img.naturalWidth, MAX_INITIAL_WIDTH), MIN_WIDTH);
+            height = Math.round((width / img.naturalWidth) * img.naturalHeight);
+            updateAttributes({
+               width,
+               height,
+               alt: img.alt,
+               title: img.title,
+            });
+            updateDimensions((state) => ({ ...state, width }));
+         } else {
+            updateAttributes({
+               alt: img.alt,
+               title: img.title,
+            });
          }
       },
-      [initialWidth, updateAttributes, updateDimensions]
+      [node.attrs.width, node.attrs.height, updateAttributes, updateDimensions]
    );
 
    const handleImageError = React.useCallback(() => {

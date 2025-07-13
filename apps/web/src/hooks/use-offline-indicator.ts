@@ -14,25 +14,30 @@ export function useOfflineIndicator() {
    useEffect(() => {
       // Helper to show/hide toasts based on online status
       const handleStatus = () => {
-         if (onlineManager.isOnline()) {
+         const isOnline = onlineManager.isOnline();
+         // Always dismiss any existing offline toast when back online
+         if (isOnline) {
             if (offlineToastId.current !== null) {
                toast.dismiss(offlineToastId.current);
                offlineToastId.current = null;
-               showToast("Back online!", "success", { duration: 2000 });
             }
+            showToast("Back online!", "success", { duration: 2000 });
          } else {
+            // Only show the offline toast if not already shown
             if (offlineToastId.current === null) {
-               offlineToastId.current = showToast("You are offline", "error", {
+               const id = showToast("You are offline", "error", {
                   duration: Number.POSITIVE_INFINITY,
                });
+               offlineToastId.current = id;
             }
          }
       };
 
-      // On mount, just subscribe, don't show any toast if online
-      didMount.current = true;
       // Subscribe to online status changes
       const unsubscribe = onlineManager.subscribe(handleStatus);
+
+      // On mount, check initial status (in case already offline)
+      handleStatus();
 
       // Cleanup on unmount
       return () => {
