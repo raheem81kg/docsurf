@@ -101,22 +101,26 @@ const HeaderContent = () => {
    React.useEffect(() => {
       setTitle(doc?.title || DEFAULT_TEXT_TITLE);
    }, [doc?.title]);
+
    const handleEditClick = (e: React.MouseEvent) => {
       e.stopPropagation();
       setEditing(true);
-      // Focus immediately during user gesture for mobile keyboard
-      if (inputRef.current) {
-         inputRef.current.focus();
-         inputRef.current.select();
-      }
+      // Focus input on next tick after state update, as close as possible to user gesture
+      setTimeout(() => {
+         inputRef.current?.focus();
+         inputRef.current?.select();
+      }, 0);
    };
+
    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setTitle(e.target.value);
    };
+
    const handleInputBlur = async () => {
       if (!editing) return;
       await handleSave();
    };
+
    const handleInputKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
          await handleSave();
@@ -125,6 +129,7 @@ const HeaderContent = () => {
          setEditing(false);
       }
    };
+
    const handleSave = async () => {
       if (!doc || !workspaceId) {
          setEditing(false);
@@ -203,50 +208,57 @@ const HeaderContent = () => {
                         {isTreeLoading ? (
                            <Skeleton className="h-5 w-[100px] md:w-[120px] lg:w-[180px] rounded-sm" />
                         ) : doc ? (
-                           <>
+                           editing ? (
                               <input
                                  type="text"
                                  inputMode="text"
                                  autoComplete="off"
                                  autoCorrect="off"
                                  autoCapitalize="sentences"
-                                 spellCheck="true"
+                                 spellCheck={true}
                                  value={title}
-                                 readOnly={!editing}
-                                 onChange={editing ? handleInputChange : undefined}
-                                 onKeyDown={editing ? handleInputKeyDown : undefined}
+                                 onChange={handleInputChange}
+                                 onKeyDown={handleInputKeyDown}
                                  ref={inputRef}
-                                 onBlur={editing ? handleInputBlur : undefined}
-                                 onClick={(e) => {
-                                    if (!editing && !isTreeLoading) {
-                                       handleEditClick(e);
-                                    }
-                                 }}
+                                 onBlur={handleInputBlur}
                                  className={cn(
-                                    // Base button styling when not editing
-                                    !editing && buttonVariants({ variant: "ghost", size: "sm" }),
-                                    // Override button styling with custom styles
-                                    "relative max-w-[250px] -ml-1 text-[13px] truncate h-7 justify-start",
-                                    // Responsive widths
+                                    "relative max-w-[250px] -ml-1 text-[13px] truncate h-7 justify-start bg-muted/50 border-primary border rounded-sm px-2 py-1.5 text-left self-start",
                                     isEvenLargerTitle && "w-[250px]",
                                     isLargeTitle && !isEvenLargerTitle && "w-[180px]",
                                     isShortTitle && "w-[90px]",
-                                    !isEvenLargerTitle && !isLargeTitle && !isShortTitle && "w-[120px]",
-                                    // Editing state styling
-                                    editing ? "bg-muted/50 border-primary border rounded-sm px-2 py-1.5" : "border-transparent",
-                                    // Cursor and interactivity
-                                    doc ? "cursor-pointer" : "cursor-default",
-                                    // Remove default input styling when not editing
-                                    !editing && "appearance-none bg-transparent border-0 outline-none shadow-none ring-0"
+                                    !isEvenLargerTitle && !isLargeTitle && !isShortTitle && "w-[120px]"
                                  )}
                                  placeholder="Enter title..."
                                  maxLength={100}
-                                 aria-label={editing ? "Editing document title" : "Document title. Click to edit."}
-                                 aria-live={editing ? "polite" : undefined}
+                                 aria-label="Editing document title"
+                                 aria-live="polite"
                                  disabled={isTreeLoading}
                               />
-                              {editing && <VisuallyHidden>Editing document title</VisuallyHidden>}
-                           </>
+                           ) : (
+                              <button
+                                 type="button"
+                                 className={cn(
+                                    "relative max-w-[250px] -ml-1 text-[13px] truncate h-7 justify-start cursor-pointer bg-transparent border-none p-0 appearance-none text-left self-start",
+                                    isEvenLargerTitle && "w-[250px]",
+                                    isLargeTitle && !isEvenLargerTitle && "w-[180px]",
+                                    isShortTitle && "w-[90px]",
+                                    !isEvenLargerTitle && !isLargeTitle && !isShortTitle && "w-[120px]"
+                                 )}
+                                 onClick={handleEditClick}
+                                 aria-label="Document title. Click to edit."
+                                 onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") {
+                                       // Synthesize a MouseEvent for handleEditClick
+                                       handleEditClick({
+                                          ...e,
+                                          stopPropagation: () => e.stopPropagation(),
+                                       } as unknown as React.MouseEvent<HTMLButtonElement>);
+                                    }
+                                 }}
+                              >
+                                 {title}
+                              </button>
+                           )
                         ) : null}
                      </BreadcrumbItem>
                   )}
