@@ -1,3 +1,5 @@
+import { DEFAULT_THEME } from "./theme-store";
+
 export const THEME_URLS = [
    "https://tweakcn.com/themes/cmc335y45000n04ld51zg72j3",
    "https://tweakcn.com/editor/theme?theme=mono",
@@ -78,6 +80,15 @@ export async function fetchThemeFromUrl(url: string): Promise<FetchedTheme> {
          type: THEME_URLS.includes(url) ? "built-in" : "custom",
       };
    } catch (err) {
+      // Fallback for custom theme URL: use DEFAULT_THEME.themeState.cssVars
+      if (url === "https://tweakcn.com/themes/cmc335y45000n04ld51zg72j3") {
+         return {
+            name: "Custom Theme",
+            preset: { cssVars: DEFAULT_THEME.themeState.cssVars },
+            url,
+            type: "custom",
+         };
+      }
       const errorMessage = err instanceof Error ? err.message : "Failed to fetch theme";
       return {
          name: getThemeName({}, url),
