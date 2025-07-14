@@ -2,7 +2,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 
-const words = ["Students", "Researchers", "Authors", "Content Creators", "Teachers", "Marketers"];
+const words = ["Students", "Researchers", "Authors", "Content Creators", "Professionals", "Marketers"];
 
 function useWordCycle(words: string[], interval: number) {
    const [index, setIndex] = useState(0);
