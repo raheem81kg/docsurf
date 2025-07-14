@@ -65,7 +65,7 @@ const SharedDocHeader = () => {
                      <button
                         type="button"
                         className={cn(
-                           "relative max-w-[250px] -ml-1 flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden h-7 justify-between gap-4",
+                           "relative max-w-[250px] flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden h-7 justify-between gap-4",
                            isLargeTitle && "w-[250px]",
                            isEvenLargerTitle && "w-[180px]",
                            isShortTitle && "w-[90px]",

@@ -242,10 +242,11 @@ export function normalizeContentForComparison(node: any): any {
       return node.map(normalizeContentForComparison);
    }
    if (node && typeof node === "object") {
-      // Keep essential fields: type, content, text, attrs
-      const { type, content, text, attrs } = node;
+      // Keep essential fields: type, content, text, attrs, marks
+      const { type, content, text, attrs, marks } = node;
       const normalized: any = { type };
       if (attrs) normalized.attrs = attrs;
+      if (marks) normalized.marks = marks.map(normalizeContentForComparison);
       if (content) normalized.content = normalizeContentForComparison(content);
       if (text) normalized.text = text;
       return normalized;
