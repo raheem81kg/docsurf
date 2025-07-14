@@ -13,7 +13,7 @@ betterAuthComponent.registerRoutes(http, createAuth);
 polar.registerRoutes(http);
 
 const cors = corsRouter(http, {
-   allowedOrigins: getConvexAppUrls(),
+   allowedOrigins: [...getConvexAppUrls(), "https://docsurf.vercel.app"],
    allowedHeaders: ["Content-Type", "Authorization"],
    allowCredentials: true,
 });

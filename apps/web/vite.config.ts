@@ -32,6 +32,9 @@ export default defineConfig({
       generateSitemap(sitemap),
       tanstackStart({
          target: "vercel",
+         spa: {
+            enabled: true,
+         },
          react: {
             babel: {
                plugins: [
