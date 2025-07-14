@@ -28,6 +28,7 @@ import { useMutation } from "convex/react";
 import { DEFAULT_TEXT_TITLE } from "@/utils/constants";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useSession } from "@/hooks/auth-hooks";
+import { Analytics } from "../providers/posthog";
 /**
  * Header component for the doc page, including breadcrumb, doc title (editable), and action buttons.
  * Shows a skeleton for the doc title while loading.
@@ -146,7 +147,7 @@ const HeaderContent = () => {
    const isLargeTitle = title.length > 12;
    const isEvenLargerTitle = title.length > 18;
    return (
-      <header className="sticky top-0 flex h-[46px] shrink-0 items-center gap-2 border-b px-3">
+      <header className="sticky top-0 flex h-[40px] shrink-0 items-center gap-2 border-b px-3">
          <Tooltip delayDuration={0} disableHoverableContent={!isMobile}>
             <TooltipTrigger asChild>
                <Button
@@ -191,17 +192,7 @@ const HeaderContent = () => {
                      </BreadcrumbItem>
                      // </Link>
                   )}
-                  {/* On doc detail page, show Documents and separator with responsive hiding and breakpoints */}
-                  {!isMobile && isDocDetailPage && (
-                     <>
-                        <Link to="/doc" className={showDocumentsBreadcrumbClass}>
-                           <BreadcrumbItem>
-                              <BreadcrumbPage className="line-clamp-1 truncate text-[13px]">Documents</BreadcrumbPage>
-                           </BreadcrumbItem>
-                        </Link>
-                        <BreadcrumbSeparator className={showDocumentsSeparatorClass} />
-                     </>
-                  )}
+
                   {/* Doc title breadcrumb (only on detail page) */}
                   {isDocDetailPage && (
                      <BreadcrumbItem>
@@ -303,6 +294,7 @@ const HeaderContent = () => {
             <Tooltip delayDuration={0}>
                <TooltipTrigger asChild>
                   <Button
+                     id="toggle-ir-sidebar"
                      data-sidebar="trigger"
                      data-slot="sidebar-trigger"
                      variant="ghost"
@@ -311,6 +303,7 @@ const HeaderContent = () => {
                      className={cn("size-7 text-primary cursor-pointer")}
                      onClick={() => {
                         toggle_ir_sidebar();
+                        Analytics.track("toggle_AI_Assistant");
                      }}
                      onFocus={(e) => e.currentTarget.blur()}
                   >

@@ -49,7 +49,7 @@ const SharedDocHeader = () => {
    const isEvenLargerTitle = doc?.title?.length && doc?.title?.length > 18;
 
    return (
-      <header className="sticky top-0 flex h-[46px] shrink-0 items-center gap-2 px-3">
+      <header className="sticky top-0 flex h-[40px] shrink-0 items-center gap-2 px-3">
          <div className="flex-1 min-w-0 flex items-center gap-2">
             <Breadcrumb>
                <BreadcrumbList>

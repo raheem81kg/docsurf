@@ -27,6 +27,10 @@ import { Route as SettingsCustomizationRouteImport } from './routes/settings/cus
 import { Route as SettingsAttachmentsRouteImport } from './routes/settings/attachments'
 import { Route as SettingsAppearanceRouteImport } from './routes/settings/appearance'
 import { Route as SettingsAiOptionsRouteImport } from './routes/settings/ai-options'
+import { Route as WelcomeTermsRouteImport } from './routes/_welcome/terms'
+import { Route as WelcomePricingRouteImport } from './routes/_welcome/pricing'
+import { Route as WelcomePolicyRouteImport } from './routes/_welcome/policy'
+import { Route as WelcomeAboutRouteImport } from './routes/_welcome/about'
 import { Route as MainDocIndexRouteImport } from './routes/_main/doc.index'
 import { Route as MainDocLibraryRouteImport } from './routes/_main/doc.library'
 import { Route as MainDocDocumentIdRouteImport } from './routes/_main/doc.$documentId'
@@ -39,10 +43,6 @@ import { ServerRoute as ApiCheckoutSuccessServerRouteImport } from './routes/api
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
 const SettingsRouteLazyRouteImport = createFileRoute('/settings')()
-const WelcomeTermsLazyRouteImport = createFileRoute('/_welcome/terms')()
-const WelcomePricingLazyRouteImport = createFileRoute('/_welcome/pricing')()
-const WelcomePolicyLazyRouteImport = createFileRoute('/_welcome/policy')()
-const WelcomeAboutLazyRouteImport = createFileRoute('/_welcome/about')()
 const PPDocumentIdLazyRouteImport = createFileRoute('/_p/p/$documentId')()
 const rootServerRouteImport = createServerRootRoute()
 
@@ -75,34 +75,6 @@ const WelcomeIndexRoute = WelcomeIndexRouteImport.update({
   path: '/',
   getParentRoute: () => WelcomeRoute,
 } as any)
-const WelcomeTermsLazyRoute = WelcomeTermsLazyRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => WelcomeRoute,
-} as any).lazy(() =>
-  import('./routes/_welcome/terms.lazy').then((d) => d.Route),
-)
-const WelcomePricingLazyRoute = WelcomePricingLazyRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
-  getParentRoute: () => WelcomeRoute,
-} as any).lazy(() =>
-  import('./routes/_welcome/pricing.lazy').then((d) => d.Route),
-)
-const WelcomePolicyLazyRoute = WelcomePolicyLazyRouteImport.update({
-  id: '/policy',
-  path: '/policy',
-  getParentRoute: () => WelcomeRoute,
-} as any).lazy(() =>
-  import('./routes/_welcome/policy.lazy').then((d) => d.Route),
-)
-const WelcomeAboutLazyRoute = WelcomeAboutLazyRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => WelcomeRoute,
-} as any).lazy(() =>
-  import('./routes/_welcome/about.lazy').then((d) => d.Route),
-)
 const SettingsUsageRoute = SettingsUsageRouteImport.update({
   id: '/usage',
   path: '/usage',
@@ -153,6 +125,26 @@ const SettingsAiOptionsRoute = SettingsAiOptionsRouteImport.update({
   id: '/ai-options',
   path: '/ai-options',
   getParentRoute: () => SettingsRouteLazyRoute,
+} as any)
+const WelcomeTermsRoute = WelcomeTermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => WelcomeRoute,
+} as any)
+const WelcomePricingRoute = WelcomePricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => WelcomeRoute,
+} as any)
+const WelcomePolicyRoute = WelcomePolicyRouteImport.update({
+  id: '/policy',
+  path: '/policy',
+  getParentRoute: () => WelcomeRoute,
+} as any)
+const WelcomeAboutRoute = WelcomeAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => WelcomeRoute,
 } as any)
 const MainDocIndexRoute = MainDocIndexRouteImport.update({
   id: '/doc/',
@@ -217,6 +209,10 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/settings': typeof SettingsRouteLazyRouteWithChildren
+  '/about': typeof WelcomeAboutRoute
+  '/policy': typeof WelcomePolicyRoute
+  '/pricing': typeof WelcomePricingRoute
+  '/terms': typeof WelcomeTermsRoute
   '/settings/ai-options': typeof SettingsAiOptionsRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/attachments': typeof SettingsAttachmentsRoute
@@ -227,10 +223,6 @@ export interface FileRoutesByFullPath {
   '/settings/providers': typeof SettingsProvidersRoute
   '/settings/subscription': typeof SettingsSubscriptionRoute
   '/settings/usage': typeof SettingsUsageRoute
-  '/about': typeof WelcomeAboutLazyRoute
-  '/policy': typeof WelcomePolicyLazyRoute
-  '/pricing': typeof WelcomePricingLazyRoute
-  '/terms': typeof WelcomeTermsLazyRoute
   '/': typeof WelcomeIndexRoute
   '/doc/$documentId': typeof MainDocDocumentIdRoute
   '/doc/library': typeof MainDocLibraryRoute
@@ -240,6 +232,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/settings': typeof SettingsRouteLazyRouteWithChildren
+  '/about': typeof WelcomeAboutRoute
+  '/policy': typeof WelcomePolicyRoute
+  '/pricing': typeof WelcomePricingRoute
+  '/terms': typeof WelcomeTermsRoute
   '/settings/ai-options': typeof SettingsAiOptionsRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/attachments': typeof SettingsAttachmentsRoute
@@ -250,10 +246,6 @@ export interface FileRoutesByTo {
   '/settings/providers': typeof SettingsProvidersRoute
   '/settings/subscription': typeof SettingsSubscriptionRoute
   '/settings/usage': typeof SettingsUsageRoute
-  '/about': typeof WelcomeAboutLazyRoute
-  '/policy': typeof WelcomePolicyLazyRoute
-  '/pricing': typeof WelcomePricingLazyRoute
-  '/terms': typeof WelcomeTermsLazyRoute
   '/': typeof WelcomeIndexRoute
   '/doc/$documentId': typeof MainDocDocumentIdRoute
   '/doc/library': typeof MainDocLibraryRoute
@@ -267,6 +259,10 @@ export interface FileRoutesById {
   '/_welcome': typeof WelcomeRouteWithChildren
   '/auth': typeof AuthRoute
   '/settings': typeof SettingsRouteLazyRouteWithChildren
+  '/_welcome/about': typeof WelcomeAboutRoute
+  '/_welcome/policy': typeof WelcomePolicyRoute
+  '/_welcome/pricing': typeof WelcomePricingRoute
+  '/_welcome/terms': typeof WelcomeTermsRoute
   '/settings/ai-options': typeof SettingsAiOptionsRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/attachments': typeof SettingsAttachmentsRoute
@@ -277,10 +273,6 @@ export interface FileRoutesById {
   '/settings/providers': typeof SettingsProvidersRoute
   '/settings/subscription': typeof SettingsSubscriptionRoute
   '/settings/usage': typeof SettingsUsageRoute
-  '/_welcome/about': typeof WelcomeAboutLazyRoute
-  '/_welcome/policy': typeof WelcomePolicyLazyRoute
-  '/_welcome/pricing': typeof WelcomePricingLazyRoute
-  '/_welcome/terms': typeof WelcomeTermsLazyRoute
   '/_welcome/': typeof WelcomeIndexRoute
   '/_main/doc/$documentId': typeof MainDocDocumentIdRoute
   '/_main/doc/library': typeof MainDocLibraryRoute
@@ -292,6 +284,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/auth'
     | '/settings'
+    | '/about'
+    | '/policy'
+    | '/pricing'
+    | '/terms'
     | '/settings/ai-options'
     | '/settings/appearance'
     | '/settings/attachments'
@@ -302,10 +298,6 @@ export interface FileRouteTypes {
     | '/settings/providers'
     | '/settings/subscription'
     | '/settings/usage'
-    | '/about'
-    | '/policy'
-    | '/pricing'
-    | '/terms'
     | '/'
     | '/doc/$documentId'
     | '/doc/library'
@@ -315,6 +307,10 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/settings'
+    | '/about'
+    | '/policy'
+    | '/pricing'
+    | '/terms'
     | '/settings/ai-options'
     | '/settings/appearance'
     | '/settings/attachments'
@@ -325,10 +321,6 @@ export interface FileRouteTypes {
     | '/settings/providers'
     | '/settings/subscription'
     | '/settings/usage'
-    | '/about'
-    | '/policy'
-    | '/pricing'
-    | '/terms'
     | '/'
     | '/doc/$documentId'
     | '/doc/library'
@@ -341,6 +333,10 @@ export interface FileRouteTypes {
     | '/_welcome'
     | '/auth'
     | '/settings'
+    | '/_welcome/about'
+    | '/_welcome/policy'
+    | '/_welcome/pricing'
+    | '/_welcome/terms'
     | '/settings/ai-options'
     | '/settings/appearance'
     | '/settings/attachments'
@@ -351,10 +347,6 @@ export interface FileRouteTypes {
     | '/settings/providers'
     | '/settings/subscription'
     | '/settings/usage'
-    | '/_welcome/about'
-    | '/_welcome/policy'
-    | '/_welcome/pricing'
-    | '/_welcome/terms'
     | '/_welcome/'
     | '/_main/doc/$documentId'
     | '/_main/doc/library'
@@ -481,34 +473,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WelcomeIndexRouteImport
       parentRoute: typeof WelcomeRoute
     }
-    '/_welcome/terms': {
-      id: '/_welcome/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof WelcomeTermsLazyRouteImport
-      parentRoute: typeof WelcomeRoute
-    }
-    '/_welcome/pricing': {
-      id: '/_welcome/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof WelcomePricingLazyRouteImport
-      parentRoute: typeof WelcomeRoute
-    }
-    '/_welcome/policy': {
-      id: '/_welcome/policy'
-      path: '/policy'
-      fullPath: '/policy'
-      preLoaderRoute: typeof WelcomePolicyLazyRouteImport
-      parentRoute: typeof WelcomeRoute
-    }
-    '/_welcome/about': {
-      id: '/_welcome/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof WelcomeAboutLazyRouteImport
-      parentRoute: typeof WelcomeRoute
-    }
     '/settings/usage': {
       id: '/settings/usage'
       path: '/usage'
@@ -578,6 +542,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/settings/ai-options'
       preLoaderRoute: typeof SettingsAiOptionsRouteImport
       parentRoute: typeof SettingsRouteLazyRoute
+    }
+    '/_welcome/terms': {
+      id: '/_welcome/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof WelcomeTermsRouteImport
+      parentRoute: typeof WelcomeRoute
+    }
+    '/_welcome/pricing': {
+      id: '/_welcome/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof WelcomePricingRouteImport
+      parentRoute: typeof WelcomeRoute
+    }
+    '/_welcome/policy': {
+      id: '/_welcome/policy'
+      path: '/policy'
+      fullPath: '/policy'
+      preLoaderRoute: typeof WelcomePolicyRouteImport
+      parentRoute: typeof WelcomeRoute
+    }
+    '/_welcome/about': {
+      id: '/_welcome/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof WelcomeAboutRouteImport
+      parentRoute: typeof WelcomeRoute
     }
     '/_main/doc/': {
       id: '/_main/doc/'
@@ -688,18 +680,18 @@ const PRouteChildren: PRouteChildren = {
 const PRouteWithChildren = PRoute._addFileChildren(PRouteChildren)
 
 interface WelcomeRouteChildren {
-  WelcomeAboutLazyRoute: typeof WelcomeAboutLazyRoute
-  WelcomePolicyLazyRoute: typeof WelcomePolicyLazyRoute
-  WelcomePricingLazyRoute: typeof WelcomePricingLazyRoute
-  WelcomeTermsLazyRoute: typeof WelcomeTermsLazyRoute
+  WelcomeAboutRoute: typeof WelcomeAboutRoute
+  WelcomePolicyRoute: typeof WelcomePolicyRoute
+  WelcomePricingRoute: typeof WelcomePricingRoute
+  WelcomeTermsRoute: typeof WelcomeTermsRoute
   WelcomeIndexRoute: typeof WelcomeIndexRoute
 }
 
 const WelcomeRouteChildren: WelcomeRouteChildren = {
-  WelcomeAboutLazyRoute: WelcomeAboutLazyRoute,
-  WelcomePolicyLazyRoute: WelcomePolicyLazyRoute,
-  WelcomePricingLazyRoute: WelcomePricingLazyRoute,
-  WelcomeTermsLazyRoute: WelcomeTermsLazyRoute,
+  WelcomeAboutRoute: WelcomeAboutRoute,
+  WelcomePolicyRoute: WelcomePolicyRoute,
+  WelcomePricingRoute: WelcomePricingRoute,
+  WelcomeTermsRoute: WelcomeTermsRoute,
   WelcomeIndexRoute: WelcomeIndexRoute,
 }
 

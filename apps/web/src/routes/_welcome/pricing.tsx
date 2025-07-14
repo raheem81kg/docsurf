@@ -1,10 +1,10 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@docsurf/ui/components/accordion";
 import { Button } from "@docsurf/ui/components/button";
-import { Link, createLazyFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { Check } from "lucide-react";
 import { PLANS, getCurrentPlan } from "@docsurf/utils/constants/pricing";
 
-export const Route = createLazyFileRoute("/_welcome/pricing")({
+export const Route = createFileRoute("/_welcome/pricing")({
    component: RouteComponent,
 });
 

@@ -231,7 +231,7 @@ export const SectionSix: React.FC<SectionSixProps> = ({
                actions={sectionSixActions}
                activeActions={activeActions}
                // Show all actions if wide, else fallback to previous logic
-               mainActionCount={isWide ? sectionSixActions.length : 4}
+               mainActionCount={isWide ? sectionSixActions.length : 3}
                dropdownTooltip="More actions"
                dropdownClassName="w-8"
                disabled={!docId}
