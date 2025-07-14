@@ -88,7 +88,7 @@ export const SectionZero: React.FC<SectionZeroProps> = ({ editor, className, isD
             disableHoverableContent
             disabled={isDocLocked || !editor}
          >
-            <WandSparkles className="size-4.5" />
+            <WandSparkles className="size-4.5 text-primary" />
          </ToolbarButton>
       </div>
    );

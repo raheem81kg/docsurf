@@ -53,7 +53,7 @@ export const useSuggestionOverlayStore = create<SuggestionOverlayState>((set, ge
       }
       const { from, to, empty } = editor.state.selection;
       if (empty) {
-         showToast("Select text in the document before using AI commands.", "warning");
+         showToast("Highlight text in the document before using AI commands.", "warning");
          return;
       }
       const coords = editor.view.coordsAtPos(to);
