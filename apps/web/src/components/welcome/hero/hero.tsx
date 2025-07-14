@@ -29,7 +29,7 @@ export function Hero() {
             </Link>
 
             <h2 className="mt-6 max-w-[580px] font-medium text-[#878787] text-[24px] leading-tight md:mt-10 md:text-[36px]">
-               Transform your writing with AI-powered edits & your personal companion for <WordAnimation />
+               Best AI Chat, Organized Docs, and Autocomplete—Everything You Need for <WordAnimation />
             </h2>
 
             <div className="mt-8 md:mt-10">
