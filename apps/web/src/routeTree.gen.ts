@@ -37,6 +37,7 @@ import { Route as MainDocDocumentIdRouteImport } from './routes/_main/doc.$docum
 import { ServerRoute as ApiUserStyleServerRouteImport } from './routes/api/user-style'
 import { ServerRoute as ApiSuggestionServerRouteImport } from './routes/api/suggestion'
 import { ServerRoute as ApiInlineSuggestionServerRouteImport } from './routes/api/inline-suggestion'
+import { ServerRoute as ApiHeaderDemoServerRouteImport } from './routes/api/header-demo'
 import { ServerRoute as ApiFetchTokenServerRouteImport } from './routes/api/fetchToken'
 import { ServerRoute as ApiPhrSplatServerRouteImport } from './routes/api/phr/$'
 import { ServerRoute as ApiCheckoutSuccessServerRouteImport } from './routes/api/checkout/success'
@@ -184,6 +185,11 @@ const ApiInlineSuggestionServerRoute =
     path: '/api/inline-suggestion',
     getParentRoute: () => rootServerRouteImport,
   } as any)
+const ApiHeaderDemoServerRoute = ApiHeaderDemoServerRouteImport.update({
+  id: '/api/header-demo',
+  path: '/api/header-demo',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
 const ApiFetchTokenServerRoute = ApiFetchTokenServerRouteImport.update({
   id: '/api/fetchToken',
   path: '/api/fetchToken',
@@ -363,6 +369,7 @@ export interface RootRouteChildren {
 }
 export interface FileServerRoutesByFullPath {
   '/api/fetchToken': typeof ApiFetchTokenServerRoute
+  '/api/header-demo': typeof ApiHeaderDemoServerRoute
   '/api/inline-suggestion': typeof ApiInlineSuggestionServerRoute
   '/api/suggestion': typeof ApiSuggestionServerRoute
   '/api/user-style': typeof ApiUserStyleServerRoute
@@ -372,6 +379,7 @@ export interface FileServerRoutesByFullPath {
 }
 export interface FileServerRoutesByTo {
   '/api/fetchToken': typeof ApiFetchTokenServerRoute
+  '/api/header-demo': typeof ApiHeaderDemoServerRoute
   '/api/inline-suggestion': typeof ApiInlineSuggestionServerRoute
   '/api/suggestion': typeof ApiSuggestionServerRoute
   '/api/user-style': typeof ApiUserStyleServerRoute
@@ -382,6 +390,7 @@ export interface FileServerRoutesByTo {
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
   '/api/fetchToken': typeof ApiFetchTokenServerRoute
+  '/api/header-demo': typeof ApiHeaderDemoServerRoute
   '/api/inline-suggestion': typeof ApiInlineSuggestionServerRoute
   '/api/suggestion': typeof ApiSuggestionServerRoute
   '/api/user-style': typeof ApiUserStyleServerRoute
@@ -393,6 +402,7 @@ export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
   fullPaths:
     | '/api/fetchToken'
+    | '/api/header-demo'
     | '/api/inline-suggestion'
     | '/api/suggestion'
     | '/api/user-style'
@@ -402,6 +412,7 @@ export interface FileServerRouteTypes {
   fileServerRoutesByTo: FileServerRoutesByTo
   to:
     | '/api/fetchToken'
+    | '/api/header-demo'
     | '/api/inline-suggestion'
     | '/api/suggestion'
     | '/api/user-style'
@@ -411,6 +422,7 @@ export interface FileServerRouteTypes {
   id:
     | '__root__'
     | '/api/fetchToken'
+    | '/api/header-demo'
     | '/api/inline-suggestion'
     | '/api/suggestion'
     | '/api/user-style'
@@ -421,6 +433,7 @@ export interface FileServerRouteTypes {
 }
 export interface RootServerRouteChildren {
   ApiFetchTokenServerRoute: typeof ApiFetchTokenServerRoute
+  ApiHeaderDemoServerRoute: typeof ApiHeaderDemoServerRoute
   ApiInlineSuggestionServerRoute: typeof ApiInlineSuggestionServerRoute
   ApiSuggestionServerRoute: typeof ApiSuggestionServerRoute
   ApiUserStyleServerRoute: typeof ApiUserStyleServerRoute
@@ -624,6 +637,13 @@ declare module '@tanstack/react-start/server' {
       preLoaderRoute: typeof ApiInlineSuggestionServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
+    '/api/header-demo': {
+      id: '/api/header-demo'
+      path: '/api/header-demo'
+      fullPath: '/api/header-demo'
+      preLoaderRoute: typeof ApiHeaderDemoServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
     '/api/fetchToken': {
       id: '/api/fetchToken'
       path: '/api/fetchToken'
@@ -739,6 +759,7 @@ export const routeTree = rootRouteImport
   ._addFileTypes<FileRouteTypes>()
 const rootServerRouteChildren: RootServerRouteChildren = {
   ApiFetchTokenServerRoute: ApiFetchTokenServerRoute,
+  ApiHeaderDemoServerRoute: ApiHeaderDemoServerRoute,
   ApiInlineSuggestionServerRoute: ApiInlineSuggestionServerRoute,
   ApiSuggestionServerRoute: ApiSuggestionServerRoute,
   ApiUserStyleServerRoute: ApiUserStyleServerRoute,

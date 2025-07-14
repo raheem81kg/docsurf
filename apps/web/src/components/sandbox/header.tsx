@@ -29,6 +29,8 @@ import { DEFAULT_TEXT_TITLE } from "@/utils/constants";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useSession } from "@/hooks/auth-hooks";
 import { Analytics } from "../providers/posthog";
+import { fetchHeaderDemo } from "./header-serverfn";
+import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 /**
  * Header component for the doc page, including breadcrumb, doc title (editable), and action buttons.
  * Shows a skeleton for the doc title while loading.
@@ -314,6 +316,26 @@ const HeaderContent = () => {
                <TooltipContent side="bottom" className="flex-row items-center hidden md:flex">
                   Open AI Assistant
                </TooltipContent>
+            </Tooltip>
+            <Tooltip delayDuration={0}>
+               <TooltipTrigger asChild>
+                  <Button
+                     variant="outline"
+                     size="sm"
+                     className="ml-2"
+                     onClick={async () => {
+                        try {
+                           const data = await fetchHeaderDemo();
+                           showToast(data.message, "success");
+                        } catch (err) {
+                           showToast(`Error: ${err instanceof Error ? err.message : "Unknown error"}`, "error");
+                        }
+                     }}
+                  >
+                     Demo
+                  </Button>
+               </TooltipTrigger>
+               <TooltipContent side="bottom">Run header demo serverfn</TooltipContent>
             </Tooltip>
          </div>
       </header>
