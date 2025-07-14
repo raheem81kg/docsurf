@@ -29,7 +29,7 @@ import { NewFolderButton } from "./threads/new-folder-button";
 import { ThreadItem } from "./threads/thread-item";
 import { ThreadItemDialogs } from "./threads/thread-item-dialogs";
 import type { Thread } from "./threads/types";
-import { CommandK } from "./commandpchats";
+import { CommandP } from "./commandpchats";
 
 function groupThreadsByTime(threads: Thread[]) {
    const now = new Date();
@@ -453,7 +453,7 @@ export function ThreadsSidebar() {
 
             <SidebarRail />
          </Sidebar>
-         <CommandK open={commandKOpen} onOpenChange={setCommandKOpen} />
+         <CommandP open={commandKOpen} onOpenChange={setCommandKOpen} />
       </>
    );
 }

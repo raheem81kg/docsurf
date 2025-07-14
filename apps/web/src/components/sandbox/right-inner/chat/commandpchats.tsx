@@ -151,8 +151,7 @@ export function CommandP({ open: controlledOpen, onOpenChange }: CommandPProps =
       setOpen(false);
       setQuery("");
       // Reset all chat state for the new thread (prevents carryover bugs)
-      useChatStore.getState().resetForThread(threadId);
-      // router.navigate({ to: "/thread/$threadId", params: { threadId } });
+      useChatStore.getState().setThreadId(threadId);
    };
 
    const handleKeyDown = (e: React.KeyboardEvent) => {

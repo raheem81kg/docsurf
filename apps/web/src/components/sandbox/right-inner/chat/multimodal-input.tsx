@@ -43,6 +43,12 @@ import { useSession } from "@/hooks/auth-hooks";
 import { useAuthTokenStore } from "@/hooks/use-auth-store";
 import { Analytics } from "@/components/providers/posthog";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
+import { useMutation } from "convex/react";
+import { useQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { useCurrentDocument } from "@/components/sandbox/left/_tree_components/SortableTree";
+import { getOutput } from "@/editor/components/minimal-tiptap/utils";
+import { useEditorRefStore } from "@/store/use-editor-ref-store";
 
 interface ExtendedUploadedFile extends UploadedFile {
    file?: File;
@@ -237,9 +243,34 @@ export function MultimodalInput({
       }
    }, [modelSupportsFunctionCalling, enabledTools, setEnabledTools]);
 
+   // Add user/document context for manual save
+   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+   const { doc } = useCurrentDocument(user);
+   const docId = doc?._id;
+   const workspaceId = doc?.workspaceId;
+   const updateDocument = useMutation(api.documents.updateDocument);
+
    const handleSubmit = async () => {
       // Refresh token before submitting
       await useAuthTokenStore.getState().refetchToken();
+
+      // --- Manual save if editor has unsaved changes ---
+      const editor = useEditorRefStore.getState().editor;
+      const hasPendingChanges = (editor as any)?.hasPendingChanges?.current;
+      if (editor && hasPendingChanges && docId && workspaceId) {
+         const content = getOutput(editor, "json");
+         try {
+            await updateDocument({
+               workspaceId,
+               id: docId,
+               updates: { content: JSON.stringify(content) },
+            });
+            // Optionally, you can clear the pending changes flag here if needed
+         } catch (err) {
+            showToast("Failed to save document before chat submit", "error");
+            // Optionally, return or handle error
+         }
+      }
 
       const inputValue = promptInputRef.current?.getValue() || "";
       if (!inputValue.trim()) {

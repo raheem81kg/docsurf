@@ -1,5 +1,4 @@
 import { Messages } from "./messages";
-import { MODELS_SHARED } from "@docsurf/backend/convex/lib/models";
 import { DefaultSettings } from "@docsurf/backend/convex/settings";
 import { useChatActions } from "./hooks/use-chat-actions";
 import { useChatDataProcessor } from "./hooks/use-chat-data-processor";
@@ -8,7 +7,6 @@ import { useDynamicTitle } from "./hooks/use-dynamic-title";
 import { useThreadSync } from "./hooks/use-thread-sync";
 import { type UploadedFile, useChatStore } from "./lib/chat-store";
 import { useModelStore } from "@docsurf/utils/chat/model-store";
-import { useThemeStore } from "./lib/theme-store";
 import { useAvailableModels } from "./lib/models-providers-shared";
 import { useDiskCachedQuery } from "./lib/convex-cached-query";
 import { AnimatePresence, motion } from "motion/react";
@@ -38,8 +36,6 @@ const ChatContent = ({ threadId: routeThreadId }: ChatProps) => {
       initial: "instant",
       resize: "instant",
    });
-   const { themeState } = useThemeStore();
-   const mode = themeState.currentMode;
    const { data: session, isPending } = useSession();
    const auth = useConvexAuth();
    useDynamicTitle({ threadId });
