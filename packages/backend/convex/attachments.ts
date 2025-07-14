@@ -16,6 +16,7 @@ import { httpAction, mutation, query } from "./_generated/server";
 import { getUserIdentity } from "./lib/identity";
 import { internal } from "./_generated/api";
 import { rateLimiter } from "./rateLimiter";
+import type { Id } from "./_generated/dataModel";
 
 export const r2 = new R2(components.r2);
 
@@ -30,22 +31,30 @@ export const uploadFile = httpAction(async (ctx, request) => {
          });
       }
 
-      // Rate limiting for file uploads
-      const rateLimitResult = await rateLimiter.limit(ctx, "uploadFile", { key: user.id, throws: false });
-      if (!rateLimitResult.ok) {
-         return new Response(
-            JSON.stringify({
-               error: "Upload rate limit exceeded. Please try again later.",
-               retryAfter: Math.ceil(rateLimitResult.retryAfter / 1000), // Convert to seconds
-            }),
-            {
-               status: 429,
-               headers: {
-                  "Content-Type": "application/json",
-                  "Retry-After": Math.ceil(rateLimitResult.retryAfter / 1000).toString(),
-               },
-            }
-         );
+      // Check subscription status
+      const subscription = await ctx.runQuery(internal.subscriptions.getSubscription, {
+         userId: user.id as Id<"users">,
+      });
+      const isPremium = !!subscription?.isPremium;
+
+      // Rate limiting for file uploads (skip for Pro users)
+      if (!isPremium) {
+         const rateLimitResult = await rateLimiter.limit(ctx, "uploadFile", { key: user.id, throws: false });
+         if (!rateLimitResult.ok) {
+            return new Response(
+               JSON.stringify({
+                  error: "Upload rate limit exceeded. Please try again later.",
+                  retryAfter: Math.ceil(rateLimitResult.retryAfter / 1000), // Convert to seconds
+               }),
+               {
+                  status: 429,
+                  headers: {
+                     "Content-Type": "application/json",
+                     "Retry-After": Math.ceil(rateLimitResult.retryAfter / 1000).toString(),
+                  },
+               }
+            );
+         }
       }
       const formData = await request.formData();
       const file = formData.get("file") as Blob;

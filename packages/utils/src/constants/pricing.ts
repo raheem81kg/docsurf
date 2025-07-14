@@ -24,9 +24,15 @@ export const PLANS = [
       limits: {
          requests1d: 60, // Total Requests (per day)
          tokens1d: 100000000, // Total Tokens (input + output + reasoning) per day
+         uploads1d: 10, // File uploads per day
          // Suggestions are unlimited for all users
       },
-      features: [{ text: "Unlimited suggestions" }, { text: "Basic AI models" }, { text: "60 chat requests/day" }],
+      features: [
+         { text: "Unlimited suggestions" },
+         { text: "Basic AI models" },
+         { text: "60 chat requests/day" },
+         { text: "6 file uploads/day" },
+      ],
    },
    {
       name: "Pro",
@@ -42,6 +48,7 @@ export const PLANS = [
       limits: {
          requests1d: INFINITY_NUMBER, // Total Requests (per day)
          tokens1d: INFINITY_NUMBER, // Total Tokens (input + output + reasoning) per day
+         uploads1d: INFINITY_NUMBER, // Unlimited uploads per day
          // Suggestions are unlimited for all users
       },
       featureTitle: "Everything in Free, plus:",
@@ -49,6 +56,7 @@ export const PLANS = [
          { text: "Unlimited suggestions" },
          { text: "Premium AI models" },
          { text: "Unlimited chat requests" },
+         { text: "Unlimited file uploads" },
          { text: "200 version history per document" },
          // {
          //    id: "advanced",

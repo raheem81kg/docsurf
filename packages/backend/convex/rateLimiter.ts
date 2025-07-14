@@ -1,9 +1,11 @@
 import { MINUTE, RateLimiter } from "@convex-dev/rate-limiter";
 import { components } from "./_generated/api";
 import { DOCUMENT_CREATION_RATE_LIMIT } from "@docsurf/utils/constants/constants";
-
+import { PLANS } from "@docsurf/utils/constants/pricing";
 // Fallback for DAY if not exported from the package
 const DAY = 24 * 60 * 60 * 1000;
+
+const freePlan = PLANS.find((plan) => plan.name === "Free");
 
 export const rateLimiter = new RateLimiter(components.rateLimiter, {
    // Limit how fast a user can add a new todo.
@@ -24,11 +26,11 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
    },
 
    // Limit file uploads to prevent abuse while still being user-friendly
-   // 100 uploads per hour should be generous for normal usage
+   // Limit to 100 uploads per day per user
    uploadFile: {
       kind: "token bucket",
-      rate: 6, // 6 upload per hour
-      period: 4 * 60 * 60 * 1000, // 4 hour in milliseconds
-      capacity: 6, // Allow burst of 6 uploads
+      rate: freePlan?.limits.uploads1d ?? 10, // 10 uploads per day
+      period: DAY, // 1 day in milliseconds
+      capacity: freePlan?.limits.uploads1d ?? 10, // Allow burst of 10 uploads
    },
 });

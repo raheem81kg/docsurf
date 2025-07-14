@@ -28,7 +28,7 @@ function RouteComponent() {
                         <span className="ml-1 font-medium text-2xl text-text-default">/mo</span>
                      </div>
                      <p className="mt-4 text-left text-[#878787] text-sm">
-                        {freePlan?.limits.requests1d} chat requests per day and unlimited suggestions.
+                        {freePlan?.limits.requests1d} chat requests per day, 6 file uploads per day, and unlimited suggestions.
                      </p>
 
                      <div className="mt-8">
@@ -61,6 +61,10 @@ function RouteComponent() {
                               <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
                               <span className="text-sm text-text-default">{freePlan?.limits.requests1d} chat requests/day</span>
                            </li>
+                           <li className="flex items-start">
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">6 file uploads/day</span>
+                           </li>
                         </ul>
                      </div>
 
@@ -87,7 +91,9 @@ function RouteComponent() {
                         <span className="ml-1 text-[40px] font-medium tracking-tight">${proPlan?.price.monthly}</span>
                         <span className="ml-1 text-xl font-medium">/mo</span>
                      </div>
-                     <p className="mt-4 text-left text-[#878787] text-sm">Unlimited chat requests per day.</p>
+                     <p className="mt-4 text-left text-[#878787] text-sm">
+                        Unlimited chat requests and unlimited file uploads per day.
+                     </p>
 
                      <div className="mt-8">
                         <h3 className="text-left font-medium font-mono text-xs uppercase tracking-wide text-text-default">
@@ -114,6 +120,10 @@ function RouteComponent() {
                            <li className="flex items-start">
                               <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
                               <span className="text-sm text-text-default">Unlimited chat requests</span>
+                           </li>
+                           <li className="flex items-start">
+                              <Check className="mr-2 h-5 w-5 flex-shrink-0 text-[#878787]" />
+                              <span className="text-sm text-text-default">Unlimited file uploads</span>
                            </li>
                         </ul>
                      </div>

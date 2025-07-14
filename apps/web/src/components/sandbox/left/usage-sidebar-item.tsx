@@ -1,4 +1,4 @@
-import { Activity, Zap } from "lucide-react";
+import { Activity, Zap, Upload } from "lucide-react";
 import NumberFlow from "@number-flow/react";
 import { AnimatePresence, motion } from "motion/react";
 import { ChevronRight } from "lucide-react";
@@ -59,6 +59,11 @@ function UsageInner() {
    const { data: user, isLoading: userLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
    // Fetch usage stats for the last 1 day
    const { data: usageStats, isLoading: usageLoading } = useQuery(convexQuery(api.analytics.getMyUsageStats, { timeframe: "1d" }));
+   // Fetch upload usage and limit
+   const { data: uploadRateLimit, isLoading: uploadLoading } = useQuery(convexQuery(api.attachments.getUploadFileRateLimit, {}));
+   // The rate limiter returns { value, config }, where value is tokens left, config.capacity is the daily limit
+   const uploadsLimit = uploadRateLimit?.config?.capacity ?? 6;
+   const uploadsUsed = uploadsLimit - (uploadRateLimit?.value ?? uploadsLimit);
 
    // Determine plan and limits
    const planName = user?.subscription?.isPremium ? "Pro" : "Free";
@@ -79,6 +84,7 @@ function UsageInner() {
    // Next plan limits
    const nextRequestsLimit = nextPlan?.limits.requests1d;
    const nextTokensLimit = nextPlan?.limits.tokens1d;
+   const nextUploadsLimit = nextPlan?.limits.uploads1d;
 
    // Billing reset date from subscription (not relevant for daily, but keep for paid plans)
    const billingEnd = user?.subscription?.currentPeriodEnd
@@ -91,8 +97,12 @@ function UsageInner() {
 
    // Warn if >= 90% of any limit
    const warnings = useMemo(
-      () => [requestsLimit > 0 && requestsUsed / requestsLimit >= 0.9, tokensLimit > 0 && tokensUsed / tokensLimit >= 0.9],
-      [requestsUsed, requestsLimit, tokensUsed, tokensLimit]
+      () => [
+         requestsLimit > 0 && requestsUsed / requestsLimit >= 0.9,
+         tokensLimit > 0 && tokensUsed / tokensLimit >= 0.9,
+         uploadsLimit > 0 && uploadsUsed / uploadsLimit >= 0.9,
+      ],
+      [requestsUsed, requestsLimit, tokensUsed, tokensLimit, uploadsUsed, uploadsLimit]
    );
    const warning = warnings.some(Boolean);
 
@@ -120,6 +130,16 @@ function UsageInner() {
                   nextPlanLimit={nextRequestsLimit}
                   warning={warnings[0] ?? false}
                   isLoading={userLoading || usageLoading}
+               />
+               <UsageRow
+                  icon={Upload}
+                  label="File Uploads"
+                  usage={uploadsUsed}
+                  limit={uploadsLimit}
+                  showNextPlan={hovered}
+                  nextPlanLimit={nextUploadsLimit}
+                  warning={warnings[2] ?? false}
+                  isLoading={uploadLoading}
                />
                {/* Suggestions are unlimited for all users */}
                {/* <UsageRow

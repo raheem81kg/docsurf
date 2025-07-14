@@ -86,6 +86,9 @@ function SubscriptionSettingsPage() {
                         <p className="text-sm text-muted-foreground flex gap-2 items-center">
                            <Check className="!size-4 text-primary" /> Search Tool
                         </p>
+                        <p className="text-sm text-muted-foreground flex gap-2 items-center">
+                           <Check className="!size-4 text-primary" /> 6 file uploads per day
+                        </p>
                      </div>
                   </div>
                </div>
@@ -122,6 +125,9 @@ function SubscriptionSettingsPage() {
                         </p>
                         <p className="text-sm text-muted-foreground flex gap-2 items-center">
                            <Check className="!size-4 text-primary" /> Search Tool
+                        </p>
+                        <p className="text-sm text-muted-foreground flex gap-2 items-center">
+                           <Check className="!size-4 text-primary" /> Unlimited file uploads
                         </p>
                      </div>
                   </div>

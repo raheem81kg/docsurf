@@ -112,6 +112,12 @@ export function PricingDialog({ open, onOpenChange, children }: PricingDialogPro
                      </div>
                      <div className="justify-center font-normal leading-normal text-white lg:text-base">Web Search Tool</div>
                   </div>
+                  <div className="inline-flex items-center justify-start gap-2.5">
+                     <div className="flex h-5 w-5 items-center justify-center gap-3 rounded-[125px] bg-[#1F1F1F] p-[5px] dark:bg-white/10">
+                        <Icons.PurpleThickCheck className="!size-4 text-primary" />
+                     </div>
+                     <div className="justify-center font-normal leading-normal text-white lg:text-base">Unlimited file uploads</div>
+                  </div>
                </div>
                <div className="z-50 mt-12 w-full">
                   {!user ? (
