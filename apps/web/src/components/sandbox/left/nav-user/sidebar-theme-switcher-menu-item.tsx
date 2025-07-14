@@ -192,7 +192,7 @@ export function ThemeSwitcher() {
                <Separator />
 
                {/* Themes List */}
-               <ScrollArea className="h-80">
+               <ScrollArea className="md:h-80 h-full">
                   <div className="p-3">
                      {isLoadingThemes ? (
                         <div className="flex items-center justify-center gap-2 py-8 text-muted-foreground">
