@@ -10,6 +10,8 @@ import { useOfflineIndicator } from "@/hooks/use-offline-indicator";
 import { useSession } from "@/hooks/auth-hooks";
 import { useAuthTokenStore } from "@/hooks/use-auth-store";
 import { useEffect } from "react";
+import { useSuggestionOverlayStore } from "@/store/use-suggestion-overlay-store";
+import { useEditorRefStore } from "@/store/use-editor-ref-store";
 
 export const Route = createFileRoute("/_main")({
    ssr: false,
@@ -42,6 +44,26 @@ function MainLayoutComponent() {
          useAuthTokenStore.getState().refetchToken();
       }
    }, [isPending, session?.user?.id]);
+
+   // Add global Cmd/Ctrl+J shortcut for suggestion overlay
+   const tryOpenSuggestionOverlayFromEditorSelection = useSuggestionOverlayStore((s) => s.tryOpenSuggestionOverlayFromEditorSelection);
+   const closeSuggestionOverlay = useSuggestionOverlayStore((s) => s.closeSuggestionOverlay);
+   const isOpen = useSuggestionOverlayStore((s) => s.isOpen);
+   const editor = useEditorRefStore((s) => s.editor);
+   useEffect(() => {
+      const handleCommandJ = (e: KeyboardEvent) => {
+         if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "j") {
+            e.preventDefault();
+            if (isOpen) {
+               closeSuggestionOverlay();
+            } else if (editor) {
+               tryOpenSuggestionOverlayFromEditorSelection(editor);
+            }
+         }
+      };
+      window.addEventListener("keydown", handleCommandJ);
+      return () => window.removeEventListener("keydown", handleCommandJ);
+   }, [tryOpenSuggestionOverlayFromEditorSelection, closeSuggestionOverlay, isOpen, editor]);
    return (
       <OnboardingProvider>
          <div className="flex overflow-hidden max-h-dvh">
