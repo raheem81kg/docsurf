@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { Editor } from "@tiptap/react";
+import { useEditorState, type Editor } from "@tiptap/react";
 import { isActive } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react";
 import { Separator } from "@docsurf/ui/components/separator";
@@ -15,7 +15,30 @@ export interface TableBubbleMenuProps {
 }
 
 export const TableBubbleMenu: React.FC<TableBubbleMenuProps> = ({ editor, disabled, actions }) => {
-   const shouldShow = React.useCallback(({ editor }: { editor: Editor }) => isActive(editor.view.state, "table"), []);
+   const editorState = useEditorState({
+      editor,
+      selector: ({ editor }) => {
+         const state = editor.state;
+         const selection = state.selection;
+         const isMultiCell =
+            selection instanceof CellSelection &&
+            selection.$anchorCell &&
+            selection.$headCell &&
+            selection.$anchorCell.pos !== selection.$headCell.pos;
+         return {
+            canAddColumnBefore: !!editor.can().addColumnBefore?.(),
+            canAddColumnAfter: !!editor.can().addColumnAfter?.(),
+            canDeleteColumn: !!editor.can().deleteColumn?.(),
+            canAddRowBefore: !!editor.can().addRowBefore?.(),
+            canAddRowAfter: !!editor.can().addRowAfter?.(),
+            canDeleteRow: !!editor.can().deleteRow?.(),
+            canMergeCells: !!editor.can().mergeCells?.(),
+            canSplitCell: !!editor.can().splitCell?.(),
+            canDeleteTable: !!editor.can().deleteTable?.(),
+            isMultiCell,
+         };
+      },
+   });
 
    function onAddColumnBefore() {
       editor.chain().focus().addColumnBefore().run();
@@ -52,25 +75,17 @@ export const TableBubbleMenu: React.FC<TableBubbleMenuProps> = ({ editor, disabl
       }
    }
 
-   // Detect if multiple cells are selected
-   const { state } = editor;
-   const isMultiCell =
-      state.selection instanceof CellSelection &&
-      state.selection.$anchorCell &&
-      state.selection.$headCell &&
-      state.selection.$anchorCell.pos !== state.selection.$headCell.pos;
-
    // Actions for multi-cell selection
    const multiCellActions = [
       {
          onClick: onMergeCell,
-         disabled: !editor?.can()?.mergeCells?.(),
+         disabled: !editorState.canMergeCells,
          icon: <Merge className="size-4" />,
          tooltip: "Merge Cells",
       },
       {
          onClick: onSplitCell,
-         disabled: !editor?.can()?.splitCell?.(),
+         disabled: !editorState.canSplitCell,
          icon: <Split className="size-4" />,
          tooltip: "Split Cells",
       },
@@ -79,19 +94,17 @@ export const TableBubbleMenu: React.FC<TableBubbleMenuProps> = ({ editor, disabl
    return (
       <BubbleMenu
          editor={editor}
-         shouldShow={shouldShow}
+         shouldShow={React.useCallback(({ editor }: { editor: Editor }) => isActive(editor.view.state, "table"), [])}
          tippyOptions={{
             placement: "bottom",
             onHidden: () => {},
             maxWidth: "auto",
             getReferenceClientRect: () => {
-               // Find the table node in the DOM from the selection
                const { state } = editor;
                const { selection } = state;
                let tableElement: HTMLElement | null = null;
 
                if (selection) {
-                  // Find the parent table node from the anchor
                   const domAtPos = editor.view.domAtPos(selection.from);
                   let node: HTMLElement | null = domAtPos.node as HTMLElement;
                   while (node && node.nodeName.toLowerCase() !== "table") {
@@ -100,7 +113,6 @@ export const TableBubbleMenu: React.FC<TableBubbleMenuProps> = ({ editor, disabl
                   tableElement = node;
                }
 
-               // Fallback: just use the editor root
                if (!tableElement) {
                   tableElement = editor.view.dom as HTMLElement;
                }
@@ -116,7 +128,7 @@ export const TableBubbleMenu: React.FC<TableBubbleMenuProps> = ({ editor, disabl
                   <ToolbarButton
                      tooltip="Delete Table"
                      onClick={onDeleteTable}
-                     disabled={!editor?.can()?.deleteTable?.()}
+                     disabled={!editorState.canDeleteTable}
                      className="w-auto px-2"
                   >
                      <Trash2Icon className="size-4" />
@@ -138,7 +150,7 @@ export const TableBubbleMenu: React.FC<TableBubbleMenuProps> = ({ editor, disabl
                      ]}
                   />
                   {/* No separator between delete and highlight */}
-                  {isMultiCell ? (
+                  {editorState.isMultiCell ? (
                      <>
                         <Separator orientation="vertical" />
                         {multiCellActions.map((action, i) => (
@@ -160,38 +172,38 @@ export const TableBubbleMenu: React.FC<TableBubbleMenuProps> = ({ editor, disabl
                         {[
                            {
                               onClick: onAddColumnBefore,
-                              disabled: !editor?.can()?.addColumnBefore?.(),
+                              disabled: !editorState.canAddColumnBefore,
                               icon: <ArrowLeft className="size-4" />,
                               tooltip: "Insert Column Before",
                            },
                            {
                               onClick: onAddColumnAfter,
-                              disabled: !editor?.can()?.addColumnAfter?.(),
+                              disabled: !editorState.canAddColumnAfter,
                               icon: <ArrowRight className="size-4" />,
                               tooltip: "Insert Column After",
                            },
                            {
                               onClick: onDeleteColumn,
-                              disabled: !editor?.can().deleteColumn?.(),
+                              disabled: !editorState.canDeleteColumn,
                               icon: <XIcon className="size-4" />,
                               tooltip: "Delete Column",
                            },
                            "sep",
                            {
                               onClick: onAddRowAbove,
-                              disabled: !editor?.can().addRowBefore?.(),
+                              disabled: !editorState.canAddRowBefore,
                               icon: <ArrowUp className="size-4" />,
                               tooltip: "Insert Row Above",
                            },
                            {
                               onClick: onAddRowBelow,
-                              disabled: !editor?.can()?.addRowAfter?.(),
+                              disabled: !editorState.canAddRowAfter,
                               icon: <ArrowDown className="size-4" />,
                               tooltip: "Insert Row Below",
                            },
                            {
                               onClick: onDeleteRow,
-                              disabled: !editor?.can()?.deleteRow?.(),
+                              disabled: !editorState.canDeleteRow,
                               icon: <XIcon className="size-4" />,
                               tooltip: "Delete Row",
                            },

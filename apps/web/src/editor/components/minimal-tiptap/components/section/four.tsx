@@ -42,26 +42,26 @@ function toggleList(editor: Editor, type: ListItemAction) {
    }
 }
 
-function canToggleList(editor: Editor, type: ListItemAction): boolean {
-   if (!editor) return false;
+// function canToggleList(editor: Editor, type: ListItemAction): boolean {
+//    if (!editor) return false;
 
-   // If we're already in a list, we should be able to toggle to any other list type
-   if (editor.isActive("bulletList") || editor.isActive("orderedList") || editor.isActive("taskList")) {
-      return true;
-   }
+//    // If we're already in a list, we should be able to toggle to any other list type
+//    if (editor.isActive("bulletList") || editor.isActive("orderedList") || editor.isActive("taskList")) {
+//       return true;
+//    }
 
-   // Otherwise check if we can toggle the specific list type
-   switch (type) {
-      case "bulletList":
-         return editor.can().chain().focus().toggleBulletList().run();
-      case "orderedList":
-         return editor.can().chain().focus().toggleOrderedList().run();
-      case "taskList":
-         return editor.can().chain().focus().toggleList("taskList", "taskItem").run();
-      default:
-         return false;
-   }
-}
+//    // Otherwise check if we can toggle the specific list type
+//    switch (type) {
+//       case "bulletList":
+//          return editor.can().chain().focus().toggleBulletList().run();
+//       case "orderedList":
+//          return editor.can().chain().focus().toggleOrderedList().run();
+//       case "taskList":
+//          return editor.can().chain().focus().toggleList("taskList", "taskItem").run();
+//       default:
+//          return false;
+//    }
+// }
 
 interface SectionFourProps extends VariantProps<typeof toggleVariants> {
    editor: Editor;
@@ -134,22 +134,22 @@ export const SectionFour: React.FC<SectionFourProps> = ({
       }
    }
 
-   function canToggleList(type: ListItemAction): boolean {
-      if (!editor) return false;
-      if (editorState.isBulletList || editorState.isOrderedList || editorState.isTaskList) {
-         return true;
-      }
-      switch (type) {
-         case "bulletList":
-            return editor.can().chain().focus().toggleBulletList().run();
-         case "orderedList":
-            return editor.can().chain().focus().toggleOrderedList().run();
-         case "taskList":
-            return editor.can().chain().focus().toggleList("taskList", "taskItem").run();
-         default:
-            return false;
-      }
-   }
+   // function canToggleList(type: ListItemAction): boolean {
+   //    if (!editor) return false;
+   //    if (editorState.isBulletList || editorState.isOrderedList || editorState.isTaskList) {
+   //       return true;
+   //    }
+   //    switch (type) {
+   //       case "bulletList":
+   //          return editor.can().chain().focus().toggleBulletList().run();
+   //       case "orderedList":
+   //          return editor.can().chain().focus().toggleOrderedList().run();
+   //       case "taskList":
+   //          return editor.can().chain().focus().toggleList("taskList", "taskItem").run();
+   //       default:
+   //          return false;
+   //    }
+   // }
 
    const formatActionsWithActive: ListItem[] = [
       {

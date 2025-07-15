@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { ShouldShowProps } from "../../types";
-import type { Editor } from "@tiptap/react";
+import { useEditorState, type Editor } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react";
 import { LinkEditBlock } from "../link/link-edit-block";
 import { LinkPopoverBlock } from "../link/link-popover-block";
@@ -16,40 +16,37 @@ interface LinkAttributes {
 
 export const LinkBubbleMenu: React.FC<LinkBubbleMenuProps> = ({ editor }) => {
    const [showEdit, setShowEdit] = React.useState(false);
-   const [linkAttrs, setLinkAttrs] = React.useState<LinkAttributes>({
-      href: "",
-      target: "",
-   });
-   const [selectedText, setSelectedText] = React.useState("");
 
-   const updateLinkState = React.useCallback(() => {
-      const { from, to } = editor.state.selection;
-      const { href, target } = editor.getAttributes("link");
-      const text = editor.state.doc.textBetween(from, to, " ");
-
-      setLinkAttrs({ href, target });
-      setSelectedText(text);
-   }, [editor]);
-
-   const shouldShow = React.useCallback(
-      ({ editor, from, to }: ShouldShowProps) => {
-         if (from === to) {
-            return false;
-         }
-         const { href } = editor.getAttributes("link");
-
-         if (!editor.isActive("link") || !editor.isEditable) {
-            return false;
-         }
-
-         if (href) {
-            updateLinkState();
-            return true;
-         }
-         return false;
+   const editorState = useEditorState({
+      editor,
+      selector: ({ editor }) => {
+         const { from, to } = editor.state.selection;
+         const { href, target } = editor.getAttributes("link");
+         const selectedText = editor.state.doc.textBetween(from, to, " ");
+         return {
+            href,
+            target,
+            selectedText,
+            isActive: editor.isActive("link"),
+            isEditable: editor.isEditable,
+            selectionEmpty: from === to,
+         };
       },
-      [updateLinkState]
-   );
+   });
+
+   const shouldShow = React.useCallback(({ editor, from, to }: ShouldShowProps) => {
+      if (from === to) {
+         return false;
+      }
+      const { href } = editor.getAttributes("link");
+      if (!editor.isActive("link") || !editor.isEditable) {
+         return false;
+      }
+      if (href) {
+         return true;
+      }
+      return false;
+   }, []);
 
    const handleEdit = React.useCallback(() => {
       setShowEdit(true);
@@ -77,16 +74,14 @@ export const LinkBubbleMenu: React.FC<LinkBubbleMenuProps> = ({ editor }) => {
             .setLink({ href: url, target: openInNewTab ? "_blank" : "" })
             .run();
          setShowEdit(false);
-         updateLinkState();
       },
-      [editor, updateLinkState]
+      [editor]
    );
 
    const onUnsetLink = React.useCallback(() => {
       editor.chain().focus().extendMarkRange("link").unsetLink().run();
       setShowEdit(false);
-      updateLinkState();
-   }, [editor, updateLinkState]);
+   }, [editor]);
 
    return (
       <BubbleMenu
@@ -100,14 +95,14 @@ export const LinkBubbleMenu: React.FC<LinkBubbleMenuProps> = ({ editor }) => {
       >
          {showEdit ? (
             <LinkEditBlock
-               defaultUrl={linkAttrs.href}
-               defaultText={selectedText}
-               defaultIsNewTab={linkAttrs.target === "_blank"}
+               defaultUrl={editorState.href}
+               defaultText={editorState.selectedText}
+               defaultIsNewTab={editorState.target === "_blank"}
                onSave={onSetLink}
                className="w-full min-w-80 rounded-sm border bg-popover p-4 text-popover-foreground shadow-md outline-none"
             />
          ) : (
-            <LinkPopoverBlock onClear={onUnsetLink} url={linkAttrs.href} onEdit={handleEdit} />
+            <LinkPopoverBlock onClear={onUnsetLink} url={editorState.href} onEdit={handleEdit} />
          )}
       </BubbleMenu>
    );

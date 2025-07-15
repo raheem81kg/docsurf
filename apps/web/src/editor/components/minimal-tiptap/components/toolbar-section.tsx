@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { Editor } from "@tiptap/react";
+import { useEditorState, type Editor } from "@tiptap/react";
 import type { FormatAction } from "../types";
 import type { VariantProps } from "class-variance-authority";
 import type { toggleVariants } from "@docsurf/ui/components/toggle";
@@ -46,13 +46,22 @@ export const ToolbarSection: React.FC<ToolbarSectionProps> = ({
       };
    }, [actions, activeActions, mainActionCount]);
 
+   const editorState = useEditorState({
+      editor,
+      selector: ({ editor }) => ({
+         canExecute: Object.fromEntries(actions.map((a) => [a.value, a.canExecute(editor)])),
+         isActive: Object.fromEntries(actions.map((a) => [a.value, a.isActive(editor)])),
+         editor,
+      }),
+   });
+
    const renderToolbarButton = React.useCallback(
       (action: FormatAction) => (
          <ToolbarButton
             key={action.label}
-            onClick={() => action.action(editor)}
-            disabled={!action.canExecute(editor) || disabled}
-            isActive={action.isActive(editor)}
+            onClick={() => action.action(editorState.editor)}
+            disabled={!editorState.canExecute[action.value] || disabled}
+            isActive={editorState.isActive[action.value]}
             tooltip={`${action.label} ${action.shortcuts.map((s) => getShortcutKey(s).symbol).join(" ")}`}
             aria-label={action.label}
             size={size}
@@ -62,17 +71,17 @@ export const ToolbarSection: React.FC<ToolbarSectionProps> = ({
             {action.icon}
          </ToolbarButton>
       ),
-      [editor, size, variant, disabled]
+      [editorState, size, variant, disabled, disableHoverableContent]
    );
 
    const renderDropdownMenuItem = React.useCallback(
       (action: FormatAction) => (
          <DropdownMenuItem
             key={action.label}
-            onClick={() => action.action(editor)}
-            disabled={!action.canExecute(editor) || disabled}
+            onClick={() => action.action(editorState.editor)}
+            disabled={!editorState.canExecute[action.value] || disabled}
             className={cn("flex flex-row items-center justify-between gap-4", {
-               "bg-accent": action.isActive(editor),
+               "bg-accent": editorState.isActive[action.value],
             })}
             aria-label={action.label}
          >
@@ -80,10 +89,13 @@ export const ToolbarSection: React.FC<ToolbarSectionProps> = ({
             <ShortcutKey keys={action.shortcuts} />
          </DropdownMenuItem>
       ),
-      [editor, disabled]
+      [editorState, disabled]
    );
 
-   const isDropdownActive = React.useMemo(() => dropdownActions.some((action) => action.isActive(editor)), [dropdownActions, editor]);
+   const isDropdownActive = React.useMemo(
+      () => dropdownActions.some((action) => editorState.isActive[action.value]),
+      [dropdownActions, editorState]
+   );
 
    return (
       <>
