@@ -59,6 +59,7 @@ import { ImageExtension } from "../extensions/custom/niazmorshed/image";
 import { ImagePlaceholder } from "../extensions/custom/niazmorshed/image-placeholder";
 import { Mathematics } from "@tiptap/extension-mathematics";
 import { useMutation } from "convex/react";
+// import { getDocumentHtml } from "@docsurf/utils/chat/get-document-html";
 // import { getHierarchicalIndexes, TableOfContents } from "@tiptap/extension-table-of-contents";
 export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
    value?: Content;
@@ -470,6 +471,12 @@ export const useMinimalTiptapEditor = ({
             return;
          }
          if (transaction.docChanged) {
+            // const rawOutput = getOutput(editor, "json");
+            // const stringifiedOutput = JSON.stringify(rawOutput);
+            // const htmlOutput = getDocumentHtml(stringifiedOutput);
+            // console.log("[DEBUG] getOutput(editor, 'json'):", rawOutput);
+            // console.log("[DEBUG] JSON.stringify(getOutput(editor, 'json')):", stringifiedOutput);
+            // console.log("[DEBUG] getDocumentHtml(JSON.stringify(getOutput(editor, 'json'))):", htmlOutput);
             hasPendingChanges.current = true;
             debouncedSave(getOutput(editor, output));
          }

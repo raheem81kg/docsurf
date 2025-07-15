@@ -23,6 +23,7 @@ import { useCurrentDocument } from "@/components/sandbox/left/_tree_components/S
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
+import { Analytics } from "@/components/providers/posthog";
 
 interface ChatProps {
    threadId: string | undefined;
@@ -115,6 +116,7 @@ const ChatContent = ({ threadId: routeThreadId }: ChatProps) => {
       chatHelpers.setData([]);
       chatHelpers.setMessages([]);
       resetChat();
+      Analytics.track("reset_chat", { userEmail: session?.user?.email });
    };
 
    useEffect(() => {

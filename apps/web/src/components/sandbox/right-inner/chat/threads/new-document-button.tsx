@@ -13,6 +13,7 @@ import { DEFAULT_TEXT_TITLE, DEFAULT_FOLDER_TITLE } from "@/utils/constants";
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
 import { RadioGroup, RadioGroupItem } from "@docsurf/ui/components/radio-group";
 import { useSession } from "@/hooks/auth-hooks";
+import { Analytics } from "@/components/providers/posthog";
 
 export function NewDocumentButton({ onClick }: { onClick?: () => void }) {
    const [showDialog, setShowDialog] = useState(false);
@@ -56,6 +57,7 @@ export function NewDocumentButton({ onClick }: { onClick?: () => void }) {
                // Close sidebar when navigating to the new document
                onClick?.();
             }
+            Analytics.track("create_document", { documentType: docType, userEmail: session?.user?.email });
             toast.success(`${docType === "text/plain" ? "Document" : "Folder"} created successfully`);
             setDocName("");
             setDocType("text/plain");

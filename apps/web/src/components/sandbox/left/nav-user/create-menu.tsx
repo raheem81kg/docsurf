@@ -24,6 +24,7 @@ import { useNavigate } from "@tanstack/react-router";
 // import { useRateLimit } from "@convex-dev/rate-limiter/react";
 import { DOCUMENT_CREATION_RATE_LIMIT } from "@docsurf/utils/constants/constants";
 import { useSession } from "@/hooks/auth-hooks";
+import { Analytics } from "@/components/providers/posthog";
 
 interface CreateMenuProps {
    parentId?: string | null;
@@ -91,6 +92,7 @@ export function CreateMenu({ parentId = null }: CreateMenuProps) {
                      id: loadingToastId,
                   });
                }
+               Analytics.track("create_document", { documentType: type, userEmail: session?.user?.email });
                if (type === "text/plain") {
                   navigate({ to: "/doc/$documentId", params: { documentId: doc.id } });
                }
