@@ -11,6 +11,7 @@ import type React from "react";
 import { PLANS } from "@docsurf/utils/constants/pricing";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Icons } from "../assets/icons";
+import { Analytics } from "../providers/posthog";
 
 interface PricingDialogProps {
    open: boolean;
@@ -142,6 +143,9 @@ export function PricingDialog({ open, onOpenChange, children }: PricingDialogPro
                            variant="outline"
                            asChild
                            className="h-12 w-full cursor-pointer !text-base !text-center !font-semibold !leading-none"
+                           onClick={() => {
+                              Analytics.track("checkout_clicked", { userEmail: user?.email });
+                           }}
                         >
                            <CheckoutLink
                               polarApi={{ generateCheckoutLink: api.polar.generateCheckoutLink }}

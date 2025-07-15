@@ -133,7 +133,14 @@ function SubscriptionSettingsPage() {
                   </div>
                   {user?.subscription?.isFree && products && (
                      <div>
-                        <Button variant="outline" asChild className="cursor-pointer ">
+                        <Button
+                           variant="outline"
+                           asChild
+                           className="cursor-pointer "
+                           onClick={() => {
+                              Analytics.track("checkout_clicked", { userEmail: user?.email });
+                           }}
+                        >
                            <CheckoutLink
                               polarApi={{ generateCheckoutLink: api.polar.generateCheckoutLink }}
                               productIds={products.map((product) => product.id)}
