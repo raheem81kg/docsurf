@@ -54,7 +54,7 @@ http.route({
 // cors.route({
 //    path: "/inline-suggestion",
 //    method: "POST",
-//    // handler: inlineSuggestion,
+//    handler: inlineSuggestion,
 // });
 
 export default http;

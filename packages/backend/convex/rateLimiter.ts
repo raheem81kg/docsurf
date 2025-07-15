@@ -6,6 +6,7 @@ import { PLANS } from "@docsurf/utils/constants/pricing";
 const DAY = 24 * 60 * 60 * 1000;
 
 const freePlan = PLANS.find((plan) => plan.name === "Free");
+const proPlan = PLANS.find((plan) => plan.name === "Pro");
 
 export const rateLimiter = new RateLimiter(components.rateLimiter, {
    // Limit how fast a user can add a new todo.
@@ -25,12 +26,18 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
       capacity: DOCUMENT_CREATION_RATE_LIMIT, // Max burst = daily limit
    },
 
-   // Limit file uploads to prevent abuse while still being user-friendly
-   // Limit to 100 uploads per day per user
-   uploadFile: {
-      kind: "token bucket",
+   uploadFileFree: {
+      kind: "fixed window",
       rate: freePlan?.limits.uploads1d ?? 10, // 10 uploads per day
       period: DAY, // 1 day in milliseconds
       capacity: freePlan?.limits.uploads1d ?? 10, // Allow burst of 10 uploads
+   },
+
+   // Unlimited uploads for pro users (set a very high rate/capacity)
+   uploadFilePro: {
+      kind: "fixed window",
+      rate: proPlan?.limits.uploads1d ?? 1000000000, // Effectively unlimited
+      period: DAY,
+      capacity: proPlan?.limits.uploads1d ?? 1000000000,
    },
 });

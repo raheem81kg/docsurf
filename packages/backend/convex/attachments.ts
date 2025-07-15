@@ -37,24 +37,25 @@ export const uploadFile = httpAction(async (ctx, request) => {
       });
       const isPremium = !!subscription?.isPremium;
 
-      // Rate limiting for file uploads (skip for Pro users)
-      if (!isPremium) {
-         const rateLimitResult = await rateLimiter.limit(ctx, "uploadFile", { key: user.id, throws: false });
-         if (!rateLimitResult.ok) {
-            return new Response(
-               JSON.stringify({
-                  error: "Upload rate limit exceeded. Please try again later.",
-                  retryAfter: Math.ceil(rateLimitResult.retryAfter / 1000), // Convert to seconds
-               }),
-               {
-                  status: 429,
-                  headers: {
-                     "Content-Type": "application/json",
-                     "Retry-After": Math.ceil(rateLimitResult.retryAfter / 1000).toString(),
-                  },
-               }
-            );
-         }
+      // Rate limiting for file uploads (enforce for Free, record for Premium)
+      const rateLimitResult = await rateLimiter.limit(ctx, isPremium ? "uploadFilePro" : "uploadFileFree", {
+         key: user.id,
+         throws: false,
+      });
+      if (!isPremium && !rateLimitResult.ok) {
+         return new Response(
+            JSON.stringify({
+               error: "Upload rate limit exceeded. Please try again later.",
+               retryAfter: Math.ceil(rateLimitResult.retryAfter / 1000), // Convert to seconds
+            }),
+            {
+               status: 429,
+               headers: {
+                  "Content-Type": "application/json",
+                  "Retry-After": Math.ceil(rateLimitResult.retryAfter / 1000).toString(),
+               },
+            }
+         );
       }
       const formData = await request.formData();
       const file = formData.get("file") as Blob;
@@ -304,12 +305,28 @@ export const getFile = httpAction(async (ctx, req) => {
 });
 
 // Hook API for file upload rate limit
-export const { getRateLimit: getUploadFileRateLimit, getServerTime: getUploadFileServerTime } = rateLimiter.hookAPI("uploadFile", {
-   key: async (ctx) => {
-      const identity = await ctx.auth.getUserIdentity();
-      if (!identity) {
-         return "NOT_AUTHENTICATED";
-      }
-      return identity.subject;
-   },
-});
+export const { getRateLimit: getUploadFileFreeRateLimit, getServerTime: getUploadFileFreeServerTime } = rateLimiter.hookAPI(
+   "uploadFileFree",
+   {
+      key: async (ctx) => {
+         const identity = await ctx.auth.getUserIdentity();
+         if (!identity) {
+            return "NOT_AUTHENTICATED";
+         }
+         return identity.subject;
+      },
+   }
+);
+
+export const { getRateLimit: getUploadFileProRateLimit, getServerTime: getUploadFileProServerTime } = rateLimiter.hookAPI(
+   "uploadFilePro",
+   {
+      key: async (ctx) => {
+         const identity = await ctx.auth.getUserIdentity();
+         if (!identity) {
+            return "NOT_AUTHENTICATED";
+         }
+         return identity.subject;
+      },
+   }
+);

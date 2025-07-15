@@ -8,12 +8,13 @@ import { cn, type Icon } from "@docsurf/ui/lib/utils";
 import { AnimatedSizeContainer } from "@docsurf/ui/components/_c/animated-size-container";
 import { buttonVariants } from "@docsurf/ui/components/button";
 import ManageSubscriptionButton from "./manage-subscription-button";
-import { getCurrentPlan, getNextPlan, INFINITY_NUMBER } from "@docsurf/utils/constants/pricing";
+import { getCurrentPlan, getNextPlan, INFINITY_NUMBER, PLANS } from "@docsurf/utils/constants/pricing";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { PricingDialog } from "@/components/dialogs/pricing-dialog";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
+import { useRateLimit } from "@convex-dev/rate-limiter/react";
 
 /**
  * Format numbers for display (e.g., 1.2K, 1M)
@@ -59,29 +60,39 @@ function UsageInner() {
    const { data: user, isLoading: userLoading } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
    // Fetch usage stats for the last 1 day
    const { data: usageStats, isLoading: usageLoading } = useQuery(convexQuery(api.analytics.getMyUsageStats, { timeframe: "1d" }));
-   // Fetch upload usage and limit
-   const { data: uploadRateLimit, isLoading: uploadLoading } = useQuery({
-      ...convexQuery(api.attachments.getUploadFileRateLimit, {}),
-      staleTime: 0,
-   });
-   // The rate limiter returns { value, config }, where value is tokens left, config.capacity is the daily limit
-   const uploadsLimit = uploadRateLimit?.config?.capacity ?? 6;
-   const uploadsUsed = uploadsLimit - (uploadRateLimit?.value ?? uploadsLimit);
-
+   const freePlan = getCurrentPlan("Free");
+   const proPlan = getCurrentPlan("Pro");
    // Determine plan and limits
    const planName = user?.subscription?.isPremium ? "Pro" : "Free";
    const plan = getCurrentPlan(planName);
    const nextPlan = getNextPlan(planName);
    const isFreePlan = planName === "Free";
+   const isPremiumPlan = planName === "Pro";
    const isEnterprisePlan = false; // Extend if you add enterprise
    const paymentFailedAt = undefined; // Extend if you add payment failure logic
+
+   // Use useRateLimit for upload file rate limit, based on plan
+   const uploadRateLimitApi = isPremiumPlan ? api.attachments.getUploadFileProRateLimit : api.attachments.getUploadFileFreeRateLimit;
+   const uploadServerTimeApi = isPremiumPlan
+      ? api.attachments.getUploadFileProServerTime
+      : api.attachments.getUploadFileFreeServerTime;
+   const { status: uploadStatus, check: checkUpload } = useRateLimit(uploadRateLimitApi, {
+      getServerTimeMutation: uploadServerTimeApi,
+      count: 0,
+   });
+   const { value: uploadValue, config: uploadConfig } = checkUpload(Date.now(), 0) ?? {};
+   // Use the plan's uploads1d limit for display
+   const uploadsLimit = plan?.limits.uploads1d ?? freePlan?.limits.uploads1d;
+   const isUploadLoading = uploadConfig == null || uploadValue == null;
+   const uploadsUsed = uploadConfig && uploadValue != null ? uploadsLimit - uploadValue : 0;
+
    // Usage values
    // Use chargedRequests to reflect only charged (platform) usage, not BYOK
    // TODO: If you want to show both, add a separate display for totalRequests
    const requestsUsed = usageStats?.chargedRequests ?? 0;
-   const requestsLimit = plan.limits.requests1d ?? INFINITY_NUMBER;
+   const requestsLimit = plan?.limits.requests1d ?? INFINITY_NUMBER;
    const tokensUsed = usageStats?.totalTokens ?? 0;
-   const tokensLimit = plan.limits.tokens1d ?? INFINITY_NUMBER;
+   const tokensLimit = plan?.limits.tokens1d ?? INFINITY_NUMBER;
    // TODO: Use usage stats in UsageRows when we add limits
 
    // Next plan limits
@@ -142,7 +153,7 @@ function UsageInner() {
                   showNextPlan={hovered}
                   nextPlanLimit={nextUploadsLimit}
                   warning={warnings[2] ?? false}
-                  isLoading={uploadLoading}
+                  isLoading={isUploadLoading}
                />
                {/* Suggestions are unlimited for all users */}
                {/* <UsageRow
