@@ -60,7 +60,10 @@ function UsageInner() {
    // Fetch usage stats for the last 1 day
    const { data: usageStats, isLoading: usageLoading } = useQuery(convexQuery(api.analytics.getMyUsageStats, { timeframe: "1d" }));
    // Fetch upload usage and limit
-   const { data: uploadRateLimit, isLoading: uploadLoading } = useQuery(convexQuery(api.attachments.getUploadFileRateLimit, {}));
+   const { data: uploadRateLimit, isLoading: uploadLoading } = useQuery({
+      ...convexQuery(api.attachments.getUploadFileRateLimit, {}),
+      staleTime: 0,
+   });
    // The rate limiter returns { value, config }, where value is tokens left, config.capacity is the daily limit
    const uploadsLimit = uploadRateLimit?.config?.capacity ?? 6;
    const uploadsUsed = uploadsLimit - (uploadRateLimit?.value ?? uploadsLimit);
