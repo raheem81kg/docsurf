@@ -6,7 +6,7 @@ import { SectionThree } from "@/components/welcome/features/section-three";
 import { Hero } from "@/components/welcome/hero/hero";
 
 export const Route = createFileRoute("/_welcome/")({
-   ssr: false,
+   ssr: true,
    component: HomeComponent,
 });
 

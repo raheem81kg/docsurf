@@ -6,6 +6,7 @@ import { PLANS, getCurrentPlan } from "@docsurf/utils/constants/pricing";
 
 export const Route = createFileRoute("/_welcome/pricing")({
    component: RouteComponent,
+   ssr: true,
 });
 
 function RouteComponent() {
