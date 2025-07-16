@@ -244,7 +244,7 @@ export const TreeItem = memo(
             <div
                className={cn(
                   "group/item relative flex items-center h-7.5 rounded-sm  hover:bg-accent dark:hover:bg-accent/70 hover:text-muted-foreground cursor-pointer",
-                  isActive && !ghost && "bg-accent dark:bg-accent/70",
+                  isActive && !ghost && "bg-accent dark:bg-accent/70 text-muted-foreground",
                   clone ? "shadow-lg bg-white border border-gray-200 w-fit min-w-[200px]" : "w-full",
                   "transition-all duration-160 ease-in-out",
                   indicator && ghost && "h-[2px] border-none p-0 my-[5px] bg-primary/70",
@@ -257,7 +257,7 @@ export const TreeItem = memo(
                      ]
                )}
                ref={isFolder ? ref : undefined}
-               style={indicator ? { position: "relative", top: "-2px" } : undefined}
+               style={indicator ? { position: "relative" } : undefined}
             >
                {indicator && ghost ? (
                   <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full border border-primary/70 bg-white" />
@@ -473,14 +473,11 @@ export const TreeItem = memo(
                   <motion.div
                      initial={false}
                      animate={{
-                        opacity: isDraggingOverFolder ? 0 : 1,
-                        y: isDraggingOverFolder ? 10 : 0,
-                        height: isDraggingOverFolder ? 0 : "auto",
-                        marginTop: isDraggingOverFolder ? 0 : undefined,
-                        marginBottom: isDraggingOverFolder ? 0 : undefined,
-                        pointerEvents: isDraggingOverFolder ? "none" : "auto",
+                        backgroundColor: isDraggingOverFolder ? "rgba(0,0,0,0.04)" : "transparent",
+                        opacity: 1,
+                        y: 0,
                      }}
-                     transition={{ duration: 0.2, ease: "easeOut" }}
+                     transition={{ duration: 0.15, ease: "easeOut" }}
                      className="text-xs text-muted-foreground italic pl-8 py-1 overflow-hidden"
                      style={{ paddingLeft: `${indentationWidth * (depth + 1)}px` }}
                   >

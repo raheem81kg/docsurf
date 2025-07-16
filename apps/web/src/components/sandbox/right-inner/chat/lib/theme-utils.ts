@@ -1,7 +1,10 @@
-import { DOCSURF_DEFAULT_THEME } from "./theme-store";
+import { DOCSURF_DEFAULT_THEME, INTERN3_DEFAULT_THEME } from "./theme-store";
+
+export const LOCAL_THEME_URLS = ["local:docsurf-default-theme", "local:intern3-default-theme"];
 
 export const THEME_URLS = [
-   "https://tweakcn.com/themes/cmc335y45000n04ld51zg72j3",
+   ...LOCAL_THEME_URLS,
+   // "https://tweakcn.com/themes/cmc335y45000n04ld51zg72j3",
    "https://tweakcn.com/editor/theme?theme=mono",
    "https://tweakcn.com/editor/theme?theme=t3-chat",
    "https://tweakcn.com/editor/theme?theme=tangerine",
@@ -58,7 +61,28 @@ export function getThemeName(themeData: any, url: string): string {
    return "Custom Theme";
 }
 
+/**
+ * Returns the theme preset for a given URL, including local themes.
+ */
 export async function fetchThemeFromUrl(url: string): Promise<FetchedTheme> {
+   // Handle local INTERN3 theme
+   if (url === "local:intern3-default-theme") {
+      return {
+         name: "INTERN3",
+         preset: { cssVars: INTERN3_DEFAULT_THEME.themeState.cssVars },
+         url,
+         type: "custom",
+      };
+   }
+   // Handle local DOCSURF theme
+   if (url === "local:docsurf-default-theme") {
+      return {
+         name: "Docsurf",
+         preset: { cssVars: DOCSURF_DEFAULT_THEME.themeState.cssVars },
+         url,
+         type: "custom",
+      };
+   }
    const baseUrl = "https://tweakcn.com/r/themes/";
    const isBuiltInUrl = url.includes("editor/theme?theme=");
    const transformedUrl =
@@ -80,15 +104,6 @@ export async function fetchThemeFromUrl(url: string): Promise<FetchedTheme> {
          type: THEME_URLS.includes(url) ? "built-in" : "custom",
       };
    } catch (err) {
-      // Fallback for custom theme URL: use DEFAULT_THEME.themeState.cssVars
-      if (url === "https://tweakcn.com/themes/cmc335y45000n04ld51zg72j3") {
-         return {
-            name: "Custom Theme",
-            preset: { cssVars: DOCSURF_DEFAULT_THEME.themeState.cssVars },
-            url,
-            type: "custom",
-         };
-      }
       const errorMessage = err instanceof Error ? err.message : "Failed to fetch theme";
       return {
          name: getThemeName({}, url),
@@ -122,3 +137,5 @@ export function extractThemeColors(preset: ThemePreset, mode: "light" | "dark"):
 
    return colors.slice(0, 5);
 }
+
+export { INTERN3_DEFAULT_THEME };

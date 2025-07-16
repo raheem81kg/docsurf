@@ -248,6 +248,9 @@ export const LeftSidebar = ({
                      set_l_sidebar_state(false);
                   }
                }}
+               activeProps={{
+                  className: "text-muted-foreground",
+               }}
                className={cn(buttonVariants({ variant: "ghost" }), "h-8 w-full justify-start md:text-sm text-base")}
             >
                <Files className="size-5 md:size-4" />
