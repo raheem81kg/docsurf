@@ -132,15 +132,13 @@ function SubscriptionSettingsPage() {
                      </div>
                   </div>
                   {user?.subscription?.isFree && products && (
-                     <div>
-                        <Button
-                           variant="outline"
-                           asChild
-                           className="cursor-pointer "
-                           onClick={() => {
-                              Analytics.track("checkout_clicked", { userEmail: user?.email });
-                           }}
-                        >
+                     // biome-ignore lint/a11y/noStaticElementInteractions: <explanation>
+                     <span
+                        onClick={() => {
+                           Analytics.track("checkout_clicked");
+                        }}
+                     >
+                        <Button variant="outline" asChild className="cursor-pointer ">
                            <CheckoutLink
                               polarApi={{ generateCheckoutLink: api.polar.generateCheckoutLink }}
                               productIds={products.map((product) => product.id)}
@@ -150,7 +148,7 @@ function SubscriptionSettingsPage() {
                               Upgrade to Pro
                            </CheckoutLink>
                         </Button>
-                     </div>
+                     </span>
                   )}
                   {user?.subscription?.isPremium && (
                      <div>

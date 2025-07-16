@@ -139,23 +139,27 @@ export function PricingDialog({ open, onOpenChange, children }: PricingDialogPro
                      </Button>
                   ) : (
                      products && (
-                        <Button
-                           variant="outline"
-                           asChild
-                           className="h-12 w-full cursor-pointer !text-base !text-center !font-semibold !leading-none"
+                        // biome-ignore lint/a11y/noStaticElementInteractions: <explanation>
+                        <span
                            onClick={() => {
-                              Analytics.track("checkout_clicked", { userEmail: user?.email });
+                              Analytics.track("checkout_clicked");
                            }}
                         >
-                           <CheckoutLink
-                              polarApi={{ generateCheckoutLink: api.polar.generateCheckoutLink }}
-                              productIds={products.map((product) => product.id)}
-                              embed={false}
-                              className="w-full"
+                           <Button
+                              variant="outline"
+                              asChild
+                              className="h-12 w-full cursor-pointer !text-base !text-center !font-semibold !leading-none"
                            >
-                              Upgrade to Pro
-                           </CheckoutLink>
-                        </Button>
+                              <CheckoutLink
+                                 polarApi={{ generateCheckoutLink: api.polar.generateCheckoutLink }}
+                                 productIds={products.map((product) => product.id)}
+                                 embed={false}
+                                 className="w-full"
+                              >
+                                 Upgrade to Pro
+                              </CheckoutLink>
+                           </Button>
+                        </span>
                      )
                   )}
                </div>
