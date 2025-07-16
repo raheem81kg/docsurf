@@ -28,7 +28,7 @@ export type SharedModel<Abilities extends ModelAbility[] = ModelAbility[]> = {
    contextLength?: number;
    maxTokens?: number;
    supportedImageSizes?: ImageSize[];
-   customIcon?: "stability-ai" | "openai" | "bflabs" | "google" | "meta";
+   customIcon?: "stability-ai" | "openai" | "bflabs" | "google" | "meta" | "moonshotai";
    supportsDisablingReasoning?: boolean;
    requiredPlanIfNoApiKey?: "pro" | "free"; // <-- added
 };
@@ -103,6 +103,14 @@ export const MODELS_SHARED: SharedModel[] = [
       shortName: "4.1 nano",
       adapters: ["i3-openai:gpt-4.1-nano", "openai:gpt-4.1-nano", "openrouter:openai/gpt-4.1-nano"],
       abilities: ["vision", "function_calling", "pdf"],
+   },
+   {
+      id: "kimi-k2-instruct",
+      name: "Kimi K2 Instruct",
+      shortName: "Kimi K2",
+      adapters: ["i3-groq:moonshotai/kimi-k2-instruct", "groq:moonshotai/kimi-k2-instruct"],
+      abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
+      customIcon: "moonshotai",
    },
    // api key only
    {

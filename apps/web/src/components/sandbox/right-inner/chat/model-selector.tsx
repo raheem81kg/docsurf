@@ -11,7 +11,7 @@ import { DefaultSettings } from "@docsurf/backend/convex/settings";
 import { useConvexAuth } from "@convex-dev/react-query";
 import { Brain, Check, ChevronDown, Eye, Globe, Image } from "lucide-react";
 import * as React from "react";
-import { BlackForestLabsIcon, StabilityIcon } from "./brand-icons";
+import { BlackForestLabsIcon, MoonshotAIIcon, StabilityIcon } from "@/components/brand-icons";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@docsurf/ui/components/tooltip";
 import { useAvailableModels, type DisplayModel } from "./lib/models-providers-shared";
 import { MODELS_SHARED, type SharedModel } from "@docsurf/backend/convex/lib/models";
@@ -48,6 +48,8 @@ export const getProviderIcon = (model: DisplayModel, isCustom: boolean) => {
             return <StabilityIcon className="size-4" />;
          case "meta":
             return <MetaIcon className="size-4" />;
+         case "moonshotai":
+            return <MoonshotAIIcon className="size-4" />;
          default:
             return <Badge className="text-xs">Built-in</Badge>;
       }
