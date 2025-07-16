@@ -1,4 +1,4 @@
-import { DEFAULT_THEME } from "./theme-store";
+import { DOCSURF_DEFAULT_THEME } from "./theme-store";
 
 export const THEME_URLS = [
    "https://tweakcn.com/themes/cmc335y45000n04ld51zg72j3",
@@ -84,7 +84,7 @@ export async function fetchThemeFromUrl(url: string): Promise<FetchedTheme> {
       if (url === "https://tweakcn.com/themes/cmc335y45000n04ld51zg72j3") {
          return {
             name: "Custom Theme",
-            preset: { cssVars: DEFAULT_THEME.themeState.cssVars },
+            preset: { cssVars: DOCSURF_DEFAULT_THEME.themeState.cssVars },
             url,
             type: "custom",
          };
