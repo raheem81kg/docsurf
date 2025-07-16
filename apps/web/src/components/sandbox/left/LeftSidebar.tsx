@@ -41,6 +41,8 @@ import { SortableTree } from "./_tree_components/SortableTree";
 import { Usage } from "./usage-sidebar-item";
 import { NewDocumentButton } from "../right-inner/chat/threads/new-document-button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@docsurf/ui/components/tooltip";
+import { SparklesIcon, type SparklesIconHandle } from "@/components/assets/animated/sparkles";
+import { Analytics } from "@/components/providers/posthog";
 
 const data = {
    navMain: [
@@ -86,6 +88,8 @@ export const LeftSidebar = ({
 }) => {
    const { setOpen, setOpenMobile, toggleSidebar, open, isMobile, openMobile } = useSidebar();
    const set_l_sidebar_state = useSandStateStore((s) => s.set_l_sidebar_state);
+   const set_ir_sidebar_state = useSandStateStore((s) => s.set_ir_sidebar_state); // <-- already present
+   const ir_sidebar_state = useSandStateStore((s) => s.ir_sidebar_state); // <-- add this
    const [commandKOpen, setCommandKOpen] = useState(false);
    const [infoCardDismissed, setInfoCardDismissed] = useState(false);
    const mounted = useMounted();
@@ -93,6 +97,8 @@ export const LeftSidebar = ({
    // SCROLL GRADIENT LOGIC (copied from threads-sidebar)
    const [showGradient, setShowGradient] = useState(false);
    const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+   const sparklesRef = useRef<SparklesIconHandle>(null);
 
    useEffect(() => {
       const container = scrollContainerRef.current;
@@ -249,7 +255,25 @@ export const LeftSidebar = ({
                   Library
                </Link>
             </div>
-
+            {/* AI Chat Button */}
+            <div className="">
+               <button
+                  type="button"
+                  onMouseEnter={() => sparklesRef.current?.startAnimation()}
+                  onMouseLeave={() => sparklesRef.current?.stopAnimation()}
+                  onClick={() => {
+                     Analytics.track("toggle_AI_Assistant");
+                     if (isMobile) {
+                        set_l_sidebar_state(false);
+                     }
+                     set_ir_sidebar_state(!ir_sidebar_state);
+                  }}
+                  className={cn(buttonVariants({ variant: "ghost" }), " px-3 h-8 w-full justify-start md:text-sm text-base")}
+               >
+                  <SparklesIcon ref={sparklesRef} className="p-0" svgClassName="!size-5 md:!size-4" />
+                  AI Chat
+               </button>
+            </div>
             <SidebarMenu className="gap-0.5">{/* <NavMain items={navMainWithActive} onSettingsClick={openModal} /> */}</SidebarMenu>
          </SidebarHeader>
 
