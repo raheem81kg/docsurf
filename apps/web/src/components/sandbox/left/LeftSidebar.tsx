@@ -241,40 +241,36 @@ export const LeftSidebar = ({
                   </kbd>
                </div>
             </Button>
-            <div className="">
-               <Link
-                  to="/doc/library"
-                  onClick={() => {
-                     if (isMobile) {
-                        set_l_sidebar_state(false);
-                     }
-                  }}
-                  className={cn(buttonVariants({ variant: "ghost" }), "h-8 w-full justify-start md:text-sm text-base")}
-               >
-                  <Files className="size-5 md:size-4" />
-                  Library
-               </Link>
-            </div>
+            <Link
+               to="/doc/library"
+               onClick={() => {
+                  if (isMobile) {
+                     set_l_sidebar_state(false);
+                  }
+               }}
+               className={cn(buttonVariants({ variant: "ghost" }), "h-8 w-full justify-start md:text-sm text-base")}
+            >
+               <Files className="size-5 md:size-4" />
+               Library
+            </Link>
             {/* AI Chat Button */}
-            <div className="">
-               <button
-                  type="button"
-                  onMouseEnter={() => sparklesRef.current?.startAnimation()}
-                  onMouseLeave={() => sparklesRef.current?.stopAnimation()}
-                  onClick={() => {
-                     Analytics.track("toggle_AI_Assistant");
-                     if (isMobile) {
-                        set_l_sidebar_state(false);
-                     }
-                     set_ir_sidebar_state(!ir_sidebar_state);
-                  }}
-                  className={cn(buttonVariants({ variant: "ghost" }), " px-3 h-8 w-full justify-start md:text-sm text-base")}
-               >
-                  <SparklesIcon ref={sparklesRef} className="p-0" svgClassName="!size-5 md:!size-4" />
-                  AI Chat
-               </button>
-            </div>
-            <SidebarMenu className="gap-0.5">{/* <NavMain items={navMainWithActive} onSettingsClick={openModal} /> */}</SidebarMenu>
+            <button
+               type="button"
+               onMouseEnter={() => sparklesRef.current?.startAnimation()}
+               onMouseLeave={() => sparklesRef.current?.stopAnimation()}
+               onClick={() => {
+                  Analytics.track("toggle_AI_Assistant");
+                  if (isMobile) {
+                     set_l_sidebar_state(false);
+                  }
+                  set_ir_sidebar_state(!ir_sidebar_state);
+               }}
+               className={cn(buttonVariants({ variant: "ghost" }), " px-3 h-8 w-full justify-start md:text-sm text-base")}
+            >
+               <SparklesIcon ref={sparklesRef} className="p-0" svgClassName="!size-5 md:!size-4" />
+               AI Chat
+            </button>
+            {/* <SidebarMenu className="gap-0.5"> <NavMain items={navMainWithActive} onSettingsClick={openModal} /> </SidebarMenu> */}
          </SidebarHeader>
 
          <SidebarContent ref={scrollContainerRef} className="scrollbar-hide">
