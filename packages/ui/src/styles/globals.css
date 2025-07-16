@@ -508,6 +508,12 @@ body {
    }
 }
 
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap");
+
+.font-lato {
+   font-family: "Lato", sans-serif;
+}
+
 @layer base {
    * {
       @apply border-border outline-ring/50;

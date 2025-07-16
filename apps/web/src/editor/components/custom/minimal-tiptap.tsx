@@ -36,6 +36,7 @@ import { ContentMenu } from "./content-menu";
 import { EditorMenuBar } from "./editor-menu-bar";
 import { TextBubbleMenu } from "./text-bubble-menu";
 import { isEqual } from "lodash-es";
+import { useDocumentSettings } from "@/store/document-settings-store";
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "onUpdate"> {
    value?: Content;
@@ -182,6 +183,7 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
       // Get user and workspaceId
       const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
       const { doc } = useCurrentDocument(user);
+      const defaultFont = useDocumentSettings((s) => s.defaultFont);
 
       const editor = useMinimalTiptapEditor({
          value,
@@ -361,7 +363,14 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
                      scrollbarColor: "var(--border) transparent",
                   }}
                   editor={editor}
-                  className={cn("minimal-tiptap-editor min-h-full", editorContentClassName)}
+                  className={cn(
+                     "minimal-tiptap-editor min-h-full",
+                     editorContentClassName,
+                     defaultFont === "sans" && "font-sans",
+                     defaultFont === "serif" && "font-serif",
+                     defaultFont === "mono" && "font-mono",
+                     defaultFont === "lato" && "font-lato"
+                  )}
                />
             </div>
 

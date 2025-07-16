@@ -23,6 +23,7 @@ import { Route as SettingsProvidersRouteImport } from './routes/settings/provide
 import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
 import { Route as SettingsModelsRouteImport } from './routes/settings/models'
 import { Route as SettingsInlineSuggestionsRouteImport } from './routes/settings/inline-suggestions'
+import { Route as SettingsDocumentRouteImport } from './routes/settings/document'
 import { Route as SettingsCustomizationRouteImport } from './routes/settings/customization'
 import { Route as SettingsAttachmentsRouteImport } from './routes/settings/attachments'
 import { Route as SettingsAppearanceRouteImport } from './routes/settings/appearance'
@@ -106,6 +107,11 @@ const SettingsInlineSuggestionsRoute =
     path: '/inline-suggestions',
     getParentRoute: () => SettingsRouteLazyRoute,
   } as any)
+const SettingsDocumentRoute = SettingsDocumentRouteImport.update({
+  id: '/document',
+  path: '/document',
+  getParentRoute: () => SettingsRouteLazyRoute,
+} as any)
 const SettingsCustomizationRoute = SettingsCustomizationRouteImport.update({
   id: '/customization',
   path: '/customization',
@@ -217,6 +223,7 @@ export interface FileRoutesByFullPath {
   '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/attachments': typeof SettingsAttachmentsRoute
   '/settings/customization': typeof SettingsCustomizationRoute
+  '/settings/document': typeof SettingsDocumentRoute
   '/settings/inline-suggestions': typeof SettingsInlineSuggestionsRoute
   '/settings/models': typeof SettingsModelsRoute
   '/settings/profile': typeof SettingsProfileRoute
@@ -240,6 +247,7 @@ export interface FileRoutesByTo {
   '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/attachments': typeof SettingsAttachmentsRoute
   '/settings/customization': typeof SettingsCustomizationRoute
+  '/settings/document': typeof SettingsDocumentRoute
   '/settings/inline-suggestions': typeof SettingsInlineSuggestionsRoute
   '/settings/models': typeof SettingsModelsRoute
   '/settings/profile': typeof SettingsProfileRoute
@@ -267,6 +275,7 @@ export interface FileRoutesById {
   '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/attachments': typeof SettingsAttachmentsRoute
   '/settings/customization': typeof SettingsCustomizationRoute
+  '/settings/document': typeof SettingsDocumentRoute
   '/settings/inline-suggestions': typeof SettingsInlineSuggestionsRoute
   '/settings/models': typeof SettingsModelsRoute
   '/settings/profile': typeof SettingsProfileRoute
@@ -292,6 +301,7 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/attachments'
     | '/settings/customization'
+    | '/settings/document'
     | '/settings/inline-suggestions'
     | '/settings/models'
     | '/settings/profile'
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/attachments'
     | '/settings/customization'
+    | '/settings/document'
     | '/settings/inline-suggestions'
     | '/settings/models'
     | '/settings/profile'
@@ -341,6 +352,7 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/attachments'
     | '/settings/customization'
+    | '/settings/document'
     | '/settings/inline-suggestions'
     | '/settings/models'
     | '/settings/profile'
@@ -513,6 +525,13 @@ declare module '@tanstack/react-router' {
       path: '/inline-suggestions'
       fullPath: '/settings/inline-suggestions'
       preLoaderRoute: typeof SettingsInlineSuggestionsRouteImport
+      parentRoute: typeof SettingsRouteLazyRoute
+    }
+    '/settings/document': {
+      id: '/settings/document'
+      path: '/document'
+      fullPath: '/settings/document'
+      preLoaderRoute: typeof SettingsDocumentRouteImport
       parentRoute: typeof SettingsRouteLazyRoute
     }
     '/settings/customization': {
@@ -703,6 +722,7 @@ interface SettingsRouteLazyRouteChildren {
   SettingsAppearanceRoute: typeof SettingsAppearanceRoute
   SettingsAttachmentsRoute: typeof SettingsAttachmentsRoute
   SettingsCustomizationRoute: typeof SettingsCustomizationRoute
+  SettingsDocumentRoute: typeof SettingsDocumentRoute
   SettingsInlineSuggestionsRoute: typeof SettingsInlineSuggestionsRoute
   SettingsModelsRoute: typeof SettingsModelsRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
@@ -716,6 +736,7 @@ const SettingsRouteLazyRouteChildren: SettingsRouteLazyRouteChildren = {
   SettingsAppearanceRoute: SettingsAppearanceRoute,
   SettingsAttachmentsRoute: SettingsAttachmentsRoute,
   SettingsCustomizationRoute: SettingsCustomizationRoute,
+  SettingsDocumentRoute: SettingsDocumentRoute,
   SettingsInlineSuggestionsRoute: SettingsInlineSuggestionsRoute,
   SettingsModelsRoute: SettingsModelsRoute,
   SettingsProfileRoute: SettingsProfileRoute,

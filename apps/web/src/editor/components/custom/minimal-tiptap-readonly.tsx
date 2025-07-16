@@ -6,6 +6,7 @@ import type { Content } from "@tiptap/react";
 import { EditorContent } from "@tiptap/react";
 import { useReadonlyTiptapEditor } from "../minimal-tiptap/hooks/use-readonly-tiptap";
 import { cn } from "@docsurf/ui/lib/utils";
+import { useDocumentSettings } from "@/store/document-settings-store";
 
 export interface MinimalTiptapReadonlyProps {
    value?: Content;
@@ -27,6 +28,7 @@ export const MinimalTiptapReadonly: React.FC<MinimalTiptapReadonlyProps> = ({
       shouldRerenderOnTransaction: false,
       editorClassName,
    });
+   const defaultFont = useDocumentSettings((s) => s.defaultFont);
 
    // Sync editor content if value changes (for public doc live updates), but only if different
    React.useEffect(() => {
@@ -42,7 +44,17 @@ export const MinimalTiptapReadonly: React.FC<MinimalTiptapReadonlyProps> = ({
 
    return (
       <div className={className}>
-         <EditorContent editor={editor} className={cn("minimal-tiptap-editor min-h-full", editorContentClassName)} />
+         <EditorContent
+            editor={editor}
+            className={cn(
+               "minimal-tiptap-editor min-h-full",
+               editorContentClassName,
+               defaultFont === "sans" && "font-sans",
+               defaultFont === "serif" && "font-serif",
+               defaultFont === "mono" && "font-mono",
+               defaultFont === "lato" && "font-lato"
+            )}
+         />
       </div>
    );
 };
