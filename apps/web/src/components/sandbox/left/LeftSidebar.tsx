@@ -188,38 +188,27 @@ export const LeftSidebar = ({
    }, [l_sidebar_state, set_l_sidebar_state]);
 
    return (
-      <Sidebar className="border-r bg-destructive" set_l_sidebar_state={set_l_sidebar_state}>
-         <SidebarHeader className="gap-3 md:gap-2">
+      <Sidebar className="border-r" set_l_sidebar_state={set_l_sidebar_state}>
+         <SidebarHeader className="gap-3 md:gap-1">
             <SidebarMenu className="flex items-center justify-between gap-1.5 flex-row">
                <div className="">
                   <NavUser />
                </div>
 
                <div className="group ml-auto">
-                  <Tooltip delayDuration={0} disableHoverableContent={!isMobile}>
-                     <TooltipTrigger asChild>
-                        <Button
-                           className={cn(
-                              "bg-transparent border-none opacity-0 group-hover:opacity-100 transition-all duration-200 outline-none cursor-pointer rounded-sm !p-2 text-sidebar -translate-x-[0.5px] group-hover:translate-x-0",
-                              isMobile && "opacity-100 mr-1"
-                           )}
-                           variant="ghost"
-                           onClick={() => {
-                              set_l_sidebar_state(false);
-                           }}
-                        >
-                           <ChevronsLeft className="size-4.5 transition-opacity text-text-default" />
-                        </Button>
-                     </TooltipTrigger>
-                     {!isMobile && (
-                        <TooltipContent sideOffset={7} side="right" className=" flex-row items-center hidden md:flex">
-                           <kbd className="pointer-events-none select-none items-center gap-1 rounded font-mono text-[10px] font-medium opacity-100 flex">
-                              <span className={cn(isMac ? "block" : "hidden")}>⌘</span>
-                              <span className={cn(!isMac ? "block" : "hidden")}>Ctrl</span>B
-                           </kbd>
-                        </TooltipContent>
+                  <Button
+                     size="sm"
+                     className={cn(
+                        "bg-transparent border-none opacity-0 group-hover:opacity-100 transition-all duration-200 outline-none cursor-pointer rounded-sm !p-2 text-sidebar -translate-x-[0.5px] group-hover:translate-x-0",
+                        isMobile && "opacity-100 mr-1"
                      )}
-                  </Tooltip>
+                     variant="ghost"
+                     onClick={() => {
+                        set_l_sidebar_state(false);
+                     }}
+                  >
+                     <ChevronsLeft className="size-4.5 transition-opacity text-text-default" />
+                  </Button>
                </div>
 
                <CreateMenu />
@@ -230,7 +219,7 @@ export const LeftSidebar = ({
                   setCommandKOpen(true);
                }}
                variant="outline"
-               className="h-10 md:h-8"
+               className="h-10 md:h-8 md:text-[13px] text-base my-1.5"
             >
                <Search className="size-5.5 md:size-4" />
                Search documents
@@ -251,7 +240,10 @@ export const LeftSidebar = ({
                activeProps={{
                   className: "text-muted-foreground",
                }}
-               className={cn(buttonVariants({ variant: "ghost" }), "h-8 w-full justify-start md:text-sm text-base")}
+               className={cn(
+                  buttonVariants({ variant: "ghost", size: "sm" }),
+                  " !px-2 !py-1 h-auto w-full justify-start md:text-[13px] text-base"
+               )}
             >
                <Files className="size-5 md:size-4" />
                Library
@@ -268,7 +260,10 @@ export const LeftSidebar = ({
                   }
                   set_ir_sidebar_state(!ir_sidebar_state);
                }}
-               className={cn(buttonVariants({ variant: "ghost" }), " px-3 h-8 w-full justify-start md:text-sm text-base")}
+               className={cn(
+                  buttonVariants({ variant: "ghost", size: "sm" }),
+                  " !px-2 !py-1 h-auto w-full justify-start md:text-[13px] text-base"
+               )}
             >
                <SparklesIcon ref={sparklesRef} className="p-0" svgClassName="!size-5 md:!size-4" />
                AI Chat
@@ -294,8 +289,8 @@ export const LeftSidebar = ({
                      </SidebarMenu>
                   </SidebarGroupContent>
                </SidebarGroup> */}
-               <SidebarGroup className="h-full">
-                  <SidebarGroupLabel className="pr-0 font-medium md:text-sm text-base">
+               <SidebarGroup className="h-full py-1.5">
+                  <SidebarGroupLabel className="h-6 pr-0 font-medium md:text-[13px] text-base">
                      <Link
                         to="/doc"
                         onClick={() => {
@@ -335,9 +330,9 @@ export const LeftSidebar = ({
 
          <SidebarFooter className="pt-0">
             <TrashPopover>
-               <Button variant="ghost" size="sm" aria-label="Open trash menu" className="justify-start">
-                  <span className="md:text-sm text-base">Trash</span>
+               <Button variant="ghost" size="sm" aria-label="Open trash menu" className="justify-start h-auto !px-2 !py-1.5">
                   <Trash2 className="size-5 md:size-4" />
+                  <span className="md:text-[13px] text-xs font-medium">Trash</span>
                </Button>
             </TrashPopover>
             <InfoCard

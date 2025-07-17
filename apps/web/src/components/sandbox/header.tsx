@@ -213,7 +213,7 @@ const HeaderContent = () => {
                                  ref={inputRef}
                                  onBlur={handleInputBlur}
                                  className={cn(
-                                    "relative max-w-[250px] font-medium truncate h-7 justify-start bg-muted/50 border-primary border rounded-sm px-2 py-1.5 text-left self-start",
+                                    "relative max-w-[250px] font-medium text-muted-foreground truncate h-7 justify-start bg-muted/50 border-primary border rounded-sm px-2 py-1.5 text-left self-start",
                                     "text-base", // 16px on all screens
                                     "sm:text-[13px]", // 13px on small and up
                                     isEvenLargerTitle && "w-[250px]",
@@ -231,7 +231,7 @@ const HeaderContent = () => {
                               <button
                                  type="button"
                                  className={cn(
-                                    "relative max-w-[250px] font-medium text-base md:text-[13px] truncate h-7 justify-start cursor-pointer bg-transparent border-none p-0 appearance-none text-left self-start",
+                                    "relative max-w-[250px] text-muted-foreground font-medium text-base md:text-[13px] truncate h-7 justify-start cursor-pointer bg-transparent border-none p-0 appearance-none text-left self-start",
                                     isEvenLargerTitle && "w-[250px]",
                                     isLargeTitle && !isEvenLargerTitle && "w-[180px]",
                                     isShortTitle && "w-[90px]",

@@ -133,10 +133,11 @@ export function CreateMenu({ parentId = null }: CreateMenuProps) {
                   <TooltipTrigger asChild>
                      <DropdownMenuTrigger asChild>
                         <Button
+                           size="sm"
                            type="button"
                            variant="ghost"
                            className={cn(
-                              "bg-transparent border-none outline-none cursor-pointer rounded-sm !p-2 text-text-default hover:text-brand transition-colors hover:bg-accent/ dark:hover:bg-accent/50",
+                              "bg-transparent border-none outline-none cursor-pointer rounded-sm !p-2 text-text-default hover:text-brand transition-colors hover:bg-accent dark:hover:bg-accent/50",
                               isPending && "opacity-50 cursor-not-allowed",
                               open && "bg-doc-brand"
                            )}

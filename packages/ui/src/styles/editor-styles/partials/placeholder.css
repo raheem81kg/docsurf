@@ -3,7 +3,7 @@
    content: attr(data-placeholder);
    @apply pointer-events-none float-left h-0;
    color: var(--color-muted-foreground) !important;
-   opacity: 0.5;
+   opacity: 0.25;
 }
 
 /* Display placeholders on every empty paragraph where cursor is positioned */
@@ -11,7 +11,7 @@
    content: attr(data-placeholder);
    @apply pointer-events-none float-left h-0;
    color: var(--color-muted-foreground) !important;
-   opacity: 0.5;
+   opacity: 0.25;
 }
 
 /* Hide placeholder when inline suggestion is present */

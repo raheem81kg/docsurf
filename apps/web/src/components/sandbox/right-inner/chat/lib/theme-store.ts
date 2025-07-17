@@ -181,7 +181,8 @@ export const DOCSURF_DEFAULT_THEME = {
             "accent-foreground": "oklch(0.2435 0 0)",
             destructive: "oklch(0.5523 0.1927 32.7272)",
             "destructive-foreground": "oklch(0.9934 0.0032 17.2118)",
-            border: "oklch(0.9037 0 0)",
+            // border: "oklch(0.9037 0 0)",
+            border: "oklch(0.9551 0 0)", // lighter border
             input: "oklch(0.9731 0 0)",
             ring: "oklch(0.7200 0 0)",
             "chart-1": "oklch(0.2300 0 0)",
@@ -189,13 +190,15 @@ export const DOCSURF_DEFAULT_THEME = {
             "chart-3": "oklch(0.6056 0.2189 292.7172)",
             "chart-4": "oklch(0.7686 0.1647 70.0804)",
             "chart-5": "oklch(0.6959 0.1491 162.4796)",
-            sidebar: "oklch(0.9911 0 0)",
+            // sidebar: "oklch(0.9911 0 0)",
+            sidebar: "oklch(0.9911 0 0)", // lighter sidebar
             "sidebar-foreground": "oklch(0.5452 0 0)",
             "sidebar-primary": "oklch(0.2300 0 0)",
             "sidebar-primary-foreground": "oklch(0.2626 0.0147 166.4589)",
             "sidebar-accent": "oklch(0.9461 0 0)",
             "sidebar-accent-foreground": "oklch(0.2435 0 0)",
-            "sidebar-border": "oklch(0.9037 0 0)",
+            // "sidebar-border": "oklch(0.9037 0 0)",
+            "sidebar-border": "oklch(0.9551 0 0)", // lighter border
             "sidebar-ring": "oklch(0.2300 0 0)",
             "font-sans": "Outfit, sans-serif",
             "font-serif": 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',

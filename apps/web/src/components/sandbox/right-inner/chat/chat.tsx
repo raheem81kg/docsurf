@@ -138,7 +138,7 @@ const ChatContent = ({ threadId: routeThreadId }: ChatProps) => {
       <div className="relative flex flex-col h-full overflow-hidden">
          <ChatHeader className="flex-none" />
          <Messages
-            className="flex-1"
+            className="flex-1 text-sm"
             messages={messages}
             onRetry={handleRetry}
             onEditAndRetry={handleEditAndRetry}
@@ -157,8 +157,8 @@ const ChatContent = ({ threadId: routeThreadId }: ChatProps) => {
                   transition={{ duration: 0.2, ease: "easeInOut" }}
                   className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
                >
-                  <div className="mb-6 size-16 rounded-full opacity-80">
-                     <img src="/logo-black.png" alt="DocSurf" className="dark:invert" width={58} height={58} />
+                  <div className="mb-4.5 size-16 rounded-full opacity-80 flex items-center justify-center">
+                     <img src="/logo-black.png" alt="DocSurf" className="dark:invert" width={50} height={50} />
                   </div>
                   <motion.div
                      initial={{ opacity: 0, y: 10 }}
@@ -166,7 +166,7 @@ const ChatContent = ({ threadId: routeThreadId }: ChatProps) => {
                      transition={{ duration: 0.2 }}
                      className="mb-8 text-center"
                   >
-                     <h1 className="px-4 font-medium text-2xl text-foreground">
+                     <h1 className="px-4 font-medium text-xl text-foreground">
                         {userName ? `What do you want to explore, ${userName?.split(" ")[0]}?` : "What do you want to explore?"}
                      </h1>
                   </motion.div>

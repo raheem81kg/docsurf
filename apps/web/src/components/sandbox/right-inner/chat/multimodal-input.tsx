@@ -97,7 +97,7 @@ const AspectRatioSelector = ({ selectedModel }: { selectedModel: string | null }
    return (
       <PromptInputAction tooltip="Select aspect ratio">
          <Select value={selectedImageSize} onValueChange={setSelectedImageSize}>
-            <SelectTrigger className="!h-8 w-auto min-w-[80px] border bg-secondary/70 font-normal text-xs backdrop-blur-lg hover:bg-secondary/80 sm:text-sm">
+            <SelectTrigger className="!h-7 w-auto min-w-[80px] border bg-secondary/70 font-normal text-xs backdrop-blur-lg hover:bg-secondary/80 sm:text-sm">
                <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -130,7 +130,7 @@ const ReasoningEffortSelector = ({ selectedModel }: { selectedModel: string | nu
    return (
       <PromptInputAction tooltip="Select reasoning effort">
          <Select value={reasoningEffort} onValueChange={setReasoningEffort}>
-            <SelectTrigger className="!h-8 w-auto gap-0.5 border-0 bg-secondary/70 px-1.5 font-normal text-xs backdrop-blur-lg transition-colors hover:bg-accent sm:text-sm">
+            <SelectTrigger className="!h-7 w-auto gap-0.5 border-0 bg-secondary/70 px-1.5 font-normal text-xs backdrop-blur-lg transition-colors hover:bg-accent sm:text-sm">
                <div className="hidden items-center gap-1.5 sm:flex">
                   <Brain className="size-4" />
                   <SelectValue />
@@ -738,7 +738,7 @@ export function MultimodalInput({
                                  variant="ghost"
                                  onClick={() => uploadInputRef.current?.click()}
                                  className={cn(
-                                    "flex size-8 cursor-pointer items-center justify-center gap-1 rounded-md bg-secondary/70 text-foreground backdrop-blur-lg hover:bg-secondary/80"
+                                    "flex size-7 cursor-pointer items-center justify-center gap-1 rounded-md bg-secondary/70 text-foreground backdrop-blur-lg hover:bg-secondary/80"
                                  )}
                               >
                                  <input
@@ -777,7 +777,7 @@ export function MultimodalInput({
                      <Button
                         variant="default"
                         size="icon"
-                        className="size-8 shrink-0 rounded-md"
+                        className="size-7 shrink-0 rounded-md"
                         disabled={status === "submitted" || uploading}
                         onClick={handleVoiceButtonClick}
                         type="submit"

@@ -399,7 +399,7 @@ export function SortableTree({ collapsible, indicator = false, indentationWidth 
                         scrollbarColor: "var(--border) transparent",
                      }}
                   >
-                     <div className="flex flex-col md:space-y-[1px] space-y-1.5">{flattenedItems.map(renderTreeItem)}</div>
+                     <div className="flex flex-col md:space-y-[1.5px] space-y-1.5">{flattenedItems.map(renderTreeItem)}</div>
                   </VList>
                </SortableContext>
                {CAN_USE_DOM &&

@@ -141,8 +141,8 @@ const BottomToolbar = ({
    <ScrollArea
       className={
          isBelowMobile
-            ? "shrink-0 overflow-x-auto border-t border-border p-2 min-h-12"
-            : "shrink-0 overflow-x-auto border-t border-border p-2"
+            ? "shrink-0 overflow-x-auto border-t border-border p-2 min-h-12 md:min-h-10"
+            : "shrink-0 overflow-x-auto border-t border-border p-1"
       }
       style={isBelowMobile ? { paddingBottom: "env(safe-area-inset-bottom)" } : undefined}
    >

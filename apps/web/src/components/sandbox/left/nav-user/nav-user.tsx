@@ -74,13 +74,13 @@ export function NavUser() {
                   size="lg"
                   className="data-[state=open]:bg-sidebar-accent h-10 md:h-8 dark:hover:bg-accent/50 hover:bg-accent cursor-pointer data-[state=open]:text-sidebar-accent-foreground"
                >
-                  <Avatar className="size-8 md:size-7 rounded-lg">
+                  <Avatar className="size-7 md:size-6 rounded-md">
                      {isLoading ? (
                         <Skeleton className="size-7 rounded-lg" />
                      ) : (
                         <>
                            <AvatarImage src={user.data?.image ?? ""} alt={user.data?.name ?? "User"} />
-                           <AvatarFallback className="rounded-lg bg-brand/5">{getInitials(user.data?.name ?? "")}</AvatarFallback>
+                           <AvatarFallback className=" rounded-lg bg-brand/5">{getInitials(user.data?.name ?? "")}</AvatarFallback>
                         </>
                      )}
                   </Avatar>
@@ -90,10 +90,10 @@ export function NavUser() {
                      ) : isError ? (
                         <span className="truncate font-semibold text-destructive">User not found</span>
                      ) : (
-                        <span className="truncate font-semibold">{user.data?.name}</span>
+                        <span className="truncate text-xs font-medium text-muted-foreground">{user.data?.name}</span>
                      )}
                   </div>
-                  <ChevronDown className="ml-auto size-3.5" />
+                  <ChevronDown className="ml-auto !size-3.5 text-muted-foreground" />
                </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent

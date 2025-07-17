@@ -248,11 +248,11 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
             <div className="flex items-center justify-between gap-2">
                <div className="flex items-center gap-2">
                   <Icon className="size-3.5 text-muted-foreground" />
-                  <span className="text-xs font-medium text-muted-foreground">{label}</span>
+                  <span className="text-[13px] md:text-xs font-medium text-muted-foreground">{label}</span>
                </div>
                {!isLoading ? (
                   <div className="flex items-center">
-                     <span className="text-xs font-medium text-muted-foreground">
+                     <span className="text-[13px] md:text-xs font-medium text-muted-foreground">
                         <NumberFlow value={usage ?? 0} /> of{" "}
                         <motion.span
                            className={cn(
@@ -280,7 +280,7 @@ const UsageRow = forwardRef<HTMLDivElement, UsageRowProps>(
                               exit={{ width: 0, opacity: 0 }}
                               transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
                            >
-                              <motion.span className="ml-1 whitespace-nowrap text-xs font-medium text-blue-500">
+                              <motion.span className="ml-1 whitespace-nowrap text-[13px] md:text-xs font-medium text-blue-500">
                                  {formatNumber(nextPlanLimit)}
                               </motion.span>
                            </motion.div>

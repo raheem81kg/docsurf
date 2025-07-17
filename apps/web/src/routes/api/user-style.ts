@@ -57,7 +57,7 @@ export const ServerRoute = createServerFileRoute("/api/user-style").methods({
             });
          }
 
-         const analysisPrompt = `You are a literary style analyst. Summarize the distinctive writing style of the author in 2-3 concise sentences, focusing on tone, vocabulary, sentence structure, and any notable quirks. Do not mention the author in third person; instead, describe the style directly (e.g., "Uses short, punchy sentences and casual slang."). Text to analyse is delimited by triple quotes.\n\n"""${sampleText}"""`;
+         const analysisPrompt = `You are a literary style analyst. Summarize the distinctive writing style of the author in 2-4 concise sentences, focusing on tone, vocabulary, sentence structure, and any notable quirks. Do not mention the author in third person; instead, describe the style directly (e.g., "Uses short, punchy sentences and casual slang."). Text to analyse is delimited by triple quotes.\n\n"""${sampleText}"""`;
 
          const google = createGoogleGenerativeAI({
             apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY!,

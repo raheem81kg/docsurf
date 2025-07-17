@@ -243,7 +243,7 @@ export const TreeItem = memo(
          const clickableContent = (
             <div
                className={cn(
-                  "group/item relative flex items-center h-7.5 rounded-sm  hover:bg-accent dark:hover:bg-accent/70 hover:text-muted-foreground cursor-pointer",
+                  "group/item relative flex items-center py-1 rounded-sm  hover:bg-accent dark:hover:bg-accent/70 hover:text-muted-foreground cursor-pointer",
                   isActive && !ghost && "bg-accent dark:bg-accent/70 text-muted-foreground",
                   clone ? "shadow-lg bg-white border border-gray-200 w-fit min-w-[200px]" : "w-full",
                   "transition-all duration-160 ease-in-out",
@@ -328,7 +328,7 @@ export const TreeItem = memo(
                            <PopoverTrigger asChild onClick={(e) => e.preventDefault()}>
                               <span
                                  className={cn(
-                                    "ml-2 truncate select-none md:text-sm text-base font-medium",
+                                    "ml-2 truncate select-none md:text-[13px] text-base font-medium",
                                     clone || ghost ? "text-gray-500" : undefined,
                                     !isMobile && "group-hover/item:pr-14"
                                  )}

@@ -223,7 +223,7 @@ function DocumentComponent() {
             value={editorValue}
             debounceDelay={2000}
             className={cn("")}
-            editorContentClassName=""
+            editorContentClassName="max-w-[54rem] w-full mx-auto px-8"
             enableVersionTracking={true}
             registerInStore={true}
             output="json"
@@ -236,7 +236,7 @@ function DocumentComponent() {
                   : "Start writing, or press Ctrl+Space for AI autocomplete..."
             }
             editable={!isUserLoading && !!user}
-            editorClassName="focus:outline-none md:px-12 px-8 py-4 min-h-full"
+            editorClassName="focus:outline-none py-8 min-h-full "
          />
       </div>
       // </div>
