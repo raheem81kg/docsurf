@@ -336,7 +336,7 @@ export const LeftSidebar = ({
                </Button>
             </TrashPopover>
             <InfoCard
-               className="bg-background z-10"
+               className="bg-[#f9f9f9] dark:bg-background z-10"
                storageKey="docsurf-beta-announcement"
                dismissType="forever"
                forceDismiss={infoCardDismissed}
@@ -346,7 +346,7 @@ export const LeftSidebar = ({
                   <div className="relative">
                      <div className="absolute -top-4 -right-4 w-[14px] h-[14px] bg-primary rounded-full animate-ping" />
                      <div className="absolute -top-4 -right-4 w-[14px] h-[14px] bg-primary rounded-full" />
-                     <InfoCardTitle className="text-primary">DocSurf is now in beta</InfoCardTitle>
+                     <InfoCardTitle className="text-muted-foreground">DocSurf is now in beta</InfoCardTitle>
                      <InfoCardDescription>We are currently in beta and we would love to hear from you.</InfoCardDescription>
                      <InfoCardFooter>
                         <InfoCardDismiss>Dismiss</InfoCardDismiss>

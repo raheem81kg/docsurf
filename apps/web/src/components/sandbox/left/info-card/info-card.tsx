@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
 import { useState, useRef, useEffect, createContext, useContext, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@docsurf/ui/lib/utils";
