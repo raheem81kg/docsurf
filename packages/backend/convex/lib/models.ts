@@ -193,7 +193,7 @@ export const MODELS_SHARED: SharedModel[] = [
       id: "gemini-2.5-pro",
       name: "Gemini 2.5 Pro",
       shortName: "2.5 Pro",
-      adapters: ["google:gemini-2.5-pro", "openrouter:google/gemini-2.5-pro"],
+      adapters: ["i3-google:gemini-2.5-pro", "google:gemini-2.5-pro", "openrouter:google/gemini-2.5-pro"],
       abilities: ["reasoning", "vision", "function_calling", "pdf", "effort_control"],
       supportsDisablingReasoning: true,
       requiredPlanIfNoApiKey: "pro",

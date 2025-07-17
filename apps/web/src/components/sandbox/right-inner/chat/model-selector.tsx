@@ -21,6 +21,9 @@ import { useSession } from "@/hooks/auth-hooks";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 
+// Show only Pro-required disabled models in the unavailable section
+const SHOW_ONLY_PRO_REQUIRED_DISABLED = true;
+
 export const getProviderIcon = (model: DisplayModel, isCustom: boolean) => {
    if (isCustom) {
       return <Badge className="text-xs">Custom</Badge>;
@@ -64,9 +67,17 @@ interface ModelItemProps {
    onModelChange: (modelId: string) => void;
    onClose: () => void;
    isCustom?: boolean;
+   disabled?: boolean;
 }
 
-const ModelItem = React.memo(function ModelItem({ model, selectedModel, onModelChange, onClose, isCustom = false }: ModelItemProps) {
+const ModelItem = React.memo(function ModelItem({
+   model,
+   selectedModel,
+   onModelChange,
+   onClose,
+   isCustom = false,
+   disabled = false,
+}: ModelItemProps) {
    const abilityRenderer = (ability: string, className: string) => {
       switch (ability) {
          case "reasoning":
@@ -108,14 +119,38 @@ const ModelItem = React.memo(function ModelItem({ model, selectedModel, onModelC
       }
    };
 
-   return (
+   const getUnavailableReason = () => {
+      if (!disabled) return null;
+
+      const sharedModel = model as SharedModel;
+      if (sharedModel.requiredPlanIfNoApiKey === "pro") {
+         return "Requires Pro subscription";
+      }
+
+      if ("isCustom" in model) {
+         return "Provider not configured";
+      }
+
+      return "Provider not configured";
+   };
+
+   const unavailableReason = getUnavailableReason();
+
+   const commandItem = (
       <CommandItem
          key={model.id}
          onSelect={() => {
-            onModelChange(model.id);
-            onClose();
+            if (!disabled) {
+               onModelChange(model.id);
+               onClose();
+            }
          }}
-         className={cn("flex items-center gap-2", model.id === selectedModel && "bg-accent/50 text-accent-foreground")}
+         className={cn(
+            "flex items-center gap-2",
+            model.id === selectedModel && "bg-accent/50 text-accent-foreground",
+            disabled && "opacity-50 cursor-not-allowed"
+         )}
+         disabled={disabled}
       >
          {getProviderIcon(model, isCustom)}
          <span className="flex items-center gap-2">
@@ -132,6 +167,21 @@ const ModelItem = React.memo(function ModelItem({ model, selectedModel, onModelC
          </div>
       </CommandItem>
    );
+
+   if (disabled && unavailableReason) {
+      return (
+         <Tooltip>
+            <TooltipTrigger>
+               <div className="w-full">{commandItem}</div>
+            </TooltipTrigger>
+            <TooltipContent>
+               <p>{unavailableReason}</p>
+            </TooltipContent>
+         </Tooltip>
+      );
+   }
+
+   return commandItem;
 });
 
 export function ModelSelector({
@@ -159,7 +209,7 @@ export function ModelSelector({
       },
       session?.user?.id && !auth.isLoading ? {} : "skip"
    );
-   const { availableModels } = useAvailableModels(
+   const { availableModels, unavailableModels } = useAvailableModels(
       "error" in userSettings ? DefaultSettings(session?.user?.id ?? "") : userSettings,
       hasPro
    );
@@ -167,7 +217,7 @@ export function ModelSelector({
    const [open, setOpen] = React.useState(false);
 
    // Memoize expensive computations to avoid repeating them on every render
-   const { selectedModelData, customModels, groupedSharedModels } = React.useMemo(() => {
+   const { selectedModelData, customModels, groupedSharedModels, groupedUnavailableModels } = React.useMemo(() => {
       // Find the model currently selected by the user
       const selectedModelData = availableModels.find((model) => model.id === selectedModel);
 
@@ -190,8 +240,41 @@ export function ModelSelector({
          }, {})
       );
 
-      return { selectedModelData, customModels, groupedSharedModels };
-   }, [availableModels, selectedModel]);
+      // Group unavailable models by provider
+      const groupedUnavailableModels = Object.entries(
+         unavailableModels
+            .filter((model) => {
+               if (!SHOW_ONLY_PRO_REQUIRED_DISABLED) return true;
+
+               // Only show models that require Pro subscription
+               if ("isCustom" in model) return false; // Custom models don't have Pro requirements
+
+               const sharedModel = model as SharedModel;
+               return sharedModel.requiredPlanIfNoApiKey === "pro";
+            })
+            .reduce<Record<string, DisplayModel[]>>((acc, model) => {
+               if ("isCustom" in model) {
+                  const providerKey = "Custom";
+                  if (!acc[providerKey]) {
+                     acc[providerKey] = [];
+                  }
+                  acc[providerKey].push(model);
+               } else {
+                  const sharedModel = model as SharedModel;
+                  const provider = sharedModel.adapters?.[0]?.split(":")[0] || "unknown";
+                  const providerKey = provider.startsWith("i3-") ? "Built-in" : provider;
+
+                  if (!acc[providerKey]) {
+                     acc[providerKey] = [];
+                  }
+                  acc[providerKey].push(model);
+               }
+               return acc;
+            }, {})
+      );
+
+      return { selectedModelData, customModels, groupedSharedModels, groupedUnavailableModels };
+   }, [availableModels, unavailableModels, selectedModel]);
 
    const isMobile = useIsMobile();
 
@@ -291,6 +374,35 @@ export function ModelSelector({
                               />
                            ))}
                         </CommandGroup>
+                     )}
+                     {groupedUnavailableModels.length > 0 && (
+                        <>
+                           <div className="h-px bg-border my-2" />
+                           {groupedUnavailableModels.map(([providerKey, providerModels]) => (
+                              <CommandGroup
+                                 key={`unavailable-${providerKey}`}
+                                 heading={
+                                    providerKey === "Built-in"
+                                       ? "Unavailable Built-in Models"
+                                       : providerKey === "Custom"
+                                       ? "Unavailable Custom Models"
+                                       : `Unavailable ${providerKey} Models`
+                                 }
+                              >
+                                 {providerModels.map((model) => (
+                                    <ModelItem
+                                       key={model.id}
+                                       model={model}
+                                       selectedModel={selectedModel}
+                                       onModelChange={onModelChange}
+                                       onClose={() => setOpen(false)}
+                                       isCustom={"isCustom" in model && model.isCustom}
+                                       disabled={true}
+                                    />
+                                 ))}
+                              </CommandGroup>
+                           ))}
+                        </>
                      )}
                   </ScrollArea>
                </CommandList>
