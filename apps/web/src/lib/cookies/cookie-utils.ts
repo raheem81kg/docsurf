@@ -35,7 +35,7 @@ class CookieUtils {
       if (options.sameSite) cookieOptions.push(`samesite=${options.sameSite}`);
       if (options.expires) cookieOptions.push(`expires=${options.expires.toUTCString()}`);
 
-      document.cookie = `${cookieString}${cookieOptions.length ? "; " + cookieOptions.join("; ") : ""}`;
+      document.cookie = `${cookieString}${cookieOptions.length ? `; ${cookieOptions.join("; ")}` : ""}`;
    }
 
    static getCookie(name: string): string | null {
@@ -61,16 +61,13 @@ class CookieUtils {
    }
 
    static getAllCookies(): { [key: string]: string } {
-      return document.cookie.split(";").reduce(
-         (acc, cookie) => {
-            const [name, value] = cookie.split("=").map((c) => c.trim());
-            if (name && value) {
-               acc[name] = decodeURIComponent(value);
-            }
-            return acc;
-         },
-         {} as { [key: string]: string }
-      );
+      return document.cookie.split(";").reduce((acc, cookie) => {
+         const [name, value] = cookie.split("=").map((c) => c.trim());
+         if (name && value) {
+            acc[name] = decodeURIComponent(value);
+         }
+         return acc;
+      }, {} as { [key: string]: string });
    }
 
    static removeAllCookiesByCategory(category: CookieCategory) {

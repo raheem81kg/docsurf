@@ -16,6 +16,7 @@ import { MinimalTiptapReadonly } from "@/editor/components/custom/minimal-tiptap
 import { api as convexApi } from "@docsurf/backend/convex/_generated/api";
 import { useMutation } from "convex/react";
 import React from "react";
+import { cn } from "@docsurf/ui/lib/utils";
 
 export const Route = createLazyFileRoute("/_p/p/$documentId")({
    component: PublicDocumentComponent,
@@ -27,6 +28,7 @@ function PublicDocumentComponent() {
    const { documentId } = Route.useParams();
    const { data: session } = useSession();
    const navigate = useNavigate();
+   const isMobile = useIsMobile();
 
    // Cache public document for 5 minutes to avoid refetching
    const { data: doc, isLoading } = useQuery({
@@ -110,8 +112,7 @@ function PublicDocumentComponent() {
    }
 
    // Add a bottom toolbar placeholder for shared doc page, matching MinimalTiptap
-   const SharedDocBottomToolbar = () => {
-      const isMobile = useIsMobile();
+   const SharedDocBottomToolbar = ({ isMobile }: { isMobile: boolean }) => {
       return (
          <div
             className="z-10 sticky bottom-0 bg-background border-t border-border min-h-[40px] flex items-center justify-end"
@@ -173,20 +174,22 @@ function PublicDocumentComponent() {
    };
 
    return (
-      <div className="relative h-full flex flex-col min-h-0 bg-background">
+      <div className="relative h-full">
          <div className="flex flex-col h-full min-h-0">
-            <div className="flex-1 min-h-0 flex flex-col h-full">
+            <div className="flex-1 min-h-0 overflow-auto flex flex-col h-full">
                <Suspense fallback={<Skeleton className="mb-4 h-8 w-full animate-pulse" />}>
                   <MinimalTiptapReadonly
                      value={content}
-                     editorContentClassName=""
-                     className="flex-1 min-h-0 flex flex-col h-full"
-                     editorClassName="focus:outline-none md:px-14 px-4 pb-8 pt-6 min-h-full"
+                     editorContentClassName="max-w-[54rem] w-full mx-auto px-8"
+                     className=""
+                     editorClassName="focus:outline-none py-8 min-h-full"
                   />
                </Suspense>
             </div>
-            {/* Show fork toolbar if public */}
-            {doc.isPublic ? <ForkPublicDocToolbar /> : <SharedDocBottomToolbar />}
+            {/* Show fork toolbar if public - positioned at bottom like MinimalTiptap */}
+            <div className="z-10 sticky bottom-0" style={isMobile ? { paddingBottom: "env(safe-area-inset-bottom)" } : undefined}>
+               {doc.isPublic ? <ForkPublicDocToolbar /> : <SharedDocBottomToolbar isMobile={isMobile} />}
+            </div>
          </div>
       </div>
    );

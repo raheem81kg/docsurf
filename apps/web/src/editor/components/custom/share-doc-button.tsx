@@ -10,16 +10,26 @@ import React from "react";
 import { copyToClipboard } from "@/components/sandbox/right-inner/chat/lib/utils";
 import { ActionButton } from "../minimal-tiptap/extensions/image/components/image-actions";
 import { convexQuery } from "@convex-dev/react-query";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useCurrentDocument } from "@/components/sandbox/left/_tree_components/SortableTree";
 import { useSession } from "@/hooks/auth-hooks";
 import { Analytics } from "@/components/providers/posthog";
 
-export function ShareDocButton() {
-   const [isOpen, setIsOpen] = React.useState(false);
+interface ShareDocButtonProps {
+   open?: boolean;
+   onOpenChange?: (open: boolean) => void;
+   trigger?: React.ReactNode;
+}
+
+export function ShareDocButton({ open, onOpenChange, trigger }: ShareDocButtonProps) {
+   const [internalOpen, setInternalOpen] = React.useState(false);
    const [isSharing, setIsSharing] = React.useState(false);
    const [copied, setCopied] = React.useState(false);
    const [isUnsharing, setIsUnsharing] = React.useState(false);
+
+   // Use external control if provided, otherwise use internal state
+   const isOpen = open !== undefined ? open : internalOpen;
+   const setIsOpen = onOpenChange || setInternalOpen;
 
    const toggleDocumentPublic = useMutation(api.documents.toggleDocumentPublic);
    const { data: session, isPending: sessionLoading } = useSession();
@@ -32,7 +42,6 @@ export function ShareDocButton() {
    const currentDocument = useCurrentDocument(user);
    const isPublic = !!currentDocument?.doc?.isPublic;
    const shareUrl = isPublic && currentDocument?.doc?._id ? `${window.location.origin}/p/${currentDocument?.doc?._id}` : null;
-   const queryClient = useQueryClient();
 
    const handleShare = async () => {
       if (isPublic) return; // Already shared
@@ -55,9 +64,6 @@ export function ShareDocButton() {
                userEmail: session?.user?.email,
             });
          }
-
-         // Invalidate the current document query to refetch state
-         queryClient.invalidateQueries();
       } catch (error) {
          console.error("Error sharing thread:", error);
       } finally {
@@ -85,8 +91,6 @@ export function ShareDocButton() {
             console.error("Failed to unshare thread:", result.error);
             return;
          }
-         // Invalidate the current document query to refetch state
-         queryClient.invalidateQueries();
       } catch (error) {
          console.error("Error unsharing thread:", error);
       } finally {
@@ -106,9 +110,11 @@ export function ShareDocButton() {
 
    return (
       <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-         <DialogTrigger asChild>
-            <ActionButton icon={<SendIcon className="h-4 w-4" />} tooltip="Publish Document" />
-         </DialogTrigger>
+         {!onOpenChange && (
+            <DialogTrigger asChild>
+               {trigger || <ActionButton icon={<SendIcon className="h-4 w-4" />} tooltip="Publish Document" />}
+            </DialogTrigger>
+         )}
          <DialogContent className="sm:max-w-md p-6 bg-background rounded-xl shadow-xl border border-border">
             <DialogHeader>
                <DialogTitle className="font-semibold text-foreground">Publish Document</DialogTitle>

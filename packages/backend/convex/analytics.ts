@@ -3,7 +3,7 @@ import { query } from "./_generated/server";
 import { internalQuery } from "./_generated/server";
 import { getUserIdentity } from "./lib/identity";
 import { MODELS_SHARED } from "./lib/models";
-import { Id } from "./_generated/dataModel";
+import type { Id } from "./_generated/dataModel";
 
 const getDaysSinceEpoch = (daysAgo: number) => Math.floor(Date.now() / (24 * 60 * 60 * 1000)) - daysAgo;
 

@@ -1,13 +1,9 @@
-import { type AuthFunctions, BetterAuth, convexAdapter, type PublicAuthFunctions } from "@convex-dev/better-auth";
-import { convex } from "@convex-dev/better-auth/plugins";
-import { getConvexAppUrl } from "@docsurf/utils/envs";
-import { betterAuth } from "better-auth";
-import { emailOTP, twoFactor } from "better-auth/plugins";
+import { type AuthFunctions, BetterAuth, type PublicAuthFunctions } from "@convex-dev/better-auth";
 import { asyncMap } from "convex-helpers";
 import { api, components, internal } from "./_generated/api";
 import type { DataModel, Id, Doc } from "./_generated/dataModel";
-import { type GenericCtx, query } from "./_generated/server";
-import { sendSignInOTP, sendWelcomeEmail } from "./email";
+import { query } from "./_generated/server";
+
 import type { SafeSubscription } from "./subscriptions";
 import gettingStartedContent from "./getting_started.json";
 import type { CurrentUser } from "./users";
@@ -21,81 +17,6 @@ export const betterAuthComponent = new BetterAuth(components.betterAuth, {
    publicAuthFunctions,
    verbose: false,
 });
-
-// Default to localhost:3001 in development, but allow override via environment variable
-// const getSiteUrl = () => {
-//    // const envUrl = process.env.SITE_URL;
-//    // if (envUrl) return envUrl;
-
-//    // Default for local development
-//    return "http://localhost:3001";
-// };
-
-export const createAuth = (ctx: GenericCtx) =>
-   betterAuth({
-      baseURL: getConvexAppUrl(),
-      database: convexAdapter(ctx, betterAuthComponent),
-      account: {
-         accountLinking: {
-            enabled: true,
-         },
-      },
-      // emailVerification: {
-      //    sendVerificationEmail: async ({ user, url }) => {
-      //       await sendEmailVerification({
-      //          to: user.email,
-      //          url,
-      //       });
-      //    },
-      // },
-      emailAndPassword: {
-         enabled: false,
-      },
-      socialProviders: {
-         google: {
-            clientId: process.env.GOOGLE_CLIENT_ID as string,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-         },
-      },
-      user: {
-         deleteUser: {
-            enabled: true,
-         },
-      },
-      plugins: [
-         // magicLink({
-         //    sendMagicLink: async ({ email, url }) => {
-         //       if (process.env.NODE_ENV === "development") {
-         //          console.log("Magic link sent to", email, "with url", url);
-         //          return;
-         //       }
-         //       await sendMagicLink({
-         //          to: email,
-         //          url,
-         //       });
-         //    },
-         // }),
-         emailOTP({
-            otpLength: 6,
-            expiresIn: 10 * 60, // 10  mintutes
-            allowedAttempts: 3,
-            async sendVerificationOTP({ email, otp, type }) {
-               if (process.env.NODE_ENV === "development") {
-                  console.log("OTP verification email sent to", email, "with code", otp);
-                  // return;
-               }
-               if (type === "sign-in") {
-                  await sendSignInOTP({
-                     to: email,
-                     code: otp,
-                  });
-               }
-            },
-         }),
-         twoFactor(),
-         convex({ jwtExpirationSeconds: 60 * 60 * 24 * 7 }), // 7 days
-      ],
-   });
 
 export const { createUser, deleteUser, updateUser, createSession, isAuthenticated } =
    betterAuthComponent.createAuthFunctions<DataModel>({
@@ -169,6 +90,14 @@ export const { createUser, deleteUser, updateUser, createSession, isAuthenticate
             .collect();
          await asyncMap(todos, async (todo) => {
             await ctx.db.delete(todo._id);
+         });
+
+         const documents = await ctx.db
+            .query("documents")
+            .withIndex("byUser", (q) => q.eq("authorId", userId as Id<"users">))
+            .collect();
+         await asyncMap(documents, async (document) => {
+            await ctx.db.delete(document._id);
          });
 
          // Remove user from Resend audience before deleting from database

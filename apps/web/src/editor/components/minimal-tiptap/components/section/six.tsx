@@ -248,7 +248,7 @@ export const SectionSix: React.FC<SectionSixProps> = ({
             {/* Version History Dialog (controlled by ToolbarSection action) */}
             <VersionHistoryDialog open={openVersionHistoryDialog} setOpen={setOpenVersionHistoryDialog} />
             {/* Share Dialog (controlled by ToolbarSection action) */}
-            {/* <ShareDocButton /> Removed: now handled by ToolbarSection */}
+            <ShareDocButton open={openShareDialog} onOpenChange={setOpenShareDialog} />
             {/* Clear Editor */}
             {/* <ActionButton ... /> Removed: now handled by ToolbarSection */}
          </div>

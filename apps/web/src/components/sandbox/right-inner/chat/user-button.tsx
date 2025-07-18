@@ -82,12 +82,6 @@ export function UserButton() {
                <SettingsIcon className="h-4 w-4" />
                <span>Settings</span>
             </DropdownMenuItem>
-            {/* <DropdownMenuItem asChild>
-               <a href="https://docs.intern3.chat" target="_blank" rel="noopener noreferrer">
-                  <BookText className="h-4 w-4" />
-                  <span>Docs</span>
-               </a>
-            </DropdownMenuItem> */}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => router.navigate({ to: "/about" })}>
                <Users className="h-4 w-4" />

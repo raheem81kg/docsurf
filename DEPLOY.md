@@ -1,6 +1,6 @@
-Deployment
+Deployment (Outdated)
 Deploy to Vercel
-Step-by-step guide to deploy intern3.chat on Vercel
+Step-by-step guide to deploy docsurf.ai on Vercel
 
 Prerequisites
 Vercel account

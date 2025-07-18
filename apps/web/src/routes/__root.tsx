@@ -1,7 +1,5 @@
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
-import { fetchSession, getCookieName } from "@convex-dev/better-auth/react-start";
 import type { ConvexQueryClient } from "@convex-dev/react-query";
-import { createAuth } from "@docsurf/backend/convex/auth";
 import { Toaster } from "@/components/sonner";
 import appCss from "@docsurf/ui/globals.css?url";
 import type { QueryClient } from "@tanstack/react-query";
@@ -17,6 +15,7 @@ import { seo } from "@/utils/seo";
 import { ThemeScript } from "@/components/providers/theme-script";
 import { Analytics } from "@vercel/analytics/react";
 import { env } from "@/env";
+import { fetchSession, getCookieName } from "@/lib/server-auth-utils";
 import Loader from "@/components/loader";
 
 export interface RouterAppContext {
@@ -27,10 +26,10 @@ export interface RouterAppContext {
 
 // Server side session request
 export const fetchAuth = createServerFn({ method: "GET" }).handler(async () => {
-   const sessionCookieName = await getCookieName(createAuth);
+   const sessionCookieName = await getCookieName();
    const token = getCookie(sessionCookieName);
    const request = getWebRequest();
-   const { session } = await fetchSession(createAuth, request);
+   const { session } = await fetchSession(request);
    return {
       userId: session?.user.id,
       token,
@@ -38,7 +37,7 @@ export const fetchAuth = createServerFn({ method: "GET" }).handler(async () => {
 });
 
 export const fetchToken = createServerFn({ method: "GET" }).handler(async () => {
-   const sessionCookieName = await getCookieName(createAuth);
+   const sessionCookieName = await getCookieName();
    return getCookie(sessionCookieName);
 });
 

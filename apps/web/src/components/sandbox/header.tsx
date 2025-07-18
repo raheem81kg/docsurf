@@ -5,30 +5,21 @@ import { cn, isMac } from "@docsurf/ui/lib/utils";
 import React, { Suspense } from "react";
 import { Skeleton } from "@docsurf/ui/components/skeleton";
 import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
-import { buttonVariants } from "@docsurf/ui/components/button";
 import { VscLayoutSidebarLeft, VscLayoutSidebarRight, VscSettingsGear } from "react-icons/vsc";
 import { useSandStateStore } from "@/store/sandstate";
 import { useCurrentDocument } from "./left/_tree_components/SortableTree";
-import { Link, useLocation, useNavigate, useParams } from "@tanstack/react-router";
-import {
-   Breadcrumb,
-   BreadcrumbItem,
-   BreadcrumbLink,
-   BreadcrumbList,
-   BreadcrumbPage,
-   BreadcrumbSeparator,
-} from "@docsurf/ui/components/breadcrumb";
+import { useLocation, useParams } from "@tanstack/react-router";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from "@docsurf/ui/components/breadcrumb";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { useConvexTree } from "./left/_tree_components/use-convex-tree";
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
-import { Pencil } from "lucide-react";
 import { useMutation } from "convex/react";
 import { DEFAULT_TEXT_TITLE } from "@/utils/constants";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useSession } from "@/hooks/auth-hooks";
 import { Analytics } from "../providers/posthog";
+import { useModal } from "../providers/modal-provider";
 /**
  * Header component for the doc page, including breadcrumb, doc title (editable), and action buttons.
  * Shows a skeleton for the doc title while loading.
@@ -146,6 +137,7 @@ const HeaderContent = () => {
    const isShortTitle = title.length < 10;
    const isLargeTitle = title.length > 12;
    const isEvenLargerTitle = title.length > 18;
+
    return (
       <header className="sticky top-0 flex h-[40px] shrink-0 items-center gap-2 border-b px-3">
          <Tooltip delayDuration={0} disableHoverableContent={!isMobile}>

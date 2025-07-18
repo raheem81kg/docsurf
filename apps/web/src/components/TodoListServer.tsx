@@ -2,7 +2,7 @@ import { getCookieName } from "@convex-dev/better-auth/react-start";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
-import { createAuth } from "@docsurf/backend/convex/auth";
+import { createAuth } from "@docsurf/backend/convex/auth_create";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import { getCookie } from "@tanstack/react-start/server";

@@ -37,6 +37,7 @@ import { EditorMenuBar } from "./editor-menu-bar";
 import { TextBubbleMenu } from "./text-bubble-menu";
 import { isEqual } from "lodash-es";
 import { useDocumentSettings } from "@/store/document-settings-store";
+import FloatingMenu from "@/components/hyperaide/floating-menu";
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "onUpdate"> {
    value?: Content;
@@ -377,6 +378,7 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
             {hasMenuBar && <EditorMenuBar editor={editor} />}
 
             {/* Wrap BubbleMenus in a div to avoid unmount errors (see https://github.com/ueberdosis/tiptap/issues/2658) */}
+            {/* <FloatingMenu /> */}
             <div>
                <TextBubbleMenu
                   editor={editor}

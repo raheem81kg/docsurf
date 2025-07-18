@@ -2,8 +2,8 @@ import { internalAction } from "../../_generated/server";
 import { ConvexError } from "convex/values";
 import { v } from "convex/values";
 import { Resend } from "resend";
-import { sendWelcomeEmail, sendGetStartedEmail } from "../../email";
 import { internal } from "../../_generated/api";
+import { sendWelcomeEmail, sendGetStartedEmail } from "../../email";
 
 /**
  * Scheduled task to send welcome email to a new user.
@@ -43,9 +43,9 @@ export const sendWelcomeEmailTask = internalAction({
          }
       }
 
-      // Send welcome email
+      // Send welcome email using regular email function
       try {
-         await sendWelcomeEmail({
+         await sendWelcomeEmail(ctx, {
             to: user.email,
             fullName: user.name,
          });
@@ -79,9 +79,9 @@ export const sendGetStartedEmailTask = internalAction({
          });
       }
 
-      // Send get started email
+      // Send get started email using regular email function
       try {
-         await sendGetStartedEmail({
+         await sendGetStartedEmail(ctx, {
             to: user.email,
             fullName: user.name,
          });

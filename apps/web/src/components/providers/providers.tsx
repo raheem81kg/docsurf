@@ -6,6 +6,7 @@ import { ThemeProvider } from "./theme-provider";
 import { ClientOnly } from "@tanstack/react-router";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache";
 import { HotkeysProvider } from "react-hotkeys-hook";
+// import { ModalProvider } from "./modal-provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
    return (
@@ -15,12 +16,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
                <ThemeProvider>
                   <PostHogProvider>
                      <CookiesProvider>
+                        {/* <ModalProvider> */}
                         {/* <CompliantCookieProvider> */}
                         {import.meta.env.NODE_ENV === "development" ? (
                            <TooltipProvider delayDuration={300}>{children}</TooltipProvider>
                         ) : (
                            <TooltipProvider delayDuration={300}>{children}</TooltipProvider>
                         )}
+                        {/* </ModalProvider> */}
                         {/* </CompliantCookieProvider> */}
                      </CookiesProvider>
                   </PostHogProvider>

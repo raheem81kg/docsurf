@@ -71,7 +71,7 @@ export async function fetchThemeFromUrl(url: string): Promise<FetchedTheme> {
          name: "INTERN3",
          preset: { cssVars: INTERN3_DEFAULT_THEME.themeState.cssVars },
          url,
-         type: "custom",
+         type: "built-in",
       };
    }
    // Handle local DOCSURF theme
@@ -80,7 +80,7 @@ export async function fetchThemeFromUrl(url: string): Promise<FetchedTheme> {
          name: "Docsurf",
          preset: { cssVars: DOCSURF_DEFAULT_THEME.themeState.cssVars },
          url,
-         type: "custom",
+         type: "built-in",
       };
    }
    const baseUrl = "https://tweakcn.com/r/themes/";

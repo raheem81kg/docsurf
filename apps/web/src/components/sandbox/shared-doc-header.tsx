@@ -1,31 +1,13 @@
-import { Separator } from "@docsurf/ui/components/separator";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@docsurf/ui/components/tooltip";
 import { Button } from "@docsurf/ui/components/button";
-import { cn, isMac } from "@docsurf/ui/lib/utils";
-import React, { Suspense, useRef } from "react";
+import { cn } from "@docsurf/ui/lib/utils";
+import { Suspense } from "react";
 import { Skeleton } from "@docsurf/ui/components/skeleton";
-import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
-import { VscLayoutSidebarLeft, VscLayoutSidebarRight, VscSettingsGear } from "react-icons/vsc";
-import { useSandStateStore } from "@/store/sandstate";
-import { useCurrentDocument } from "./left/_tree_components/SortableTree";
-import { Link, useLocation, useNavigate, useParams } from "@tanstack/react-router";
-import {
-   Breadcrumb,
-   BreadcrumbItem,
-   BreadcrumbLink,
-   BreadcrumbList,
-   BreadcrumbPage,
-   BreadcrumbSeparator,
-} from "@docsurf/ui/components/breadcrumb";
+import { useNavigate, useParams } from "@tanstack/react-router";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList } from "@docsurf/ui/components/breadcrumb";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
-import { Pencil } from "lucide-react";
-import { useMutation } from "convex/react";
-import { DEFAULT_TEXT_TITLE } from "@/utils/constants";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useSession } from "@/hooks/auth-hooks";
-import { SparklesIcon, type SparklesIconHandle } from "@/components/assets/animated/sparkles";
 import { api } from "@docsurf/backend/convex/_generated/api";
 
 /**
@@ -33,7 +15,6 @@ import { api } from "@docsurf/backend/convex/_generated/api";
  * Shows a skeleton for the doc title while loading.
  */
 const SharedDocHeader = () => {
-   const isMobile = useIsMobile();
    const navigate = useNavigate();
    const params = useParams({ strict: false });
    const documentId = params?.documentId;
@@ -42,7 +23,6 @@ const SharedDocHeader = () => {
       enabled: !!documentId,
    });
    const session = useSession();
-   const sparklesRef = useRef<SparklesIconHandle>(null);
 
    const isShortTitle = doc?.title?.length && doc?.title?.length < 10;
    const isLargeTitle = doc?.title?.length && doc?.title?.length > 12;

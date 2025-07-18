@@ -385,7 +385,17 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
 function ThemeSelector() {
    const { themeState, filteredThemes, handleThemeSelect, toggleMode, selectedThemeUrl } = useThemeManagement();
 
-   const popularThemes = filteredThemes.filter((theme) => theme.type === "built-in").slice(0, 6);
+   const builtInThemes = filteredThemes.filter((theme) => theme.type === "built-in");
+
+   // Prioritize DOCSURF theme to be first, then take the first 6 themes
+   const popularThemes = builtInThemes
+      .sort((a, b) => {
+         // Put DOCSURF theme first
+         if (a.url === "local:docsurf-default-theme") return -1;
+         if (b.url === "local:docsurf-default-theme") return 1;
+         return 0;
+      })
+      .slice(0, 6);
 
    return (
       <div className="w-full max-w-md space-y-4">

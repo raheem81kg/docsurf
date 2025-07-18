@@ -59,7 +59,8 @@ export function OTPSignIn({ className }: Props) {
          {
             onSuccess: async () => {
                setCookie(COOKIES.PreferredSignInProvider, "otp");
-               await navigate({ to: "/doc" });
+               // Reload the document to ensure the session is properly updated
+               await navigate({ to: "/doc", reloadDocument: true });
             },
             onError: (err) => {
                showToast("Invalid verification code. Please try again.", "error");
