@@ -211,8 +211,8 @@ function RouteComponent() {
                      </AccordionTrigger>
                      <AccordionContent>
                         Sure, we're happy to answer any questions you might have. Just send us an email at{" "}
-                        <a href="mailto:support@docsurf.com" className="underline">
-                           support@docsurf.com
+                        <a href="mailto:support@docsurf.ai" className="underline">
+                           support@docsurf.ai
                         </a>{" "}
                         and we'll get back to you as soon as possible.
                      </AccordionContent>

@@ -45,7 +45,7 @@ function RouteComponent() {
             <h2 className="mt-4 scroll-m-20 border-b pb-2 font-semibold text-xl tracking-tight first:mt-0">Contact</h2>
             <p className="mt-6 leading-7">Want to learn more about DocSurf? Get in touch:</p>
             <ul>
-               <li>By email: support@docsurf.com</li>
+               <li>By email: support@docsurf.ai</li>
             </ul>
          </div>
       </div>

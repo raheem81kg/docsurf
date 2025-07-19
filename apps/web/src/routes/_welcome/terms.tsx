@@ -138,7 +138,7 @@ function RouteComponent() {
             <p className="mt-8 leading-7">
                If you are a copyright owner, or authorized on behalf of one, and you believe that the copyrighted work has been copied
                in a way that constitutes copyright infringement that is taking place through the Service, you must submit your notice
-               in writing to the attention of "Copyright Infringement" of support@docsurf.com and include in your notice a detailed
+               in writing to the attention of "Copyright Infringement" of support@docsurf.ai and include in your notice a detailed
                description of the alleged Infringement.
             </p>
 
@@ -241,7 +241,7 @@ function RouteComponent() {
 
             <h2>Contact Us</h2>
 
-            <p className="mt-8 leading-7">If you have any questions about these Terms, please contact us at support@docsurf.com.</p>
+            <p className="mt-8 leading-7">If you have any questions about these Terms, please contact us at support@docsurf.ai.</p>
          </div>
       </div>
    );

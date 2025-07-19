@@ -445,7 +445,7 @@ function RouteComponent() {
             <h2>Contact Us</h2>
             <p className="mt-8 leading-7">If you have any questions about this Privacy Policy, please contact us:</p>
             <ul>
-               <li>By email: support@docsurf.com</li>
+               <li>By email: support@docsurf.ai</li>
             </ul>
          </div>
       </div>
