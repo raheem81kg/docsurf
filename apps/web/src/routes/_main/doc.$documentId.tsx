@@ -152,6 +152,9 @@ export const Route = createFileRoute("/_main/doc/$documentId")({
 });
 
 function DocumentComponent() {
+   // const l_sidebar_state = useSandStateStore((s) => s.l_sidebar_state);
+   // const ir_sidebar_state = useSandStateStore((s) => s.ir_sidebar_state);
+   // const isBothSidebarsOpen = l_sidebar_state && ir_sidebar_state;
    const { data: session, isPending } = useSession();
    const { data: user, isLoading: isUserLoading } = useQuery({
       ...convexQuery(api.auth.getCurrentUser, {}),
@@ -232,8 +235,8 @@ function DocumentComponent() {
             }}
             placeholder={
                isMobileBreakPoint
-                  ? `Start writing..., or type "++" to get an AI suggestion`
-                  : "Start writing, or press Ctrl+Space for AI autocomplete..."
+                  ? `Start writing, or type "++" for AI autocomplete`
+                  : "Start writing, or hit Ctrl+Space for AI autocomplete"
             }
             editable={!isUserLoading && !!user}
             editorClassName="focus:outline-none py-8 min-h-full "

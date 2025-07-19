@@ -20,6 +20,7 @@ import { DEFAULT_TEXT_TITLE } from "@/utils/constants";
 import { useSession } from "@/hooks/auth-hooks";
 import { Analytics } from "../providers/posthog";
 import { useModal } from "../providers/modal-provider";
+import { MenuIcon, PanelLeftIcon, PanelRightIcon, PanelsTopLeftIcon } from "lucide-react";
 /**
  * Header component for the doc page, including breadcrumb, doc title (editable), and action buttons.
  * Shows a skeleton for the doc title while loading.
@@ -139,38 +140,38 @@ const HeaderContent = () => {
    const isEvenLargerTitle = title.length > 18;
 
    return (
-      <header className="sticky top-0 flex h-[40px] shrink-0 items-center gap-2 border-b px-3">
-         <Tooltip delayDuration={0} disableHoverableContent={!isMobile}>
-            <TooltipTrigger asChild>
-               <Button
-                  data-sidebar="trigger"
-                  data-slot="sidebar-trigger"
-                  variant="ghost"
-                  size="icon"
-                  className={cn(
-                     "size-7 text-primary cursor-pointer",
-                     "md:hidden", // Hide on desktop
-                     "flex items-center" // Ensure consistent layout
-                  )}
-                  onClick={() => {
-                     toggle_l_sidebar();
-                  }}
-                  onFocus={(e) => e.currentTarget.blur()}
-               >
-                  <VscLayoutSidebarLeft className="!h-4.5 !w-4.5 md:!h-[1.04rem] md:!w-[1.04rem] 2xl:!h-[1.063rem] 2xl:!w-[1.-63rem]" />
-                  <span className="sr-only">Toggle Sidebar</span>
-               </Button>
-            </TooltipTrigger>
-            {!isMobile && (
-               <TooltipContent sideOffset={7} side="right" className=" flex-row items-center hidden md:flex">
-                  <kbd className="pointer-events-none select-none items-center gap-1 rounded font-mono text-[10px] font-medium opacity-100 flex">
-                     <span className={cn(isMac ? "block" : "hidden")}>⌘</span>
-                     <span className={cn(!isMac ? "block" : "hidden")}>Ctrl</span>B
-                  </kbd>
-               </TooltipContent>
-            )}
-         </Tooltip>
-         <Separator orientation="vertical" className="mr-2 !h-4 md:hidden" />
+      <header className="sticky top-0 flex h-[40px] shrink-0 items-center gap-2 px-3">
+         {(!l_sidebar_state || isMobile) && (
+            <Tooltip delayDuration={0}>
+               <TooltipTrigger asChild>
+                  <Button
+                     data-sidebar="trigger"
+                     data-slot="sidebar-trigger"
+                     variant="ghost"
+                     size="icon"
+                     className={cn(
+                        "size-7 text-primary cursor-pointer mr-1 md:mr-0",
+                        "items-center" // Ensure consistent layout
+                     )}
+                     onClick={() => {
+                        toggle_l_sidebar();
+                     }}
+                     onFocus={(e) => e.currentTarget.blur()}
+                  >
+                     <PanelLeftIcon className="!h-4.5 !w-4.5 md:!h-[1.04rem] md:!w-[1.04rem] 2xl:!h-[1.063rem] 2xl:!w-[1.-63rem]" />
+                     <span className="sr-only">Toggle Left Sidebar</span>
+                  </Button>
+               </TooltipTrigger>
+               {!isMobile && (
+                  <TooltipContent side="bottom" className="flex-row items-center hidden md:flex">
+                     <kbd className="pointer-events-none select-none items-center gap-1 rounded font-mono text-[10px] font-medium opacity-100 flex">
+                        <span className={cn(isMac ? "block" : "hidden")}>⌘</span>
+                        <span className={cn(!isMac ? "block" : "hidden")}>Ctrl</span>B
+                     </kbd>
+                  </TooltipContent>
+               )}
+            </Tooltip>
+         )}
 
          <div className="flex-1 min-w-0 flex items-center gap-2">
             <Breadcrumb>
@@ -223,7 +224,7 @@ const HeaderContent = () => {
                               <button
                                  type="button"
                                  className={cn(
-                                    "relative max-w-[250px] text-muted-foreground font-medium text-base md:text-[13px] truncate h-7 justify-start cursor-pointer bg-transparent border-none p-0 appearance-none text-left self-start",
+                                    "relative max-w-[250px] text-muted-foreground font-medium text-base md:text-sm truncate h-7 justify-start cursor-pointer bg-transparent border-none p-0 appearance-none text-left self-start",
                                     isEvenLargerTitle && "w-[250px]",
                                     isLargeTitle && !isEvenLargerTitle && "w-[180px]",
                                     isShortTitle && "w-[90px]",
@@ -252,61 +253,32 @@ const HeaderContent = () => {
          </div>
 
          <div className="flex items-center md:gap-[0.1875rem] gap-[0.725rem] ml-auto">
-            <Tooltip delayDuration={0} disableHoverableContent={true}>
-               <TooltipTrigger asChild>
-                  <Button
-                     data-sidebar="trigger"
-                     data-slot="sidebar-trigger"
-                     variant="ghost"
-                     size="icon"
-                     className={cn(
-                        "size-7 text-primary cursor-pointer",
-                        "hidden md:flex", // Show only on desktop
-                        "items-center" // Ensure consistent layout
-                     )}
-                     onClick={() => {
-                        toggle_l_sidebar();
-                     }}
-                     onFocus={(e) => e.currentTarget.blur()}
-                  >
-                     <VscLayoutSidebarLeft className="!h-4.5 !w-4.5 md:!h-[1.04rem] md:!w-[1.04rem] 2xl:!h-[1.063rem] 2xl:!w-[1.-63rem]" />
-                     <span className="sr-only">Toggle Left Sidebar</span>
-                  </Button>
-               </TooltipTrigger>
-               {!isMobile && (
-                  <TooltipContent sideOffset={3} side="left" className="flex-row items-center hidden md:flex">
-                     <kbd className="pointer-events-none select-none items-center gap-1 rounded font-mono text-[10px] font-medium opacity-100 flex">
-                        <span className={cn(isMac ? "block" : "hidden")}>⌘</span>
-                        <span className={cn(!isMac ? "block" : "hidden")}>Ctrl</span>B
-                     </kbd>
+            {!ir_sidebar_state && (
+               <Tooltip delayDuration={0}>
+                  <TooltipTrigger asChild>
+                     <Button
+                        id="toggle-ir-sidebar"
+                        data-sidebar="trigger"
+                        data-slot="sidebar-trigger"
+                        variant="ghost"
+                        size="icon"
+                        // disabled={isUserNotSignedIn} //  !doc || doc?.isLocked || doc?.isDeleted || !isDocDetailPage (for now)
+                        className={cn("size-7 text-primary cursor-pointer")}
+                        onClick={() => {
+                           toggle_ir_sidebar();
+                           Analytics.track("toggle_AI_Assistant");
+                        }}
+                        onFocus={(e) => e.currentTarget.blur()}
+                     >
+                        <PanelRightIcon className="!h-4.5 !w-4.5 md:!h-[1.04rem] md:!w-[1.04rem] 2xl:!h-[1.063rem] 2xl:!w-[1.-63rem]" />
+                        <span className="sr-only">Toggle Inner Right Sidebar</span>
+                     </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="flex-row items-center hidden md:flex">
+                     Open Chat
                   </TooltipContent>
-               )}
-            </Tooltip>
-
-            <Tooltip delayDuration={0}>
-               <TooltipTrigger asChild>
-                  <Button
-                     id="toggle-ir-sidebar"
-                     data-sidebar="trigger"
-                     data-slot="sidebar-trigger"
-                     variant="ghost"
-                     size="icon"
-                     // disabled={isUserNotSignedIn} //  !doc || doc?.isLocked || doc?.isDeleted || !isDocDetailPage (for now)
-                     className={cn("size-7 text-primary cursor-pointer")}
-                     onClick={() => {
-                        toggle_ir_sidebar();
-                        Analytics.track("toggle_AI_Assistant");
-                     }}
-                     onFocus={(e) => e.currentTarget.blur()}
-                  >
-                     <VscLayoutSidebarRight className="!h-4.5 !w-4.5 md:!h-[1.04rem] md:!w-[1.04rem] 2xl:!h-[1.063rem] 2xl:!w-[1.-63rem]" />
-                     <span className="sr-only">Toggle Inner Right Sidebar</span>
-                  </Button>
-               </TooltipTrigger>
-               <TooltipContent side="bottom" className="flex-row items-center hidden md:flex">
-                  Open AI Assistant
-               </TooltipContent>
-            </Tooltip>
+               </Tooltip>
+            )}
          </div>
       </header>
    );

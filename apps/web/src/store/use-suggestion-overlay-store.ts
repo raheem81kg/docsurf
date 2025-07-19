@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { Editor } from "@tiptap/react";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
+import { useUIVisibilityStore } from "./use-ui-visibility-store";
 
 interface SuggestionOverlayState {
    isOpen: boolean;
@@ -42,9 +43,13 @@ export const useSuggestionOverlayStore = create<SuggestionOverlayState>((set, ge
          position: position || { x: window.innerWidth / 2 - 200, y: window.innerHeight / 3 },
          selectionRange: typeof from === "number" && typeof to === "number" ? { from, to } : null,
       });
+      // Hide text bubble menu when suggestion overlay is open
+      useUIVisibilityStore.getState().setAnyMenuOpen(true);
    },
    closeSuggestionOverlay: () => {
       set({ isOpen: false, selectedText: "", selectionRange: null });
+      // Show text bubble menu when suggestion overlay is closed
+      useUIVisibilityStore.getState().setAnyMenuOpen(false);
    },
    tryOpenSuggestionOverlayFromEditorSelection: (editor) => {
       if (!editor) {

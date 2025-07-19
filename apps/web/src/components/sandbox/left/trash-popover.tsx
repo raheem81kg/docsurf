@@ -200,7 +200,7 @@ function TrashedDocumentsList({
             </div>
          ) : (
             <>
-               <CommandEmpty className="text-base p-4 md:p-0 md:text-sm">No deleted documents found.</CommandEmpty>
+               <CommandEmpty className="text-base p-4 md:text-sm">No deleted documents found.</CommandEmpty>
                {results.length > 0 && (
                   <CommandGroup heading="Trashed Documents">
                      {results.map((doc: Document) => {

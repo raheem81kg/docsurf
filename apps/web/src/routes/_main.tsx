@@ -77,9 +77,9 @@ function MainLayoutComponent() {
                      <SuggestionOverlayRoot />
                   </div>
                   {/* sidebar 3 */}
-                  <WrapperInnerRightSidebar />
                </div>
             </SidebarInset>
+            <WrapperInnerRightSidebar />
          </div>
       </OnboardingProvider>
    );

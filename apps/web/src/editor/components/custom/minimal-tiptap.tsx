@@ -38,6 +38,7 @@ import { TextBubbleMenu } from "./text-bubble-menu";
 import { isEqual } from "lodash-es";
 import { useDocumentSettings } from "@/store/document-settings-store";
 import FloatingMenu from "@/components/hyperaide/floating-menu";
+import SectionSixNew from "../minimal-tiptap/components/section/bottom-toolbar/six-new";
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "onUpdate"> {
    value?: Content;
@@ -148,6 +149,35 @@ const BottomToolbar = ({
       style={isBelowMobile ? { paddingBottom: "env(safe-area-inset-bottom)" } : undefined}
    >
       <SectionSix
+         editor={editor}
+         docId={docId}
+         docTitle={docTitle}
+         characterLimit={characterLimit}
+         isDocLocked={isDocLocked}
+         toggleLock={toggleLock}
+      />
+      <ScrollBar orientation="horizontal" />
+   </ScrollArea>
+);
+
+const BottomToolbarNew = ({
+   editor,
+   docId,
+   docTitle,
+   characterLimit = MAX_CHARACTERS,
+   isDocLocked,
+   toggleLock,
+   isBelowMobile,
+}: BottomToolbarProps) => (
+   <ScrollArea
+      className={
+         isBelowMobile
+            ? "shrink-0 overflow-x-auto border-t border-border p-2 min-h-12 md:min-h-10"
+            : "shrink-0 overflow-x-auto border-t border-border p-1"
+      }
+      style={isBelowMobile ? { paddingBottom: "env(safe-area-inset-bottom)" } : undefined}
+   >
+      <SectionSixNew
          editor={editor}
          docId={docId}
          docTitle={docTitle}
@@ -347,7 +377,7 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
             <Deleted />
             <AnimatePresence>{showSearchReplace && <SearchAndReplaceToolbar editor={editor} />}</AnimatePresence>
             {/* Hide top toolbars if deleted or locked */}
-            {!(doc?.isDeleted || doc?.isLocked) && !isUserNotSignedIn && (
+            {/* {!(doc?.isDeleted || doc?.isLocked) && !isUserNotSignedIn && (
                <div className="sticky top-0 z-10 shrink-0 overflow-x-auto border-b border-border [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                   {isMobile ? (
                      <MobileTopToolbar editor={editor} isDocLocked={doc?.isLocked ?? false} />
@@ -355,7 +385,7 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
                      <TopToolbar editor={editor} isDocLocked={doc?.isLocked ?? false} />
                   )}
                </div>
-            )}
+            )} */}
 
             <div className="flex-1 min-h-0 overflow-auto flex flex-col h-full">
                <EditorContent
@@ -390,7 +420,7 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
                <TableBubbleMenu editor={editor} />
             </div>
             <div className="z-10 sticky bottom-0" style={isBelowMobile ? { paddingBottom: "env(safe-area-inset-bottom)" } : undefined}>
-               <BottomToolbar
+               <BottomToolbarNew
                   editor={editor}
                   docId={doc?._id ?? ""}
                   docTitle={doc?.title ?? ""}
@@ -399,6 +429,15 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
                   toggleLock={handleToggleLock}
                   isBelowMobile={isBelowMobile}
                />
+               {/* <BottomToolbar
+                  editor={editor}
+                  docId={doc?._id ?? ""}
+                  docTitle={doc?.title ?? ""}
+                  characterLimit={characterLimit}
+                  isDocLocked={doc?.isLocked ?? false}
+                  toggleLock={handleToggleLock}
+                  isBelowMobile={isBelowMobile}
+               /> */}
             </div>
          </div>
       );

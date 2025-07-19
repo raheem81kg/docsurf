@@ -12,6 +12,7 @@ import { cn } from "@docsurf/ui/lib/utils";
 import { DragHandle } from "../minimal-tiptap/extensions/custom/drag-handle/drag-handle";
 import { BaseButton } from "./ui/base-button";
 import { Divider } from "./ui/divider";
+import { useUIVisibilityStore } from "@/store/use-ui-visibility-store";
 
 export type ContentMenuProps = {
    editor: Editor;
@@ -24,6 +25,8 @@ export function ContentMenu(props: ContentMenuProps) {
    const [menuOpen, setMenuOpen] = useState(false);
    const [currentNode, setCurrentNode] = useState<Node | null>(null);
    const [currentNodePos, setCurrentNodePos] = useState<number>(-1);
+   const setContentMenuOpen = useUIVisibilityStore((state) => state.setContentMenuOpen);
+   const setAnyMenuOpen = useUIVisibilityStore((state) => state.setAnyMenuOpen);
 
    const handleNodeChange = useCallback(
       (data: { node: Node | null; editor: Editor; pos: number }) => {
@@ -47,12 +50,16 @@ export function ContentMenu(props: ContentMenuProps) {
          .run();
 
       setMenuOpen(false);
+      setContentMenuOpen(false);
+      setAnyMenuOpen(false);
    }
 
    function deleteCurrentNode() {
       editor.chain().setMeta("hideDragHandle", true).setNodeSelection(currentNodePos).deleteSelection().run();
 
       setMenuOpen(false);
+      setContentMenuOpen(false);
+      setAnyMenuOpen(false);
    }
 
    // TODO: Re-add when dropdown menu is implemented
@@ -85,14 +92,20 @@ export function ContentMenu(props: ContentMenuProps) {
    useEffect(() => {
       if (menuOpen) {
          editor.commands.setMeta("lockDragHandle", true);
+         setContentMenuOpen(true);
+         setAnyMenuOpen(true);
       } else {
          editor.commands.setMeta("lockDragHandle", false);
+         setContentMenuOpen(false);
+         setAnyMenuOpen(false);
       }
 
       return () => {
          editor.commands.setMeta("lockDragHandle", false);
+         setContentMenuOpen(false);
+         setAnyMenuOpen(false);
       };
-   }, [editor, menuOpen]);
+   }, [editor, menuOpen, setContentMenuOpen, setAnyMenuOpen]);
 
    return (
       <DragHandle
