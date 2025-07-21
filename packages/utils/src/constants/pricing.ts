@@ -38,8 +38,8 @@ export const PLANS = [
       name: "Pro",
       link: `${HARDCODED_APP_URL}/pricing`,
       price: {
-         monthly: 10,
-         yearly: 10,
+         monthly: 12,
+         yearly: 12,
          ids: [
             // 2025 pricing
             "20a3a3ba-0e8a-4523-afec-8723bce557ac", // monthly

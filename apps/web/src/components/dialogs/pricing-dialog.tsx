@@ -72,9 +72,7 @@ export function PricingDialog({ open, onOpenChange, children }: PricingDialogPro
                   </div>
                   <div className="flex flex-col items-start justify-start gap-2 self-stretch">
                      <div className="inline-flex items-end justify-start gap-1 self-stretch">
-                        <span className="text-xl font-medium line-through text-[#A586FF]  mr-1">
-                           ${(proPlan?.price.monthly || 0) + 2}
-                        </span>
+                        <span className="text-xl font-medium line-through text-[#A586FF]  mr-1">${20}</span>
                         <div className="justify-center text-4xl font-semibold leading-10 text-white">${proPrice}</div>
                         <div className="flex items-center justify-center gap-2.5 pb-0.5">
                            <div className="justify-center text-sm font-medium leading-tight text-white/40">/ MONTH</div>

@@ -86,9 +86,7 @@ function RouteComponent() {
                      <h2 className="mb-2 text-left text-xl text-text-default">{proPlan?.name}</h2>
 
                      <div className="mt-1 flex items-baseline">
-                        <span className="text-[40px] font-medium tracking-tight line-through text-[#878787]">
-                           ${proPlan?.price.monthly + 2}
-                        </span>
+                        <span className="text-[40px] font-medium tracking-tight line-through text-[#878787]">${20}</span>
                         <span className="ml-1 text-[40px] font-medium tracking-tight">${proPlan?.price.monthly}</span>
                         <span className="ml-1 text-xl font-medium">/mo</span>
                      </div>

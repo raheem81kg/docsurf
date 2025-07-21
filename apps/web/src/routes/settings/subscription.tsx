@@ -100,9 +100,7 @@ function SubscriptionSettingsPage() {
                   </div>
                   <p className="text-sm text-muted-foreground">Gain access to premium models, unlimited chats, and more.</p>
                   <div className="flex gap-2 items-center">
-                     <span className="text-sm font-medium line-through text-muted-foreground mr-1">
-                        ${(proPlan?.price.monthly || 0) + 2}
-                     </span>
+                     <span className="text-sm font-medium line-through text-muted-foreground mr-1">${20}</span>
                      <p className="text-sm font-medium">${proPlan?.price.monthly}</p>
                      <p className="text-sm text-muted-foreground">/month</p>
                   </div>
