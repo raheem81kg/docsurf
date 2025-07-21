@@ -1,3 +1,4 @@
+// biome-ignore assist/source/organizeImports: <explanation>
 import TiptapTable from "@tiptap/extension-table";
 import type { TableCellOptions } from "@tiptap/extension-table-cell";
 import { TableHeader } from "@tiptap/extension-table-header";
@@ -29,13 +30,21 @@ export interface TableOptions {
    /** options for table cell background */
    tableCellBackground: Partial<TableCellBackgroundOptions>;
 }
+
 export const Table = /* @__PURE__ */ TiptapTable.extend<TableOptions>({
    addOptions() {
       return {
          ...this.parent?.(),
+         HTMLAttributes: {},
          resizable: true,
+         handleWidth: 5,
+         cellMinWidth: 100,
          lastColumnResizable: true,
          allowTableNodeSelection: true,
+         tableRow: {},
+         tableHeader: {},
+         tableCell: {},
+         tableCellBackground: {},
          button: ({ editor, t }: any) => ({
             component: TableActionButton,
             componentProps: {

@@ -1,12 +1,10 @@
 import * as React from "react";
 import { useEditorState, type Editor } from "@tiptap/react";
 import { MAX_CHARACTERS } from "../../tiptap-util";
-import { ActionButton } from "../../extensions/image/components/image-actions";
 import { FileUpIcon, DownloadIcon, LockIcon, UnlockIcon, Trash2Icon, SendIcon } from "lucide-react";
 import { showToast } from "@docsurf/ui/components/_c/toast/showToast";
 import { showProgressToast, hideProgressToast } from "@docsurf/ui/components/_c/toast/progressToast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@docsurf/ui/components/dialog";
-import { cn } from "@docsurf/ui/lib/utils";
 import { ClockRewind } from "@/editor/components/custom/ui/diffview/lib/icons";
 import VersionHistoryDialog from "@/editor/components/custom/version-history-dialog";
 import { ShareDocButton } from "@/editor/components/custom/share-doc-button";
@@ -50,9 +48,10 @@ export const SectionSix: React.FC<SectionSixProps> = ({
    const { characterCount, wordCount } = useEditorState({
       editor,
       selector: (ctx) => {
+         const text = ctx.editor.getText();
          return {
-            characterCount: ctx.editor.storage.characterCount.characters(),
-            wordCount: ctx.editor.storage.characterCount.words(),
+            characterCount: [...new Intl.Segmenter().segment(text)].length,
+            wordCount: text.split(/\s+/).filter((word) => word !== "").length,
          };
       },
    });

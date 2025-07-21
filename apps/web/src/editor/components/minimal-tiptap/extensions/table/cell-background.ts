@@ -47,11 +47,12 @@ export function updateCellBackground(tr: Transaction, options: TableCellBackgrou
       return tr;
    }
 
+   let updatedTr = tr;
    selection.forEachCell((node, pos) => {
-      tr = setCellBackgroundMarkup(tr, pos, backgroundColor);
+      updatedTr = setCellBackgroundMarkup(updatedTr, pos, backgroundColor);
    });
 
-   return tr;
+   return updatedTr;
 }
 
 export function createCellBackgroundCommand(backgroundColor: string, options: TableCellBackgroundOptions): Command {
@@ -91,11 +92,10 @@ export const TableCellBackground = Extension.create<TableCellBackgroundOptions>(
                   renderHTML: (attributes) => {
                      if (!attributes.backgroundColor || attributes.backgroundColor === "") {
                         return {};
-                     } else {
-                        return {
-                           style: `background-color: ${attributes.backgroundColor}`,
-                        };
                      }
+                     return {
+                        style: `background-color: ${attributes.backgroundColor}`,
+                     };
                   },
                },
             },

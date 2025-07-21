@@ -850,9 +850,9 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
                      </DialogClose>
                   </div>
                </aside>
-               <section className="flex-1 flex flex-col min-h-0 bg-muted/40 border-t md:border-t-0 md:border-l border-border/40">
+               <section className="flex-1 flex flex-col min-h-0 bg-muted/40 border-t md:border-t-0 md:border-l border-border/40 overflow-hidden">
                   {selectedVersion && (
-                     <div className="flex flex-col h-full">
+                     <div className="flex flex-col h-full overflow-hidden">
                         <div className="flex items-center justify-between px-4 pt-2 pb-2 border-b /80">
                            <div className="py-1.5">
                               <div className="text-xs text-muted-foreground mb-0.5">
@@ -877,7 +877,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, setOp
                               <TooltipContent>Restore this version</TooltipContent>
                            </Tooltip>
                         </div>
-                        <div className="p-w flex-1 min-h-0 h-full overflow-auto flex flex-col ">
+                        <div className="flex-1 min-h-0 overflow-auto">
                            <EditorContent
                               style={{
                                  scrollbarWidth: "thin",

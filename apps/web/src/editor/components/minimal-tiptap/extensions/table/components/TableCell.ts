@@ -6,10 +6,10 @@ export const TableCell = TBCell.extend({
          ...this.parent?.(),
          HTMLAttributes: {
             style: `
-            border-right: 1px solid #738496; 
-            padding: 8px 12px;            
+            border-right: 1px solid #738496;
+            padding: 8px 12px;
             &:last-child {
-              border-right: none;        
+              border-right: none;
             }
           `,
          },

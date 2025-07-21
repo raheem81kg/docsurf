@@ -71,25 +71,23 @@ const PromptInput = forwardRef<PromptInputRef, PromptInputProps>(
       );
 
       return (
-         <TooltipProvider>
-            <PromptInputContext.Provider
-               value={{
-                  isLoading,
-                  maxHeight,
-                  onSubmit,
-                  textareaRef,
-               }}
+         <PromptInputContext.Provider
+            value={{
+               isLoading,
+               maxHeight,
+               onSubmit,
+               textareaRef,
+            }}
+         >
+            <div
+               className={cn(
+                  "rounded-t-lg border border-border bg-background/80 p-2 shadow-xs backdrop-blur-lg md:rounded-xl dark:bg-input/70",
+                  className
+               )}
             >
-               <div
-                  className={cn(
-                     "rounded-t-lg border border-border bg-background/80 p-2 shadow-xs backdrop-blur-lg md:rounded-xl dark:bg-input/70",
-                     className
-                  )}
-               >
-                  {children}
-               </div>
-            </PromptInputContext.Provider>
-         </TooltipProvider>
+               {children}
+            </div>
+         </PromptInputContext.Provider>
       );
    }
 );

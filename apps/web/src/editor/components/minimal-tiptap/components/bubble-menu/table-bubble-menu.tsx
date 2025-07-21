@@ -1,12 +1,12 @@
 import * as React from "react";
 import { useEditorState, type Editor } from "@tiptap/react";
 import { isActive } from "@tiptap/react";
-import { BubbleMenu } from "@tiptap/react";
 import { Separator } from "@docsurf/ui/components/separator";
 import ToolbarButton from "../toolbar-button";
 import { HighlightPopoverButton } from "../section/three";
 import { Merge, Split, Highlighter, ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Trash2Icon, XIcon } from "lucide-react";
 import { CellSelection } from "@tiptap/pm/tables";
+import { BubbleMenu } from "@tiptap/react";
 
 export interface TableBubbleMenuProps {
    editor: Editor;

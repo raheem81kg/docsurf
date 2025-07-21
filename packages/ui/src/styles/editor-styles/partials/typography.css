@@ -31,9 +31,9 @@
 }
 
 .minimal-tiptap-editor .ProseMirror a.link {
-   @apply cursor-pointer text-primary;
+   @apply cursor-pointer text-primary underline;
 }
 
-.minimal-tiptap-editor .ProseMirror a.link:hover {
-   @apply underline;
-}
+/* .minimal-tiptap-editor .ProseMirror a.link:hover {
+   @apply opacity-100;
+} */

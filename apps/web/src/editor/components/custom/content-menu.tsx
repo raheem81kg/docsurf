@@ -118,10 +118,9 @@ export function ContentMenu(props: ContentMenuProps) {
          onNodeChange={handleNodeChange}
          className={cn(editor.isEditable ? "visible" : "hidden", className)}
       >
-         <TooltipProvider>
-            <div className="flex items-center pr-1.5">
-               {/* TODO: Re-add when dropdown menu is implemented */}
-               {/* <Tooltip>
+         <div className="flex items-center pr-1.5">
+            {/* TODO: Re-add when dropdown menu is implemented */}
+            {/* <Tooltip>
                   <TooltipTrigger asChild>
                      <BaseButton
                         variant="ghost"
@@ -135,62 +134,61 @@ export function ContentMenu(props: ContentMenuProps) {
                   </TooltipTrigger>
                   <TooltipContent sideOffset={8} className="text-xs">Insert block below</TooltipContent>
                </Tooltip> */}
-               <Popover open={menuOpen} onOpenChange={setMenuOpen}>
-                  <div className="relative flex flex-col">
-                     <Tooltip disableHoverableContent={true}>
-                        <TooltipTrigger asChild>
-                           <BaseButton
-                              variant="ghost"
-                              size="icon"
-                              className="relative z-[1] !size-5 cursor-grab text-muted-foreground hover:text-primary"
-                              onClick={(e) => {
-                                 e.preventDefault();
-                                 setMenuOpen(true);
-                                 editor.commands.setNodeSelection(currentNodePos);
-                              }}
-                              type="button"
-                           >
-                              <GripVertical className="size-3.5 shrink-0" />
-                           </BaseButton>
-                        </TooltipTrigger>
-                        <TooltipContent side="bottom" sideOffset={8} className="text-[11px] px-2 py-1 bg-neutral-900 rounded shadow">
-                           <div className="flex flex-col gap-0">
-                              <span>
-                                 <span className="font-bold text-white">Drag</span>
-                                 <span className="text-neutral-400 font-normal"> to move</span>
-                              </span>
-                              <span>
-                                 <span className="font-bold text-white">Click</span>
-                                 <span className="text-neutral-400 font-normal"> to open menu</span>
-                              </span>
-                           </div>
-                        </TooltipContent>
-                     </Tooltip>
-                     <PopoverTrigger className="absolute left-0 top-0 z-0 h-5 w-5" />
-                  </div>
+            <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+               <div className="relative flex flex-col">
+                  <Tooltip disableHoverableContent={true}>
+                     <TooltipTrigger asChild>
+                        <BaseButton
+                           variant="ghost"
+                           size="icon"
+                           className="relative z-[1] !size-5 cursor-grab text-muted-foreground hover:text-primary"
+                           onClick={(e) => {
+                              e.preventDefault();
+                              setMenuOpen(true);
+                              editor.commands.setNodeSelection(currentNodePos);
+                           }}
+                           type="button"
+                        >
+                           <GripVertical className="size-3.5 shrink-0" />
+                        </BaseButton>
+                     </TooltipTrigger>
+                     <TooltipContent side="bottom" sideOffset={8} className="text-[11px] px-2 py-1 bg-neutral-900 rounded shadow">
+                        <div className="flex flex-col gap-0">
+                           <span>
+                              <span className="font-bold text-white">Drag</span>
+                              <span className="text-neutral-400 font-normal"> to move</span>
+                           </span>
+                           <span>
+                              <span className="font-bold text-white">Click</span>
+                              <span className="text-neutral-400 font-normal"> to open menu</span>
+                           </span>
+                        </div>
+                     </TooltipContent>
+                  </Tooltip>
+                  <PopoverTrigger className="absolute left-0 top-0 z-0 h-5 w-5" />
+               </div>
 
-                  <PopoverContent align="start" side="bottom" sideOffset={8} className="w-max bg-background p-1">
-                     <BaseButton
-                        variant="ghost"
-                        onClick={duplicateNode}
-                        className="h-auto w-full justify-start gap-2 !rounded px-2 py-1 text-sm font-normal hover:bg-accent/50 hover:text-primary"
-                     >
-                        <Copy className="size-[15px] shrink-0" />
-                        Duplicate
-                     </BaseButton>
-                     <Divider type="horizontal" />
-                     <BaseButton
-                        variant="ghost"
-                        onClick={deleteCurrentNode}
-                        className="h-auto w-full justify-start gap-2 !rounded px-2 py-1 text-sm font-normal hover:bg-red-50 hover:text-red-600"
-                     >
-                        <Trash2 className="size-[15px] shrink-0" />
-                        Delete
-                     </BaseButton>
-                  </PopoverContent>
-               </Popover>
-            </div>
-         </TooltipProvider>
+               <PopoverContent align="start" side="bottom" sideOffset={8} className="w-max bg-background p-1">
+                  <BaseButton
+                     variant="ghost"
+                     onClick={duplicateNode}
+                     className="h-auto w-full justify-start gap-2 !rounded px-2 py-1 text-sm font-normal hover:bg-accent/50 hover:text-primary"
+                  >
+                     <Copy className="size-[15px] shrink-0" />
+                     Duplicate
+                  </BaseButton>
+                  <Divider type="horizontal" />
+                  <BaseButton
+                     variant="ghost"
+                     onClick={deleteCurrentNode}
+                     className="h-auto w-full justify-start gap-2 !rounded px-2 py-1 text-sm font-normal hover:bg-red-50 hover:text-red-600"
+                  >
+                     <Trash2 className="size-[15px] shrink-0" />
+                     Delete
+                  </BaseButton>
+               </PopoverContent>
+            </Popover>
+         </div>
       </DragHandle>
    );
 }

@@ -14,7 +14,7 @@ export function ChatHeader({ className }: { className?: string }) {
    const [commandPOpen, setCommandPOpen] = useState(false);
    const set_ir_sidebar_state = useSandStateStore((s) => s.set_ir_sidebar_state);
    return (
-      <div className={cn("flex pointer-events-auto items-center justify-between gap-2 px-4 py-2", className)}>
+      <div className={cn("flex pointer-events-auto items-center justify-between gap-2 px-3 py-2", className)}>
          <div className="flex items-center gap-2 md:gap-1.5">
             <Popover>
                <PopoverTrigger asChild>

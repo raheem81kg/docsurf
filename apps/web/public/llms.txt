@@ -1,0 +1,53 @@
+# DocSurf
+
+> Best AI Chat, Organized Docs, and Autocomplete—Everything You Need for Writing
+
+DocSurf is an AI-powered writing assistant platform that helps you create and edit documents with intelligent support. We combine powerful writing tools with AI capabilities to enhance your writing experience, making it more efficient and enjoyable. The platform offers real-time AI suggestions, smart text editing, document management, and seamless collaboration features.
+
+## Core Features
+- **AI Autocomplete**: Real-time, context-aware suggestions as you type with intelligent sentence completion
+- **Smart Text Suggestions**: Select text, describe changes, and see visual diffs with AI-powered recommendations
+- **AI Chat Features**: Choose from GPT-4, Claude, Gemini, and more models with file uploads and web search
+- **Document Management**: Organize documents with automatic saving, version history, and folder structure
+- **Word Document Support**: Import and export .docx files with formatting preservation
+- **Image Generation**: Generate visuals and images through AI chat integration
+
+## Key Pages
+- [Home](https://docsurf.ai): Feature overview with hero section, smart suggestions demo, AI chat features, and document management showcase
+- [About](https://docsurf.ai/about): Mission statement, company journey, and contact information
+- [Pricing](https://docsurf.ai/pricing): Free and Pro plan comparison with transparent pricing
+- [Auth](https://docsurf.ai/auth): Google OAuth and email OTP authentication options
+- [Document Editor](https://docsurf.ai/doc/$documentId): Main writing environment with AI assistance
+- [Document Library](https://docsurf.ai/doc/library): File management, organization, and asset library
+- [Settings](https://docsurf.ai/settings): User preferences, AI options, appearance, and subscription management
+
+## Settings Pages
+- [Profile](https://docsurf.ai/settings/profile): User account and personal information
+- [AI Options](https://docsurf.ai/settings/ai-options): AI model preferences and chat settings
+- [Inline Suggestions](https://docsurf.ai/settings/inline-suggestions): Text suggestion configuration
+- [Appearance](https://docsurf.ai/settings/appearance): Theme and UI customization
+- [Attachments](https://docsurf.ai/settings/attachments): File upload and management settings
+- [Subscription](https://docsurf.ai/settings/subscription): Plan management and billing
+- [Models](https://docsurf.ai/settings/models): AI model selection and configuration
+- [Providers](https://docsurf.ai/settings/providers): AI service provider settings
+
+## Legal & Support
+- [Terms of Service](https://docsurf.ai/terms): Legal terms and conditions
+- [Privacy Policy](https://docsurf.ai/policy): Data protection and privacy information
+
+## Technical Stack
+- **Frontend**: React 19 with Vite, TanStack Router, TanStack Query, TailwindCSS, Radix UI
+- **Backend**: Convex for real-time database and functions, Better Auth for authentication
+- **AI Integration**: Multiple AI providers (OpenAI, Anthropic, Google) with custom adapters
+- **File Storage**: R2 storage for document assets and generated images
+- **Editor**: TipTap rich text editor with custom extensions and AI integrations
+
+## Developer Resources
+- **Monorepo Structure**: Turborepo with workspace packages for UI, backend, utils, and email
+- **Type Safety**: Full TypeScript implementation with shared type definitions
+- **Code Quality**: Biome for linting and formatting, Husky for git hooks
+- **Package Management**: pnpm with workspace dependencies
+
+## Contact
+- **Support Email**: support@docsurf.ai
+- **Documentation**: Built-in help and onboarding flows within the application 

@@ -19,9 +19,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
                         {/* <ModalProvider> */}
                         {/* <CompliantCookieProvider> */}
                         {import.meta.env.NODE_ENV === "development" ? (
-                           <TooltipProvider delayDuration={300}>{children}</TooltipProvider>
+                           <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
                         ) : (
-                           <TooltipProvider delayDuration={300}>{children}</TooltipProvider>
+                           <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
                         )}
                         {/* </ModalProvider> */}
                         {/* </CompliantCookieProvider> */}

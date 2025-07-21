@@ -2,7 +2,7 @@ import type { Attrs, Node } from "@tiptap/pm/model";
 import type { Editor } from "@tiptap/react";
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-export const MAX_CHARACTERS = 250000;
+export const MAX_CHARACTERS = 500000;
 /** Default number of rows and columns for grids when creating a table */
 export const TABLE_INIT_GRID_SIZE = 10;
 /** Maximum number of rows and columns for grids when creating a table */

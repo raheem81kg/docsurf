@@ -189,7 +189,7 @@ export const LeftSidebar = ({
 
    return (
       <Sidebar className="border-r" set_l_sidebar_state={set_l_sidebar_state}>
-         <SidebarHeader className="gap-3 md:gap-1">
+         <SidebarHeader className="gap-1.5 md:gap-1">
             <SidebarMenu className="flex items-center justify-between gap-1.5 flex-row">
                <div className="">
                   <NavUser />
@@ -271,7 +271,7 @@ export const LeftSidebar = ({
             {/* <SidebarMenu className="gap-0.5"> <NavMain items={navMainWithActive} onSettingsClick={openModal} /> </SidebarMenu> */}
          </SidebarHeader>
 
-         <SidebarContent ref={scrollContainerRef} className="scrollbar-hide">
+         <SidebarContent ref={scrollContainerRef}>
             <div className="flex-1 flex flex-col min-h-0">
                {/* Folders Section */}
                {/* <SidebarGroup>

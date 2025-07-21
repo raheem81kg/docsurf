@@ -3,18 +3,11 @@ import * as React from "react";
 import type { Content, Editor } from "@tiptap/react";
 import type { UseMinimalTiptapEditorProps } from "../minimal-tiptap/hooks/use-minimal-tiptap";
 import { EditorContent } from "@tiptap/react";
-import { Separator } from "@docsurf/ui/components/separator";
 import { cn } from "@docsurf/ui/lib/utils";
-import { SectionOne } from "../minimal-tiptap/components/section/one";
-import { SectionTwo } from "../minimal-tiptap/components/section/two";
-import { SectionThree } from "../minimal-tiptap/components/section/three";
-import { SectionFour } from "../minimal-tiptap/components/section/four";
-import { SectionFive } from "../minimal-tiptap/components/section/five";
 import { LinkBubbleMenu } from "../minimal-tiptap/components/bubble-menu/link-bubble-menu";
 import { useMinimalTiptapEditor } from "../minimal-tiptap/hooks/use-minimal-tiptap";
 import { SectionSix } from "../minimal-tiptap/components/section/six";
 import { MAX_CHARACTERS, getComparableContent } from "../minimal-tiptap/tiptap-util";
-import { SectionZero } from "../minimal-tiptap/components/section/zero";
 import { TableBubbleMenu } from "../minimal-tiptap/components/bubble-menu/table-bubble-menu";
 import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
 import { useBreakpoint } from "@docsurf/ui/hooks/use-breakpoint";
@@ -37,7 +30,6 @@ import { EditorMenuBar } from "./editor-menu-bar";
 import { TextBubbleMenu } from "./text-bubble-menu";
 import { isEqual } from "lodash-es";
 import { useDocumentSettings } from "@/store/document-settings-store";
-import FloatingMenu from "@/components/hyperaide/floating-menu";
 import SectionSixNew from "../minimal-tiptap/components/section/bottom-toolbar/six-new";
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "onUpdate"> {
@@ -51,76 +43,6 @@ export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "o
    hasMenuBar?: boolean;
 }
 
-const MobileTopToolbar = ({ editor, isDocLocked }: { editor: Editor; isDocLocked?: boolean }) => (
-   <div className="flex w-max items-center gap-px p-2">
-      <SectionZero editor={editor} isDocLocked={isDocLocked} />
-      <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
-      <SectionOne editor={editor} activeLevels={[1, 2, 3, 4, 5, 6]} isDocLocked={isDocLocked} />
-      <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
-      <SectionTwo
-         editor={editor}
-         activeActions={["bold", "italic", "underline", "strikethrough", "code", "clearFormatting", "superscript", "subscript"]}
-         mainActionCount={3}
-         isDocLocked={isDocLocked}
-      />
-      <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
-      <SectionThree editor={editor} isDocLocked={isDocLocked} />
-      <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
-      <SectionFour
-         editor={editor}
-         activeActions={["orderedList", "bulletList", "taskList"]}
-         mainActionCount={0}
-         isDocLocked={isDocLocked}
-      />
-      <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
-      <SectionFive
-         editor={editor}
-         activeActions={["codeBlock", "blockquote", "horizontalRule"]}
-         mainActionCount={0}
-         isDocLocked={isDocLocked}
-      />
-   </div>
-);
-
-const TopToolbar = ({ editor, isDocLocked }: { editor: Editor; isDocLocked?: boolean }) => {
-   const { l_sidebar_state, ir_sidebar_state } = useSandStateStore();
-   const isEitherSidebarOpen = l_sidebar_state || ir_sidebar_state;
-
-   return (
-      <div className="flex w-max items-center gap-px px-2 py-1">
-         <SectionZero editor={editor} isDocLocked={isDocLocked} />
-         <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
-         <SectionOne editor={editor} activeLevels={[1, 2, 3, 4]} variant="outline" isDocLocked={isDocLocked} />
-         <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
-         <SectionTwo
-            editor={editor}
-            activeActions={["italic", "bold", "underline", "code", "strikethrough", "clearFormatting", "superscript", "subscript"]}
-            mainActionCount={5}
-            variant="outline"
-            isDocLocked={isDocLocked}
-         />
-         <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
-         <SectionThree editor={editor} variant="outline" isDocLocked={isDocLocked} />
-         <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
-         <SectionFour
-            editor={editor}
-            activeActions={["bulletList", "orderedList", "taskList"]}
-            mainActionCount={isEitherSidebarOpen ? 0 : 3}
-            variant="outline"
-            isDocLocked={isDocLocked}
-         />
-         <Separator orientation="vertical" className="mx-2 h-7 min-h-7" />
-         <SectionFive
-            editor={editor}
-            activeActions={["blockquote", "codeBlock", "horizontalRule"]}
-            mainActionCount={3}
-            variant="outline"
-            isDocLocked={isDocLocked}
-         />
-      </div>
-   );
-};
-
 interface BottomToolbarProps {
    editor: Editor;
    docId: string;
@@ -130,35 +52,6 @@ interface BottomToolbarProps {
    toggleLock?: () => void;
    isBelowMobile?: boolean;
 }
-
-const BottomToolbar = ({
-   editor,
-   docId,
-   docTitle,
-   characterLimit = MAX_CHARACTERS,
-   isDocLocked,
-   toggleLock,
-   isBelowMobile,
-}: BottomToolbarProps) => (
-   <ScrollArea
-      className={
-         isBelowMobile
-            ? "shrink-0 overflow-x-auto border-t border-border p-2 min-h-12 md:min-h-10"
-            : "shrink-0 overflow-x-auto border-t border-border p-1"
-      }
-      style={isBelowMobile ? { paddingBottom: "env(safe-area-inset-bottom)" } : undefined}
-   >
-      <SectionSix
-         editor={editor}
-         docId={docId}
-         docTitle={docTitle}
-         characterLimit={characterLimit}
-         isDocLocked={isDocLocked}
-         toggleLock={toggleLock}
-      />
-      <ScrollBar orientation="horizontal" />
-   </ScrollArea>
-);
 
 const BottomToolbarNew = ({
    editor,
@@ -248,6 +141,13 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
             useEditorRefStore.getState().setEditor(null);
          };
       }, [editor]);
+
+      // Hide drag handle when sidebar states change
+      React.useEffect(() => {
+         if (editor && (editor as any).hideDragHandle) {
+            (editor as any).hideDragHandle();
+         }
+      }, [l_sidebar_state, ir_sidebar_state, editor]);
 
       // Track last user input time for conflict detection
       const lastInputTime = React.useRef<number>(0);
@@ -376,16 +276,6 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
             {doc?.isLocked && !doc?.isDeleted && <Locked />}
             <Deleted />
             <AnimatePresence>{showSearchReplace && <SearchAndReplaceToolbar editor={editor} />}</AnimatePresence>
-            {/* Hide top toolbars if deleted or locked */}
-            {/* {!(doc?.isDeleted || doc?.isLocked) && !isUserNotSignedIn && (
-               <div className="sticky top-0 z-10 shrink-0 overflow-x-auto border-b border-border [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                  {isMobile ? (
-                     <MobileTopToolbar editor={editor} isDocLocked={doc?.isLocked ?? false} />
-                  ) : (
-                     <TopToolbar editor={editor} isDocLocked={doc?.isLocked ?? false} />
-                  )}
-               </div>
-            )} */}
 
             <div className="flex-1 min-h-0 overflow-auto flex flex-col h-full">
                <EditorContent
@@ -410,11 +300,7 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
             {/* Wrap BubbleMenus in a div to avoid unmount errors (see https://github.com/ueberdosis/tiptap/issues/2658) */}
             {/* <FloatingMenu /> */}
             <div>
-               <TextBubbleMenu
-                  editor={editor}
-                  appendTo={ref as React.RefObject<any>}
-                  className={isMobileSidebarOpen ? "hidden" : ""}
-               />
+               <TextBubbleMenu editor={editor} className={isMobileSidebarOpen ? "hidden" : ""} />
                {!hideContextMenu && <ContentMenu editor={editor} className={isBelowMobile ? "hidden" : ""} />}
                <LinkBubbleMenu editor={editor} />
                <TableBubbleMenu editor={editor} />
@@ -429,15 +315,6 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
                   toggleLock={handleToggleLock}
                   isBelowMobile={isBelowMobile}
                />
-               {/* <BottomToolbar
-                  editor={editor}
-                  docId={doc?._id ?? ""}
-                  docTitle={doc?.title ?? ""}
-                  characterLimit={characterLimit}
-                  isDocLocked={doc?.isLocked ?? false}
-                  toggleLock={handleToggleLock}
-                  isBelowMobile={isBelowMobile}
-               /> */}
             </div>
          </div>
       );

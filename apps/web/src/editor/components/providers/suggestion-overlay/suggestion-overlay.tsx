@@ -770,38 +770,36 @@ export default function SuggestionOverlay({
                            {/* Action buttons - only show on completion */}
                            {!isGenerating && suggestion && (
                               <div className="flex justify-end gap-2 p-2 border-t bg-background/50">
-                                 <TooltipProvider>
-                                    <Tooltip>
-                                       <TooltipTrigger asChild>
-                                          <button
-                                             type="button"
-                                             onClick={onClose}
-                                             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-sm transition-colors text-muted-foreground hover:text-destructive cursor-pointer touch-manipulation"
-                                          >
-                                             <X size={13} strokeWidth={2.5} />
-                                             <span className="text-xs">Reject</span>
-                                          </button>
-                                       </TooltipTrigger>
-                                       <TooltipContent side="top">
-                                          <span className="text-xs">⌘+Backspace</span>
-                                       </TooltipContent>
-                                    </Tooltip>
-                                    <Tooltip>
-                                       <TooltipTrigger asChild>
-                                          <button
-                                             type="button"
-                                             onClick={() => handleAcceptSuggestion(suggestion)}
-                                             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-sm transition-colors text-muted-foreground hover:text-primary cursor-pointer touch-manipulation"
-                                          >
-                                             <Check size={13} strokeWidth={2.5} />
-                                             <span className="text-xs">Accept</span>
-                                          </button>
-                                       </TooltipTrigger>
-                                       <TooltipContent side="top">
-                                          <span className="text-xs">⌘+Enter</span>
-                                       </TooltipContent>
-                                    </Tooltip>
-                                 </TooltipProvider>
+                                 <Tooltip>
+                                    <TooltipTrigger asChild>
+                                       <button
+                                          type="button"
+                                          onClick={onClose}
+                                          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-sm transition-colors text-muted-foreground hover:text-destructive cursor-pointer touch-manipulation"
+                                       >
+                                          <X size={13} strokeWidth={2.5} />
+                                          <span className="text-xs">Reject</span>
+                                       </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="top">
+                                       <span className="text-xs">⌘+Backspace</span>
+                                    </TooltipContent>
+                                 </Tooltip>
+                                 <Tooltip>
+                                    <TooltipTrigger asChild>
+                                       <button
+                                          type="button"
+                                          onClick={() => handleAcceptSuggestion(suggestion)}
+                                          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-sm transition-colors text-muted-foreground hover:text-primary cursor-pointer touch-manipulation"
+                                       >
+                                          <Check size={13} strokeWidth={2.5} />
+                                          <span className="text-xs">Accept</span>
+                                       </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="top">
+                                       <span className="text-xs">⌘+Enter</span>
+                                    </TooltipContent>
+                                 </Tooltip>
                               </div>
                            )}
 

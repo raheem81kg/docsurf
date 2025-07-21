@@ -33,6 +33,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import ToolbarButton from "../../toolbar-button";
 import BlockDropdown from "./block-dropdown";
 import { SectionFive } from "../five";
+import { useCurrentDocument } from "@/components/sandbox/left/_tree_components/SortableTree";
+import { useSession } from "@/hooks/auth-hooks";
+import { convexQuery } from "@convex-dev/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@docsurf/backend/convex/_generated/api";
+import { isToday, isYesterday } from "date-fns";
 
 /**
  * SectionSix displays character/word count and formatting actions in the bottom toolbar.
@@ -77,27 +83,38 @@ export const SectionSixNew: React.FC<SectionSixProps> = ({
 
    // Flip logic: isWide is true when window.innerWidth >= 1324
    const isWide = !useBreakpoint(1300);
-   const { characterCount, wordCount, canUndo, canRedo } = useEditorState({
+
+   // Use useEditorState for undo/redo state and character/word counts
+   const { canUndo, canRedo, characterCount, wordCount } = useEditorState({
       editor,
-      selector: ({ editor }: { editor: Editor }) => {
+      selector: (ctx) => {
+         const text = ctx.editor.getText();
          return {
-            characterCount: editor.storage.characterCount.characters(),
-            wordCount: editor.storage.characterCount.words(),
-            canUndo: editor.can().undo(),
-            canRedo: editor.can().redo(),
+            canUndo: ctx.editor.can().undo(),
+            canRedo: ctx.editor.can().redo(),
+            characterCount: [...new Intl.Segmenter().segment(text)].length,
+            wordCount: text.split(/\s+/).filter((word) => word !== "").length,
          };
       },
    });
 
    const [loading, setLoading] = React.useState(false);
    const fileInput = React.useRef<HTMLInputElement>(null);
-   // Use character and word counts from editor.storage.characterCount
    const used = characterCount ?? 0;
    const words = wordCount ?? 0;
    const remaining = characterLimit - used;
    const isLimit = used >= characterLimit;
    const [showClearDialog, setShowClearDialog] = React.useState(false);
    const [openVersionHistoryDialog, setOpenVersionHistoryDialog] = React.useState(false);
+
+   // Get current document for updatedAt
+   const { data: session, isPending: sessionLoading } = useSession();
+   const { data: user } = useQuery({
+      ...convexQuery(api.auth.getCurrentUser, {}),
+      enabled: !!session?.user,
+   });
+   const currentDocument = useCurrentDocument(user);
+   const updatedAt = currentDocument?.doc?.updatedAt;
 
    // --- ACTIONS SETUP ---
    // Handler to open share dialog
@@ -263,6 +280,7 @@ export const SectionSixNew: React.FC<SectionSixProps> = ({
                <MicIcon size={16} />
             </button>
             <Separator orientation="vertical" className="min-h-7 min-w-[1px]" /> */}
+
             <BlockDropdown editor={editor} />
             <Separator orientation="vertical" className="min-h-7 min-w-[1px]" />
             <SectionFive editor={editor} />
@@ -319,10 +337,55 @@ export const SectionSixNew: React.FC<SectionSixProps> = ({
                   <FileUpIcon className="size-4 mr-2" />
                   Import Word
                </DropdownMenuItem>
+               <DropdownMenuItem onClick={() => setOpenVersionHistoryDialog(true)}>
+                  <ClockRewind size={16} />
+                  <span className="ml-2">Version History</span>
+               </DropdownMenuItem>
                <DropdownMenuItem onClick={() => setShowClearDialog(true)}>
                   <Trash2Icon className="size-4 mr-2" />
                   Clear Editor
                </DropdownMenuItem>
+               {/* Word count and last updated info */}
+               {remaining > 0 && (
+                  <div className="border-t p-2">
+                     <p className="text-xs text-muted-foreground mb-1">Remaining: {remaining.toLocaleString()} characters</p>
+                  </div>
+               )}
+               {(words > 0 || updatedAt) && (
+                  <div className="border-t p-2">
+                     {<p className="text-xs text-muted-foreground mb-1">Word count: {words.toLocaleString()} words</p>}
+                     {updatedAt && (
+                        <p className="text-xs text-muted-foreground">
+                           Last edited{" "}
+                           {(() => {
+                              const date = new Date(updatedAt);
+                              if (isToday(date)) {
+                                 return `today at ${date.toLocaleTimeString(undefined, {
+                                    hour: "numeric",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                 })}`;
+                              }
+                              if (isYesterday(date)) {
+                                 return `yesterday at ${date.toLocaleTimeString(undefined, {
+                                    hour: "numeric",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                 })}`;
+                              }
+                              return date.toLocaleString(undefined, {
+                                 year: "numeric",
+                                 month: "short",
+                                 day: "numeric",
+                                 hour: "numeric",
+                                 minute: "2-digit",
+                                 hour12: true,
+                              });
+                           })()}
+                        </p>
+                     )}
+                  </div>
+               )}
             </DropdownMenuContent>
          </DropdownMenu>
 
@@ -330,6 +393,32 @@ export const SectionSixNew: React.FC<SectionSixProps> = ({
          <VersionHistoryDialog open={openVersionHistoryDialog} setOpen={setOpenVersionHistoryDialog} />
          {/* Share Dialog (controlled by ToolbarSection action) */}
          <ShareDocButton open={openShareDialog} onOpenChange={setOpenShareDialog} />
+
+         {/* Clear Editor Dialog */}
+         <Dialog open={showClearDialog} onOpenChange={setShowClearDialog}>
+            <DialogContent>
+               <DialogHeader>
+                  <DialogTitle>Clear Editor</DialogTitle>
+                  <DialogDescription>Are you sure you want to clear the editor?</DialogDescription>
+               </DialogHeader>
+               <DialogFooter>
+                  <button
+                     type="button"
+                     className="rounded bg-muted px-4 py-2 text-foreground hover:bg-accent"
+                     onClick={() => setShowClearDialog(false)}
+                  >
+                     Cancel
+                  </button>
+                  <button
+                     type="button"
+                     className="rounded bg-destructive px-4 py-2 text-destructive-foreground hover:bg-destructive/80"
+                     onClick={handleClear}
+                  >
+                     Clear
+                  </button>
+               </DialogFooter>
+            </DialogContent>
+         </Dialog>
 
          {/* Hidden file input for import */}
          <input ref={fileInput} type="file" accept=".docx,.doc" onChange={handleFileChange} className="hidden" />

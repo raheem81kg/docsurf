@@ -277,6 +277,20 @@ export function DragHandlePlugin(options: DragHandlePluginOptions): Plugin<{ loc
    let x = false;
    let currentNode: TNode | null = null;
    let lastNodePos = -1;
+
+   // Function to hide drag handle and reset state
+   const hideDragHandle = () => {
+      if (tippyInstance) {
+         tippyInstance.hide();
+         currentNode = null;
+         lastNodePos = -1;
+         onNodeChange?.({ editor: editor, node: null, pos: -1 });
+      }
+   };
+
+   // Expose hideDragHandle on the editor instance - will be updated when tippyInstance is created
+   (editor as any).hideDragHandle = hideDragHandle;
+
    element.addEventListener("dragstart", (e) => {
       const { view } = editor;
       if (!e.dataTransfer) return;
@@ -373,10 +387,19 @@ export function DragHandlePlugin(options: DragHandlePluginOptions): Plugin<{ loc
                appendTo: container,
                content: element,
             })),
+            // Update the hideDragHandle function now that tippyInstance is available
+            ((editor as any).hideDragHandle = hideDragHandle),
             {
                update(t, n) {
                   if (!element || !tippyInstance) return;
                   if (((element.draggable = !x), e.state.doc.eq(n.doc) || -1 === lastNodePos)) return;
+
+                  // Hide drag handle if text is selected
+                  if (!e.state.selection.empty) {
+                     hideDragHandle();
+                     return;
+                  }
+
                   let o = e.nodeDOM(lastNodePos) as HTMLElement;
                   if (((o = getOuterNodePos(e, o)), o === e.dom)) return;
                   if (1 !== (null == o ? undefined : o.nodeType)) return;
@@ -408,17 +431,17 @@ export function DragHandlePlugin(options: DragHandlePluginOptions): Plugin<{ loc
       props: {
          handleDOMEvents: {
             mouseleave: (e, event) => (
-               x ||
-                  (event.target &&
-                     !container.contains(event?.relatedTarget as Node) &&
-                     (null == tippyInstance || tippyInstance.hide(),
-                     (currentNode = null),
-                     (lastNodePos = -1),
-                     null == onNodeChange || onNodeChange({ editor: editor, node: null, pos: -1 }))),
-               false
+               x || (event.target && !container.contains(event?.relatedTarget as Node) && hideDragHandle()), false
             ),
             mousemove(e, t) {
                if (!element || !tippyInstance || x) return false;
+
+               // Hide drag handle if text is selected
+               if (!e.state.selection.empty) {
+                  hideDragHandle();
+                  return false;
+               }
+
                const n = findElementNextToCoords({
                   x: t.clientX,
                   y: t.clientY,

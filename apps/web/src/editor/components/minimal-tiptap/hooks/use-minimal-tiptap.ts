@@ -4,7 +4,6 @@
  *
  * TODO: If editor state is not reactive, audit custom extensions in createExtensions. Try with only core extensions (StarterKit, Placeholder, etc.) to isolate issues.
  */
-"use client";
 import * as React from "react";
 import type { Editor } from "@tiptap/react";
 import type { Content, UseEditorOptions } from "@tiptap/react";
@@ -37,7 +36,7 @@ import { IndentHandler, TrailingNode } from "../extensions/custom";
 import { Superscript } from "@tiptap/extension-superscript";
 import { Subscript } from "@tiptap/extension-subscript";
 import { TaskList } from "@tiptap/extension-task-list";
-import CharacterCount from "@tiptap/extension-character-count";
+// import CharacterCount from "@tiptap/extension-character-count";
 import { ExportWord } from "../extensions/custom/export-word";
 import { ImportWord } from "../extensions/custom/import-word";
 import { Table } from "../extensions/table";
@@ -59,8 +58,6 @@ import { ImageExtension } from "../extensions/custom/niazmorshed/image";
 import { ImagePlaceholder } from "../extensions/custom/niazmorshed/image-placeholder";
 import { Mathematics } from "@tiptap/extension-mathematics";
 import { useMutation } from "convex/react";
-// import { getDocumentHtml } from "@docsurf/utils/chat/get-document-html";
-// import { getHierarchicalIndexes, TableOfContents } from "@tiptap/extension-table-of-contents";
 export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
    value?: Content;
    output?: "html" | "json" | "text";
@@ -146,8 +143,9 @@ const createExtensions = (
       Link,
       TrailingNode,
       TaskList,
-      TaskItem.configure({ nested: true }),
       Underline,
+      TaskItem.configure({ nested: true }),
+      // CharacterCount.configure({ limit: characterLimit }),
       Mathematics,
       ImagePlaceholder,
       Image.configure({
@@ -254,7 +252,6 @@ const createExtensions = (
       Typography,
       Superscript,
       Subscript,
-      CharacterCount.configure({ limit: characterLimit }),
       UnsetAllMarks,
       HorizontalRule,
       ResetMarksOnEnter,
@@ -453,7 +450,7 @@ export const useMinimalTiptapEditor = ({
 
    const editor = useEditor({
       extensions,
-      shouldRerenderOnTransaction: false,
+      shouldRerenderOnTransaction: false, // Keep false for performance, we handle character counts manually
       immediatelyRender: true,
       content: value, // Set initial content directly
       editorProps: {

@@ -57,7 +57,7 @@ export function DragHandle(props: DragHandleProps) {
          editor.unregisterPlugin(pluginKey);
          pluginRef.current = null;
       };
-   }, [element, editor, onNodeChange, pluginKey]);
+   }, [element, editor, onNodeChange, pluginKey, tippyOptions]);
 
    return (
       <div className={className} ref={setElement}>

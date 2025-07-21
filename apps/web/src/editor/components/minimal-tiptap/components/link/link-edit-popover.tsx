@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { Editor } from "@tiptap/react";
+import { useEditorState, type Editor } from "@tiptap/react";
 import type { VariantProps } from "class-variance-authority";
 import type { toggleVariants } from "@docsurf/ui/components/toggle";
 import { Popover, PopoverContent, PopoverTrigger } from "@docsurf/ui/components/popover";
@@ -15,7 +15,13 @@ interface LinkEditPopoverProps extends VariantProps<typeof toggleVariants> {
 
 const LinkEditPopover = ({ editor, size, variant, disableHoverableContent = false, disabled = false }: LinkEditPopoverProps) => {
    const [open, setOpen] = React.useState(false);
-
+   const editorState = useEditorState({
+      editor,
+      selector: ({ editor }) => ({
+         isLinkActive: editor.isActive("link"),
+         isCodeBlockActive: editor.isActive("codeBlock"),
+      }),
+   });
    const { from, to } = editor.state.selection;
    const text = editor.state.doc.textBetween(from, to, " ");
 
@@ -50,10 +56,10 @@ const LinkEditPopover = ({ editor, size, variant, disableHoverableContent = fals
       <Popover open={open} onOpenChange={setOpen}>
          <PopoverTrigger asChild>
             <ToolbarButton
-               isActive={editor.isActive("link")}
+               isActive={editorState.isLinkActive}
                tooltip="Link"
                aria-label="Insert link"
-               disabled={editor.isActive("codeBlock") || disabled}
+               disabled={editorState.isCodeBlockActive || disabled}
                size={size}
                variant={variant}
                disableHoverableContent={disableHoverableContent}

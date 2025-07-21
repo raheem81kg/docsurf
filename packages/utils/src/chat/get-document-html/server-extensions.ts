@@ -16,7 +16,6 @@ import { Color } from "@tiptap/extension-color";
 import { Superscript } from "@tiptap/extension-superscript";
 import { Subscript } from "@tiptap/extension-subscript";
 import { TaskList } from "@tiptap/extension-task-list";
-import CharacterCount from "@tiptap/extension-character-count";
 import { Table } from "@tiptap/extension-table";
 import { TableRow } from "@tiptap/extension-table-row";
 import { TableCell } from "@tiptap/extension-table-cell";
@@ -49,7 +48,6 @@ export function getServerTiptapExtensions() {
       TableRow,
       TableCell,
       TableHeader,
-      CharacterCount,
       Placeholder,
       Mathematics,
    ];

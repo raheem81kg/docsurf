@@ -90,7 +90,7 @@ export function NavUser() {
                      ) : isError ? (
                         <span className="truncate font-semibold text-destructive">User not found</span>
                      ) : (
-                        <span className="truncate text-xs font-medium text-muted-foreground">{user.data?.name}</span>
+                        <span className="truncate md:text-xs font-medium text-muted-foreground">{user.data?.name}</span>
                      )}
                   </div>
                   <ChevronDown className="ml-auto !size-3.5 text-muted-foreground" />

@@ -2,22 +2,9 @@
 
 import { BubbleMenu } from "@tiptap/react";
 import type { BubbleMenuProps } from "@tiptap/react";
-import {
-   WandSparkles,
-   MessageSquarePlus,
-   Bold,
-   Italic,
-   Underline,
-   Strikethrough,
-   Code,
-   Radical,
-   Link,
-   ChevronDown,
-   Ellipsis,
-   Type,
-} from "lucide-react";
+import { WandSparkles, Bold, Italic, Underline, Strikethrough, Code, ChevronDown, Type } from "lucide-react";
+import { TextNoneIcon, DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { ToolbarButton } from "../minimal-tiptap/components/toolbar-button";
-import { TooltipProvider } from "@docsurf/ui/components/tooltip";
 import { useSuggestionOverlayStore } from "@/store/use-suggestion-overlay-store";
 import { useUIVisibilityStore } from "@/store/use-ui-visibility-store";
 import { useEditorState } from "@tiptap/react";
@@ -26,20 +13,21 @@ import { isTextSelected } from "@/utils/is-text-selected";
 import { isCustomNodeSelected } from "@/utils/is-custom-node-selected";
 import * as React from "react";
 import { cn } from "@docsurf/ui/lib/utils";
-import SuggestionOverlay from "@/editor/components/providers/suggestion-overlay/suggestion-overlay";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { useCurrentDocument } from "@/components/sandbox/left/_tree_components/SortableTree";
 import type { Id } from "@docsurf/backend/convex/_generated/dataModel";
-import { Separator } from "@docsurf/ui/components/separator";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@docsurf/ui/components/dropdown-menu";
-import { Popover, PopoverContent, PopoverTrigger } from "@docsurf/ui/components/popover";
-import { ToggleGroup, ToggleGroupItem } from "@docsurf/ui/components/toggle-group";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@docsurf/ui/components/tooltip";
+import type { FormatAction } from "../minimal-tiptap/types";
+import { ToolbarSection } from "../minimal-tiptap/components/toolbar-section";
+import { ColorPicker } from "./bubble-menu-components/color-picker";
+import { AlignmentPicker } from "./bubble-menu-components/alignment-picker";
+import { LinkPopover } from "./bubble-menu-components/link-popover";
 
 export type EditorBubbleMenuProps = Omit<BubbleMenuProps, "children"> & {
    appendTo?: React.RefObject<any>;
+   className?: string;
 };
 
 export function TextBubbleMenu(props: EditorBubbleMenuProps) {
@@ -49,14 +37,25 @@ export function TextBubbleMenu(props: EditorBubbleMenuProps) {
    const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
    const { doc } = useCurrentDocument(user);
    const workspaceId = user?.workspaces?.[0]?.workspace?._id as Id<"workspaces">;
-   const { isParagraphActive, isHeadingActive } = useTextMenuState(editor);
+   const { isParagraphActive, isHeadingActive } = useTextMenuState(editor || null);
    const shouldShowButton = Boolean(isParagraphActive) || Boolean(isHeadingActive);
    const isActive = Boolean(
       useEditorState({
-         editor,
+         editor: editor || null,
          selector: () => isOpen,
       })
    );
+
+   const editorState = useEditorState({
+      editor: editor || null,
+      selector: ({ editor }) => ({
+         isCodeBlock: editor?.isActive("codeBlock"),
+         isTableSelected: editor?.isActive("table"),
+      }),
+   });
+
+   // Container ref for popovers to prevent BubbleMenu from closing
+   const containerRef = React.useRef<HTMLDivElement>(null);
 
    if (!editor) return null;
 
@@ -77,7 +76,10 @@ export function TextBubbleMenu(props: EditorBubbleMenuProps) {
          if (isCustomNodeSelected(editor, node) || !editor.isEditable) return false;
 
          // Only exclude table as a nested node
-         const isTableSelected = editor.isActive("table") && node?.classList?.contains("ProseMirror-selectednode");
+         const isTableSelected = editorState?.isTableSelected && node?.classList?.contains("ProseMirror-selectednode");
+
+         // Don't show text bubble menu if a link is active (let LinkBubbleMenu handle it)
+         if (editor.isActive("link")) return false;
 
          return isTextSelected(editor) && !isTableSelected;
       },
@@ -98,283 +100,263 @@ export function TextBubbleMenu(props: EditorBubbleMenuProps) {
       if (isOpen) {
          closeSuggestionOverlay();
       } else {
-         tryOpenSuggestionOverlayFromEditorSelection(editor);
+         tryOpenSuggestionOverlayFromEditorSelection(editor || null);
       }
    }
 
    return (
-      <BubbleMenu
-         {...bubbleMenuProps}
-         className={cn("flex gap-0 overflow-hidden rounded-lg border bg-background shadow-md", className)}
-      >
-         {isOpen && doc?._id && workspaceId ? (
-            <></>
-         ) : (
-            <>
-               {/* AI Transform Button */}
-               <button
-                  className="inline-flex h-8 items-center justify-center gap-1.5 whitespace-nowrap rounded-md rounded-r-none border-border/50 border-r px-3 font-medium text-xs transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:select-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
-                  data-state="closed"
-                  aria-label="Transform with AI"
-                  title="Transform with AI"
-                  onClick={handleAiButtonClick}
-                  type="button"
-               >
-                  <WandSparkles className="size-3.5" />
-                  <span className="text-xs">Transform</span>
-               </button>
-
-               <Separator orientation="vertical" className="mx-1.5 h-6" />
-
-               {/* Comment and Edit Section */}
-               <div className="flex items-center gap-0.5">
-                  <ToolbarButton
-                     tooltip="Comment"
-                     aria-label="Add comment"
-                     className="h-8 w-8 p-0"
-                     onClick={() => {
-                        // TODO: Implement comment functionality
-                        console.log("Comment clicked");
-                     }}
+      <BubbleMenu {...bubbleMenuProps}>
+         <div
+            ref={containerRef}
+            className={cn("flex gap-0 max-w-[90vw] overflow-x-scroll rounded-lg border bg-background shadow-md", className)}
+         >
+            {isOpen && doc?._id && workspaceId ? (
+               <></>
+            ) : (
+               <>
+                  {/* AI Transform Button */}
+                  <button
+                     className="inline-flex h-8 items-center justify-center gap-1.5 whitespace-nowrap rounded-md rounded-r-none border-border/50 border-r px-3 font-medium text-xs transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:select-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+                     data-state="closed"
+                     aria-label="Transform with AI"
+                     title="Transform with AI"
+                     onClick={handleAiButtonClick}
+                     type="button"
                   >
-                     <MessageSquarePlus className="size-4" />
-                  </ToolbarButton>
-                  <ToolbarButton
-                     tooltip="Edit"
-                     aria-label="Edit"
-                     className="h-8 w-8 p-0"
-                     onClick={() => {
-                        // TODO: Implement edit functionality
-                        console.log("Edit clicked");
-                     }}
-                  >
-                     <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                           strokeLinecap="round"
-                           strokeLinejoin="round"
-                           strokeWidth={2}
-                           d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                        />
-                     </svg>
-                  </ToolbarButton>
-               </div>
+                     <WandSparkles className="size-3.5" />
+                     <span className="text-xs">AI Edit</span>
+                  </button>
 
-               <Separator orientation="vertical" className="mx-1.5 h-6" />
-
-               {/* Text Formatting Section */}
-               <div className="flex items-center gap-0.5">
-                  {/* Text Style Dropdown */}
-                  <DropdownMenu>
-                     <DropdownMenuTrigger asChild>
-                        <ToolbarButton
-                           tooltip="Text styles"
-                           aria-label="Text styles"
-                           className="h-8 px-2 gap-1"
-                           onClick={() => {
-                              // TODO: Implement text style dropdown
-                              console.log("Text style dropdown clicked");
-                           }}
-                        >
-                           <Type className="size-4" />
-                           <ChevronDown className="size-3.5" />
-                        </ToolbarButton>
-                     </DropdownMenuTrigger>
-                     <DropdownMenuContent align="start" className="w-48">
-                        <DropdownMenuItem onClick={() => editor.chain().focus().setParagraph().run()}>Normal Text</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}>
-                           Heading 1
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
-                           Heading 2
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}>
-                           Heading 3
-                        </DropdownMenuItem>
-                     </DropdownMenuContent>
-                  </DropdownMenu>
-
-                  {/* Bold */}
-                  <ToolbarButton
-                     tooltip="Bold (Ctrl+B)"
-                     aria-label="Bold"
-                     className="h-8 w-8 p-0"
-                     isActive={editor.isActive("bold")}
-                     onClick={() => editor.chain().focus().toggleBold().run()}
-                  >
-                     <Bold className="size-4" />
-                  </ToolbarButton>
-
-                  {/* Italic */}
-                  <ToolbarButton
-                     tooltip="Italic (Ctrl+I)"
-                     aria-label="Italic"
-                     className="h-8 w-8 p-0"
-                     isActive={editor.isActive("italic")}
-                     onClick={() => editor.chain().focus().toggleItalic().run()}
-                  >
-                     <Italic className="size-4" />
-                  </ToolbarButton>
-
-                  {/* Underline */}
-                  <ToolbarButton
-                     tooltip="Underline (Ctrl+U)"
-                     aria-label="Underline"
-                     className="h-8 w-8 p-0"
-                     isActive={editor.isActive("underline")}
-                     onClick={() => editor.chain().focus().toggleUnderline().run()}
-                  >
-                     <Underline className="size-4" />
-                  </ToolbarButton>
-
-                  {/* Strikethrough */}
-                  <ToolbarButton
-                     tooltip="Strikethrough"
-                     aria-label="Strikethrough"
-                     className="h-8 w-8 p-0"
-                     isActive={editor.isActive("strike")}
-                     onClick={() => editor.chain().focus().toggleStrike().run()}
-                  >
-                     <Strikethrough className="size-4" />
-                  </ToolbarButton>
-
-                  {/* Code */}
-                  <ToolbarButton
-                     tooltip="Code"
-                     aria-label="Code"
-                     className="h-8 w-8 p-0"
-                     isActive={editor.isActive("code")}
-                     onClick={() => editor.chain().focus().toggleCode().run()}
-                  >
-                     <Code className="size-4" />
-                  </ToolbarButton>
-
-                  {/* Radical */}
-                  <ToolbarButton
-                     tooltip="Radical"
-                     aria-label="Radical"
-                     className="h-8 w-8 p-0"
-                     onClick={() => {
-                        // TODO: Implement radical functionality
-                        console.log("Radical clicked");
-                     }}
-                  >
-                     <Radical className="size-4" />
-                  </ToolbarButton>
-
-                  {/* Link */}
-                  <ToolbarButton
-                     tooltip="Link"
-                     aria-label="Link"
-                     className="h-8 w-8 p-0"
-                     isActive={editor.isActive("link")}
-                     onClick={() => {
-                        // TODO: Implement link functionality
-                        console.log("Link clicked");
-                     }}
-                  >
-                     <Link className="size-4" />
-                  </ToolbarButton>
-               </div>
-
-               <Separator orientation="vertical" className="mx-1.5 h-6" />
-
-               {/* Color Picker */}
-               <Popover>
-                  <PopoverTrigger asChild>
-                     <ToolbarButton tooltip="Text color" aria-label="Text color" className="h-8 px-2 gap-1">
-                        <div
-                           className="size-4 rounded-full"
-                           style={{
-                              background:
-                                 "linear-gradient(120deg, rgb(110, 182, 242) 20%, rgb(168, 85, 247), rgb(234, 88, 12), rgb(234, 179, 8) 80%)",
-                           }}
-                        />
-                        <ChevronDown className="size-3.5" />
-                     </ToolbarButton>
-                  </PopoverTrigger>
-                  <PopoverContent align="start" className="w-48 p-2">
-                     <div className="grid grid-cols-7 gap-1">
-                        {/* Default colors - simplified for now */}
-                        {[
-                           "#000000",
-                           "#ffffff",
-                           "#ff0000",
-                           "#00ff00",
-                           "#0000ff",
-                           "#ffff00",
-                           "#ff00ff",
-                           "#00ffff",
-                           "#ffa500",
-                           "#800080",
-                           "#008000",
-                           "#ffc0cb",
-                           "#a52a2a",
-                           "#808080",
-                           "#000080",
-                        ].map((color, index) => (
-                           <button
-                              key={index}
-                              type="button"
-                              className="size-6 rounded border border-border hover:scale-110 transition-transform"
-                              style={{ backgroundColor: color }}
+                  {/* Text Formatting Section */}
+                  <div className="flex items-center gap-0.5">
+                     {/* Text Style Dropdown */}
+                     <DropdownMenu modal={true}>
+                        <DropdownMenuTrigger asChild>
+                           <ToolbarButton
+                              tooltip="Text styles"
+                              aria-label="Text styles"
+                              className="h-8 px-5.5 gap-1 rounded-l-none"
                               onClick={() => {
-                                 // TODO: Implement color selection
-                                 console.log("Color selected:", color);
+                                 // TODO: Implement text style dropdown
+                                 console.log("Text style dropdown clicked");
                               }}
-                              aria-label={`Select color ${color}`}
-                           />
-                        ))}
-                     </div>
-                  </PopoverContent>
-               </Popover>
+                           >
+                              <Type className="size-4" />
+                              <ChevronDown className="size-3.5" />
+                           </ToolbarButton>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-48" container={containerRef?.current ?? undefined}>
+                           <DropdownMenuItem onClick={() => editor.chain().focus().setParagraph().run()}>Normal Text</DropdownMenuItem>
+                           <DropdownMenuItem onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}>
+                              Heading 1
+                           </DropdownMenuItem>
+                           <DropdownMenuItem onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
+                              Heading 2
+                           </DropdownMenuItem>
+                           <DropdownMenuItem onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}>
+                              Heading 3
+                           </DropdownMenuItem>
+                        </DropdownMenuContent>
+                     </DropdownMenu>
 
-               <Separator orientation="vertical" className="mx-1.5 h-6" />
+                     {/* Basic Formatting Actions */}
+                     <BubbleMenuFormattingActions editor={editor} />
+                  </div>
 
-               {/* More Options */}
-               <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                     <ToolbarButton tooltip="More options" aria-label="More options" className="h-8 w-8 p-0">
-                        <Ellipsis className="size-4" />
-                     </ToolbarButton>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-48">
-                     <DropdownMenuItem
-                        onClick={() => {
-                           // TODO: Implement clear formatting
-                           console.log("Clear formatting clicked");
-                        }}
-                     >
-                        Clear formatting
-                     </DropdownMenuItem>
-                     <DropdownMenuItem
-                        onClick={() => {
-                           // TODO: Implement subscript
-                           console.log("Subscript clicked");
-                        }}
-                     >
-                        Subscript
-                     </DropdownMenuItem>
-                     <DropdownMenuItem
-                        onClick={() => {
-                           // TODO: Implement superscript
-                           console.log("Superscript clicked");
-                        }}
-                     >
-                        Superscript
-                     </DropdownMenuItem>
-                     <DropdownMenuItem
-                        onClick={() => {
-                           // TODO: Implement highlight
-                           console.log("Highlight clicked");
-                        }}
-                     >
-                        Highlight
-                     </DropdownMenuItem>
-                  </DropdownMenuContent>
-               </DropdownMenu>
-            </>
-         )}
+                  {/* Combined Color & Highlight Picker */}
+                  <ColorPicker editor={editor} containerRef={containerRef} />
+
+                  {/* Link Popover */}
+                  <LinkPopover editor={editor} disabled={editorState?.isCodeBlock ?? false} containerRef={containerRef} />
+
+                  {/* Alignment Picker */}
+                  <AlignmentPicker editor={editor} containerRef={containerRef} />
+
+                  {/* More Options */}
+                  <BubbleMenuMoreOptions editor={editor} containerRef={containerRef} />
+               </>
+            )}
+         </div>
       </BubbleMenu>
+   );
+}
+
+// --- Bubble Menu Formatting Actions Component ---
+interface BubbleMenuFormattingActionsProps {
+   editor: any;
+}
+
+function BubbleMenuFormattingActions({ editor }: BubbleMenuFormattingActionsProps) {
+   const editorState = useEditorState({
+      editor,
+      selector: (context) => ({
+         isCodeBlock: context.editor.isActive("codeBlock"),
+         isBold: context.editor.isActive("bold"),
+         isItalic: context.editor.isActive("italic"),
+         isUnderline: context.editor.isActive("underline"),
+         isStrike: context.editor.isActive("strike"),
+         isCode: context.editor.isActive("code"),
+         isLink: context.editor.isActive("link"),
+      }),
+   });
+
+   const formatActions: FormatAction[] = [
+      {
+         value: "bold",
+         label: "Bold",
+         icon: <Bold className="size-4" />,
+         action: (editor) => editor.chain().focus().toggleBold().run(),
+         isActive: () => editorState.isBold,
+         canExecute: (editor) => editor.can().chain().focus().toggleBold().run() && !editorState.isCodeBlock,
+         shortcuts: [],
+      },
+      {
+         value: "italic",
+         label: "Italic",
+         icon: <Italic className="size-4" />,
+         action: (editor) => editor.chain().focus().toggleItalic().run(),
+         isActive: () => editorState.isItalic,
+         canExecute: (editor) => editor.can().chain().focus().toggleItalic().run() && !editorState.isCodeBlock,
+         shortcuts: [],
+      },
+      {
+         value: "underline",
+         label: "Underline",
+         icon: <Underline className="size-4" />,
+         action: (editor) => editor.chain().focus().toggleUnderline().run(),
+         isActive: () => editorState.isUnderline,
+         canExecute: (editor) => editor.can().chain().focus().toggleUnderline().run() && !editorState.isCodeBlock,
+         shortcuts: [],
+      },
+      {
+         value: "strikethrough",
+         label: "Strikethrough",
+         icon: <Strikethrough className="size-4" />,
+         action: (editor) => editor.chain().focus().toggleStrike().run(),
+         isActive: () => editorState.isStrike,
+         canExecute: (editor) => editor.can().chain().focus().toggleStrike().run() && !editorState.isCodeBlock,
+         shortcuts: [],
+      },
+      {
+         value: "code",
+         label: "Code",
+         icon: <Code className="size-4" />,
+         action: (editor) => editor.chain().focus().toggleCode().run(),
+         isActive: () => editorState.isCode,
+         canExecute: (editor) => editor.can().chain().focus().toggleCode().run() && !editorState.isCodeBlock,
+         shortcuts: [],
+      },
+      // {
+      //    value: "radical",
+      //    label: "Mark as equation",
+      //    icon: <Radical className="size-4" />,
+      //    action: (editor) => {
+      //       // TODO: Implement radical functionality
+      //       console.log("Radical clicked");
+      //    },
+      //    isActive: () => false,
+      //    canExecute: (editor) => !editorState.isCodeBlock,
+      //    shortcuts: [],
+      // },
+   ];
+
+   return (
+      <ToolbarSection
+         editor={editor}
+         actions={formatActions}
+         activeActions={["bold", "italic", "underline", "strikethrough", "code"]}
+         mainActionCount={6}
+         size="sm"
+         variant="outline"
+         disableHoverableContent
+         disabled={editorState.isCodeBlock}
+      />
+   );
+}
+
+// --- Bubble Menu More Options Component ---
+interface BubbleMenuMoreOptionsProps {
+   editor: any;
+   containerRef: React.RefObject<HTMLDivElement | null>;
+}
+
+function BubbleMenuMoreOptions({ editor, containerRef }: BubbleMenuMoreOptionsProps) {
+   const editorState = useEditorState({
+      editor,
+      selector: (context) => ({
+         isCodeBlock: context.editor.isActive("codeBlock"),
+         isSuperscript: context.editor.isActive("superscript"),
+         isSubscript: context.editor.isActive("subscript"),
+      }),
+   });
+
+   const moreOptionsActions: FormatAction[] = [
+      {
+         value: "clearFormatting",
+         label: "Clear formatting",
+         icon: <TextNoneIcon className="size-4" />,
+         action: (editor) => editor.chain().focus().unsetAllMarks().run(),
+         isActive: () => false,
+         canExecute: (editor) => editor.can().chain().focus().unsetAllMarks().run() && !editorState.isCodeBlock,
+         shortcuts: ["mod", "\\"],
+      },
+      {
+         value: "superscript",
+         label: "Superscript",
+         icon: <Code className="size-4" />,
+         action: (editor) => editor.chain().focus().toggleSuperscript().run(),
+         isActive: () => editorState.isSuperscript,
+         canExecute: (editor) => editor.can().chain().focus().toggleSuperscript().run() && !editorState.isCodeBlock,
+         shortcuts: ["mod", "."],
+      },
+      {
+         value: "subscript",
+         label: "Subscript",
+         icon: <Code className="size-4" />,
+         action: (editor) => editor.chain().focus().toggleSubscript().run(),
+         isActive: () => editorState.isSubscript,
+         canExecute: (editor) => editor.can().chain().focus().toggleSubscript().run() && !editorState.isCodeBlock,
+         shortcuts: ["mod", ","],
+      },
+   ];
+
+   return (
+      <DropdownMenu modal={true}>
+         <DropdownMenuTrigger asChild>
+            <ToolbarButton
+               tooltip="More formatting"
+               aria-label="More formatting"
+               className="!border-l !border !border-border/50 h-8 w-8 p-0"
+               size="sm"
+               variant="outline"
+               disableHoverableContent
+               disabled={editorState.isCodeBlock}
+            >
+               <DotsHorizontalIcon className="size-4" />
+            </ToolbarButton>
+         </DropdownMenuTrigger>
+         <DropdownMenuContent align="start" className="w-48" container={containerRef?.current ?? undefined}>
+            {moreOptionsActions.map((action) => (
+               <DropdownMenuItem
+                  key={action.value}
+                  onClick={() => action.action(editor)}
+                  disabled={!action.canExecute(editor) || editorState.isCodeBlock}
+                  className="flex flex-row items-center justify-between gap-4"
+                  aria-label={action.label}
+               >
+                  <span className="flex items-center gap-2">
+                     {action.icon}
+                     {action.label}
+                  </span>
+                  {action.shortcuts.length > 0 && (
+                     <span className="text-xs text-muted-foreground">
+                        {action.shortcuts.map((s) => (s === "mod" ? "⌘" : s === "shift" ? "⇧" : s)).join("+")}
+                     </span>
+                  )}
+               </DropdownMenuItem>
+            ))}
+         </DropdownMenuContent>
+      </DropdownMenu>
    );
 }
 
@@ -390,14 +372,14 @@ export const useTextMenuState = (editor: Editor | null) => {
          if (!editor) return {};
          return {
             currentTextColor: editor.getAttributes("textStyle").color || DEFAULT_TEXT_COLOR,
-            linkUrl: editor?.getAttributes("link").href,
-            textAlign: editor?.isActive({ textAlign: "left" })
+            linkUrl: editor.getAttributes("link").href,
+            textAlign: editor.isActive({ textAlign: "left" })
                ? "left"
-               : editor?.isActive({ textAlign: "center" })
+               : editor.isActive({ textAlign: "center" })
                ? "center"
-               : editor?.isActive({ textAlign: "right" })
+               : editor.isActive({ textAlign: "right" })
                ? "right"
-               : editor?.isActive({ textAlign: "justify" })
+               : editor.isActive({ textAlign: "justify" })
                ? "justify"
                : "left",
             isListActive: editor.isActive("bulletList") || editor.isActive("orderedList"),
