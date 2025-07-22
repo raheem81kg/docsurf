@@ -229,7 +229,7 @@ function DocumentComponent() {
             debounceDelay={2000}
             className={cn("")}
             isEditorLocked={doc.isLocked}
-            editorContentClassName={fullWidth ? "w-full px-4" : "max-w-[54rem] w-full mx-auto px-8"}
+            editorContentClassName={fullWidth ? "w-full px-8" : "max-w-[54rem] w-full mx-auto px-8"}
             enableVersionTracking={true}
             registerInStore={true}
             output="json"
