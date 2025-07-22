@@ -22,6 +22,8 @@ import { motion } from "motion/react";
 import { useBreakpoint } from "@docsurf/ui/hooks/use-breakpoint";
 import { INLINE_SUGGESTION_MOBILE_BREAKPOINT } from "@/editor/components/minimal-tiptap/extensions/custom/inline-suggestion/inline-suggestion-plugin";
 import { useDocumentSettings } from "@/store/document-settings-store";
+import { useParams } from "@tanstack/react-router";
+import { useEditorRefStore } from "@/store/use-editor-ref-store";
 
 // Beautiful 404 component for documents
 function DocumentNotFound() {
@@ -186,6 +188,16 @@ function DocumentComponent() {
       }
       return EMPTY_DOC;
    }, [doc?.content]);
+
+   const { documentId } = useParams({ strict: false });
+   const editor = useEditorRefStore((s) => s.editor);
+
+   React.useEffect(() => {
+      if (editor) {
+         // Focus at the end of the document after mount or page switch
+         editor.commands.focus("start");
+      }
+   }, [editor, documentId]);
 
    // Show loading only when we're actually loading something
    if (isUserLoading || (user && isTreeLoading) || (user && isDocLoading) || isPending) {
