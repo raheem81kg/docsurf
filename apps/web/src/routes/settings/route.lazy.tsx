@@ -28,11 +28,11 @@ const settingsNavItems = [
       href: "/settings/subscription",
       icon: CreditCard,
    },
-   {
-      title: "Document Settings",
-      href: "/settings/document",
-      icon: FileCog, // Reuse Edit3 for now, or pick another suitable icon
-   },
+   // {
+   //    title: "Document Settings",
+   //    href: "/settings/document",
+   //    icon: FileCog, // Reuse Edit3 for now, or pick another suitable icon
+   // },
    {
       title: "Providers",
       href: "/settings/providers",

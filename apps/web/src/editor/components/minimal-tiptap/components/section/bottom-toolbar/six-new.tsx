@@ -39,6 +39,9 @@ import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@docsurf/backend/convex/_generated/api";
 import { isToday, isYesterday } from "date-fns";
+import { useDocumentSettings, FONT_OPTIONS } from "@/store/document-settings-store";
+import { Switch } from "@docsurf/ui/components/switch";
+import { ArrowLeftRight } from "lucide-react";
 
 /**
  * SectionSix displays character/word count and formatting actions in the bottom toolbar.
@@ -221,6 +224,7 @@ export const SectionSixNew: React.FC<SectionSixProps> = ({
    // Import Word logic
    const triggerFileInput = () => fileInput.current?.click();
    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (isDocLocked) return; // Prevent import when locked
       const file = event.target.files?.[0];
       if (!file) return;
       if (file.size > 10 * 1024 * 1024) {
@@ -265,6 +269,38 @@ export const SectionSixNew: React.FC<SectionSixProps> = ({
       setShowClearDialog(false);
    }
 
+   // Font state for dropdown
+   const defaultFont = useDocumentSettings((s) => s.defaultFont);
+   const setDefaultFont = useDocumentSettings((s) => s.setDefaultFont);
+   const fullWidth = useDocumentSettings((s) => s.fullWidth);
+   const setFullWidth = useDocumentSettings((s) => s.setFullWidth);
+
+   // Add nFormatter for formatting large numbers like 500K, 1M, etc.
+   function nFormatter(num?: number, opts: { digits?: number; full?: boolean } = { digits: 1 }) {
+      if (!num) return "0";
+      if (opts.full) {
+         return Intl.NumberFormat("en-US").format(num);
+      }
+      const rx = /\.0+ |\.[0-9]*[1-9]0+$/;
+      if (num < 1) {
+         return num.toFixed(opts.digits).replace(rx, "$1");
+      }
+      const lookup = [
+         { value: 1, symbol: "" },
+         { value: 1e3, symbol: "K" },
+         { value: 1e6, symbol: "M" },
+         { value: 1e9, symbol: "G" },
+         { value: 1e12, symbol: "T" },
+         { value: 1e15, symbol: "P" },
+         { value: 1e18, symbol: "E" },
+      ];
+      var item = lookup
+         .slice()
+         .reverse()
+         .find((item) => num >= item.value);
+      return item ? (num / item.value).toFixed(opts.digits).replace(rx, "$1") + item.symbol : "0";
+   }
+
    return (
       <div className="flex w-full items-center justify-between">
          {/* Left: Empty space for balance */}
@@ -281,9 +317,9 @@ export const SectionSixNew: React.FC<SectionSixProps> = ({
             </button>
             <Separator orientation="vertical" className="min-h-7 min-w-[1px]" /> */}
 
-            <BlockDropdown editor={editor} />
+            <BlockDropdown editor={editor} isDocLocked={isDocLocked} />
             <Separator orientation="vertical" className="min-h-7 min-w-[1px]" />
-            <SectionFive editor={editor} />
+            <SectionFive editor={editor} disabled={isDocLocked} />
             <Separator orientation="vertical" className="min-h-7 min-w-[1px]" />
             <ToolbarButton
                onClick={handleUndo}
@@ -325,30 +361,96 @@ export const SectionSixNew: React.FC<SectionSixProps> = ({
                </ToolbarButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
+               {/* Font selection row */}
+               <div className="flex flex-col gap-1 px-1 pb-1">
+                  <div className="flex justify-between gap-1">
+                     {FONT_OPTIONS.map((option) => {
+                        const isActive = defaultFont === option.value;
+                        return (
+                           <button
+                              key={option.value}
+                              type="button"
+                              aria-label={option.label}
+                              tabIndex={0}
+                              className={
+                                 "flex flex-col items-center min-w-[38px] justify-end rounded transition-colors cursor-pointer px-1 py-1 " +
+                                 (isActive ? "bg-accent text-primary" : "hover:bg-accent/30")
+                              }
+                              style={{ userSelect: "none" }}
+                              onClick={() => setDefaultFont(option.value)}
+                           >
+                              <span
+                                 className={option.className + " text-[22px] pb-1.5"}
+                                 style={
+                                    (option.value === "sans"
+                                       ? { height: 22 }
+                                       : option.value === "mono"
+                                       ? { letterSpacing: -1, height: 22 }
+                                       : { height: 22 }) as React.CSSProperties
+                                 }
+                              >
+                                 Ag
+                              </span>
+                              <span
+                                 className="text-[12px] leading-4 mt-1 whitespace-nowrap overflow-hidden text-ellipsis"
+                                 style={{ color: isActive ? "#2383e2" : undefined }}
+                              >
+                                 {option.previewLabel}
+                              </span>
+                           </button>
+                        );
+                     })}
+                  </div>
+               </div>
+               {/* Full width toggle row */}
+               <div className="flex items-center justify-between gap-2 px-2 py-1 mt-1 rounded bg-muted/30">
+                  <div className="flex items-center gap-2">
+                     <ArrowLeftRight className="size-4 text-muted-foreground" />
+                     <span className="text-sm ">Full width</span>
+                  </div>
+                  <Switch checked={fullWidth} onCheckedChange={setFullWidth} aria-label="Toggle full width" />
+               </div>
+               {/* Lock editor toggle row */}
+               <div className="flex items-center justify-between gap-2 px-2 py-1 mt-1 rounded bg-muted/30">
+                  <div className="flex items-center gap-2">
+                     {isDocLocked ? (
+                        <UnlockIcon className="size-4 text-muted-foreground" />
+                     ) : (
+                        <LockIcon className="size-4 text-muted-foreground" />
+                     )}
+                     <span className="text-sm ">Lock editor</span>
+                  </div>
+                  <Switch
+                     checked={!!isDocLocked}
+                     onCheckedChange={toggleLock}
+                     aria-label="Toggle lock editor"
+                     disabled={!!loadingDoc}
+                  />
+               </div>
                <DropdownMenuItem onClick={() => setOpenShareDialog(true)}>
-                  <SendIcon className="size-4 mr-2" />
+                  <SendIcon className="size-4 mr-1.5" />
                   Share
                </DropdownMenuItem>
                <DropdownMenuItem onClick={() => handleExport()}>
-                  <DownloadIcon className="size-4 mr-2" />
+                  <DownloadIcon className="size-4 mr-1.5" />
                   Export as Word
                </DropdownMenuItem>
-               <DropdownMenuItem onClick={() => triggerFileInput()}>
-                  <FileUpIcon className="size-4 mr-2" />
+               <DropdownMenuItem onClick={() => triggerFileInput()} disabled={isDocLocked}>
+                  <FileUpIcon className="size-4 mr-1.5" />
                   Import Word
                </DropdownMenuItem>
                <DropdownMenuItem onClick={() => setOpenVersionHistoryDialog(true)}>
                   <ClockRewind size={16} />
-                  <span className="ml-2">Version History</span>
+                  <span className="ml-1.5">Version History</span>
                </DropdownMenuItem>
-               <DropdownMenuItem onClick={() => setShowClearDialog(true)}>
-                  <Trash2Icon className="size-4 mr-2" />
+               <DropdownMenuItem onClick={() => setShowClearDialog(true)} disabled={isDocLocked}>
+                  <Trash2Icon className="size-4 mr-1.5" />
                   Clear Editor
                </DropdownMenuItem>
                {/* Word count and last updated info */}
                {remaining > 0 && (
                   <div className="border-t p-2">
-                     <p className="text-xs text-muted-foreground mb-1">Remaining: {remaining.toLocaleString()} characters</p>
+                     <p className="text-xs text-muted-foreground mb-1">Remaining: {nFormatter(remaining)} characters</p>
                   </div>
                )}
                {(words > 0 || updatedAt) && (

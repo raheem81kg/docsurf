@@ -102,6 +102,10 @@ export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
     * Whether this is the main editor instance that should handle content syncing and saving.
     */
    isMainEditor: boolean;
+   /**
+    * Whether the editor is locked.
+    */
+   isEditorLocked: boolean;
 }
 
 const useLatest = <T>(value: T) => {
@@ -330,6 +334,7 @@ export const useMinimalTiptapEditor = ({
    versionTrackingOptions = {},
    onSave,
    isMainEditor,
+   isEditorLocked,
    ...props
 }: UseMinimalTiptapEditorProps) => {
    // Track if there are unsaved changes
@@ -453,6 +458,7 @@ export const useMinimalTiptapEditor = ({
       shouldRerenderOnTransaction: false, // Keep false for performance, we handle character counts manually
       immediatelyRender: true,
       content: value, // Set initial content directly
+      editable: !isEditorLocked,
       editorProps: {
          attributes: {
             autocomplete: "off",

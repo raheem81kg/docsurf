@@ -21,6 +21,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import { useBreakpoint } from "@docsurf/ui/hooks/use-breakpoint";
 import { INLINE_SUGGESTION_MOBILE_BREAKPOINT } from "@/editor/components/minimal-tiptap/extensions/custom/inline-suggestion/inline-suggestion-plugin";
+import { useDocumentSettings } from "@/store/document-settings-store";
 
 // Beautiful 404 component for documents
 function DocumentNotFound() {
@@ -167,6 +168,7 @@ function DocumentComponent() {
    });
 
    const isMobileBreakPoint = useBreakpoint(INLINE_SUGGESTION_MOBILE_BREAKPOINT);
+   const fullWidth = useDocumentSettings((s) => s.fullWidth);
 
    const EMPTY_DOC = { type: "doc", content: [{ type: "paragraph" }] };
 
@@ -226,7 +228,8 @@ function DocumentComponent() {
             value={editorValue}
             debounceDelay={2000}
             className={cn("")}
-            editorContentClassName="max-w-[54rem] w-full mx-auto px-8"
+            isEditorLocked={doc.isLocked}
+            editorContentClassName={fullWidth ? "w-full px-4" : "max-w-[54rem] w-full mx-auto px-8"}
             enableVersionTracking={true}
             registerInStore={true}
             output="json"

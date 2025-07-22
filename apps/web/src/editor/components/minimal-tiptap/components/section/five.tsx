@@ -19,7 +19,7 @@ interface SectionFiveProps extends VariantProps<typeof toggleVariants> {
    editor: Editor;
    activeActions?: InsertElementAction[];
    mainActionCount?: number;
-   isDocLocked?: boolean;
+   disabled?: boolean;
 }
 
 export const SectionFive: React.FC<SectionFiveProps> = ({
@@ -28,7 +28,7 @@ export const SectionFive: React.FC<SectionFiveProps> = ({
    mainActionCount = 0,
    size,
    variant,
-   isDocLocked,
+   disabled,
 }) => {
    const editorState = useEditorState({
       editor,
@@ -43,7 +43,7 @@ export const SectionFive: React.FC<SectionFiveProps> = ({
          value: "codeBlock",
          label: "Code block",
          icon: <CodeIcon className="size-4.5" />,
-         action: (editor) => editor.chain().focus().toggleCodeBlock().run(),
+         action: (editor) => (disabled ? undefined : editor.chain().focus().toggleCodeBlock().run()),
          isActive: () => editorState.isCodeBlock,
          canExecute: (editor) => editor.can().chain().focus().toggleCodeBlock().run(),
          shortcuts: ["mod", "alt", "C"],
@@ -52,7 +52,7 @@ export const SectionFive: React.FC<SectionFiveProps> = ({
          value: "blockquote",
          label: "Blockquote",
          icon: <QuoteIcon className="size-4.5" />,
-         action: (editor) => editor.chain().focus().toggleBlockquote().run(),
+         action: (editor) => (disabled ? undefined : editor.chain().focus().toggleBlockquote().run()),
          isActive: () => editorState.isBlockquote,
          canExecute: (editor) => editor.can().chain().focus().toggleBlockquote().run(),
          shortcuts: ["mod", "shift", "B"],
@@ -61,7 +61,7 @@ export const SectionFive: React.FC<SectionFiveProps> = ({
          value: "horizontalRule",
          label: "Divider",
          icon: <DividerHorizontalIcon className="size-4.5" />,
-         action: (editor) => editor.chain().focus().setHorizontalRule().run(),
+         action: (editor) => (disabled ? undefined : editor.chain().focus().setHorizontalRule().run()),
          isActive: () => false,
          canExecute: (editor) => editor.can().chain().focus().setHorizontalRule().run(),
          shortcuts: ["mod", "alt", "-"],
@@ -76,10 +76,10 @@ export const SectionFive: React.FC<SectionFiveProps> = ({
             tooltip="Insert table"
             icon={<TableIcon className="size-4.5" />}
             disableHoverableContent={true}
-            disabled={isDocLocked}
+            disabled={disabled}
          />
-         <LinkEditPopover editor={editor} size={size} variant={variant} disableHoverableContent={true} disabled={isDocLocked} />
-         <ImageEditDialog editor={editor} size={size} variant={variant} disableHoverableContent={true} disabled={isDocLocked} />
+         <LinkEditPopover editor={editor} size={size} variant={variant} disableHoverableContent={true} disabled={disabled} />
+         <ImageEditDialog editor={editor} size={size} variant={variant} disableHoverableContent={true} disabled={disabled} />
          <ToolbarSection
             editor={editor}
             actions={formatActionsWithActive}
@@ -95,7 +95,7 @@ export const SectionFive: React.FC<SectionFiveProps> = ({
             dropdownTooltip="Insert elements"
             size={size}
             variant={variant}
-            disabled={isDocLocked}
+            disabled={disabled}
          />
       </>
    );

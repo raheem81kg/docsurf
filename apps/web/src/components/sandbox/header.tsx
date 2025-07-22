@@ -21,6 +21,7 @@ import { useSession } from "@/hooks/auth-hooks";
 import { Analytics } from "../providers/posthog";
 import { useModal } from "../providers/modal-provider";
 import { MenuIcon, PanelLeftIcon, PanelRightIcon, PanelsTopLeftIcon } from "lucide-react";
+import { useDocumentSettings, FONT_OPTIONS, APPLY_FONT_TO_HEADER } from "@/store/document-settings-store";
 /**
  * Header component for the doc page, including breadcrumb, doc title (editable), and action buttons.
  * Shows a skeleton for the doc title while loading.
@@ -90,6 +91,9 @@ const HeaderContent = () => {
          );
       }
    });
+   const defaultFont = useDocumentSettings((s) => s.defaultFont);
+   // Find the font class for the current font
+   const fontClass = APPLY_FONT_TO_HEADER ? FONT_OPTIONS.find((f) => f.value === defaultFont)?.className ?? "" : "";
 
    React.useEffect(() => {
       setTitle(doc?.title || DEFAULT_TEXT_TITLE);
@@ -207,6 +211,7 @@ const HeaderContent = () => {
                                  onBlur={handleInputBlur}
                                  className={cn(
                                     "relative max-w-[250px] font-medium text-muted-foreground truncate h-7 justify-start bg-muted/50 border-primary border rounded-sm px-2 py-1.5 text-left self-start",
+                                    fontClass,
                                     "text-base", // 16px on all screens
                                     "sm:text-[13px]", // 13px on small and up
                                     isEvenLargerTitle && "w-[250px]",
@@ -225,6 +230,7 @@ const HeaderContent = () => {
                                  type="button"
                                  className={cn(
                                     "relative max-w-[250px] text-muted-foreground font-medium text-base md:text-sm truncate h-7 justify-start cursor-pointer bg-transparent border-none p-0 appearance-none text-left self-start",
+                                    fontClass,
                                     isEvenLargerTitle && "w-[250px]",
                                     isLargeTitle && !isEvenLargerTitle && "w-[180px]",
                                     isShortTitle && "w-[90px]",
