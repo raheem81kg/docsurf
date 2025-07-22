@@ -179,7 +179,7 @@ function UsageInner() {
             </div>
 
             <div className="mt-3">
-               <p className="text-xs text-muted-foreground opacity-50">Today's usage</p>
+               {/* <p className="text-xs text-muted-foreground opacity-50">Today's usage</p> */}
                <p className={cn("text-xs text-muted-foreground opacity-50", paymentFailedAt && "text-red-600")}>
                   {paymentFailedAt
                      ? "Your last payment failed. Please update your payment method to continue using DocSurf."
