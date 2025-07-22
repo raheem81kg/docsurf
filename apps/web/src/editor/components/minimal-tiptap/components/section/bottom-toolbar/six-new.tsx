@@ -374,7 +374,7 @@ export const SectionSixNew: React.FC<SectionSixProps> = ({
                               tabIndex={0}
                               className={
                                  "flex flex-col items-center min-w-[38px] justify-end rounded transition-colors cursor-pointer px-1 py-1 " +
-                                 (isActive ? "bg-accent text-primary" : "hover:bg-accent/30")
+                                 (isActive ? "bg-accent text-primary/80" : "hover:bg-accent/30")
                               }
                               style={{ userSelect: "none" }}
                               onClick={() => setDefaultFont(option.value)}
@@ -392,8 +392,10 @@ export const SectionSixNew: React.FC<SectionSixProps> = ({
                                  Ag
                               </span>
                               <span
-                                 className="text-[12px] leading-4 mt-1 whitespace-nowrap overflow-hidden text-ellipsis"
-                                 style={{ color: isActive ? "#2383e2" : undefined }}
+                                 className={cn(
+                                    "text-[12px] leading-4 mt-1 whitespace-nowrap overflow-hidden text-ellipsis",
+                                    isActive && "text-primary"
+                                 )}
                               >
                                  {option.previewLabel}
                               </span>
