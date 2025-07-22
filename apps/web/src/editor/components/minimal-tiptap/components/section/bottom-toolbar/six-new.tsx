@@ -256,6 +256,8 @@ export const SectionSixNew: React.FC<SectionSixProps> = ({
          const { value } = await mammoth.convertToHtml({ arrayBuffer });
          const html = await filerImage(value);
          editor.chain().setContent(html, true).run();
+         // Scroll into view to ensure imported content is visible
+         editor.commands.scrollIntoView();
          showToast("Word document imported successfully.", "success");
       } catch (err) {
          showToast("Failed to import Word document.", "error");

@@ -3,6 +3,18 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/_welcome/terms")({
    component: RouteComponent,
    ssr: true,
+   head: () => ({
+      meta: [
+         {
+            title: "Terms and Conditions - DocSurf",
+         },
+         {
+            name: "description",
+            content:
+               "Read DocSurf's terms and conditions governing the use of our AI-powered document editor. Learn about subscriptions, content policies, and user responsibilities.",
+         },
+      ],
+   }),
 });
 
 function RouteComponent() {

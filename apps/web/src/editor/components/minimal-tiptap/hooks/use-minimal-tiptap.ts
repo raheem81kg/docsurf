@@ -177,6 +177,8 @@ const createExtensions = (
                   };
                })
             );
+            // Scroll into view to ensure inserted content is visible
+            editor.commands.scrollIntoView();
          },
          onImageRemoved({ id, src }) {
             console.log("Image removed", { id, src });
@@ -233,6 +235,8 @@ const createExtensions = (
                   type: "image",
                   attrs: { src: blobUrl },
                });
+               // Scroll into view to ensure pasted content is visible
+               editor.commands.scrollIntoView();
             });
          },
          onValidationError: (errors) => {
@@ -465,6 +469,17 @@ export const useMinimalTiptapEditor = ({
             autocorrect: "off",
             autocapitalize: "off",
             class: cn("min-h-full flex-1 focus:outline-none", editorClassName),
+         },
+         handlePaste: (view, event) => {
+            // Let the default paste behavior happen first
+            const result = false; // Don't prevent default
+
+            // After paste, scroll into view to ensure content is visible
+            setTimeout(() => {
+               view.dispatch(view.state.tr.scrollIntoView());
+            }, 0);
+
+            return result;
          },
       },
       onUpdate: ({ editor, transaction }) => {

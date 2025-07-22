@@ -17,7 +17,13 @@ export function Footer() {
                   title="Home"
                >
                   {/* <LogoLarge /> */}
-                  <img src={logo} alt="DocSurf" className="rounded-lg dark:invert" width={52} height={52} />
+                  <img
+                     src={logo}
+                     alt="DocSurf - AI-powered document editor logo"
+                     className="rounded-lg dark:invert"
+                     width={52}
+                     height={52}
+                  />
                   {/* <p className="text-3xl font-medium">Docsurf</p> */}
                   <span className="sr-only">Docsurf</span>
                </Link>

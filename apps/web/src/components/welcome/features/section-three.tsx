@@ -124,7 +124,7 @@ export function SectionThree() {
                      darkSrc={docsurfEditorSuggestionDark}
                      height={400}
                      className="-mb-[32px] md:-mb-[1px] mt-8 object-contain md:mt-0 md:w-[800px]"
-                     alt="AI Writing Assistant"
+                     alt="DocSurf AI-powered text editor with smart suggestions and visual diff interface"
                   />
                </div>
             </div>

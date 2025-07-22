@@ -11,14 +11,6 @@ export const Route = createFileRoute("/_welcome")({
    head: () => ({
       meta: [
          {
-            title: "Docsurf - The AI Document Editor",
-         },
-         {
-            name: "description",
-            content:
-               "Revolutionize your document workflow with AI-powered editing and intelligent content generation. Start for free today.",
-         },
-         {
             name: "robots",
             content: "index, follow", // Marketing pages should be indexed
          },

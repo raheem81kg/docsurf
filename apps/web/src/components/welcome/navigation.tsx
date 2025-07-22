@@ -98,7 +98,13 @@ export default function Navigation({ profile }: { profile: Profile }) {
             {/* Left group: logo + nav menu */}
             <div className="flex gap-4 items-center">
                <Link to="/" className="flex text-[#0B100F] dark:text-foreground items-center gap-2.5">
-                  <img src={logo} alt="DocSurf" className="rounded-lg dark:invert" width={33} height={33} />
+                  <img
+                     src={logo}
+                     alt="DocSurf - AI-powered document editor logo"
+                     className="rounded-lg dark:invert"
+                     width={33}
+                     height={33}
+                  />
                   {/* <p className="text-xl">Docsurf</p> */}
                </Link>
 

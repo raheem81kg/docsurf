@@ -10,7 +10,7 @@ export function SectionFive() {
             <DynamicImage
                lightSrc="/welcome/docsurf-file-system-light.png"
                darkSrc="/welcome/docsurf-file-system.png"
-               alt="Document Management"
+               alt="DocSurf document management system with organized folders and file structure"
                className="mt-8 max-w-[70%] basis-1/2 object-contain sm:max-w-[50%] md:max-w-[35%] lg:mt-0"
             />
 

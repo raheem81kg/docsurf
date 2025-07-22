@@ -3,6 +3,18 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/_welcome/policy")({
    component: RouteComponent,
    ssr: true,
+   head: () => ({
+      meta: [
+         {
+            title: "Privacy Policy - DocSurf",
+         },
+         {
+            name: "description",
+            content:
+               "Learn how DocSurf protects your privacy and handles your data. Read our comprehensive privacy policy covering data collection, usage, and your rights as a user.",
+         },
+      ],
+   }),
 });
 
 function RouteComponent() {

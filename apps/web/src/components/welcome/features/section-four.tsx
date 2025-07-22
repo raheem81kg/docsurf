@@ -56,7 +56,7 @@ export function SectionFour() {
                   width={299}
                   height={423}
                   className="-bottom-[33px] relative ml-[10%] object-contain xl:ml-[20%]"
-                  alt="AI Writing Assistant"
+                  alt="DocSurf AI chat interface showing conversation with intelligent writing assistant"
                />
 
                {/* <motion.div
@@ -72,7 +72,7 @@ export function SectionFour() {
                      height={57}
                      width={327}
                      className="object-contain"
-                     alt="AI suggestions"
+                     alt="AI text suggestions and improvements for document editing"
                   />
                </motion.div> */}
             </div>

@@ -48,11 +48,12 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
       meta: [
          // --- SEO Meta Tags ---
          ...seo({
-            title: "Docsurf: The AI document editor",
-            description: "Docsurf is an AI document editor that makes it easy to create, edit, and share essays and research papers.",
+            title: "DocSurf: AI-Powered Writing Assistant",
+            description:
+               "DocSurf is the ultimate AI-powered document editor with smart autocomplete, intelligent text suggestions, AI chat features, and seamless document management. Write better, faster with GPT-4, Claude, and Gemini integration.",
             image: `${PROD_APP_URL}/opengraph.jpg`,
             keywords:
-               "docsurf, docsurf ai, docs, document, writing, free document editor, ai essay generator, ai writing assistant, writing productivity tool, ai writing, essay, ai essay, essay writer, online text editor",
+               "DocSurf, AI document editor, writing assistant, smart autocomplete, text suggestions, AI chat, document management, GPT-4, Claude, Gemini, writing tool, essay writer, research papers, free document editor, AI writing assistant, writing productivity tool, AI writing, essay, AI essay, online text editor",
          }),
          // --- App & Theme Meta Tags ---
          {

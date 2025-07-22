@@ -1,7 +1,7 @@
 {
-   "name": "Docsurf: The AI document editor",
-   "short_name": "Docsurf",
-   "description": "Docsurf is an AI document editor that makes it easy to create, edit, and share essays and research papers.",
+   "name": "DocSurf: AI-Powered Document Editor",
+   "short_name": "DocSurf",
+   "description": "DocSurf is the ultimate AI-powered document editor with smart autocomplete, intelligent text suggestions, AI chat features, and seamless document management.",
    "start_url": "/auth",
    "display": "standalone",
    "background_color": "#ffffff",

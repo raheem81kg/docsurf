@@ -3,6 +3,18 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/_welcome/about")({
    component: RouteComponent,
    ssr: true,
+   head: () => ({
+      meta: [
+         {
+            title: "About DocSurf - AI-Powered Writing Assistant Platform",
+         },
+         {
+            name: "description",
+            content:
+               "Learn about DocSurf's mission to revolutionize writing with AI assistance. Discover our journey building the ultimate AI-powered document editor for students, researchers, and professionals.",
+         },
+      ],
+   }),
 });
 
 function RouteComponent() {

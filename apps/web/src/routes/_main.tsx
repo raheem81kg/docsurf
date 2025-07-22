@@ -20,11 +20,12 @@ export const Route = createFileRoute("/_main")({
    head: () => ({
       meta: [
          {
-            title: "Docsurf - AI Document Editor",
+            title: "DocSurf - AI Document Editor | Smart Writing Workspace",
          },
          {
             name: "description",
-            content: "Create, edit, and collaborate on documents with AI assistance. Your intelligent document workspace.",
+            content:
+               "Create, edit, and collaborate on documents with AI assistance. Features smart autocomplete, intelligent text suggestions, AI chat, and seamless document management.",
          },
          {
             name: "robots",

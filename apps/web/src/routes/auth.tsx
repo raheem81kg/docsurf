@@ -20,11 +20,12 @@ export const Route = createFileRoute("/auth")({
    head: () => ({
       meta: [
          {
-            title: "Sign In - Docsurf",
+            title: "Sign In - DocSurf | AI Document Editor",
          },
          {
             name: "description",
-            content: "Sign in to your Docsurf account to access your AI-powered documents and collaborate with your team.",
+            content:
+               "Sign in to your DocSurf account to access your AI-powered documents, smart autocomplete, and intelligent writing assistance. Start writing smarter today.",
          },
          {
             name: "robots",

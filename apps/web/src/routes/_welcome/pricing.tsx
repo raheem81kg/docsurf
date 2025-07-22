@@ -7,6 +7,18 @@ import { PLANS, getCurrentPlan } from "@docsurf/utils/constants/pricing";
 export const Route = createFileRoute("/_welcome/pricing")({
    component: RouteComponent,
    ssr: true,
+   head: () => ({
+      meta: [
+         {
+            title: "DocSurf Pricing - Simple, Transparent Plans | Free & Pro",
+         },
+         {
+            name: "description",
+            content:
+               "Choose the perfect DocSurf plan for your writing needs. Free plan includes AI autocomplete and 50 daily chat requests. Pro plan offers unlimited AI features for $9/month. Start free today.",
+         },
+      ],
+   }),
 });
 
 function RouteComponent() {
