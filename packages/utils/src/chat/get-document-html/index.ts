@@ -9,29 +9,33 @@ function isBrowser() {
 /**
  * Render a document's Tiptap JSON content as HTML using the server extension set.
  * Returns null if content is missing or invalid.
+ * This function is now async because it may dynamically import DOMPurify in the browser.
  */
-export function getDocumentHtml(content: string): string | null {
+export async function getDocumentHtml(content: string): Promise<string | null> {
    if (!content) return null;
    const originalJson = safeParseTiptapContent(content);
    if (originalJson) {
       try {
          let html = generateHTML(originalJson, getServerTiptapExtensions());
+         console.log("[DEBUG] html:", html);
          // Replace all base64-encoded data URLs (images, audio, video, pdf, etc.) with a placeholder
          html = html.replace(/data:[^;]+;base64,[A-Za-z0-9+/=]+/g, "[base64 omitted]");
          // Replace all blob: URLs with a placeholder
          html = html.replace(/blob:[^"'\s)]+/g, "[blob omitted]");
          // Sanitize HTML to prevent XSS and other issues (browser only)
          if (isBrowser()) {
-            // @ts-ignore
-            // This ensures isomorphic-dompurify is only loaded in environments where window exists. (CRITICAL)
-            const DOMPurify = require("isomorphic-dompurify");
-            html = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
+            // Dynamically import DOMPurify only in the browser
+            const DOMPurify = await import("isomorphic-dompurify");
+            html = DOMPurify.default.sanitize(html, { USE_PROFILES: { html: true } });
          }
          return html;
-      } catch {
+      } catch (error) {
+         console.log("[DEBUG] error:", error);
+         console.log("[DEBUG] catch error");
          return null;
       }
    }
+   console.log("[DEBUG] outside null 2");
    return null;
 }
 

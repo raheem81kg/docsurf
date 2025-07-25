@@ -31,6 +31,8 @@ import { TextBubbleMenu } from "./text-bubble-menu";
 import { isEqual } from "lodash-es";
 import { useDocumentSettings } from "@/store/document-settings-store";
 import SectionSixNew from "../minimal-tiptap/components/section/bottom-toolbar/six-new";
+import { SectionZero } from "../minimal-tiptap/components/section/zero";
+import SectionOne from "../minimal-tiptap/components/section/one";
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "onUpdate"> {
    value?: Content;
@@ -81,6 +83,17 @@ const BottomToolbarNew = ({
       <ScrollBar orientation="horizontal" />
    </ScrollArea>
 );
+
+const TopToolbar = ({ editor, isDocLocked }: { editor: Editor; isDocLocked?: boolean }) => {
+   const { l_sidebar_state, ir_sidebar_state } = useSandStateStore();
+   const isEitherSidebarOpen = l_sidebar_state || ir_sidebar_state;
+
+   return (
+      <div className="flex w-max items-center gap-px px-2 py-1">
+         <SectionOne editor={editor} isDocLocked={isDocLocked} />
+      </div>
+   );
+};
 
 // Simple sync logic - just update editor when value prop changes and differs from current content
 
@@ -225,16 +238,17 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
             };
 
             // Check if user is actively typing
+            const FOCUSED_SYNC_DELAY = 3000; // 3 seconds
             const timeSinceLastInput = Date.now() - lastInputTime.current;
 
-            if (timeSinceLastInput < 1000 && editor.isFocused) {
+            if (timeSinceLastInput < FOCUSED_SYNC_DELAY && editor.isFocused) {
                // User is actively typing, delay sync to avoid interruption
                syncTimeoutRef.current = setTimeout(() => {
                   // Only sync if editor is no longer focused or enough time has passed
-                  if (!editor.isFocused || Date.now() - lastInputTime.current >= 1000) {
+                  if (!editor.isFocused || Date.now() - lastInputTime.current >= FOCUSED_SYNC_DELAY) {
                      performSync();
                   }
-               }, 1000);
+               }, FOCUSED_SYNC_DELAY);
             } else {
                // Safe to sync immediately
                performSync();
@@ -277,6 +291,11 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
             <Deleted />
             <AnimatePresence>{showSearchReplace && <SearchAndReplaceToolbar editor={editor} />}</AnimatePresence>
 
+            {!(doc?.isDeleted || doc?.isLocked) && !isUserNotSignedIn && import.meta.env.DEV && (
+               <div className="sticky top-0 z-10 shrink-0 overflow-x-auto border-b border-border [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                  <TopToolbar editor={editor} isDocLocked={doc?.isLocked ?? false} />
+               </div>
+            )}
             <div className="flex-1 min-h-0 overflow-auto flex flex-col h-full">
                <EditorContent
                   style={{

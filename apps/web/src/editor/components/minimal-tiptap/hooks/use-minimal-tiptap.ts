@@ -58,6 +58,7 @@ import { ImageExtension } from "../extensions/custom/niazmorshed/image";
 import { ImagePlaceholder } from "../extensions/custom/niazmorshed/image-placeholder";
 import { Mathematics } from "@tiptap/extension-mathematics";
 import { useMutation } from "convex/react";
+import { getDocumentHtml } from "@docsurf/utils/chat/get-document-html";
 export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
    value?: Content;
    output?: "html" | "json" | "text";
@@ -482,7 +483,7 @@ export const useMinimalTiptapEditor = ({
             return result;
          },
       },
-      onUpdate: ({ editor, transaction }) => {
+      onUpdate: async ({ editor, transaction }) => {
          if (!isMainEditor) return;
          if (skipNextUpdate.current) {
             skipNextUpdate.current = false;
@@ -491,10 +492,11 @@ export const useMinimalTiptapEditor = ({
          if (transaction.docChanged) {
             // const rawOutput = getOutput(editor, "json");
             // const stringifiedOutput = JSON.stringify(rawOutput);
-            // const htmlOutput = getDocumentHtml(stringifiedOutput);
+            // const htmlOutput = await getDocumentHtml(stringifiedOutput);
             // console.log("[DEBUG] getOutput(editor, 'json'):", rawOutput);
             // console.log("[DEBUG] JSON.stringify(getOutput(editor, 'json')):", stringifiedOutput);
-            // console.log("[DEBUG] getDocumentHtml(JSON.stringify(getOutput(editor, 'json'))):", htmlOutput);
+            // const blocks = getBlockBasedState(editor);
+            // console.log("[DEBUG] blocks:", blocks);
             hasPendingChanges.current = true;
             debouncedSave(getOutput(editor, output));
          }

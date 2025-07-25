@@ -152,6 +152,9 @@ export const SectionOne: React.FC<SectionOneProps> = function SectionOne({
       }))
    );
 
+   // Batch edit dialog state
+   const [batchDialogOpen, setBatchDialogOpen] = React.useState(false);
+
    // Sync blockEdits with blocks if blocks change (e.g. after apply)
    React.useEffect(() => {
       setBlockEdits((prev) => {
@@ -198,48 +201,51 @@ export const SectionOne: React.FC<SectionOneProps> = function SectionOne({
       [editor]
    );
 
-   // const handleApplyAll = React.useCallback(() => {
-   //    if (!editor || blockEdits.length === 0) return;
-   //    const blocks = getBlockBasedState(editor);
-   //    blockEdits.forEach((edit) => {
-   //       if (edit.editType === ("insert" as EditType)) {
-   //          // Handle insert
-   //          const pos = edit.placement === ("after_block" as Placement) ? edit.range.to : edit.range.from;
-   //          editor
-   //             .chain()
-   //             .focus()
-   //             .insertContentAt(pos, {
-   //                type: "confirmBlockChange",
-   //                attrs: {
-   //                   changeType: edit.editType,
-   //                   originalContent: "",
-   //                   newContent: edit.content,
-   //                   blockId: edit.id,
-   //                },
-   //             })
-   //             .run();
-   //       } else if (edit.editType === ("remove" as EditType)) {
-   //          // Handle remove
-   //          editor.chain().focus().deleteRange(edit.range).run();
-   //       } else {
-   //          // Handle replace
-   //          editor
-   //             .chain()
-   //             .focus()
-   //             .deleteRange(edit.range)
-   //             .insertContentAt(edit.range.from, {
-   //                type: "confirmBlockChange",
-   //                attrs: {
-   //                   changeType: edit.editType,
-   //                   originalContent: "",
-   //                   newContent: edit.content,
-   //                   blockId: edit.id,
-   //                },
-   //             })
-   //             .run();
-   //       }
-   //    });
-   // }, [editor, blockEdits]);
+   // Apply all edits from bottom to top
+   const handleApplyAll = React.useCallback(() => {
+      if (!editor || blockEdits.length === 0) return;
+      const blocks = getBlockBasedState(editor);
+      // Sort edits by range.from descending (bottom to top)
+      const sortedEdits = [...blockEdits].map((edit, idx) => ({ edit, idx, from: edit.range.from })).sort((a, b) => b.from - a.from);
+      sortedEdits.forEach(({ edit }) => {
+         if (edit.editType === ("insert" as EditType)) {
+            // Handle insert
+            const pos = edit.placement === ("after_block" as Placement) ? edit.range.to : edit.range.from;
+            editor
+               .chain()
+               .focus()
+               .insertContentAt(pos, {
+                  type: "confirmBlockChange",
+                  attrs: {
+                     changeType: edit.editType,
+                     originalContent: "",
+                     newContent: edit.content,
+                     blockId: edit.id,
+                  },
+               })
+               .run();
+         } else if (edit.editType === ("remove" as EditType)) {
+            // Handle remove
+            editor.chain().focus().deleteRange(edit.range).run();
+         } else {
+            // Handle replace
+            editor
+               .chain()
+               .focus()
+               .deleteRange(edit.range)
+               .insertContentAt(edit.range.from, {
+                  type: "confirmBlockChange",
+                  attrs: {
+                     changeType: edit.editType,
+                     originalContent: "",
+                     newContent: edit.content,
+                     blockId: edit.id,
+                  },
+               })
+               .run();
+         }
+      });
+   }, [editor, blockEdits]);
 
    return (
       <div className="flex items-center gap-2">
@@ -264,11 +270,17 @@ export const SectionOne: React.FC<SectionOneProps> = function SectionOne({
                {filteredActions.map(renderMenuItem)}
             </DropdownMenuContent>
          </DropdownMenu>
-         {/* {process.env.NODE_ENV === "development" && (
-            <Button type="button" variant="outline" size="sm" onClick={() => setDialogOpen(true)} className="ml-1">
-               Show Blocks
-            </Button>
-         )} */}
+         {import.meta.env.DEV && (
+            <>
+               <Button type="button" variant="outline" size="sm" onClick={() => setDialogOpen(true)} className="ml-1">
+                  Show Blocks
+               </Button>
+               <Button type="button" variant="outline" size="sm" onClick={() => setBatchDialogOpen(true)} className="ml-1">
+                  Batch Edit Blocks
+               </Button>
+            </>
+         )}
+         {/* Existing single-block edit dialog */}
          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogContent className="max-w-2xl">
                <DialogHeader>
@@ -340,6 +352,87 @@ export const SectionOne: React.FC<SectionOneProps> = function SectionOne({
                </div>
                <DialogFooter>
                   <Button type="button" variant="secondary" onClick={() => setDialogOpen(false)} disabled={isDocLocked}>
+                     Close
+                  </Button>
+               </DialogFooter>
+            </DialogContent>
+         </Dialog>
+         {/* Batch edit dialog for applying all edits at once */}
+         <Dialog open={batchDialogOpen} onOpenChange={setBatchDialogOpen}>
+            <DialogContent className="max-w-2xl">
+               <DialogHeader>
+                  <DialogTitle>Batch Edit Blocks</DialogTitle>
+                  <DialogDescription>
+                     Stage multiple edits and apply them all at once. Edits are applied from bottom to top to avoid shifting issues.
+                  </DialogDescription>
+               </DialogHeader>
+               <div className="max-h-[60vh] space-y-6 overflow-y-auto">
+                  {blocks.length === 0 ? (
+                     <div className="text-muted-foreground">No blocks found.</div>
+                  ) : (
+                     blocks.map((block, idx) => {
+                        const edit = blockEdits[idx];
+                        if (!edit) return null;
+                        return (
+                           <div key={edit.id} className="rounded border bg-muted/50 p-3">
+                              <div className="mb-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                                 <span className="font-mono">{block.id}</span> — <span>{block.type}</span>
+                                 <select
+                                    className="ml-2 rounded border px-1 py-0.5 text-xs"
+                                    value={edit.editType}
+                                    onChange={(e) =>
+                                       handleEditChange(idx, "editType", e.target.value as "replace" | "insert" | "remove")
+                                    }
+                                 >
+                                    <option value="replace">Replace</option>
+                                    <option value="insert">Insert</option>
+                                    <option value="remove">Remove</option>
+                                 </select>
+                                 {edit.editType === "insert" && (
+                                    <select
+                                       className="ml-2 rounded border px-1 py-0.5 text-xs"
+                                       value={edit.placement}
+                                       onChange={(e) =>
+                                          handleEditChange(
+                                             idx,
+                                             "placement",
+                                             e.target.value as "before_block" | "after_block" | "in_place"
+                                          )
+                                       }
+                                    >
+                                       <option value="before_block">Before</option>
+                                       <option value="after_block">After</option>
+                                    </select>
+                                 )}
+                              </div>
+                              <textarea
+                                 className="min-h-[60px] w-full rounded border bg-background p-2 font-mono text-xs"
+                                 value={edit.content}
+                                 onChange={(e) => handleEditChange(idx, "content", e.target.value)}
+                                 readOnly={edit.editType === "remove"}
+                                 spellCheck={false}
+                              />
+                              <div className="mt-1 text-xs text-muted-foreground">
+                                 Range: {block.range.from} - {block.range.to}
+                              </div>
+                           </div>
+                        );
+                     })
+                  )}
+               </div>
+               <DialogFooter>
+                  <Button
+                     type="button"
+                     variant="default"
+                     onClick={() => {
+                        handleApplyAll();
+                        setBatchDialogOpen(false);
+                     }}
+                     disabled={isDocLocked || blocks.length === 0}
+                  >
+                     Apply All
+                  </Button>
+                  <Button type="button" variant="secondary" onClick={() => setBatchDialogOpen(false)} disabled={isDocLocked}>
                      Close
                   </Button>
                </DialogFooter>

@@ -229,6 +229,9 @@ export function getBlockBasedState(editor: Editor): BlockBasedState[] {
 /**
  * Cleans up HTML by removing inline styles and normalizing attributes
  */
+/**
+ * Cleans up HTML by removing inline styles and normalizing attributes
+ */
 function cleanBlockHtml(html: string): string {
    // Create a temporary DOM element to parse the HTML
    const tempDiv = document.createElement("div");
@@ -236,8 +239,9 @@ function cleanBlockHtml(html: string): string {
 
    // Function to clean up a single element
    const cleanElement = (element: Element) => {
-      // Remove style attributes
+      // Remove style and class attributes
       element.removeAttribute("style");
+      element.removeAttribute("class");
 
       // Clean up specific elements
       if (element.tagName === "TD" || element.tagName === "TH") {

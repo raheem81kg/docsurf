@@ -32,7 +32,7 @@ export const DocumentContextAdapter: ToolAdapter = async ({ ctx, enabledTools, t
                   metadata: null,
                };
             }
-            const html = getDocumentHtml(doc.content);
+            const html = await getDocumentHtml(doc.content);
             return {
                success: true,
                html,
