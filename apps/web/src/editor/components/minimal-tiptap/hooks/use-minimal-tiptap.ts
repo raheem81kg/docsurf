@@ -495,6 +495,7 @@ export const useMinimalTiptapEditor = ({
             // const htmlOutput = await getDocumentHtml(stringifiedOutput);
             // console.log("[DEBUG] getOutput(editor, 'json'):", rawOutput);
             // console.log("[DEBUG] JSON.stringify(getOutput(editor, 'json')):", stringifiedOutput);
+            // Removed getBlockBasedState call to prevent focus issues
             // const blocks = getBlockBasedState(editor);
             // console.log("[DEBUG] blocks:", blocks);
             hasPendingChanges.current = true;
