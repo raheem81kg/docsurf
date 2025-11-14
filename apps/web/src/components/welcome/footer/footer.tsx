@@ -85,7 +85,7 @@ export function Footer() {
                      </ul>
                   </div>
 
-                  <div>
+                  <div className="min-w-[7.5ch]">
                      <span>Company</span>
                      <ul>
                         <li className="text-[#878787] transition-colors">

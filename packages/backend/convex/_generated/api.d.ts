@@ -59,6 +59,7 @@ import type * as schema_parts from "../schema/parts.js";
 import type * as schema_settings from "../schema/settings.js";
 import type * as schema_streams from "../schema/streams.js";
 import type * as schema_thread from "../schema/thread.js";
+import type * as schema_types from "../schema/types.js";
 import type * as schema_usage from "../schema/usage.js";
 import type * as schema_workspace from "../schema/workspace.js";
 import type * as settings from "../settings.js";
@@ -137,6 +138,7 @@ declare const fullApi: ApiFromModules<{
   "schema/settings": typeof schema_settings;
   "schema/streams": typeof schema_streams;
   "schema/thread": typeof schema_thread;
+  "schema/types": typeof schema_types;
   "schema/usage": typeof schema_usage;
   "schema/workspace": typeof schema_workspace;
   settings: typeof settings;
