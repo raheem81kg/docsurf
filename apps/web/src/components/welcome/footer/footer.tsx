@@ -100,6 +100,21 @@ export function Footer() {
                         </li> */}
                      </ul>
                   </div>
+                  <div>
+                     <span>More</span>
+                     <ul>
+                        <li className="text-[#878787] transition-colors">
+                           <a
+                              href="https://www.betterpowerpoints.com"
+                              title="Better Powerpoints"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                           >
+                              Better Powerpoints
+                           </a>
+                        </li>
+                     </ul>
+                  </div>
                </div>
 
                <div className="mt-8 flex md:mt-0 md:w-6/12 md:justify-end">

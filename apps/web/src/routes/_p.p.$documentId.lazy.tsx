@@ -182,7 +182,7 @@ function PublicDocumentComponent() {
                      value={content}
                      editorContentClassName="max-w-[54rem] w-full mx-auto px-8"
                      className=""
-                     editorClassName="focus:outline-none py-8 min-h-full"
+                     editorClassName="focus:outline-none py-6 min-h-full"
                   />
                </Suspense>
             </div>

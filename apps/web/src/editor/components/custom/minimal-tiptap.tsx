@@ -291,11 +291,11 @@ export const MinimalTiptap = React.forwardRef<HTMLDivElement, MinimalTiptapProps
             <Deleted />
             <AnimatePresence>{showSearchReplace && <SearchAndReplaceToolbar editor={editor} />}</AnimatePresence>
 
-            {!(doc?.isDeleted || doc?.isLocked) && !isUserNotSignedIn && import.meta.env.DEV && (
+            {/* {!(doc?.isDeleted || doc?.isLocked) && !isUserNotSignedIn && import.meta.env.DEV && (
                <div className="sticky top-0 z-10 shrink-0 overflow-x-auto border-b border-border [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                   <TopToolbar editor={editor} isDocLocked={doc?.isLocked ?? false} />
                </div>
-            )}
+            )} */}
             <div className="flex-1 min-h-0 overflow-auto flex flex-col h-full">
                <EditorContent
                   style={{

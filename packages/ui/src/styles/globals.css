@@ -883,7 +883,7 @@ body {
 }
 
 .minimal-tiptap-editor .ProseMirror hr {
-   @apply my-3 h-0.5 w-full border-none bg-[var(--mt-hr)];
+   @apply mt-3 mb-1 h-0.25 w-full border-none bg-[var(--mt-hr)];
 }
 
 .minimal-tiptap-editor .ProseMirror-focused hr.ProseMirror-selectednode {

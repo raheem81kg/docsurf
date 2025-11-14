@@ -42,6 +42,7 @@ import { isToday, isYesterday } from "date-fns";
 import { useDocumentSettings, FONT_OPTIONS } from "@/store/document-settings-store";
 import { Switch } from "@docsurf/ui/components/switch";
 import { ArrowLeftRight } from "lucide-react";
+import { useIsMobile } from "@docsurf/ui/hooks/use-mobile";
 
 /**
  * SectionSix displays character/word count and formatting actions in the bottom toolbar.
@@ -83,6 +84,7 @@ export const SectionSixNew: React.FC<SectionSixProps> = ({
    function handleRedo() {
       if (canRedo) editor.chain().focus().redo().run();
    }
+   const isMobile = useIsMobile();
 
    // Flip logic: isWide is true when window.innerWidth >= 1324
    const isWide = !useBreakpoint(1300);
@@ -407,13 +409,15 @@ export const SectionSixNew: React.FC<SectionSixProps> = ({
                   </div>
                </div>
                {/* Full width toggle row */}
-               <div className="flex items-center justify-between gap-2 px-2 py-1 mt-1 rounded bg-muted/30">
-                  <div className="flex items-center gap-2">
-                     <ArrowLeftRight className="size-4 text-muted-foreground" />
-                     <span className="text-sm ">Full width</span>
+               {!isMobile && (
+                  <div className="flex items-center justify-between gap-2 px-2 py-1 mt-1 rounded bg-muted/30">
+                     <div className="flex items-center gap-2">
+                        <ArrowLeftRight className="size-4 text-muted-foreground" />
+                        <span className="text-sm ">Full width</span>
+                     </div>
+                     <Switch checked={fullWidth} onCheckedChange={setFullWidth} aria-label="Toggle full width" />
                   </div>
-                  <Switch checked={fullWidth} onCheckedChange={setFullWidth} aria-label="Toggle full width" />
-               </div>
+               )}
                {/* Lock editor toggle row */}
                <div className="flex items-center justify-between gap-2 px-2 py-1 mt-1 rounded bg-muted/30">
                   <div className="flex items-center gap-2">
